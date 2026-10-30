@@ -54,6 +54,8 @@ class StateSpace:
     def unwarp(self, z: np.ndarray, source: str | None = None) -> np.ndarray:  # identity here
         return z
 
+    add_slow = None        # optional callable (source, T) -> (n_core, T), added after unwarp
+
     def encode(self, s: BenchSample) -> tuple[np.ndarray, np.ndarray]:
         """(k, T) state and (k,) mask of which variables are real for this worm."""
         z = np.nan_to_num(s.x[self.core])
@@ -66,6 +68,8 @@ class StateSpace:
         T = template.x.shape[1]
         out = np.full((len(self.classes), T), np.nan)
         out[self.core] = self.unwarp(v[:-2, :T], source)
+        if self.add_slow is not None:
+            out[self.core] += self.add_slow(source, T)
         out[~template.observed] = np.nan
         beh = v[-2:, :T] * self.beh_sd[:, None] + self.beh_mean[:, None]
         behaviour = {"velocity": beh[0], "reversing": (beh[1] > 0.5).astype(float)}
@@ -226,6 +230,39 @@ class ESNFeatures:
     def step(self, h, v_t):
         h = self._next(h, v_t)
         return h, np.concatenate([h, v_t, [1.0]])
+
+
+class MultiScaleFeatures:
+    """Linear features with memory at several timescales: the previous `lags` frames plus the
+    mean of each variable over longer windows further back. Windows are (a, b) in frame lags
+    (lag l = v[t-1-l]); defaults cover lags 3-15 (about 8 s at 0.6 s frames) and 16-99
+    (about 50 s), so a linear model can carry minute-scale structure [A]."""
+
+    def __init__(self, k: int, lags: int = 3, windows=((3, 16), (16, 100))):
+        self.k, self.lags, self.windows = k, lags, tuple(windows)
+        self.warmup = max(b for _, b in self.windows)
+
+    def run(self, v: np.ndarray) -> np.ndarray:
+        T = v.shape[1]
+        cs = np.concatenate([np.zeros((self.k, 1)), np.cumsum(v, axis=1)], axis=1)   # cs[:, i] = sum v[:, :i]
+        t = np.arange(self.warmup, T)
+        cols = [v[:, t - 1 - l].T for l in range(self.lags)]
+        for a, b in self.windows:
+            cols.append(((cs[:, t - a] - cs[:, t - b]) / (b - a)).T)
+        return np.hstack(cols)
+
+    def step_init(self, hist: np.ndarray):
+        h = hist[:, :-1]
+        if h.shape[1] < self.warmup:
+            h = np.hstack([np.zeros((self.k, self.warmup - h.shape[1])), h])
+        return h[:, -self.warmup:].copy()
+
+    def step(self, state, v_t):
+        state = np.concatenate([state[:, 1:], v_t[:, None]], axis=1)      # newest last
+        cols = [state[:, -1 - l] for l in range(self.lags)]
+        for a, b in self.windows:
+            cols.append(state[:, self.warmup - b: self.warmup - a].mean(axis=1))
+        return state, np.concatenate(cols)
 
 
 def _power_radius(W, iters: int = 200) -> float:
@@ -470,3 +507,95 @@ class IndividualVAR:
         s.name = f"{self.name}:{self.names[i]}"       # the individual it came from
         return s
 
+
+
+# ---------------------------------------------------------------- fast / slow
+
+class SlowFastVAR:
+    """Fast dynamics plus a per-worm slow brain state.
+
+    Real recordings carry minute-scale trends (a third of the power in periods over 3 min;
+    each neuron's slow part correlates about 0.63 with time; half of it one shared component,
+    with neurons rising and falling in equal numbers, so not bleaching). A stationary model
+    with seconds of memory cannot make that. So:
+        slow = 3-minute moving average of each trace,  fast = trace - slow
+        fast:  IndividualVAR on a CalciumStateSpace (drive, per-worm marginals), lam fixed
+        slow:  per training worm, the top `rank` principal components of its slow part
+               (loadings over core classes), driven by independent Ornstein-Uhlenbeck
+               latents with time constant `tau_s` [A], smoothed with the same moving
+               average and scaled to the worm's own slow variance
+    Sample j comes from training worm j: its fast dynamics and its slow loadings.
+    """
+
+    def __init__(self, gamma: float = 0.5, lam: float = 300.0, feats: str = "lags3",
+                 window_s: float = 180.0, rank: int = 2, tau_s: float = 600.0):
+        self.gamma, self.lam, self.feats_kind = gamma, lam, feats
+        self.window_s, self.rank, self.tau_s = window_s, rank, tau_s
+        self.inner = None
+        self.loadings: dict = {}
+        self.info: dict = {}
+
+    @property
+    def name(self) -> str:
+        return f"slowfast_{self.feats_kind}_g{self.gamma:g}_lam{self.lam:g}"
+
+    @property
+    def names(self):
+        return self.inner.names if self.inner is not None else []
+
+    def _split(self, s: BenchSample):
+        from scipy.ndimage import uniform_filter1d
+        w = max(3, int(round(self.window_s / s.dt)))
+        slow = np.full_like(s.x, np.nan)
+        for i in np.flatnonzero(s.observed):
+            slow[i] = uniform_filter1d(s.x[i], w, mode="nearest")
+        fast = BenchSample(s.name, s.classes, s.x - slow, s.dt, s.origin, s.behaviour)
+        return fast, slow
+
+    def fit(self, train, val):
+        fast_train, slows = zip(*[self._split(s) for s in train])
+        fast_val = [self._split(s)[0] for s in val]
+        cs = CalciumStateSpace.from_train(list(fast_train), gamma=self.gamma)
+        feats = LagFeatures(cs.k, 3, False) if self.feats_kind == "lags3" else MultiScaleFeatures(cs.k)
+        self.inner = IndividualVAR(Forecaster("var3", cs, feats), fixed_lam=self.lam).fit(list(fast_train), fast_val)
+        core = cs.core
+        self.loadings = {}
+        share = []
+        for s, slow in zip(train, slows):
+            S = np.nan_to_num(slow[core])
+            S = S - S.mean(axis=1, keepdims=True)
+            U, sv, _ = np.linalg.svd(S, full_matrices=False)
+            T = S.shape[1]
+            self.loadings[s.origin] = U[:, :self.rank] * (sv[:self.rank] / np.sqrt(T))   # latent unit variance
+            share.append(float(np.sum(sv[:self.rank] ** 2) / max(np.sum(sv ** 2), 1e-12)))
+        self.dt = train[0].dt
+        cs.add_slow = self._slow
+        self._rng = np.random.default_rng(0)
+        self.info = {**self.inner.info, "slow_rank_share": round(float(np.median(share)), 3)}
+        return self
+
+    def _slow(self, source, T):
+        from scipy.ndimage import uniform_filter1d
+        L = self.loadings.get(source)
+        if L is None:
+            return 0.0
+        a = np.exp(-self.dt / self.tau_s)
+        burn = int(3 * self.tau_s / self.dt)
+        z = np.zeros((self.rank, T + burn))
+        e = self._rng.standard_normal(z.shape) * np.sqrt(1 - a * a)
+        for t in range(1, T + burn):
+            z[:, t] = a * z[:, t - 1] + e[:, t]
+        z = z[:, burn:]
+        w = max(3, int(round(self.window_s / self.dt)))
+        z = uniform_filter1d(z, w, axis=1, mode="nearest")
+        z = (z - z.mean(axis=1, keepdims=True)) / np.maximum(z.std(axis=1, keepdims=True), 1e-9)
+        return L @ z
+
+    def generate(self, template, rng, which, **kw):
+        self._rng = rng
+        s = self.inner.generate(template, rng, which, **kw)
+        s.name = s.name.replace(self.inner.name, self.name)
+        return s
+
+    def one_step_r2(self, samples):
+        return self.inner.one_step_r2([self._split(s)[0] for s in samples])

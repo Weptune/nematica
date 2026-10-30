@@ -105,3 +105,25 @@ def test_calcium_space_round_trip_and_skew():
     for t in range(1, drive.shape[1]):
         rebuilt[t] = 0.5 * rebuilt[t - 1] + drive[i, t]
     assert np.allclose(rebuilt, s.x[i])
+
+
+def test_multiscale_step_matches_run():
+    from nematica.systems.forecasters import MultiScaleFeatures
+    train = [worm(s) for s in range(1, 3)]
+    space = StateSpace.from_train(train, min_fraction=0.5)
+    v, _ = space.encode(train[0])
+    f = MultiScaleFeatures(space.k, lags=3, windows=((3, 10), (10, 40)))
+    F = f.run(v)
+    for t in (45, 300):                                   # predict v[:, t + 1]
+        state = f.step_init(v[:, : t + 1])
+        _, x = f.step(state, v[:, t])
+        assert np.allclose(x, F[t + 1 - f.warmup])
+
+
+def test_slowfast_adds_slow_structure():
+    from nematica.systems.forecasters import SlowFastVAR
+    train = [worm(s) for s in range(1, 6)]
+    m = SlowFastVAR(gamma=0.5, lam=300, window_s=60.0, tau_s=120.0).fit(train, [worm(6)])
+    s = m.generate(worm(7), np.random.default_rng(0), which=0, burn=50)
+    assert s.name.startswith("slowfast_lags3")
+    assert s.x.shape == worm(7).x.shape and np.isfinite(s.x[s.observed]).all()

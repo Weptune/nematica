@@ -115,7 +115,16 @@ Other findings (`scripts/run_arc1.py`, `scripts/run_cv.py`; tables in `docs/figu
   autocorrelation is 0.755 against 0.656 in real worms (that feature alone gives AUC 0.88).
   Real worms have more power at both ends of the spectrum (33% of power in periods over
   3 minutes, against 19% in the model, plus more frame-to-frame variation). A VAR with
-  1.8 s of memory cannot produce minute-scale structure; multi-timescale memory is next.
+  1.8 s of memory cannot produce minute-scale structure.
+- **For linear models, the eight levels and the classifier pull in opposite directions.**
+  Real worms' slow power is not bleaching (raw brightness changes by about 1%, neurons rise
+  and fall in equal numbers) but a slow brain-state shift: each neuron's slow part correlates
+  about 0.63 with time, half of it one shared component. Adding 8 s and 50 s memory
+  (`MultiScaleFeatures`) and a per-worm slow state (`SlowFastVAR`) lowers the Level 8 AUC
+  from 0.94 to 0.84 on the frozen pool, but breaks pairwise levels: 6 of 8 inside instead
+  of 8 (`scripts/run_slowfast.py`, `docs/figures/slowfast_combined.csv`). No linear model
+  found so far passes both; real worms do. The next rung is nonlinear (a GRU), which needs
+  PyTorch on the Windows machine.
 - A correction: on the single frozen 6-worm test pool the per-worm model looked fully
   inside on these levels; the rotating pools show that at the forecasting-chosen shrinkage
   it is still slightly too typical. The shrinkage sweep explains why.
