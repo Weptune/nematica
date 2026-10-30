@@ -51,6 +51,9 @@ class StateSpace:
     def k(self) -> int:
         return self.core.size + 2
 
+    def unwarp(self, z: np.ndarray, source: str | None = None) -> np.ndarray:  # identity here
+        return z
+
     def encode(self, s: BenchSample) -> tuple[np.ndarray, np.ndarray]:
         """(k, T) state and (k,) mask of which variables are real for this worm."""
         z = np.nan_to_num(s.x[self.core])
@@ -59,15 +62,62 @@ class StateSpace:
         mask = np.concatenate([s.observed[self.core], [True, True]])
         return np.vstack([z, b]), mask
 
-    def decode(self, v: np.ndarray, template: BenchSample, name: str) -> BenchSample:
+    def decode(self, v: np.ndarray, template: BenchSample, name: str, source: str | None = None) -> BenchSample:
         T = template.x.shape[1]
         out = np.full((len(self.classes), T), np.nan)
-        out[self.core] = v[:-2, :T]
+        out[self.core] = self.unwarp(v[:-2, :T], source)
         out[~template.observed] = np.nan
         beh = v[-2:, :T] * self.beh_sd[:, None] + self.beh_mean[:, None]
         behaviour = {"velocity": beh[0], "reversing": (beh[1] > 0.5).astype(float)}
         return BenchSample(f"{name}:{template.origin}", self.classes, zscore_rows(out),
                            template.dt, origin=None, behaviour=behaviour)
+
+
+@dataclass
+class WarpedStateSpace(StateSpace):
+    """Gaussian-copula version: each class trace is replaced by its normal scores
+    (rank-based, per worm) before modelling, and generated rows are mapped back through an
+    empirical quantile function: the source worm's own for per-worm models, pooled over
+    training worms otherwise (and for classes the source worm lacks). Linear dynamics in
+    the warped space give realistic, skewed activity distributions [A]."""
+    pooled_q: dict = field(default_factory=dict)        # core row -> sorted values
+    worm_q: dict = field(default_factory=dict)          # origin -> {core row -> sorted values}
+
+    @classmethod
+    def from_train(cls, train, min_fraction: float = 0.6) -> "WarpedStateSpace":
+        base = StateSpace.from_train(train, min_fraction)
+        sp = cls(base.classes, base.core, base.beh_mean, base.beh_sd)
+        grid = np.linspace(0, 1, 201)
+        for r, ci in enumerate(sp.core):
+            vals = [s.x[ci] for s in train if s.observed[ci]]
+            if vals:
+                sp.pooled_q[r] = np.quantile(np.concatenate(vals), grid)
+            for s in train:
+                if s.observed[ci]:
+                    sp.worm_q.setdefault(s.origin, {})[r] = np.quantile(s.x[ci], grid)
+        return sp
+
+    def encode(self, s):
+        v, mask = StateSpace.encode(self, s)
+        from scipy.stats import norm, rankdata
+        z = v[:-2]
+        T = z.shape[1]
+        for r, ci in enumerate(self.core):
+            if s.observed[ci]:
+                z[r] = norm.ppf((rankdata(s.x[ci]) - 0.5) / T)
+        return v, mask
+
+    def unwarp(self, z, source=None):
+        from scipy.stats import norm
+        grid = np.linspace(0, 1, 201)
+        out = np.empty_like(z)
+        for r in range(z.shape[0]):
+            row = z[r]
+            sd = row.std()
+            u = norm.cdf((row - row.mean()) / sd) if sd > 0 else np.full_like(row, 0.5)
+            q = self.worm_q.get(source, {}).get(r, self.pooled_q.get(r))
+            out[r] = np.interp(u, grid, q) if q is not None else row
+        return out
 
 
 # ---------------------------------------------------------------- feature maps
@@ -375,6 +425,6 @@ class IndividualVAR:
             state, f = p.feats.step(state, cur)
             cur = np.clip(f @ W + L @ rng.standard_normal(k), -clip, clip)
             out[:, t] = cur
-        s = p.space.decode(out[:, burn:], template, self.name)
+        s = p.space.decode(out[:, burn:], template, self.name, source=self.names[i])
         s.name = f"{self.name}:{self.names[i]}"       # the individual it came from
         return s

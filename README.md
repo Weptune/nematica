@@ -88,6 +88,12 @@ Other findings (`scripts/run_arc1.py`, `scripts/run_cv.py`; tables in `docs/figu
   worms; per-worm dynamics close 55 to 77%; per-worm deviations of the same size with their
   structure scrambled close 40 to 91% (they fix correlations and lead-lag but not behaviour
   encoding).
+- **A static warp does not fix the last level.** Running the same linear dynamics in a
+  Gaussian-copula space (each neuron's own empirical distribution) brings the activity
+  distribution ratio from about 1.5 to 1.06, but breaks reversal-state dwell times (1.00
+  to 1.23): 6 of 8 inside instead of 7. With shared marginals the distributions become too
+  typical (0.93). Skewed activity and realistic bout durations seem to need genuine state
+  switching, which is the next model (`scripts/run_warp.py`, `docs/figures/warp_combined.csv`).
 - A correction: on the single frozen 6-worm test pool the per-worm model looked fully
   inside on these levels; the rotating pools show that at the forecasting-chosen shrinkage
   it is still slightly too typical. The shrinkage sweep explains why.

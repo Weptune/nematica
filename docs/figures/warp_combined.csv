@@ -1,0 +1,49 @@
+system,metric,level,primary,distance_ratio,shift,shift_lo,shift_hi,self_spread_ratio,folds,verdict
+var3,L1.distribution,1,True,1.487,0.0568,0.0498,0.0666,0.403,outside/outside/outside,outside
+var3,L1.timescale,1,False,0.957,-0.0298,-0.1372,0.0487,0.269,inside/inside/inside,inside
+var3,L2.correlation,2,True,0.749,-0.1562,-0.1828,-0.1186,0.318,too typical/too typical/too typical,too typical
+var3,L2.dimension,2,False,3.065,0.3213,0.2084,0.3916,0.499,outside/outside/inside,outside
+var3,L4.leadlag,4,True,0.851,-0.1024,-0.1346,-0.0662,0.644,too typical/too typical/too typical,too typical
+var3,L4.dwell,4,False,1.192,0.0616,-0.0025,0.1061,1.15,inside/inside/inside,inside
+var3,L5.encoding,5,True,0.652,-0.1143,-0.1606,-0.0931,0.258,too typical/too typical/too typical,too typical
+var3,L5.reversal,5,False,0.668,-0.1036,-0.1379,-0.0784,0.323,too typical/too typical/too typical,too typical
+indiv_var3_lam300,L1.distribution,1,True,1.512,0.0597,0.0525,0.0695,0.472,outside/outside/outside,outside
+indiv_var3_lam300,L1.timescale,1,False,1.009,0.0057,-0.1066,0.0703,0.855,inside/inside/inside,inside
+indiv_var3_lam300,L2.correlation,2,True,0.994,-0.0046,-0.0336,0.0358,1.002,inside/inside/inside,inside
+indiv_var3_lam300,L2.dimension,2,False,1.093,0.0132,-0.0608,0.0742,0.949,inside/inside/inside,inside
+indiv_var3_lam300,L4.leadlag,4,True,1.011,0.0074,-0.0343,0.0445,1.022,inside/inside/inside,inside
+indiv_var3_lam300,L4.dwell,4,False,1.002,-0.0011,-0.0566,0.0426,0.979,inside/inside/inside,inside
+indiv_var3_lam300,L5.encoding,5,True,0.969,-0.0119,-0.0613,0.0104,0.977,inside/inside/inside,inside
+indiv_var3_lam300,L5.reversal,5,False,0.97,-0.0105,-0.0418,0.0166,1.005,inside/inside/inside,inside
+indiv_var3_lam3000,L1.distribution,1,True,1.503,0.0586,0.0515,0.0681,0.463,outside/outside/outside,outside
+indiv_var3_lam3000,L1.timescale,1,False,0.978,-0.0153,-0.1313,0.0484,0.684,inside/inside/inside,inside
+indiv_var3_lam3000,L2.correlation,2,True,0.926,-0.0467,-0.0728,-0.0061,0.85,inside/inside/inside,too typical
+indiv_var3_lam3000,L2.dimension,2,False,1.532,0.0817,-0.0063,0.1511,0.93,inside/inside/inside,inside
+indiv_var3_lam3000,L4.leadlag,4,True,0.966,-0.0235,-0.0593,0.0139,0.925,inside/inside/inside,inside
+indiv_var3_lam3000,L4.dwell,4,False,1.06,0.0175,-0.0408,0.0653,0.995,inside/inside/inside,inside
+indiv_var3_lam3000,L5.encoding,5,True,0.846,-0.0511,-0.1008,-0.0278,0.717,inside/too typical/too typical,too typical
+indiv_var3_lam3000,L5.reversal,5,False,0.85,-0.0476,-0.0792,-0.0221,0.743,inside/too typical/too typical,too typical
+warp_var3,L1.distribution,1,True,0.931,-0.008,-0.0135,-0.0024,0.518,inside/too typical/inside,too typical
+warp_var3,L1.timescale,1,False,1.126,0.0817,-0.0179,0.1897,0.318,inside/outside/inside,inside
+warp_var3,L2.correlation,2,True,0.752,-0.1543,-0.1816,-0.1165,0.316,too typical/too typical/too typical,too typical
+warp_var3,L2.dimension,2,False,3.525,0.3931,0.2737,0.4577,0.47,outside/outside/outside,outside
+warp_var3,L4.leadlag,4,True,0.896,-0.0715,-0.1031,-0.0328,0.755,inside/too typical/too typical,too typical
+warp_var3,L4.dwell,4,False,1.349,0.1127,0.0467,0.1614,1.305,outside/outside/inside,outside
+warp_var3,L5.encoding,5,True,0.674,-0.1073,-0.1552,-0.0872,0.277,too typical/too typical/too typical,too typical
+warp_var3,L5.reversal,5,False,0.681,-0.0993,-0.1337,-0.0744,0.331,too typical/too typical/too typical,too typical
+warp_indiv_var3_lam300,L1.distribution,1,True,1.058,0.0067,0.0007,0.0119,1.109,inside/inside/outside,outside
+warp_indiv_var3_lam300,L1.timescale,1,False,1.086,0.0561,-0.0655,0.1181,0.829,inside/inside/inside,inside
+warp_indiv_var3_lam300,L2.correlation,2,True,1.0,-0.0012,-0.0296,0.0366,1.008,inside/inside/inside,inside
+warp_indiv_var3_lam300,L2.dimension,2,False,1.429,0.0657,-0.0266,0.1237,1.0,inside/inside/inside,inside
+warp_indiv_var3_lam300,L4.leadlag,4,True,1.044,0.0299,-0.0081,0.0729,1.082,inside/inside/inside,inside
+warp_indiv_var3_lam300,L4.dwell,4,False,1.233,0.0745,0.0029,0.1171,1.164,inside/inside/inside,outside
+warp_indiv_var3_lam300,L5.encoding,5,True,1.006,0.001,-0.0481,0.0226,1.049,inside/inside/inside,inside
+warp_indiv_var3_lam300,L5.reversal,5,False,0.988,-0.0049,-0.0363,0.0211,1.024,inside/inside/inside,inside
+warp_indiv_var3_lam3000,L1.distribution,1,True,1.061,0.0071,0.001,0.0117,1.113,inside/inside/outside,outside
+warp_indiv_var3_lam3000,L1.timescale,1,False,1.054,0.0347,-0.0804,0.1081,0.66,inside/inside/inside,inside
+warp_indiv_var3_lam3000,L2.correlation,2,True,0.933,-0.0425,-0.0694,-0.0037,0.862,inside/inside/inside,too typical
+warp_indiv_var3_lam3000,L2.dimension,2,False,1.943,0.1446,0.0449,0.2102,0.98,outside/outside/inside,outside
+warp_indiv_var3_lam3000,L4.leadlag,4,True,1.009,0.0055,-0.029,0.0478,1.003,inside/inside/inside,inside
+warp_indiv_var3_lam3000,L4.dwell,4,False,1.273,0.088,0.0186,0.1355,1.187,inside/inside/inside,outside
+warp_indiv_var3_lam3000,L5.encoding,5,True,0.892,-0.0359,-0.0878,-0.0164,0.764,inside/inside/too typical,too typical
+warp_indiv_var3_lam3000,L5.reversal,5,False,0.875,-0.0394,-0.0723,-0.0161,0.769,inside/inside/too typical,too typical
