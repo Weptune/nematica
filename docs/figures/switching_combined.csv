@@ -1,0 +1,41 @@
+system,metric,level,primary,distance_ratio,shift,shift_lo,shift_hi,self_spread_ratio,folds,verdict
+real_other_worms,L1.distribution,1,True,1.022,0.0025,-0.004,0.0067,1.017,inside/inside/inside,inside
+real_other_worms,L1.timescale,1,False,0.969,-0.0205,-0.1299,0.0345,0.983,inside/inside/inside,inside
+real_other_worms,L2.correlation,2,True,0.983,-0.0125,-0.0416,0.0282,0.985,inside/inside/inside,inside
+real_other_worms,L2.dimension,2,False,0.907,-0.0159,-0.0961,0.0262,0.965,inside/inside/inside,inside
+real_other_worms,L4.leadlag,4,True,0.978,-0.0158,-0.0495,0.0254,0.986,inside/inside/inside,inside
+real_other_worms,L4.dwell,4,False,0.985,-0.0066,-0.0615,0.0252,1.01,inside/inside/inside,inside
+real_other_worms,L5.encoding,5,True,0.983,-0.0083,-0.0508,0.0192,0.999,inside/inside/inside,inside
+real_other_worms,L5.reversal,5,False,0.974,-0.0093,-0.0444,0.0212,0.989,inside/inside/inside,inside
+indiv_var3_lam300,L1.distribution,1,True,1.512,0.0597,0.0525,0.0695,0.472,outside/outside/outside,outside
+indiv_var3_lam300,L1.timescale,1,False,1.009,0.0057,-0.1066,0.0703,0.855,inside/inside/inside,inside
+indiv_var3_lam300,L2.correlation,2,True,0.994,-0.0046,-0.0336,0.0358,1.002,inside/inside/inside,inside
+indiv_var3_lam300,L2.dimension,2,False,1.093,0.0132,-0.0608,0.0742,0.949,inside/inside/inside,inside
+indiv_var3_lam300,L4.leadlag,4,True,1.011,0.0074,-0.0343,0.0445,1.022,inside/inside/inside,inside
+indiv_var3_lam300,L4.dwell,4,False,1.002,-0.0011,-0.0566,0.0426,0.979,inside/inside/inside,inside
+indiv_var3_lam300,L5.encoding,5,True,0.969,-0.0119,-0.0613,0.0104,0.977,inside/inside/inside,inside
+indiv_var3_lam300,L5.reversal,5,False,0.97,-0.0105,-0.0418,0.0166,1.005,inside/inside/inside,inside
+switch_var3,L1.distribution,1,True,1.304,0.0354,0.0288,0.0434,0.427,outside/outside/outside,outside
+switch_var3,L1.timescale,1,False,0.902,-0.0656,-0.1675,0.0079,0.259,inside/inside/inside,inside
+switch_var3,L2.correlation,2,True,0.765,-0.1467,-0.1746,-0.1104,0.363,too typical/too typical/too typical,too typical
+switch_var3,L2.dimension,2,False,3.239,0.3496,0.2318,0.4201,0.378,outside/outside/inside,outside
+switch_var3,L4.leadlag,4,True,0.854,-0.1003,-0.1355,-0.0688,0.61,too typical/too typical/too typical,too typical
+switch_var3,L4.dwell,4,False,0.922,-0.0264,-0.084,0.0024,0.864,inside/inside/inside,inside
+switch_var3,L5.encoding,5,True,0.659,-0.1115,-0.1632,-0.0909,0.258,too typical/too typical/too typical,too typical
+switch_var3,L5.reversal,5,False,0.63,-0.1147,-0.1498,-0.0883,0.242,too typical/too typical/too typical,too typical
+switch_var3_indiv_lam300,L1.distribution,1,True,1.314,0.0365,0.0295,0.0438,0.561,outside/outside/outside,outside
+switch_var3_indiv_lam300,L1.timescale,1,False,0.996,-0.0033,-0.123,0.0609,0.704,inside/inside/inside,inside
+switch_var3_indiv_lam300,L2.correlation,2,True,0.979,-0.0139,-0.0442,0.0237,0.974,inside/inside/inside,inside
+switch_var3_indiv_lam300,L2.dimension,2,False,1.267,0.042,-0.0486,0.1069,0.83,inside/inside/inside,inside
+switch_var3_indiv_lam300,L4.leadlag,4,True,1.004,0.0028,-0.0319,0.0417,1.013,inside/inside/inside,inside
+switch_var3_indiv_lam300,L4.dwell,4,False,0.929,-0.0234,-0.0823,-0.0048,0.825,inside/inside/inside,too typical
+switch_var3_indiv_lam300,L5.encoding,5,True,0.975,-0.0099,-0.0597,0.0144,0.994,inside/inside/inside,inside
+switch_var3_indiv_lam300,L5.reversal,5,False,0.932,-0.0216,-0.0557,0.0064,0.92,inside/inside/inside,inside
+switch_var3_indiv_lam3000,L1.distribution,1,True,1.304,0.0354,0.028,0.0424,0.506,outside/outside/outside,outside
+switch_var3_indiv_lam3000,L1.timescale,1,False,0.927,-0.0488,-0.1604,0.0169,0.535,inside/inside/inside,inside
+switch_var3_indiv_lam3000,L2.correlation,2,True,0.889,-0.0693,-0.0984,-0.0316,0.746,too typical/inside/too typical,too typical
+switch_var3_indiv_lam3000,L2.dimension,2,False,1.952,0.1488,0.0433,0.2203,0.711,outside/outside/inside,outside
+switch_var3_indiv_lam3000,L4.leadlag,4,True,0.936,-0.0437,-0.0772,-0.0064,0.854,inside/too typical/inside,too typical
+switch_var3_indiv_lam3000,L4.dwell,4,False,0.887,-0.0376,-0.0923,-0.0169,0.76,inside/inside/too typical,too typical
+switch_var3_indiv_lam3000,L5.encoding,5,True,0.794,-0.0675,-0.1152,-0.0447,0.592,too typical/too typical/too typical,too typical
+switch_var3_indiv_lam3000,L5.reversal,5,False,0.749,-0.0778,-0.1097,-0.05,0.528,too typical/too typical/too typical,too typical

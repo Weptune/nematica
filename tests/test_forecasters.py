@@ -68,3 +68,16 @@ def test_individual_models_recover_individual_dynamics():
     a = m.generate(train[0], np.random.default_rng(0), which=0, burn=50)
     b = m.generate(train[0], np.random.default_rng(0), which=1, burn=50)
     assert a.name.endswith(":w1") and b.name.endswith(":w2")
+
+
+def test_switching_model_keeps_state_and_behaviour_consistent():
+    from nematica.systems.switching import SwitchingVAR
+    train = [worm(s) for s in range(1, 7)]
+    space = StateSpace.from_train(train, min_fraction=0.5)
+    for lam in (None, 300):
+        m = SwitchingVAR(space, lam=lam).fit(train, [worm(7)])
+        s = m.generate(worm(8), np.random.default_rng(0), which=1, burn=50)
+        rev = s.behaviour["reversing"]
+        assert set(np.unique(rev)) <= {0.0, 1.0}
+        assert 0.0 < rev.mean() < 1.0                       # it does switch, both ways
+        assert s.x.shape == worm(8).x.shape

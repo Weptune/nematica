@@ -94,6 +94,15 @@ Other findings (`scripts/run_arc1.py`, `scripts/run_cv.py`; tables in `docs/figu
   to 1.23): 6 of 8 inside instead of 7. With shared marginals the distributions become too
   typical (0.93). Skewed activity and realistic bout durations seem to need genuine state
   switching, which is the next model (`scripts/run_warp.py`, `docs/figures/warp_combined.csv`).
+- **Neither does explicit state switching.** Separate forward and reverse dynamics, with
+  neural activity driving the switches (`nematica/systems/switching.py`), bring the
+  distribution ratio to 1.31 but make reversal bouts too typical: 6 of 8.
+- **Diagnosis of the last level:** real traces have median skew 0.84 and excess kurtosis
+  0.86; every linear-Gaussian model gives about 0. Detrending real worms barely changes the
+  distance, so slow drift is not the cause. A stationary linear-Gaussian process is
+  time-reversible, while calcium traces rise fast and decay slowly. The next model
+  deconvolves the drive, models it with per-worm dynamics, and re-applies calcium
+  kinetics.
 - A correction: on the single frozen 6-worm test pool the per-worm model looked fully
   inside on these levels; the rotating pools show that at the forecasting-chosen shrinkage
   it is still slightly too typical. The shrinkage sweep explains why.
