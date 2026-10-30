@@ -46,8 +46,9 @@ typical** (significantly closer to every real worm than real worms are to each o
 - In the copper arena, ASH (the canonical nociceptor) is the strongest responder when the
   head meets the boundary, followed by AWC. Two random halves of the worms agree on the
   pooled encounter response at r = 0.62.
-- No system passes yet (pairwise levels; behaviour levels are not scored for systems that
-  produce no behaviour):
+- None of the baseline systems passes (pairwise levels, frozen test pool; behaviour levels
+  are not scored for systems that produce no behaviour). Arc 1 below builds a model that
+  passes all eight pairwise levels but still fails Level 8:
 
 | System | Inside | Too typical | Outside | L8 AUC |
 |---|---|---|---|---|
@@ -100,9 +101,21 @@ Other findings (`scripts/run_arc1.py`, `scripts/run_cv.py`; tables in `docs/figu
 - **Diagnosis of the last level:** real traces have median skew 0.84 and excess kurtosis
   0.86; every linear-Gaussian model gives about 0. Detrending real worms barely changes the
   distance, so slow drift is not the cause. A stationary linear-Gaussian process is
-  time-reversible, while calcium traces rise fast and decay slowly. The next model
-  deconvolves the drive, models it with per-worm dynamics, and re-applies calcium
-  kinetics.
+  time-reversible, while calcium traces rise fast and decay slowly.
+- **Modelling the drive instead of the trace passes all eight levels.** Each trace is
+  deconvolved with a first-order calcium decay (d_t = y_t - γ y_{t-1}), the drive is
+  modelled with per-worm VAR(3) (λ = 300) in per-worm normal scores, and samples are
+  mapped back through the source worm's drive distribution and re-convolved
+  (`CalciumStateSpace`, `scripts/run_calcium.py`). With γ = 0.5 (decay time 0.87 s) the
+  model is **inside on 8 of 8 levels** combined over the three pools, skew 0.86 (real 0.84).
+  γ was one of three values fixed in advance (0.5, 0.7, 0.85); choosing it on two pools and
+  scoring the third gives 8/8, 7/8 and 8/8.
+- **But a classifier still tells it apart (Level 8 AUC 0.94; other real worms 0.68).** The
+  giveaway is short-timescale structure: within 30 s windows the model's lag-1
+  autocorrelation is 0.755 against 0.656 in real worms (that feature alone gives AUC 0.88).
+  Real worms have more power at both ends of the spectrum (33% of power in periods over
+  3 minutes, against 19% in the model, plus more frame-to-frame variation). A VAR with
+  1.8 s of memory cannot produce minute-scale structure; multi-timescale memory is next.
 - A correction: on the single frozen 6-worm test pool the per-worm model looked fully
   inside on these levels; the rotating pools show that at the forecasting-chosen shrinkage
   it is still slightly too typical. The shrinkage sweep explains why.
@@ -148,6 +161,7 @@ python scripts/plot_arc1.py --results results                        # results/a
 python scripts/run_cv.py --data $copper --folds configs/splits/copper2026_cv3.yaml
 python scripts/run_shrinkage.py --data $copper --folds configs/splits/copper2026_cv3.yaml
 python scripts/plot_shrinkage.py                                     # results/shrinkage/shrinkage.png
+python scripts/run_calcium.py --data $copper --folds configs/splits/copper2026_cv3.yaml
 ```
 
 ## Replay lab

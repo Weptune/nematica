@@ -81,3 +81,27 @@ def test_switching_model_keeps_state_and_behaviour_consistent():
         assert set(np.unique(rev)) <= {0.0, 1.0}
         assert 0.0 < rev.mean() < 1.0                       # it does switch, both ways
         assert s.x.shape == worm(8).x.shape
+
+
+def test_calcium_space_round_trip_and_skew():
+    """Encoding to the drive and rebuilding calcium must invert each other, and a skewed
+    drive must come back as skewed calcium."""
+    from scipy.stats import skew
+    from nematica.systems.forecasters import CalciumStateSpace
+    train = [worm(s) for s in range(1, 5)]
+    sp = CalciumStateSpace.from_train(train, min_fraction=0.5, gamma=0.5)
+    rng = np.random.default_rng(0)
+    d = np.where(rng.random(2000) < 0.05, rng.exponential(3.0, 2000), 0.0) - 0.15
+    c = np.empty_like(d)
+    c[0] = d[0] / 0.5
+    for t in range(1, d.size):
+        c[t] = 0.5 * c[t - 1] + d[t]
+    assert skew(c) > 1.0
+    s = train[0]
+    drive = CalciumStateSpace._drive_sample(s, 0.5).x
+    i = int(np.flatnonzero(s.observed)[0])
+    rebuilt = np.empty(drive.shape[1])
+    rebuilt[0] = drive[i, 0] / 0.5
+    for t in range(1, drive.shape[1]):
+        rebuilt[t] = 0.5 * rebuilt[t - 1] + drive[i, t]
+    assert np.allclose(rebuilt, s.x[i])

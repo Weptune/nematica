@@ -120,6 +120,47 @@ class WarpedStateSpace(StateSpace):
         return out
 
 
+@dataclass
+class CalciumStateSpace(WarpedStateSpace):
+    """Model the drive behind each calcium trace, not the trace itself.
+
+    encode: drive d_t = y_t - gamma * y_{t-1} (inverse of a first-order calcium decay with
+            factor gamma = exp(-dt / tau) [A]), then per-worm normal scores of d
+    unwarp: normal scores -> d via the source worm's own drive quantiles (pooled for shared
+            models), then calcium is rebuilt: c_t = gamma * c_{t-1} + d_t
+    A skewed, spiky drive passed through a slow decay gives what linear-Gaussian dynamics
+    cannot: fast rises, slow decays (time asymmetry) and positive skew.
+    """
+    gamma: float = 0.6
+
+    @classmethod
+    def from_train(cls, train, min_fraction: float = 0.6, gamma: float = 0.6) -> "CalciumStateSpace":
+        drive = [cls._drive_sample(s, gamma) for s in train]
+        w = WarpedStateSpace.from_train(drive, min_fraction)
+        sp = cls(w.classes, w.core, w.beh_mean, w.beh_sd, w.pooled_q, w.worm_q)
+        sp.gamma = gamma
+        return sp
+
+    @staticmethod
+    def _drive_sample(s: BenchSample, gamma: float) -> BenchSample:
+        x = s.x.copy()
+        d = x.copy()
+        d[:, 1:] = x[:, 1:] - gamma * x[:, :-1]
+        d[:, 0] = x[:, 0] * (1 - gamma)
+        return BenchSample(s.name, s.classes, d, s.dt, s.origin, s.behaviour)
+
+    def encode(self, s):
+        return WarpedStateSpace.encode(self, self._drive_sample(s, self.gamma))
+
+    def unwarp(self, z, source=None):
+        d = WarpedStateSpace.unwarp(self, z, source)
+        c = np.empty_like(d)
+        c[:, 0] = d[:, 0] / (1 - self.gamma)
+        for t in range(1, d.shape[1]):
+            c[:, t] = self.gamma * c[:, t - 1] + d[:, t]
+        return c
+
+
 # ---------------------------------------------------------------- feature maps
 
 class LagFeatures:
@@ -428,3 +469,4 @@ class IndividualVAR:
         s = p.space.decode(out[:, burn:], template, self.name, source=self.names[i])
         s.name = f"{self.name}:{self.names[i]}"       # the individual it came from
         return s
+
