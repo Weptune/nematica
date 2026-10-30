@@ -1,0 +1,70 @@
+"""Tests for the forecaster ladder and the individual-worm models (arc 1)."""
+
+import numpy as np
+
+from nematica.bench import BenchSample
+from nematica.data.canonical import zscore_rows
+from nematica.systems.forecasters import (ESNFeatures, Forecaster, IndividualVAR, LagFeatures,
+                                          StateSpace)
+
+C, T, DT = 12, 800, 0.6
+
+
+def worm(seed, A=None):
+    """Linear dynamics x_t = A x_{t-1} + noise, plus velocity/reversal read out of x."""
+    rng = np.random.default_rng(seed)
+    if A is None:
+        A = 0.9 * np.eye(C) + 0.05 * np.random.default_rng(0).standard_normal((C, C))
+    x = np.zeros((C, T))
+    for t in range(1, T):
+        x[:, t] = A @ x[:, t - 1] + 0.3 * rng.standard_normal(C)
+    vel = 0.1 * x[0] + 0.01 * rng.standard_normal(T)
+    rev = (x[1] > 1.0).astype(float)
+    x[rng.choice(C, 1)] = np.nan
+    return BenchSample(f"real:w{seed}", tuple(f"N{i}" for i in range(C)), zscore_rows(x), DT,
+                       origin=f"w{seed}", behaviour={"velocity": vel, "reversing": rev})
+
+
+def test_linear_forecaster_learns_and_generates():
+    train = [worm(s) for s in range(1, 7)]
+    val, test = [worm(7)], [worm(8)]
+    space = StateSpace.from_train(train, min_fraction=0.5)
+    m = Forecaster("var1", space, LagFeatures(space.k, 1, False)).fit(train, val)
+    r1 = m.one_step_r2(test)
+    assert r1 > 0.5
+    assert m.multi_step_r2(test, horizon=5, stride=50) < r1          # harder further ahead
+    s = m.generate(test[0], np.random.default_rng(0), burn=50)
+    assert s.x.shape == test[0].x.shape
+    assert np.isnan(s.x[~test[0].observed]).all()                   # template mask applied
+    assert set(s.behaviour) == {"velocity", "reversing"}
+
+
+def test_lag_state_matches_training_features():
+    """step() must build exactly the feature vector run() builds for the same history."""
+    train = [worm(s) for s in range(1, 4)]
+    space = StateSpace.from_train(train, min_fraction=0.5)
+    v, _ = space.encode(train[0])
+    for feats in (LagFeatures(space.k, 3, False), ESNFeatures(space.k, 50, seed=1)):
+        F = feats.run(v)
+        t = 40                                                     # predict v[:, t + 1]
+        state = feats.step_init(v[:, : t + 1])
+        _, f = feats.step(state, v[:, t])
+        assert np.allclose(f, F[t + 1 - feats.warmup])
+
+
+def test_individual_models_recover_individual_dynamics():
+    """Worms with genuinely different dynamics: per-worm models (shrunk toward the pooled
+    one) must forecast each worm's second half better than the pooled model."""
+    rng = np.random.default_rng(3)
+    base = 0.85 * np.eye(C)
+    train = []
+    for s in range(1, 9):
+        A = base + 0.15 * rng.standard_normal((C, C))
+        A *= 0.9 / np.max(np.abs(np.linalg.eigvals(A)))         # stable, each worm different
+        train.append(worm(s, A))
+    space = StateSpace.from_train(train, min_fraction=0.5)
+    m = IndividualVAR(Forecaster("var1", space, LagFeatures(space.k, 1, False))).fit(train, [train[0]])
+    assert m.info["within_worm_r2_individual"] > m.info["within_worm_r2_pooled"]
+    a = m.generate(train[0], np.random.default_rng(0), which=0, burn=50)
+    b = m.generate(train[0], np.random.default_rng(0), which=1, burn=50)
+    assert a.name.endswith(":w1") and b.name.endswith(":w2")
