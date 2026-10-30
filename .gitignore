@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/raw/
+data/derived/
+results/
+runs/
+lab/node_modules/
+lab/dist/
+
+# downloaded or generated, not redistributed
+data_assets/skuhersky2022_atlas.csv
+lab/public/data/
+*.egg-info/
