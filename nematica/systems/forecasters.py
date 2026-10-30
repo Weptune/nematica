@@ -285,6 +285,7 @@ class IndividualVAR:
     """
     pooled: Forecaster
     mode: str = "full"       # "full" | "noise_only" (pooled W, own noise) | "shuffled" (scrambled deviation)
+    fixed_lam: float | None = None   # skip the forecasting-based choice and use this shrinkage
     lam: float = 0.0
     W: list = field(default_factory=list)
     L: list = field(default_factory=list)
@@ -308,6 +309,8 @@ class IndividualVAR:
 
     def fit(self, train, val, lams=(10, 100, 1000, 3000, 10000, 1e5)):
         self.pooled.fit(train, val)
+        if self.fixed_lam is not None:
+            lams = (self.fixed_lam,)
         best = None
         for lam in lams:
             num = den = 0.0

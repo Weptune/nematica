@@ -96,7 +96,8 @@ def worm_bootstrap(d_sys: np.ndarray, sys_groups: np.ndarray, d_bio: np.ndarray,
 
 
 def score_system(name: str, samples: Sequence[BenchSample], real: Sequence[BenchSample],
-                 ref: Reference, alpha: float = 0.05, n_boot: int = 2000) -> list[dict]:
+                 ref: Reference, alpha: float = 0.05, n_boot: int = 2000,
+                 return_boot: bool = False) -> list[dict]:
     rows = []
     groups = np.array([_group(s) for s in samples])
     _, gidx = np.unique(groups, return_inverse=True)
@@ -157,4 +158,45 @@ def score_system(name: str, samples: Sequence[BenchSample], real: Sequence[Bench
             "self_spread_ratio": round(spread, 3) if spread is not None else None,
             "verdict": verdict,
         })
+        if return_boot:
+            rows[-1]["_boot"] = boot
     return rows
+
+
+def combine_folds(fold_rows: Sequence[Sequence[dict]], alpha: float = 0.05, seed: int = 0) -> list[dict]:
+    """Combine one system's scores from several disjoint reference pools (rotating folds).
+
+    Each fold's rows must come from score_system(..., return_boot=True). For every metric,
+    the combined shift is the average over folds of one bootstrap draw per fold, so the
+    interval reflects worm-level uncertainty in every pool. Verdict: "outside" if the lower
+    end of the one-sided interval is above 0, "too typical" if the upper end is below 0.
+    The distance ratio is the mean of the per-fold ratios. Per-fold verdicts are kept.
+    """
+    rng = np.random.default_rng(seed)
+    by_metric: dict[str, list[dict]] = {}
+    for rows in fold_rows:
+        for r in rows:
+            by_metric.setdefault(r["metric"], []).append(r)
+    out = []
+    for m, rs in by_metric.items():
+        scored = [r for r in rs if r.get("verdict") != "not scored" and len(r.get("_boot", [])) > 0]
+        base = {"system": rs[0]["system"], "metric": m}
+        if len(scored) < len(rs) or not scored:
+            out.append({**base, "verdict": "not scored", "folds": "/".join(r.get("verdict", "?") for r in rs)})
+            continue
+        n = min(len(r["_boot"]) for r in scored)
+        draws = np.mean([rng.choice(r["_boot"], n) for r in scored], axis=0)
+        lo, hi = np.percentile(draws, [100 * alpha, 100 * (1 - alpha)])
+        verdict = "outside" if lo > 0 else ("too typical" if hi < 0 else "inside")
+        out.append({
+            **base, "level": scored[0]["level"], "primary": scored[0]["primary"],
+            "distance_ratio": round(float(np.mean([r["system_median"] / r["bio_median"] for r in scored])), 3),
+            "shift": round(float(np.mean([r["shift"] for r in scored])), 4),
+            "shift_lo": round(float(lo), 4), "shift_hi": round(float(hi), 4),
+            "self_spread_ratio": round(float(np.mean([r["self_spread_ratio"] for r in scored
+                                                      if r.get("self_spread_ratio") is not None])), 3)
+            if any(r.get("self_spread_ratio") is not None for r in scored) else None,
+            "folds": "/".join(r["verdict"] for r in scored),
+            "verdict": verdict,
+        })
+    return out

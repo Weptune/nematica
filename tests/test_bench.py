@@ -136,3 +136,34 @@ def test_environment_test_detects_broken_coupling():
     assert fresh["L6.encounter"]["verdict"] == "inside", fresh["L6.encounter"]
     deaf = rows("deaf", lambda A, rng: [arena_worm(int(s.origin[1:]) + 700, respond=False) for s in A])
     assert deaf["L6.encounter"]["verdict"] == "outside", deaf["L6.encounter"]
+
+
+def test_folds_are_frozen_disjoint_and_date_spread(tmp_path):
+    from nematica.data.splits import load_folds, make_worm_folds, save_folds
+    uids = [f"2023-0{m}-1{d}-0{s}" for m in (1, 2, 3) for d in (0, 1, 2) for s in (1, 2)]
+    doc = make_worm_folds(uids, 3, seed=0)
+    assert sorted(u for f in doc["folds"] for u in f) == sorted(uids)
+    assert all(len({u[:10] for u in f}) >= 4 for f in doc["folds"])     # dates spread
+    p = tmp_path / "f.yaml"
+    save_folds(doc, p, "x")
+    assert load_folds(p)["folds"] == doc["folds"]
+    import pytest
+    with pytest.raises(FileExistsError):
+        save_folds(doc, p, "x")
+
+
+def test_combined_folds_separate_good_from_broken():
+    from nematica.bench import combine_folds
+    pools = [[synthetic_worm(s) for s in range(10 * f, 10 * f + 6)] for f in (1, 2, 3)]
+    good, bad = [], []
+    rng = np.random.default_rng(1)
+    for f, pool in enumerate(pools):
+        ref = build_reference(pool)
+        good.append(score_system("held", [synthetic_worm(100 + 10 * f + i) for i in range(4)], pool, ref,
+                                 return_boot=True))
+        bad.append(score_system("shuffle", [frame_shuffle(s, rng) for s in pool], pool, ref, return_boot=True))
+    g = {r["metric"]: r for r in combine_folds(good)}
+    b = {r["metric"]: r for r in combine_folds(bad)}
+    assert g["L2.correlation"]["verdict"] == "inside"
+    assert b["L1.timescale"]["verdict"] == "outside"
+    assert b["L1.timescale"]["folds"] == "outside/outside/outside"

@@ -1,0 +1,8 @@
+lam,within_worm_r2,L1.distribution_ratio,L1.distribution_verdict,L1.timescale_ratio,L1.timescale_verdict,L2.correlation_ratio,L2.correlation_verdict,L2.dimension_ratio,L2.dimension_verdict,L4.leadlag_ratio,L4.leadlag_verdict,L4.dwell_ratio,L4.dwell_verdict,L5.encoding_ratio,L5.encoding_verdict,L5.reversal_ratio,L5.reversal_verdict,individuality,mean_abs_log_ratio_key
+30,0.7009,1.524,outside,1.033,inside,1.013,inside,1.023,inside,1.024,inside,0.975,inside,1.013,inside,1.031,inside,1.052,0.02
+100,0.7326,1.523,outside,1.024,inside,1.006,inside,1.056,inside,1.019,inside,1.014,inside,0.992,inside,1.011,inside,1.038,0.0109
+300,0.7519,1.512,outside,1.009,inside,0.994,inside,1.093,inside,1.011,inside,1.002,inside,0.969,inside,0.97,inside,0.99,0.0197
+1000,0.7602,1.506,outside,0.999,inside,0.97,inside,1.332,inside,0.999,inside,1.069,inside,0.916,too typical,0.915,too typical,0.909,0.052
+3000,0.7611,1.503,outside,0.978,inside,0.926,too typical,1.532,inside,0.966,inside,1.06,inside,0.846,too typical,0.85,too typical,0.783,0.1103
+10000,0.7598,1.517,outside,0.949,inside,0.878,too typical,1.766,outside,0.925,too typical,1.104,inside,0.768,too typical,0.773,too typical,0.625,0.1824
+100000,0.7576,1.5,outside,0.932,inside,0.792,too typical,2.074,outside,0.877,too typical,1.135,inside,0.708,too typical,0.714,too typical,0.456,0.2617

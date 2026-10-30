@@ -1,0 +1,4 @@
+held_out_fold,lam_chosen_on_other_folds,L1.distribution_verdict,L1.timescale_verdict,L2.correlation_verdict,L2.dimension_verdict,L4.leadlag_verdict,L4.dwell_verdict,L5.encoding_verdict,L5.reversal_verdict,L1.distribution_ratio,L1.timescale_ratio,L2.correlation_ratio,L2.dimension_ratio,L4.leadlag_ratio,L4.dwell_ratio,L5.encoding_ratio,L5.reversal_ratio
+0,30,outside,inside,inside,inside,inside,inside,inside,inside,1.509,0.999,1.004,1.059,1.043,0.997,1.087,1.109
+1,100,outside,inside,inside,inside,inside,inside,inside,inside,1.509,1.057,1.06,0.995,1.031,1.046,0.979,0.961
+2,300,outside,inside,inside,inside,inside,inside,inside,inside,1.529,1.02,0.96,1.075,0.994,0.888,0.912,0.953

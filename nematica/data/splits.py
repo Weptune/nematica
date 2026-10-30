@@ -89,3 +89,42 @@ def load_split(path: str | Path) -> dict:
     if overlap:
         raise ValueError(f"{path}: worms in more than one split: {sorted(overlap)}")
     return doc
+
+
+def make_worm_folds(uids: Sequence[str], k: int, seed: int = 0) -> dict:
+    """k disjoint folds of worms for rotating reference pools, spread over recording dates:
+    worms are ordered by date and dealt round-robin from a random starting fold."""
+    uids = sorted(str(u) for u in uids)
+    if len(set(uids)) != len(uids):
+        raise ValueError("duplicate uids")
+    rng = np.random.default_rng(seed)
+    order = sorted(uids, key=lambda u: (_date_key(u), rng.random()))
+    start = int(rng.integers(k))
+    folds = [[] for _ in range(k)]
+    for i, u in enumerate(order):
+        folds[(start + i) % k].append(u)
+    return {"seed": seed, "k": k, "folds": [sorted(f) for f in folds]}
+
+
+def folds_hash(doc: dict) -> str:
+    return hashlib.sha256(json.dumps(doc["folds"], sort_keys=True).encode()).hexdigest()[:16]
+
+
+def save_folds(doc: dict, path: str | Path, dataset: str) -> None:
+    path = Path(path)
+    if path.exists():
+        raise FileExistsError(f"{path} exists; folds are frozen and never overwritten")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as fh:
+        yaml.safe_dump({"dataset": dataset, "hash": folds_hash(doc), **doc}, fh, sort_keys=False)
+
+
+def load_folds(path: str | Path) -> dict:
+    with Path(path).open("r", encoding="utf-8") as fh:
+        doc = yaml.safe_load(fh)
+    if folds_hash(doc) != doc["hash"]:
+        raise ValueError(f"{path}: folds hash mismatch; the frozen folds were edited")
+    seen = [u for f in doc["folds"] for u in f]
+    if len(seen) != len(set(seen)):
+        raise ValueError(f"{path}: a worm appears in more than one fold")
+    return doc

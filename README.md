@@ -57,29 +57,44 @@ typical** (significantly closer to every real worm than real worms are to each o
 
 ## Arc 1: forecasting is not fidelity
 
+![Shrinkage sweep](docs/figures/shrinkage.png)
+
+**Tuning a model to forecast best makes it too typical.** Each training worm gets its own
+linear model (VAR(3)), shrunk toward the shared model by a penalty λ. Forecasting skill
+(within-worm R²) peaks at λ = 3,000. There, the simulated worms are too typical on
+correlations and on velocity and reversal encoding (individuality 0.78). At λ = 300,
+forecasting is only 0.009 R² lower and those levels sit on the real-worm line
+(individuality 0.99). Fully shared dynamics (λ → ∞) are too typical on four levels.
+
+Evidence is combined over three frozen, date-spread reference pools of 9 worms
+(`configs/splits/copper2026_cv3.yaml`); every model is refitted on the other 18 worms of
+each rotation. Nested check: choosing λ by realism on two pools and scoring it on the third
+gives **7 of 8 levels inside on every held-out pool**. The one failure is the shape of
+activity distributions (distance ratio about 1.5): Gaussian noise cannot make the skewed
+calcium signal.
+
 ![Arc 1](docs/figures/arc1.png)
 
-A ladder of next-step forecasters (per-neuron AR, VAR, echo-state reservoirs of 400 and
-1,500 units) was fitted on 18 training worms, used as simulators, and scored on the 6 test
-worms (4 seeds per template). Sources: `nematica/systems/forecasters.py`,
-`scripts/run_arc1.py`, tables in `docs/figures/`.
+Other findings (`scripts/run_arc1.py`, `scripts/run_cv.py`; tables in `docs/figures/`):
 
 - **Forecasting skill does not rank realism.** Models within 0.006 of each other in
-  one-step R² (0.780 to 0.786) range from 2 to 6 of 8 levels outside, and from 0.33 to 1.37
-  in individuality.
-- **Pooling makes an average worm.** Every model that shares one set of dynamics across
-  worms is "too typical" on correlations and behaviour encoding (individuality about 0.4).
-- **Per-worm dynamics fix it.** One VAR per training worm, shrunk toward the pooled model,
-  barely changes forecasting (within-worm R² 0.729 to 0.737) but moves those levels onto
-  the real-worm line: 6 of 8 inside, none too typical, individuality 0.83 to 0.88.
-  Controls: per-worm noise alone leaves individuality at 0.43 to 0.49; per-worm deviations
-  of the same size with their structure scrambled overshoot (VAR(1): individuality 1.18,
-  distance ratio 1.21).
-- **Still failing everywhere:** activity distributions (Gaussian noise cannot make the
-  skewed calcium signal) and dimensionality. Those are the next targets.
+  one-step R² (per-neuron AR, VAR, reservoirs of 400 and 1,500 units) range from 2 to 6 of 8
+  levels outside and from 0.33 to 1.37 in individuality.
+- **Shared dynamics make an average worm.** VAR(1), VAR(3) and the reservoir are too
+  typical on correlations, lead-lag and behaviour encoding in all three pools. Tripling the
+  reservoir changes nothing.
+- **What has to vary between simulated worms is the dynamics, not the noise.** At the
+  forecasting-chosen shrinkage, per-worm noise alone closes about 15% of the gap to real
+  worms; per-worm dynamics close 55 to 77%; per-worm deviations of the same size with their
+  structure scrambled close 40 to 91% (they fix correlations and lead-lag but not behaviour
+  encoding).
+- A correction: on the single frozen 6-worm test pool the per-worm model looked fully
+  inside on these levels; the rotating pools show that at the forecasting-chosen shrinkage
+  it is still slightly too typical. The shrinkage sweep explains why.
 
-Caveat: 6 test worms; verdict counts are coarse and the rotating cross-validated reference
-pools are the next robustness step.
+Caveats: 27 worms from one lab; the per-worm and shrinkage analyses were proposed after
+the first ladder results and are tested with controls and nested selection, not
+pre-registered; Level 8 (classifier) has not yet been run on the sweep.
 
 ## Setup (Windows, PowerShell)
 
@@ -115,6 +130,9 @@ python scripts/run_l8.py --dataset copper --data $copper --split configs/splits/
 python scripts/plot_profile.py --dataset copper                     # results/bench/fidelity_copper.png
 python scripts/run_arc1.py --data $copper --split configs/splits/copper2026.yaml --seeds 4 --out results/arc1_controls
 python scripts/plot_arc1.py --results results                        # results/arc1/arc1.png
+python scripts/run_cv.py --data $copper --folds configs/splits/copper2026_cv3.yaml
+python scripts/run_shrinkage.py --data $copper --folds configs/splits/copper2026_cv3.yaml
+python scripts/plot_shrinkage.py                                     # results/shrinkage/shrinkage.png
 ```
 
 ## Replay lab
