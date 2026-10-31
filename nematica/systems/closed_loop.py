@@ -47,7 +47,8 @@ class SensoryVAR:
                  hazard_from: str = "brain", ridges=(0.01, 0.1, 1, 10, 100, 1000),
                  directional: bool = False, reversals: str = "hazard", speed_map: bool = False,
                  sense_scales=(SENSE_SCALE_MM,), per_worm_rates: bool = False,
-                 sense_ridge_mults=(1.0,)):
+                 sense_ridge_mults=(1.0,), steer: bool = False, steer_window: int = 17,
+                 copper_limit: bool = False, steer_scales=None, heading_noise: float = 0.0):
         """hazard_from: "brain" (core classes and velocity), "speed" (velocity only) or "none"
         (constant rates); copper proximity is added to any of them when `senses` is on.
         directional: add proximity x facing-the-copper to the senses.
@@ -61,6 +62,13 @@ class SensoryVAR:
         self.scale = self.sense_scales[0]
         self.per_worm_rates = per_worm_rates
         self.sense_ridge_mults = tuple(sense_ridge_mults)
+        self.steer, self.steer_window = steer, steer_window
+        self.k_steer = 0.0
+        self.copper_limit = copper_limit
+        self.steer_scales = tuple(steer_scales) if steer_scales else None
+        self.steer_scale = None
+        self.heading_noise = heading_noise
+        self.d_limit = -np.inf
         self.offsets: dict = {}
         self.names: list = []
         self.info: dict = {}
@@ -68,10 +76,11 @@ class SensoryVAR:
     @property
     def name(self) -> str:
         n = "closed_loop_" + ("senses" if self.senses else "blind")
+        tail = ("_steer" if self.steer and self.senses else "") + ("_limit" if self.copper_limit and self.senses else "")
         if self.reversals == "hysteresis":
             return n + "_hyst" + ("_dir" if self.directional and self.senses else "")
         return n + ("" if self.hazard_from == "brain" else "_" + self.hazard_from) \
-            + ("_dir" if self.directional and self.senses else "")
+            + ("_dir" if self.directional and self.senses else "") + tail
 
     def _sense(self, s: BenchSample):
         return sense(s.behaviour["dist_to_boundary"], s.behaviour["facing_out"] if self.directional else None,
@@ -221,6 +230,15 @@ class SensoryVAR:
             self._fit_thresholds(train)
         if self.per_worm_rates and self.reversals == "hazard":
             self._fit_offsets(train)
+        if self.steer and self.senses:
+            self._fit_steering(train, val)
+        if self.copper_limit and self.senses:
+            # real training worms never go further past the copper line than this (0.5% of
+            # frames); beyond it the model has no data, and model worms that cross it
+            # wander off. Copper is treated as impassable there: past it the worm moves
+            # whichever way leads back inside [A]
+            self.d_limit = float(np.quantile(np.concatenate([s.behaviour["dist_to_boundary"] for s in train]), 0.005))
+            self.info["d_limit_mm"] = round(self.d_limit, 3)
         # speed per state: real crawling is bimodal (forward ~ +0.09, reversing ~ -0.08 mm/s)
         # while the brain's velocity channel is unimodal. With `speed_map`, the channel's
         # normal score is mapped through the training worms' speed quantiles for the current
@@ -251,6 +269,91 @@ class SensoryVAR:
             hist = hist[1:] + [v]
             out[i] = v[-1] * self.space.beh_sd[1] + self.space.beh_mean[1]
         return out
+
+    def _steer_slope(self, dist, facing_side, turn, scale=None):
+        L = self.steer_window
+        x = np.exp(-np.maximum(dist, -0.5) / (scale or self.steer_scale or self.scale)) * facing_side
+        O = np.concatenate([[0.0], np.cumsum(turn)])
+        idx = np.arange(0, len(x) - L, 2)
+        return x[idx], (O[idx + L] - O[idx]) / L
+
+    def calibrate_heading(self, train, arenas, library, sigmas=(0.0, 0.03, 0.06, 0.09, 0.12, 0.15),
+                          lag: int = 100, seed=0):
+        """Indirect inference on TRAINING worms [L]: motion clips alone make paths too straight
+        over a minute. Pick the per-frame heading noise (random walk, rad) whose simulated
+        training worms turn as much over `lag` frames (median |change in orientation|) as
+        the real training worms do."""
+        def med_change(O):
+            return np.median(np.abs(O[lag:] - O[:-lag]))
+        target = np.median([med_change(np.concatenate([[0.0], np.cumsum(s.behaviour["turn"])])) for s in train])
+        res = {}
+        for sg in sigmas:
+            self.heading_noise = sg
+            vals = []
+            for i, (s, (radius, start, t)) in enumerate(zip(train, arenas)):
+                _, ang, _, _ = self.simulate(s, radius, start, library, np.random.default_rng(seed + i), i, t)
+                vals.append(med_change(np.unwrap(np.angle(np.mean(np.exp(1j * ang), axis=1)))))
+            res[sg] = float(np.median(vals))
+        self.heading_noise = min(res, key=lambda k: abs(res[k] - target))
+        self.info.update({"heading_noise": self.heading_noise, "heading_target_deg": round(float(np.degrees(target)), 1),
+                          "heading_sim_deg": {k: round(float(np.degrees(v)), 1) for k, v in res.items()}})
+
+    def calibrate_steering(self, train, arenas, library, mults=(1, 2, 4, 8, 16), seed=0):
+        """Indirect inference on TRAINING worms [L]: the regression slope is attenuated by
+        posture noise, so simulate each training worm in its own arena (`arenas`: list of
+        (radius_mm, start_dist_mm, t)) at k = mult x fitted slope, measure the same slope on
+        the simulated trajectories, and keep the multiplier that reproduces the real one."""
+        if not (self.steer and self.senses):
+            return
+        k0, target = self.k_steer, self.k_steer
+        res = {}
+        for mult in mults:
+            self.k_steer = mult * k0
+            X, Y = [], []
+            for i, (s, (radius, start, t)) in enumerate(zip(train, arenas)):
+                smp, ang, path, _ = self.simulate(s, radius, start, library, np.random.default_rng(seed + i), i, t)
+                O = np.unwrap(np.angle(np.mean(np.exp(1j * ang), axis=1)))
+                side = np.sin(O + np.pi - np.arctan2(path[:, 1], path[:, 0]))
+                x, y = self._steer_slope(smp.behaviour["dist_to_boundary"], side, np.diff(O, append=O[-1]))
+                X.append(x)
+                Y.append(y)
+            X, Y = np.concatenate(X), np.concatenate(Y)
+            res[mult] = float(X @ Y / (X @ X))
+        best = min(res, key=lambda m: abs(res[m] - target))
+        self.k_steer = best * k0
+        self.info.update({"k_steer": round(self.k_steer, 4), "steer_mult": best,
+                          "steer_sim_slopes": {m: round(v, 4) for m, v in res.items()}})
+
+    def _fit_steering(self, train, val=None):
+        """Slow steering away from copper [L]. Real worms near copper turn away over tens of
+        seconds (invisible frame by frame, where turning is posture noise). Fitted on
+        training worms as mean turning rate over `steer_window` frames regressed on
+        proximity x sin(angle between facing and the outward normal), at the sensing
+        distance already chosen: turn_rate = k * x * sin(psi), k > 0 turns away."""
+        def data(samples, sc):
+            X, Y = [], []
+            for s in samples:
+                b = s.behaviour
+                if "facing_side" in b:
+                    x, y = self._steer_slope(b["dist_to_boundary"], b["facing_side"], b["turn"], sc)
+                    X.append(x)
+                    Y.append(y)
+            return np.concatenate(X), np.concatenate(Y)
+        if self.steer_scales and val:
+            # the steering length scale: the candidate whose training fit best predicts the
+            # validation worms' slow turning [L]
+            score = {}
+            for sc in self.steer_scales:
+                X, Y = data(train, sc)
+                k = float(X @ Y / (X @ X))
+                Xv, Yv = data(val, sc)
+                score[sc] = 1 - np.mean((Yv - k * Xv) ** 2) / np.mean((Yv - Yv.mean()) ** 2)
+            self.steer_scale = max(score, key=score.get)
+            self.info["steer_scale_val_r2"] = {k: round(float(v), 5) for k, v in score.items()}
+        X, Y = data(train, self.steer_scale)
+        self.k_steer = float(X @ Y / (X @ X))
+        self.info["steer_scale_mm"] = self.steer_scale or self.scale
+        self.info["k_steer"] = round(self.k_steer, 4)
 
     def _open_loop_states(self, s: BenchSample, which: int, rng, off):
         """Brain + reversal hazards driven by a real worm's recorded copper input (no body);
@@ -393,7 +496,11 @@ class SensoryVAR:
             vel = -speed if state == 1 else speed
             rev = float(state)
             states[i] = state
-            if not hyst:
+            if not hyst and d_now < self.d_limit:
+                # impassable copper [A]: move whichever way leads back inside (reverse when
+                # facing out, crawl forward when facing in)
+                state = 1 if facing() > 0 else 0
+            elif not hyst:
                 pred = float(self._features(hist, e) @ W[:, -1]) if self._uses_drive else 0.0
                 hz = self._hz_vec(v, self._hz_rows(), pred, e) @ self.hazard[state] + off[state]
                 if rng.random() < 1 / (1 + np.exp(-np.clip(hz, -30, 30))):
@@ -407,6 +514,11 @@ class SensoryVAR:
                 fwd = angles[i, 0] + np.pi
                 head = head + vel * dt * np.array([np.cos(fwd), np.sin(fwd)])
                 H += turn
+                if self.heading_noise:
+                    H += self.heading_noise * rng.standard_normal()
+                if self.steer and self.senses:
+                    psi = H + np.pi - np.arctan2(head[1], head[0])
+                    H += self.k_steer * np.exp(-max(d_now, -0.5) / (self.steer_scale or self.scale)) * np.sin(psi)
                 d_prev, d_now = d_now, arena_radius_mm - np.hypot(*head)
             vel_prev, rev_prev = vel, rev
         s = sp.decode(out, template, self.name, source=origin)

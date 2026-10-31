@@ -296,9 +296,29 @@ Reversal statistics become very close to real (spread of per-worm onset rates, l
   copper contact in the previous 5 minutes, with median distance to copper 2.1 mm, although
   they move far enough to reach it. Simulated worms touch copper about five times as often.
 So the real avoidance acts before contact, and the reversal hazard measured near copper
-(at most 2.5 times the far rate) does not explain it. Open question; the next candidate is
-how heading changes with distance over tens of seconds (slow steering in a gradient),
-which frame-by-frame turning cannot show.
+(at most 2.5 times the far rate) does not explain it.
+
+**Version 6: slow steering, and copper as a limit.** Over 20 s windows real worms facing
+the copper 0.5 to 2 mm away turn away (cosine to the outward normal drops by 0.6 to 0.8
+even without reversing) and end up further from it; frame by frame this is invisible.
+v6 adds a steering term, turn rate = k x proximity x sin(angle to the outward normal),
+with k fitted on training worms (indirect inference on simulated training worms confirms
+the fitted gain reproduces the real slope, 0.019 vs 0.019 rad per frame) and its length
+scale chosen on validation worms (2 mm). It also exposed a simulation artefact: model
+worms that crossed the copper line had no data-driven reason to come back (the sense is
+flat beyond the deepest real crossing), and 22% of simulated time was more than 1 mm past
+the line (real 0.5%). Copper is now treated as impassable beyond the deepest crossing seen
+in training worms (-0.85 mm): there the worm moves whichever way leads back inside [A].
+Results (`--variants v6`, `docs/figures/closed_loop_v6.csv`): 10 of 10 pairwise, but time
+near copper 27.3%, occupancy and encounter outside.
+
+Every local statistic checked now matches real worms: steering slope, reversal rate,
+duration and anatomy near copper (distance gained 9 s after a reversal ends +0.45 vs
++0.41 mm), escape depth. What does not match is how often model worms arrive at the edge.
+Model worms also travel straighter over a minute and cover more ground; adding heading
+noise calibrated on training worms did not change occupancy (`calibrate_heading`). This
+is where arc 5 stands: the brain-behaviour model is complete at the pairwise levels in
+closed loop, and the open problem is the arena-scale distribution of where worms go.
 
 ## Leaderboard: published models
 

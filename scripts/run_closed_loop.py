@@ -38,7 +38,7 @@ def main() -> int:
     ap.add_argument("--folds", required=True)
     ap.add_argument("--out", default="results/closed_loop")
     ap.add_argument("--seeds", type=int, default=2)
-    ap.add_argument("--variants", default="v2", choices=("v2", "v3", "v4", "v5"))
+    ap.add_argument("--variants", default="v2", choices=("v2", "v3", "v4", "v5", "v6"))
     args = ap.parse_args()
     recs = load_copper_dir(Path(args.data))
     classes = tuple(canonical_classes(recs, 0.25))
@@ -60,6 +60,13 @@ def main() -> int:
         # v5: as v4, plus the brain's own predicted reversal drive in the hazard
         variants = {"senses_drive_fixed": dict(senses=True, **{**v2, "hazard_from": "drive_fixed"},
                                                per_worm_rates=True)}
+    if args.variants == "v6":
+        # v6: v4 plus slow steering away from copper (gain fitted on training worms, checked
+        # by indirect inference; length scale chosen on validation worms) and impassable
+        # copper beyond the deepest crossing seen in training worms
+        variants = {"senses_steer": dict(senses=True, **{**v2, "hazard_from": "command_fixed"}, per_worm_rates=True,
+                                         steer=True, copper_limit=True, steer_scales=(0.5, 1, 2, 4, 8)),
+                    "blind_limit": dict(senses=False, **v2, per_worm_rates=True)}
     if args.variants == "v4":
         # v4: command neurons set reversal timing around a copper effect fitted first, alone
         variants = {"senses_command_fixed": dict(senses=True, **{**v2, "hazard_from": "command_fixed"},
@@ -78,6 +85,10 @@ def main() -> int:
         ref = build_reference(pool)
         for vname, kw in variants.items():
             m = SensoryVAR(**kw).fit(train, val)
+            if kw.get("steer"):
+                m.calibrate_steering(train, [(by[u].meta["arena"]["radius_mm"],
+                                              float(by[u].behaviour["dist_from_center_mm"][0]), by[u].t)
+                                             for u in train_uids], lib)
             print(f"  fold {fi} {vname}: {m.info}", flush=True)
             built = {}
             for i, (s, uid) in enumerate(zip(pool, pool_uids)):
