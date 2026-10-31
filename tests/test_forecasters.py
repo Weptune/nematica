@@ -142,3 +142,26 @@ def test_student_innovations_fit_tail_weight():
     assert np.isfinite(s.x[s.observed if hasattr(s, "observed") else slice(None)]).any()
     z = np.concatenate([m._noise(np.random.default_rng(1), 5000, 0)])
     assert np.mean(z ** 4) / np.mean(z ** 2) ** 2 > 4.0 and abs(np.var(z) - 1) < 0.15
+
+
+def test_wiring_masks_and_masked_fit():
+    from nematica.systems.wiring import (WiredVAR, class_wiring, diagonal_wiring, feature_mask,
+                                         shuffled_wiring, MaskedForecaster)
+    A = class_wiring(("AVA", "AVB", "AIB", "NOT_A_NEURON"))
+    assert A.shape == (4, 4) and A.diagonal().all() and A[0, 2]          # AIB -> AVA
+    assert A[3].sum() == 1 and A[:, 3].sum() == 1                       # unknown class: self only
+    S = shuffled_wiring(A, 0)
+    assert (S.sum(1) == A.sum(1)).all() and S.diagonal().all()
+    M = feature_mask(diagonal_wiring(2), lags=2)                        # k = 4 (2 neurons + 2 behaviour)
+    assert M.shape == (8, 4) and not M[1, 0] and M[0, 0] and M[2, 0] and M[3, 0] and M[1, 2]
+    train = [worm(s) for s in range(1, 6)]
+    space = StateSpace.from_train(train, min_fraction=0.5)
+    m = WiredVAR(MaskedForecaster("var2", space, LagFeatures(space.k, 2, False)), fixed_lam=300,
+                 wiring=lambda names: diagonal_wiring(len(names)), label="diag").fit(train, [train[0]])
+    n = space.core.size
+    allowed = m.pooled.allowed
+    for W in [m.pooled.Wout] + m.W:
+        assert np.all(W[~allowed] == 0)                                 # masked weights stay zero
+    assert m.info["inputs_per_class_mean"] == 0
+    s = m.generate(train[0], np.random.default_rng(0), which=0, burn=20)
+    assert np.isfinite(s.x[:n][s.observed[:n]] if s.x.shape[0] > n else s.x).any()

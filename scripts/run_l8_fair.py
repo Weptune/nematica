@@ -49,6 +49,10 @@ def build(name, train):
     if name.startswith("hyst"):                       # hyst, hyst6, hyst10: lag order
         lags = int(name[4:] or 3)
         return Debounced(IndividualVAR(Forecaster(f"var{lags}", cs, LagFeatures(cs.k, lags, False)), fixed_lam=300))
+    if name.startswith("wire_"):                      # arc 3 wiring variants (VAR(10))
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from run_wiring import wired
+        return Debounced(wired(name[5:], train))
     if name in ("cl11", "cl12"):                     # closed loop v11 (3 lags) or v12 (10 lags)
         return SensoryVAR(**CL11, lags=10 if name == "cl12" else 3)
     if name == "heavy":

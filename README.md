@@ -53,6 +53,7 @@ choice made on training and validation worms only, except where marked post hoc)
 | Published: Creamer, Leifer & Pillow 2024 LDS (immobilised-worm models) | 0 to 1 of 6 | not run | not modelled |
 | Per-worm calcium-drive VAR(3), hysteresis reversals | **10 of 10** | 0.82 held-out, 0.77 in-sample | not modelled |
 | Same with 10 frames of memory | **10 of 10** | **0.62 held-out (not distinguishable in 2 of 3 pools), 0.50 in-sample** | not modelled |
+| Same, coupling restricted to the connectome (arc 3) | 8 of 10 | 0.68 held-out, 0.57 in-sample (shuffled wiring: 0.69 to 0.72, 0.59 to 0.64) | not modelled |
 | Closed loop v7 (3-frame brain senses copper, steers, reverses) | 9 of 10 | 0.95 (v6, frozen split) | occupancy and approach inside; 14 to 17% of time near copper (real 3.2%) |
 | Closed loop v8 (10-frame brain) | 9 of 10 | not yet run | occupancy and approach inside; 11% near copper; encounter outside |
 | Closed loop v9 (copper acts only through ASH and the brain) | 8 of 10 | not yet run | **all three Level 6 metrics inside**; 10.4% near copper |
@@ -293,6 +294,67 @@ python scripts/fetch_atlas.py
 python scripts/export_replay.py data/raw/doi_10_5061_dryad_w9ghx3g4v__v20260415 --split configs/splits/copper2026.yaml --out lab/public/data
 cd lab; npm install; npm run dev
 ```
+
+## Arc 3: what the wiring buys
+
+**Design, written before any run (Oct 31).** The best open-loop model (per-worm
+calcium-drive VAR with 10 frames of memory, hysteresis reversals) is refitted with its
+neuron-to-neuron weights restricted to a wiring diagram, everything else identical
+(`nematica/systems/wiring.py`, `scripts/run_wiring.py`):
+
+- **full**: every class may influence every class (the current model)
+- **connectome**: class j may influence class i only if some member of j synapses onto some
+  member of i or they share a gap junction (Kunert 2014 / Neural Interactome matrices). Among
+  the 48 core classes this allows 6.6 inputs per class (density 0.14); the pharyngeal
+  classes (I1 to I3, M3, M4, MC, MI, NSM) have no somatic inputs and keep only their own
+  history
+- **shuffled** (3 seeds): the same number of inputs per class, drawn at random
+- **diagonal**: no coupling between classes
+
+Self-connections and the two behaviour channels are always allowed; only neuron-to-neuron
+weights are restricted. Scored on the three rotating pools (10 pairwise levels), the fair
+Level 8 (held-out and in-sample) and forecasting on held-out worms (one-step and 30 s
+ahead, R^2).
+
+**Expectations.** (1) Full forecasts best, since it has the most freedom, and diagonal worst.
+(2) If the connectome carries real information about which neurons drive which, the
+connectome model should beat the shuffled models with the same number of connections on
+realism: more pairwise levels inside, especially correlation and lead-lag, and a lower
+Level 8 AUC. (3) A null result is possible and would be reported as such: with
+calcium-level dynamics, unobserved neurons and class pooling, the anatomical wiring may
+not constrain the effective coupling that the recordings reveal.
+
+**Results** (`docs/figures/wiring_combined.csv`, `wiring_forecast.csv`, `l8_fair_wiring.csv`):
+
+| wiring | pairwise inside | correlation | dimension | lead-lag | Level 8 held-out / in-sample | one-step R^2 | 30 s R^2 |
+|---|---|---|---|---|---|---|---|
+| full | 10 of 10 | 1.03 | 1.34 | 1.04 | **0.620 / 0.499** | 0.4910 | **0.1009** |
+| connectome | 8 of 10 | **1.06** | 2.18 | **1.04** | **0.680 / 0.569** | **0.4935** | 0.0827 |
+| shuffled, seed 0 | 7 of 10 | 1.09 | 2.19 | 1.05 | 0.716 / 0.636 | 0.4923 | 0.0791 |
+| shuffled, seed 1 | 7 of 10 | 1.08 | 2.13 | 1.06 | 0.690 / 0.594 | 0.4923 | 0.0820 |
+| shuffled, seed 2 | 8 of 10 | 1.07 | 2.16 | 1.05 | not run | 0.4924 | 0.0820 |
+| no coupling | 8 of 10 | 1.09 | 2.21 | 1.05 | 0.716 / 0.626 | 0.4913 | 0.0744 |
+
+(bold: best among the sparse models; full is shown for reference)
+
+- **The real wiring carries information, and the effect is small.** With the same number
+  of connections per class, the connectome model beats all three shuffled wirings on
+  one-step forecasting of held-out worms (0.4935 vs 0.4923 to 0.4924, and in every
+  rotation), on correlations (1.06 vs 1.07 to 1.09) and lead-lag (1.04 vs 1.05 to 1.06),
+  and on the classifier in every rotation (held-out 0.787, 0.633, 0.619 against 0.816,
+  0.671, 0.660 and 0.799, 0.639, 0.632). It even forecasts one step ahead better than the
+  fully coupled model.
+- **But anatomical sparsity costs realism.** Every sparse model, connectome included, is
+  far too high-dimensional (ratio about 2.2 against 1.34 for full), and the fully coupled
+  model is the most realistic on every measure except one-step forecasting. With neurons
+  pooled into classes and most neurons unrecorded, the coupling a recording reveals
+  includes indirect paths the anatomy does not draw; restricting to direct synapses
+  removes the shared drive that keeps real activity low-dimensional.
+- Expectation (1) held for 30 s forecasting but not one step; expectation (2) held in
+  direction for every measure, at a small size; the null in (3) did not occur.
+- What would make it a stronger test: the connectome as a prior (shrink non-synaptic
+  weights rather than zero them), weighted by synapse counts, and a wiring mask that
+  allows two-step paths.
 
 ## Arc 5: a worm that senses copper
 
