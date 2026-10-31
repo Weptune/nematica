@@ -1374,6 +1374,31 @@ complexity inside in at least 2 of 3 pools, and the poke test still passed (patt
 spread inside in at least 2 of 3): the first model to match a real brain's perturbational
 complexity.
 
+Result (`docs/figures/ingredients.csv`): **echo complexity moves most of the way toward real
+but stays outside** (PCI distance 0.47 to 0.56, against 0.88 to 0.93 for the earlier hybrids
+and 0.35 to 0.37 between real worms); pattern stays inside in 2 of 3 pools, spread falls back
+inside in only 1 of 3, and rest collapses to 1 or 2 of 6 (distributions, correlations,
+dimension and lead-lag all fail): decoupling quiet classes breaks the brain's ordinary
+statistics. Expectation not met.
+
+**Where the ingredient hunt stands.** Every property can be reached on its own, but in this
+family of models (linear dynamics, Gaussian noise, learned causal kernels) they trade off:
+
+| what the ingredient fixes | what it costs |
+|---|---|
+| causal kernels learned from pokes: echo pattern | nothing measurable |
+| fast measurement noise: spread | echo complexity gets worse |
+| calm/active regimes (whole brain): spread distribution | a little rest realism |
+| a few shared modes: dimensionality | correlations become too typical |
+| per-class quiet stretches: echo complexity, most of the way | rest realism collapses |
+
+Real brains have all of these at once. A model that does too will probably need what none of
+these have: activity that is genuinely nonlinear in time (neurons that switch on and stay on,
+others that stay off), learned from the brain itself rather than assembled from parts. That
+is the next target, together with individual backgrounds (each simulated worm its own
+dynamics), which the copper data showed is what makes a brain model look like a particular
+worm rather than an average one.
+
 **Signal or noise? (written before computing it).** A model can fail the poke test in two
 different ways: its *average* echo is wrong (it does not know the causal structure), or its
 average echo is right but each single echo is buried in the wrong kind of variability.
