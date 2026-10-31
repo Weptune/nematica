@@ -43,7 +43,7 @@ V7 = dict(senses=True, hazard_from="command_fixed", directional=True, speed_map=
           steer_scales=(0.5, 1, 2, 4, 8), stage_speed=True)
 CL_LABEL = "closed loop v7: the brain model senses copper, decides reversals and steers its own body"
 
-MODEL_LABEL = "per-worm linear dynamics on the calcium drive, reversals read with hysteresis"
+MODEL_LABEL = "per-worm linear dynamics on the calcium drive (10 frames of memory), reversals read with hysteresis"
 METRIC_NAMES = {
     "L1.distribution": "activity values", "L1.timescale": "timescales",
     "L2.correlation": "which neurons move together", "L2.dimension": "dimensionality",
@@ -65,14 +65,15 @@ def main() -> int:
     ap.add_argument("--out", default="lab/public/data/which2")
     ap.add_argument("--start-s", type=float, default=120.0)
     ap.add_argument("--duration-s", type=float, default=420.0)
-    ap.add_argument("--scorecard", default="docs/figures/reversals_combined.csv")
+    ap.add_argument("--scorecard", default="docs/figures/lags_combined.csv")
+    ap.add_argument("--lags", type=int, default=10, help="memory of the open-loop brain, frames")
     ap.add_argument("--seed", type=int, default=2026)
     ap.add_argument("--closed-loop", action="store_true",
                     help="model worm = closed-loop v7 in the real worm's own arena, copper ring shown")
     args = ap.parse_args()
     if args.closed_loop and args.out == "lab/public/data/which2":
         args.out = "lab/public/data/which3"
-    if args.closed_loop and args.scorecard == "docs/figures/reversals_combined.csv":
+    if args.closed_loop and args.scorecard == "docs/figures/lags_combined.csv":
         args.scorecard = "docs/figures/closed_loop_v7.csv"
 
     recs = load_copper_dir(Path(args.data))
@@ -82,7 +83,8 @@ def main() -> int:
     S = lambda uids: [from_recording(by[u], classes) for u in uids]  # noqa: E731
     train, val, test = S(split["train"]), S(split["val"]), S(split["test"])
     cs = CalciumStateSpace.from_train(train, gamma=0.5)
-    model = Debounced(IndividualVAR(Forecaster("var3", cs, LagFeatures(cs.k, 3, False)), fixed_lam=300)).fit(train, val)
+    model = Debounced(IndividualVAR(Forecaster(f"var{args.lags}", cs, LagFeatures(cs.k, args.lags, False)),
+                                    fixed_lam=300)).fit(train, val)
     library = MotionLibrary.from_recordings([by[u] for u in split["train"]])
     cl_runs = {}
     if args.closed_loop:
@@ -106,7 +108,7 @@ def main() -> int:
     p = Path(args.scorecard)
     if p.exists():
         for r in csv.DictReader(p.open(encoding="utf-8")):
-            if r["system"] == "calcium_g0.5_indiv_lam300_hyst" or (
+            if r["system"] in ("calcium_g0.5_indiv_lam300_hyst", f"calcium_var{args.lags}_hyst") or (
                     args.closed_loop and r["system"].startswith("closed_loop_senses") and "metric" in r
                     and r["metric"] in METRIC_NAMES):
                 card.append({"metric": r["metric"], "what": METRIC_NAMES.get(r["metric"], r["metric"]),
