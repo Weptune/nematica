@@ -5,11 +5,13 @@ import Scene from './Scene'
 import Overlay from './Overlay'
 import WhichReal from './WhichReal'
 import Swarm from './Swarm'
+import Poke from './Poke'
 
 export default function App() {
   const mode = new URLSearchParams(location.search).get('mode')
   if (mode === 'which') return <WhichReal />
   if (mode === 'swarm') return <Swarm />
+  if (mode === 'poke') return <Poke />
   return <Replay />
 }
 

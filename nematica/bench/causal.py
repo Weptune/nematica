@@ -43,8 +43,17 @@ class ResponseSet:
     dt: float = 0.5
 
     def amp(self, key) -> float:
-        n = int(round(AMP_S / self.dt)) + 1
-        return float(np.nanmean(self.traces[key][:n]))
+        cache = self.__dict__.setdefault("_amp", {})
+        v = cache.get(key)
+        if v is None or cache.get(("_id", key)) != id(self.traces[key]):
+            n = int(round(AMP_S / self.dt)) + 1
+            with np.errstate(invalid="ignore"):
+                tr = self.traces[key][:n]
+                fin = np.isfinite(tr)
+                v = float(tr[fin].mean()) if fin.any() else float("nan")
+            cache[key] = v
+            cache[("_id", key)] = id(self.traces[key])
+        return v
 
 
 def window(dt: float) -> tuple[int, int]:
@@ -164,6 +173,9 @@ def c_kinetics(a: ResponseSet, b: ResponseSet, top: float = 0.25) -> float:
 CAUSAL_LEVELS = {"C1.pattern": c_pattern, "C2.magnitude": c_magnitude, "C3.kinetics": c_kinetics}
 
 
+_BIO_CACHE: dict = {}
+
+
 def score_sets(name: str, system: Sequence[ResponseSet], real: Sequence[ResponseSet], alpha: float = 0.05,
                n_boot: int = 2000, levels: dict = CAUSAL_LEVELS) -> list[dict]:
     """The ruler's verdict rules (nematica.bench.reference.score_system) applied to response
@@ -173,9 +185,13 @@ def score_sets(name: str, system: Sequence[ResponseSet], real: Sequence[Response
     _, gidx = np.unique(groups, return_inverse=True)
     n = len(real)
     for m, fn in levels.items():
-        d_bio = np.full((n, n), np.nan)
-        for i, j in combinations(range(n), 2):
-            d_bio[i, j] = d_bio[j, i] = fn(real[i], real[j])
+        key = (tuple(id(r) for r in real), m)
+        if key not in _BIO_CACHE:               # real-to-real distances, reused across systems
+            d_bio = np.full((n, n), np.nan)
+            for i, j in combinations(range(n), 2):
+                d_bio[i, j] = d_bio[j, i] = fn(real[i], real[j])
+            _BIO_CACHE[key] = d_bio
+        d_bio = _BIO_CACHE[key]
         bio = d_bio[np.triu_indices(n, 1)]
         bio = bio[np.isfinite(bio)]
         d_sys = np.array([[fn(s, r) if s.group != r.group else np.nan for r in real] for s in system], float)

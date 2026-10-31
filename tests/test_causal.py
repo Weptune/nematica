@@ -85,9 +85,13 @@ def test_real_atlas_loads():
 
 
 def test_lz76_and_pci():
-    from nematica.bench.perturbational import lz76, pci
+    from nematica.bench.perturbational import lz76, lz76_reference, pci
     assert lz76(np.array([int(c) for c in "0001101001000101"])) == 6     # Kaspar and Schuster 1987
     rng = np.random.default_rng(0)
+    for n in (2, 17, 300):
+        for p in (0.05, 0.5):
+            s = (rng.random(n) < p).astype(np.uint8)
+            assert lz76(s) == lz76_reference(s)
     noisy = pci(rng.random((40, 61)) < 0.1)
     stereotyped = pci(np.tile(rng.random((40, 1)) < 0.3, (1, 61)))
     assert noisy > 0.8 and stereotyped < 0.2 and pci(np.zeros((5, 10), bool)) == 0.0

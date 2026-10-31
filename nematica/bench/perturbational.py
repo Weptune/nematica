@@ -35,7 +35,23 @@ THRESHOLD = 3.0
 
 
 def lz76(s: np.ndarray) -> int:
-    """Number of phrases in the Lempel-Ziv (1976) parsing (Kaspar and Schuster 1987)."""
+    """Number of phrases in the Lempel-Ziv (1976) parsing: each new phrase is the shortest
+    substring that has not occurred before (overlap allowed). Same counts as Kaspar and Schuster
+    (1987), with the substring search done by bytes.find (checked equal in the tests)."""
+    b = bytes(np.asarray(s, dtype=np.uint8))
+    n = len(b)
+    c, i = 0, 0
+    while i < n:
+        k = 1
+        while i + k <= n and b.find(b[i:i + k], 0, i + k - 1) != -1:
+            k += 1
+        c += 1
+        i += k
+    return c
+
+
+def lz76_reference(s: np.ndarray) -> int:
+    """Kaspar and Schuster (1987), kept to check lz76."""
     s = np.asarray(s, dtype=np.uint8)
     n = len(s)
     if n == 0:
@@ -72,7 +88,7 @@ def pci(binary: np.ndarray) -> float:
     return float(lz76(s) * np.log2(L) / (L * H))
 
 
-def event_matrices(rec: PumpProbe, threshold: float = THRESHOLD, transform=None) -> list[dict]:
+def event_matrices(rec: PumpProbe, threshold: float = THRESHOLD, transform=None, keep: bool = False) -> list[dict]:
     """Per stimulation: the class-level significance matrix and its PCI and spread."""
     npre, npost = window(rec.dt)
     x = rec.x
@@ -106,7 +122,11 @@ def event_matrices(rec: PumpProbe, threshold: float = THRESHOLD, transform=None)
         if transform is not None:
             R = transform(R)
         B = np.abs(np.nan_to_num(R)) > threshold
-        out.append({"stim_class": ci, "frame": f, "n_classes": len(rows), "pci": pci(B), "spread": float(B.mean())})
+        ev = {"stim_class": ci, "frame": f, "n_classes": len(rows), "pci": pci(B), "spread": float(B.mean())}
+        if keep:
+            ev["classes"] = sorted(rows)
+            ev["R"] = R
+        out.append(ev)
     return out
 
 
