@@ -43,6 +43,17 @@ fold,kind,system,metric,level,primary,system_median,bio_median,bio_p05,bio_p95,c
 0,causal,hybrid_kernels_connectome,C3.kinetics,,,0.0808,0.0772,0.0399,0.2122,,0.527,,-0.0044,0.0099,0.0772,,1144,,,inside,
 0,complexity,hybrid_kernels_connectome,P1.complexity,,,0.8125,0.3636,0.1636,0.6808,,0.993,,0.3892,0.4984,0.0,,1190,,,outside,0.2411
 0,complexity,hybrid_kernels_connectome,P2.spread,,,0.67,0.3692,0.1582,0.7933,,0.909,,0.2203,0.3799,0.0,,1190,,,outside,0.2411
+0,activity,hybrid_kernels_gru64,L1.distribution,1,True,0.1262,0.1432,0.1036,0.2287,0.1267,0.279,-0.017,-0.025,-0.0098,1.0,0.0,1332,37,0.41,too typical,
+0,activity,hybrid_kernels_gru64,L1.timescale,1,False,1.5119,0.8539,0.4641,1.518,0.5168,0.947,0.6581,0.4517,0.8512,0.0,1.0,1332,37,0.58,outside,
+0,activity,hybrid_kernels_gru64,L2.correlation,2,True,0.8662,0.8211,0.6327,1.0052,0.6363,0.71,0.0451,0.0231,0.0741,0.0,1.0,1332,37,1.002,outside,
+0,activity,hybrid_kernels_gru64,L2.dimension,2,False,0.3575,0.2389,0.0198,1.0909,0.2083,0.67,0.1186,0.0391,0.1944,0.0,1.0,1332,37,0.664,outside,
+0,activity,hybrid_kernels_gru64,L4.leadlag,4,True,0.9854,0.9665,0.8222,1.0803,0.893,0.608,0.0189,0.0047,0.032,0.0,1.0,1332,37,0.969,outside,
+0,activity,hybrid_kernels_gru64,L4.dwell,4,False,0.2819,0.2241,0.0907,0.4286,0.1793,0.643,0.0579,-0.001,0.1226,0.0,1.0,420,37,0.4,inside,
+0,causal,hybrid_kernels_gru64,C1.pattern,,,0.8736,0.9051,0.6807,1.1001,,0.386,,-0.0538,-0.0088,1.0,,1144,,,too typical,
+0,causal,hybrid_kernels_gru64,C2.magnitude,,,0.164,0.1871,0.0205,0.5175,,0.438,,-0.0536,0.0136,0.9676,,1144,,,inside,
+0,causal,hybrid_kernels_gru64,C3.kinetics,,,0.0895,0.0772,0.0399,0.2122,,0.624,,0.0032,0.0214,0.0,,1144,,,outside,
+0,complexity,hybrid_kernels_gru64,P1.complexity,,,0.956,0.3636,0.1636,0.6808,,1.0,,0.5417,0.6278,0.0,,1190,,,outside,0.1401
+0,complexity,hybrid_kernels_gru64,P2.spread,,,0.3759,0.3692,0.1582,0.7933,,0.519,,-0.0306,0.0579,0.0314,,1190,,,inside,0.1401
 0,activity,hybrid_kernels_obs,L1.distribution,1,True,0.14,0.1432,0.1036,0.2287,0.1267,0.468,-0.0032,-0.012,0.0049,0.9134,0.0866,1332,37,0.343,inside,
 0,activity,hybrid_kernels_obs,L1.timescale,1,False,1.0155,0.8539,0.4641,1.518,0.5168,0.667,0.1616,0.0151,0.2916,0.0,1.0,1332,37,0.295,outside,
 0,activity,hybrid_kernels_obs,L2.correlation,2,True,0.8233,0.8211,0.6327,1.0052,0.6363,0.509,0.0021,-0.0245,0.0367,0.0914,0.9086,1332,37,0.671,inside,
@@ -87,6 +98,17 @@ fold,kind,system,metric,level,primary,system_median,bio_median,bio_p05,bio_p95,c
 0,causal,hybrid_kernels_regimes_obsfit,C3.kinetics,,,0.0844,0.0772,0.0399,0.2122,,0.574,,-0.0011,0.0148,0.0001,,1144,,,inside,
 0,complexity,hybrid_kernels_regimes_obsfit,P1.complexity,,,0.907,0.3636,0.1636,0.6808,,1.0,,0.4903,0.582,0.0,,1190,,,outside,0.201
 0,complexity,hybrid_kernels_regimes_obsfit,P2.spread,,,0.382,0.3692,0.1582,0.7933,,0.526,,-0.0497,0.0839,0.157,,1190,,,inside,0.201
+0,activity,hybrid_kernels_regimes_obsfit_indiv,L1.distribution,1,True,0.1311,0.1432,0.1036,0.2287,0.1267,0.344,-0.0121,-0.0205,-0.0043,1.0,0.0,1332,37,0.344,too typical,
+0,activity,hybrid_kernels_regimes_obsfit_indiv,L1.timescale,1,False,1.4663,0.8539,0.4641,1.518,0.5168,0.934,0.6124,0.4197,0.7638,0.0,1.0,1332,37,0.492,outside,
+0,activity,hybrid_kernels_regimes_obsfit_indiv,L2.correlation,2,True,0.818,0.8211,0.6327,1.0052,0.6363,0.494,-0.0032,-0.0217,0.0226,0.1976,0.8024,1332,37,0.917,inside,
+0,activity,hybrid_kernels_regimes_obsfit_indiv,L2.dimension,2,False,0.441,0.2389,0.0198,1.0909,0.2083,0.737,0.2021,0.1276,0.271,0.0,1.0,1332,37,0.382,outside,
+0,activity,hybrid_kernels_regimes_obsfit_indiv,L4.leadlag,4,True,0.9865,0.9665,0.8222,1.0803,0.893,0.613,0.02,0.0049,0.0319,0.0,1.0,1332,37,0.984,outside,
+0,activity,hybrid_kernels_regimes_obsfit_indiv,L4.dwell,4,False,0.3398,0.2241,0.0907,0.4286,0.1793,0.79,0.1158,0.0491,0.2058,0.0,1.0,420,37,0.443,outside,
+0,causal,hybrid_kernels_regimes_obsfit_indiv,C1.pattern,,,0.8736,0.9051,0.6807,1.1001,,0.386,,-0.0543,-0.0094,1.0,,1144,,,too typical,
+0,causal,hybrid_kernels_regimes_obsfit_indiv,C2.magnitude,,,0.1989,0.1871,0.0205,0.5175,,0.537,,-0.0244,0.0544,0.033,,1144,,,inside,
+0,causal,hybrid_kernels_regimes_obsfit_indiv,C3.kinetics,,,0.091,0.0772,0.0399,0.2122,,0.636,,0.0037,0.0212,0.0,,1144,,,outside,
+0,complexity,hybrid_kernels_regimes_obsfit_indiv,P1.complexity,,,0.8677,0.3636,0.1636,0.6808,,1.0,,0.4498,0.5396,0.0,,1190,,,outside,0.1573
+0,complexity,hybrid_kernels_regimes_obsfit_indiv,P2.spread,,,0.3394,0.3692,0.1582,0.7933,,0.454,,-0.0704,0.0164,0.9611,,1190,,,inside,0.1573
 0,activity,hybrid_kernels_regimes_obsfit_lowrank6,L1.distribution,1,True,0.1333,0.1432,0.1036,0.2287,0.1267,0.375,-0.0099,-0.0182,-0.0021,1.0,0.0,1332,37,0.357,too typical,
 0,activity,hybrid_kernels_regimes_obsfit_lowrank6,L1.timescale,1,False,1.0102,0.8539,0.4641,1.518,0.5168,0.662,0.1563,-0.0064,0.2956,0.0,1.0,1332,37,0.18,inside,
 0,activity,hybrid_kernels_regimes_obsfit_lowrank6,L2.correlation,2,True,0.7343,0.8211,0.6327,1.0052,0.6363,0.218,-0.0868,-0.104,-0.0649,1.0,0.0,1332,37,0.533,too typical,
@@ -219,6 +241,17 @@ fold,kind,system,metric,level,primary,system_median,bio_median,bio_p05,bio_p95,c
 1,causal,hybrid_kernels_connectome,C3.kinetics,,,0.0814,0.0831,0.0422,0.2119,,0.484,,-0.0112,0.0058,0.8133,,1004,,,inside,
 1,complexity,hybrid_kernels_connectome,P1.complexity,,,0.8396,0.3474,0.1579,0.6634,,0.994,,0.4349,0.5497,0.0,,1056,,,outside,0.2454
 1,complexity,hybrid_kernels_connectome,P2.spread,,,0.6887,0.3808,0.1574,0.7133,,0.939,,0.2056,0.3856,0.0,,1056,,,outside,0.2454
+1,activity,hybrid_kernels_gru64,L1.distribution,1,True,0.138,0.1518,0.1056,0.2681,0.1297,0.332,-0.0138,-0.0247,-0.0023,1.0,0.0,1260,37,0.444,too typical,
+1,activity,hybrid_kernels_gru64,L1.timescale,1,False,1.5337,1.0447,0.4935,2.7586,0.5899,0.825,0.489,0.2588,0.7911,0.0,1.0,1260,37,0.466,outside,
+1,activity,hybrid_kernels_gru64,L2.correlation,2,True,0.9031,0.8211,0.6535,0.9779,0.6407,0.817,0.082,0.06,0.1074,0.0,1.0,1260,37,1.071,outside,
+1,activity,hybrid_kernels_gru64,L2.dimension,2,False,0.323,0.2978,0.0265,1.5774,0.1669,0.521,0.0251,-0.0907,0.0884,0.4594,0.5406,1260,37,0.502,inside,
+1,activity,hybrid_kernels_gru64,L4.leadlag,4,True,0.9931,0.9732,0.828,1.0877,0.8855,0.633,0.0199,0.0075,0.0345,0.0,1.0,1260,37,0.965,outside,
+1,activity,hybrid_kernels_gru64,L4.dwell,4,False,0.265,0.1999,0.0877,0.4636,0.2132,0.668,0.0651,-0.0024,0.1235,0.0,1.0,380,37,0.407,inside,
+1,causal,hybrid_kernels_gru64,C1.pattern,,,0.8948,0.8942,0.6827,1.0719,,0.506,,-0.018,0.0309,0.0809,,1004,,,inside,
+1,causal,hybrid_kernels_gru64,C2.magnitude,,,0.187,0.2182,0.0118,0.5885,,0.448,,-0.0689,0.0178,0.9449,,1004,,,inside,
+1,causal,hybrid_kernels_gru64,C3.kinetics,,,0.0908,0.0831,0.0422,0.2119,,0.566,,-0.0027,0.0162,0.0055,,1004,,,inside,
+1,complexity,hybrid_kernels_gru64,P1.complexity,,,0.9386,0.3474,0.1579,0.6634,,1.0,,0.5281,0.6439,0.0,,1056,,,outside,0.1517
+1,complexity,hybrid_kernels_gru64,P2.spread,,,0.3667,0.3808,0.1574,0.7133,,0.472,,-0.0497,0.0283,0.8876,,1056,,,inside,0.1517
 1,activity,hybrid_kernels_obs,L1.distribution,1,True,0.15,0.1518,0.1056,0.2681,0.1297,0.478,-0.0018,-0.0145,0.0089,0.788,0.212,1260,37,0.311,inside,
 1,activity,hybrid_kernels_obs,L1.timescale,1,False,1.0461,1.0447,0.4935,2.7586,0.5899,0.503,0.0015,-0.1819,0.2898,0.0217,0.9783,1260,37,0.155,inside,
 1,activity,hybrid_kernels_obs,L2.correlation,2,True,0.7774,0.8211,0.6535,0.9779,0.6407,0.325,-0.0437,-0.064,-0.0216,1.0,0.0,1260,37,0.546,too typical,
@@ -263,6 +296,17 @@ fold,kind,system,metric,level,primary,system_median,bio_median,bio_p05,bio_p95,c
 1,causal,hybrid_kernels_regimes_obsfit,C3.kinetics,,,0.0801,0.0831,0.0422,0.2119,,0.468,,-0.0123,0.0044,0.9003,,1004,,,inside,
 1,complexity,hybrid_kernels_regimes_obsfit,P1.complexity,,,0.931,0.3474,0.1579,0.6634,,1.0,,0.5258,0.6298,0.0,,1056,,,outside,0.1994
 1,complexity,hybrid_kernels_regimes_obsfit,P2.spread,,,0.3594,0.3808,0.1574,0.7133,,0.464,,-0.0729,0.0472,0.9777,,1056,,,inside,0.1994
+1,activity,hybrid_kernels_regimes_obsfit_indiv,L1.distribution,1,True,0.1431,0.1518,0.1056,0.2681,0.1297,0.406,-0.0087,-0.0205,0.0035,0.9999,0.0001,1260,37,0.372,inside,
+1,activity,hybrid_kernels_regimes_obsfit_indiv,L1.timescale,1,False,1.4533,1.0447,0.4935,2.7586,0.5899,0.792,0.4086,0.2066,0.664,0.0,1.0,1260,37,0.474,outside,
+1,activity,hybrid_kernels_regimes_obsfit_indiv,L2.correlation,2,True,0.8458,0.8211,0.6535,0.9779,0.6407,0.617,0.0247,0.0051,0.0511,0.0,1.0,1260,37,0.993,outside,
+1,activity,hybrid_kernels_regimes_obsfit_indiv,L2.dimension,2,False,0.501,0.2978,0.0265,1.5774,0.1669,0.667,0.2032,0.0786,0.2729,0.0,1.0,1260,37,0.403,outside,
+1,activity,hybrid_kernels_regimes_obsfit_indiv,L4.leadlag,4,True,0.9898,0.9732,0.828,1.0877,0.8855,0.603,0.0166,0.0052,0.0287,0.0,1.0,1260,37,0.97,outside,
+1,activity,hybrid_kernels_regimes_obsfit_indiv,L4.dwell,4,False,0.2469,0.1999,0.0877,0.4636,0.2132,0.637,0.047,-0.0222,0.1427,0.0,1.0,380,37,0.738,inside,
+1,causal,hybrid_kernels_regimes_obsfit_indiv,C1.pattern,,,0.9089,0.8942,0.6827,1.0719,,0.56,,-0.0044,0.0451,0.0001,,1004,,,inside,
+1,causal,hybrid_kernels_regimes_obsfit_indiv,C2.magnitude,,,0.2153,0.2182,0.0118,0.5885,,0.496,,-0.0528,0.0527,0.2472,,1004,,,inside,
+1,causal,hybrid_kernels_regimes_obsfit_indiv,C3.kinetics,,,0.0842,0.0831,0.0422,0.2119,,0.508,,-0.0078,0.009,0.2378,,1004,,,inside,
+1,complexity,hybrid_kernels_regimes_obsfit_indiv,P1.complexity,,,0.6076,0.3474,0.1579,0.6634,,0.915,,0.1965,0.3232,0.0,,1056,,,outside,0.1904
+1,complexity,hybrid_kernels_regimes_obsfit_indiv,P2.spread,,,0.375,0.3808,0.1574,0.7133,,0.491,,-0.0388,0.0428,0.3224,,1056,,,inside,0.1904
 1,activity,hybrid_kernels_regimes_obsfit_lowrank6,L1.distribution,1,True,0.1456,0.1518,0.1056,0.2681,0.1297,0.435,-0.0062,-0.0193,0.0063,0.9956,0.0044,1260,37,0.352,inside,
 1,activity,hybrid_kernels_regimes_obsfit_lowrank6,L1.timescale,1,False,1.1227,1.0447,0.4935,2.7586,0.5899,0.59,0.078,-0.1182,0.3697,0.0,1.0,1260,37,0.158,inside,
 1,activity,hybrid_kernels_regimes_obsfit_lowrank6,L2.correlation,2,True,0.7375,0.8211,0.6535,0.9779,0.6407,0.179,-0.0836,-0.102,-0.0586,1.0,0.0,1260,37,0.539,too typical,
@@ -395,6 +439,17 @@ fold,kind,system,metric,level,primary,system_median,bio_median,bio_p05,bio_p95,c
 2,causal,hybrid_kernels_connectome,C3.kinetics,,,0.0935,0.0943,0.0448,0.2759,,0.493,,-0.0168,0.0104,0.675,,938,,,inside,
 2,complexity,hybrid_kernels_connectome,P1.complexity,,,0.8387,0.3726,0.1702,0.6725,,0.992,,0.4094,0.5048,0.0,,961,,,outside,0.2515
 2,complexity,hybrid_kernels_connectome,P2.spread,,,0.6571,0.423,0.1616,0.8019,,0.835,,0.1233,0.3474,0.0,,961,,,outside,0.2515
+2,activity,hybrid_kernels_gru64,L1.distribution,1,True,0.1339,0.147,0.1013,0.4805,0.1333,0.325,-0.0132,-0.0241,-0.0043,1.0,0.0,1260,36,0.516,too typical,
+2,activity,hybrid_kernels_gru64,L1.timescale,1,False,1.3335,0.9743,0.487,3.8094,0.5033,0.746,0.3591,0.1258,0.5831,0.0,1.0,1260,36,0.578,outside,
+2,activity,hybrid_kernels_gru64,L2.correlation,2,True,0.8976,0.8384,0.6524,1.0341,0.6192,0.705,0.0592,0.0302,0.0845,0.0,1.0,1260,36,1.038,outside,
+2,activity,hybrid_kernels_gru64,L2.dimension,2,False,0.331,0.2152,0.0165,2.4764,0.1192,0.638,0.1158,0.0351,0.1741,0.0,1.0,1260,36,1.039,outside,
+2,activity,hybrid_kernels_gru64,L4.leadlag,4,True,0.9915,0.9731,0.8642,1.0873,0.9192,0.614,0.0184,0.0062,0.0343,0.0,1.0,1260,36,0.964,outside,
+2,activity,hybrid_kernels_gru64,L4.dwell,4,False,0.3268,0.2177,0.0866,0.7159,0.166,0.692,0.1091,0.0067,0.1692,0.0,1.0,600,36,0.339,outside,
+2,causal,hybrid_kernels_gru64,C1.pattern,,,0.8941,0.9071,0.6678,1.1137,,0.442,,-0.0347,0.0087,0.9563,,938,,,inside,
+2,causal,hybrid_kernels_gru64,C2.magnitude,,,0.2067,0.2265,0.0186,0.8977,,0.473,,-0.0705,0.0387,0.9249,,938,,,inside,
+2,causal,hybrid_kernels_gru64,C3.kinetics,,,0.0972,0.0943,0.0448,0.2759,,0.507,,-0.0132,0.0158,0.2082,,938,,,inside,
+2,complexity,hybrid_kernels_gru64,P1.complexity,,,0.9375,0.3726,0.1702,0.6725,,1.0,,0.5119,0.6017,0.0,,961,,,outside,0.1433
+2,complexity,hybrid_kernels_gru64,P2.spread,,,0.4176,0.423,0.1616,0.8019,,0.498,,-0.0675,0.0753,0.1944,,961,,,inside,0.1433
 2,activity,hybrid_kernels_obs,L1.distribution,1,True,0.1439,0.147,0.1013,0.4805,0.1333,0.451,-0.0031,-0.0167,0.0094,0.9725,0.0276,1260,36,0.356,inside,
 2,activity,hybrid_kernels_obs,L1.timescale,1,False,0.9726,0.9743,0.487,3.8094,0.5033,0.498,-0.0017,-0.186,0.1486,0.8685,0.1315,1260,36,0.19,inside,
 2,activity,hybrid_kernels_obs,L2.correlation,2,True,0.8055,0.8384,0.6524,1.0341,0.6192,0.37,-0.0329,-0.0574,-0.0054,1.0,0.0,1260,36,0.628,too typical,
@@ -439,6 +494,17 @@ fold,kind,system,metric,level,primary,system_median,bio_median,bio_p05,bio_p95,c
 2,causal,hybrid_kernels_regimes_obsfit,C3.kinetics,,,0.0957,0.0943,0.0448,0.2759,,0.505,,-0.014,0.0126,0.4065,,938,,,inside,
 2,complexity,hybrid_kernels_regimes_obsfit,P1.complexity,,,0.9067,0.3726,0.1702,0.6725,,1.0,,0.4834,0.5688,0.0,,961,,,outside,0.207
 2,complexity,hybrid_kernels_regimes_obsfit,P2.spread,,,0.3798,0.423,0.1616,0.8019,,0.442,,-0.0963,0.035,0.9887,,961,,,inside,0.207
+2,activity,hybrid_kernels_regimes_obsfit_indiv,L1.distribution,1,True,0.1406,0.147,0.1013,0.4805,0.1333,0.397,-0.0064,-0.0179,0.0035,0.9999,0.0001,1260,36,0.393,inside,
+2,activity,hybrid_kernels_regimes_obsfit_indiv,L1.timescale,1,False,1.4342,0.9743,0.487,3.8094,0.5033,0.784,0.4599,0.2413,0.6209,0.0,1.0,1260,36,0.555,outside,
+2,activity,hybrid_kernels_regimes_obsfit_indiv,L2.correlation,2,True,0.862,0.8384,0.6524,1.0341,0.6192,0.59,0.0236,-0.0005,0.0483,0.0002,0.9998,1260,36,1.027,inside,
+2,activity,hybrid_kernels_regimes_obsfit_indiv,L2.dimension,2,False,0.4091,0.2152,0.0165,2.4764,0.1192,0.713,0.1939,0.1101,0.2579,0.0,1.0,1260,36,0.594,outside,
+2,activity,hybrid_kernels_regimes_obsfit_indiv,L4.leadlag,4,True,0.9854,0.9731,0.8642,1.0873,0.9192,0.584,0.0123,0.0007,0.0276,0.0,1.0,1260,36,0.995,outside,
+2,activity,hybrid_kernels_regimes_obsfit_indiv,L4.dwell,4,False,0.3805,0.2177,0.0866,0.7159,0.166,0.764,0.1628,0.0521,0.2399,0.0,1.0,600,36,0.605,outside,
+2,causal,hybrid_kernels_regimes_obsfit_indiv,C1.pattern,,,0.8975,0.9071,0.6678,1.1137,,0.469,,-0.032,0.0109,0.879,,938,,,inside,
+2,causal,hybrid_kernels_regimes_obsfit_indiv,C2.magnitude,,,0.2171,0.2265,0.0186,0.8977,,0.486,,-0.0581,0.0421,0.687,,938,,,inside,
+2,causal,hybrid_kernels_regimes_obsfit_indiv,C3.kinetics,,,0.1018,0.0943,0.0448,0.2759,,0.533,,-0.0088,0.02,0.0073,,938,,,inside,
+2,complexity,hybrid_kernels_regimes_obsfit_indiv,P1.complexity,,,0.8462,0.3726,0.1702,0.6725,,0.994,,0.4255,0.5123,0.0,,961,,,outside,0.1519
+2,complexity,hybrid_kernels_regimes_obsfit_indiv,P2.spread,,,0.381,0.423,0.1616,0.8019,,0.446,,-0.0894,0.0249,0.9908,,961,,,inside,0.1519
 2,activity,hybrid_kernels_regimes_obsfit_lowrank6,L1.distribution,1,True,0.1401,0.147,0.1013,0.4805,0.1333,0.392,-0.0069,-0.0185,0.0054,0.9997,0.0003,1260,36,0.377,inside,
 2,activity,hybrid_kernels_regimes_obsfit_lowrank6,L1.timescale,1,False,0.9936,0.9743,0.487,3.8094,0.5033,0.521,0.0193,-0.1536,0.1614,0.2844,0.7156,1260,36,0.192,inside,
 2,activity,hybrid_kernels_regimes_obsfit_lowrank6,L2.correlation,2,True,0.7843,0.8384,0.6524,1.0341,0.6192,0.297,-0.0541,-0.0802,-0.0273,1.0,0.0,1260,36,0.58,too typical,

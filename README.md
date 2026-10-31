@@ -1391,6 +1391,8 @@ family of models (linear dynamics, Gaussian noise, learned causal kernels) they 
 | calm/active regimes (whole brain): spread distribution | a little rest realism |
 | a few shared modes: dimensionality | correlations become too typical |
 | per-class quiet stretches: echo complexity, most of the way | rest realism collapses |
+| individual backgrounds: correlations no longer too typical | timescale, bouts, lead-lag |
+| a learned nonlinear background (GRU): spread and magnitude, with nothing hand-tuned | rest realism; complexity unchanged |
 
 Real brains have all of these at once. A model that does too will probably need what none of
 these have: activity that is genuinely nonlinear in time (neurons that switch on and stay on,
@@ -1422,6 +1424,16 @@ predicts both the next frame and how large its fluctuation will be, so calm can 
 (12% against 13%), with too many classes crossing the threshold (87% against 62%) and echo
 complexity still too high (0.88 against 0.67). Expectation: the poke test is passed (pattern
 and spread inside in at least 2 of 3) with rest at least 4 of 6; complexity: no strong prior.
+
+Result: **the poke test is passed with nothing calibrated by hand**: echo spread comes out
+real-like in all three pools (14 to 15%, against 16% for real echoes in these units) because
+the GRU learned when to be calm; pattern inside in 2 of 3 (too typical in the third), and
+magnitude inside in all 3, a first. But rest is 0 to 2 of 6 (its activity is too slow,
+timescale 1.4 to 1.8 times real, and too regular: distributions too typical, correlations and
+lead-lag outside), and echo complexity is as far from real as ever (PCI distance 0.94). Half
+of the expectation met. A learned nonlinear brain finds calm by itself, which no linear
+ingredient did, but a short training run on about 140 stimulation-free stretches does not
+give it realistic ongoing dynamics.
 
 **Signal or noise? (written before computing it).** A model can fail the poke test in two
 different ways: its *average* echo is wrong (it does not know the causal structure), or its
