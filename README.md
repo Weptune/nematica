@@ -1293,6 +1293,14 @@ dynamics' driving noise and added back as white noise on the output. Expectation
 comes inside in at least 2 of 3 pools while pattern stays inside in at least 2 of 3: the
 first pass of the poke test.
 
+**Why does echo complexity still fail? (hypothesis written before computing).** The passing
+hybrid gives every poke of the same neuron class the same average echo (its kernel) on top
+of background activity, while a real brain answers the same poke differently each time.
+Prediction: (1) the hybrid's echoes are *less* complex than real ones (lower median PCI);
+(2) real echoes to repeated pokes of the same class differ more from each other than the
+hybrid's do (lower correlation between repeats in real worms). If both hold, the missing
+ingredient for complexity is trial-to-trial variability in the causal response itself.
+
 **Signal or noise? (written before computing it).** A model can fail the poke test in two
 different ways: its *average* echo is wrong (it does not know the causal structure), or its
 average echo is right but each single echo is buried in the wrong kind of variability.
