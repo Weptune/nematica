@@ -330,7 +330,7 @@ build step). Regenerate its data and serve it locally:
 
 ```
 python scripts/export_site.py --local      # results.js, plus the opening figure from the local atlas copy
-web\serve.cmd                              # Windows: serves http://localhost:8000 and opens it
+web\serve.cmd                              # Windows: serves http://localhost:8642 and opens it
 sh web/serve.sh                            # elsewhere
 ```
 
