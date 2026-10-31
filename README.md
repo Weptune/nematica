@@ -179,6 +179,30 @@ kurtosis close to real (2.37 vs 2.73) but do not change the classifier result. T
 remaining giveaway is second-order: model windows are about 0.03 smoother than their own
 source worms, with too much power at 10 to 60 s periods and too little at 1 to 5 s.
 
+**More memory closes most of the gap.** In-sample on one rotation's training worms (no
+reference pools involved), VAR(3) windows are smoother than the worms they imitate
+(lag-1 autocorrelation 0.747 vs 0.707; power share at 1 to 5 s periods 0.137 vs 0.162,
+at 10 to 60 s 0.459 vs 0.413). Giving the drive model 6 frames of memory matches those
+statistics (0.709; 0.161; 0.432) and 10 frames slightly overshoots (0.694; 0.169; 0.409).
+On the rotating pools all three stay inside on all 10 pairwise levels (VAR(6) improves
+the timescale ratio from 1.14 to 1.02; dimensionality ratio rises to 1.25 and 1.34, still
+inside; `scripts/run_lags.py`, `docs/figures/lags_combined.csv`). The fair Level 8
+(`docs/figures/l8_fair_lags.csv`):
+
+| | in-sample | held-out (rotations 1, 2, 3) | held-out mean |
+|---|---|---|---|
+| real control | | 0.500, 0.442, 0.434 | 0.459 |
+| VAR(3) | 0.769 | 0.904, 0.793, 0.758 (all p 0.02) | 0.818 |
+| VAR(6) | 0.563 | 0.783 (p 0.02), 0.650 (p 0.02), 0.579 (p 0.23) | 0.671 |
+| VAR(10) | 0.499 | 0.735 (p 0.02), 0.611 (p 0.08), 0.514 (p 0.44) | 0.620 |
+
+**With 10 frames (6 s) of memory, a classifier can no longer tell the model from the worms
+it imitates, and cannot tell it from held-out real worms in two of the three rotations**:
+the first model to pass Level 8 anywhere. Honest bookkeeping: the in-sample criterion
+pointed to 6 lags; 10 is ahead only on the Level 8 result, which uses the reference pools,
+so "10 beats 6" is a post-hoc observation, while "longer memory than 3 frames" was chosen
+without them. Rotation 1 still separates every model.
+
 Caveats: 27 worms from one lab; the per-worm and shrinkage analyses were proposed after
 the first ladder results and are tested with controls and nested selection, not
 pre-registered; Level 8 (classifier) has not yet been run on the sweep.

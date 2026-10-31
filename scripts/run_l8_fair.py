@@ -39,8 +39,9 @@ from nematica.systems.forecasters import CalciumStateSpace, Debounced, Forecaste
 
 def build(name, train):
     cs = CalciumStateSpace.from_train(train, gamma=0.5)
-    if name == "hyst":
-        return Debounced(IndividualVAR(Forecaster("var3", cs, LagFeatures(cs.k, 3, False)), fixed_lam=300))
+    if name.startswith("hyst"):                       # hyst, hyst6, hyst10: lag order
+        lags = int(name[4:] or 3)
+        return Debounced(IndividualVAR(Forecaster(f"var{lags}", cs, LagFeatures(cs.k, lags, False)), fixed_lam=300))
     if name == "heavy":
         return Debounced(IndividualVAR(Forecaster("var3", cs, LagFeatures(cs.k, 3, False)), fixed_lam=300,
                                        innovations="student"))
