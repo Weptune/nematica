@@ -1218,6 +1218,23 @@ one that settles and wakes.
 So far, then: cause and effect can be given to a model (the hybrid's echo patterns are
 real-like), but a real brain's way of being quiet cannot yet, by any ingredient tried.
 
+**Two more ingredients for calm (written before scoring).** Both are calibrated on training
+worms only, to match their "spread at random moments" (5th, 50th and 95th percentiles: 6%,
+17% and 28%):
+- `hybrid_kernels_regimes`: the dynamics' driving noise switches between a quiet and an
+  active gain (hidden two-state chain; share of quiet time, dwell and gain chosen on training
+  worms). On calibration it reaches 4%, 26%, 33%: it widens the low end but cannot bring the
+  median down.
+- `hybrid_kernels_obsfit`: a single share of white measurement noise for all classes, chosen
+  the same way: 10%, reaching 11%, 18%, 24% on calibration (median right, range too narrow).
+- `hybrid_kernels_regimes_obsfit`: both.
+
+Expectation for the poke test on held-out worms: `obsfit` brings spread inside in at least 2
+of 3 pools with pattern still inside in at least 2 of 3, which would be the first full pass
+of the poke test; the combination does at least as well. Calibration shows the median of
+"calm" is set by how much fast, non-propagating noise sits on top of the slow dynamics,
+which the autocovariance estimate (6%) understated.
+
 Result, pool 1: pattern inside again (0.916, 54th percentile), but spread *worse* (30%):
 expectation not met, and the remaining pools are not needed to see it. Looking at why: the
 spread level counts responses above 3 times each neuron's fluctuation size just before the

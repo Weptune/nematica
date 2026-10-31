@@ -183,9 +183,11 @@ class ClassVAR:
         return nxt
 
     # -------------------------------------------------------------- stimulation
-    def simulate(self, rec: PumpProbe, rng: np.random.Generator, burn: int = 200) -> PumpProbe:
+    def simulate(self, rec: PumpProbe, rng: np.random.Generator, burn: int = 200,
+                 noise_gain: np.ndarray | None = None) -> PumpProbe:
         """A simulated version of `rec`: the model's classes observed in this worm, one row
-        each, stimulated on the worm's schedule."""
+        each, stimulated on the worm's schedule. `noise_gain` (length burn + frames) scales
+        the driving noise frame by frame (quiet and active regimes)."""
         C, p = len(self.classes), self.lags
         idx = {c: i for i, c in enumerate(self.classes)}
         T = rec.n_frames
@@ -237,7 +239,7 @@ class ClassVAR:
         base = {}
         for t in range(p, T + burn):
             nxt = self._step(z, t, A, b)
-            nxt += self.noise_sd * self._shock(rng, C)
+            nxt += self.noise_sd * self._shock(rng, C) * (1.0 if noise_gain is None else noise_gain[t])
             nxt[~seen] = 0.0
             tt = t - burn
             if tt in pulse:
@@ -339,14 +341,67 @@ class HybridKernel:
     wiring matrix (class_wiring: A[to, from]); None allows every pair."""
 
     def __init__(self, lags: int = 3, shrink: float = 2.0, mask: str | None = None, seed: int = 0,
-                 background: str = "spontaneous", obs_noise: bool = False, heavy: bool = False):
+                 background: str = "spontaneous", obs_noise: bool = False, heavy: bool = False,
+                 regimes: bool = False, obs_fit: bool = False):
         self.lags, self.shrink, self.mask, self.seed = lags, shrink, mask, seed
         self.background = background     # which frames the ongoing-dynamics VAR learns from
         self.obs_noise = obs_noise       # split each class's variability into slow dynamics and
                                          # white measurement noise (see _noise_fractions) [A]
         self.heavy = heavy               # heavy-tailed shocks in the ongoing dynamics
+        self.regimes = regimes           # quiet and active regimes: the driving noise switches
+                                         # between a low and a high gain, hidden Markov [A],
+                                         # calibrated on training worms (calibrate_regimes) [L]
+        self.regime = None
+        self.obs_fit = obs_fit           # measurement-noise share chosen on training worms so that
+                                         # 'spread' at random moments matches them [L]
         self.name = ("hybrid_kernels" + (f"_{mask}" if mask else "") + ("" if background == "spontaneous" else f"_bg{background}")
-                     + ("_obs" if obs_noise else "") + ("_heavy" if heavy else ""))
+                     + ("_obs" if obs_noise else "") + ("_heavy" if heavy else "") + ("_regimes" if regimes else "")
+                     + ("_obsfit" if obs_fit else ""))
+
+    def _gain(self, n: int, rng: np.random.Generator) -> np.ndarray:
+        """A two-state Markov chain (quiet, active) with the calibrated share of quiet time and
+        mean dwell, mapped to noise gains whose mean square is 1."""
+        pq, dwell, gq = self.regime
+        ga = np.sqrt(max((1 - pq * gq ** 2) / (1 - pq), 1e-6))
+        leave_q, leave_a = 1.0 / dwell, (1.0 / dwell) * pq / (1 - pq)
+        st = rng.random() < pq
+        out = np.empty(n)
+        for t in range(n):
+            out[t] = gq if st else ga
+            if rng.random() < (leave_q if st else leave_a):
+                st = not st
+        return out
+
+    def calibrate_regimes(self, train, n_worms: int = 6, seed: int = 0):
+        """Choose (share quiet, mean dwell in frames, quiet gain) so that the model's 'spread' at
+        random moments matches the training worms' (5th, 50th, 95th percentiles) [L]."""
+        from dataclasses import replace as _replace
+        from ..bench.perturbational import pci_set
+        rng = np.random.default_rng(seed)
+        npre, npost = window(train[0].dt)
+
+        def at_random(rec):
+            fr = rng.integers(npre, rec.n_frames - npost, len(rec.stims))
+            return _replace(rec, stims=[(k, int(f)) for (k, _), f in zip(rec.stims, fr)])
+
+        pick = [train[i] for i in rng.choice(len(train), size=min(n_worms, len(train)), replace=False)]
+        target = np.percentile(np.concatenate([pci_set(at_random(r)).spread for r in pick]), [5, 50, 95])
+        kernels, self.kernels = self.kernels, {}
+        best = None
+        for pq in (0.3, 0.5, 0.7):
+            for dwell in (30.0, 60.0, 120.0):
+                for gq in (0.15, 0.3, 0.5):
+                    self.regime = (pq, dwell, gq)
+                    got = np.percentile(np.concatenate([pci_set(at_random(self.simulate(r, np.random.default_rng(7)))).spread
+                                                        for r in pick]), [5, 50, 95])
+                    loss = float(np.sum((got - target) ** 2))
+                    if best is None or loss < best[0]:
+                        best = (loss, self.regime, got)
+        self.kernels = kernels
+        self.regime = best[1]
+        self.info.update({"regime": best[1], "random_spread_target": np.round(target, 3).tolist(),
+                          "random_spread_model": np.round(best[2], 3).tolist()})
+        return self
 
     @staticmethod
     def _noise_fractions(recs, classes) -> np.ndarray:
@@ -392,6 +447,40 @@ class HybridKernel:
             idx = {c: i for i, c in enumerate(cls)}
             self.kernels = {k: v for k, v in self.kernels.items() if A[idx[k[1]], idx[k[0]]]}
         self.info = {**self.var.info, "kernels": len(self.kernels)}
+        if self.regimes:
+            self.calibrate_regimes(list(train))
+        if self.obs_fit:
+            self.calibrate_obs(list(train))
+        return self
+
+    def calibrate_obs(self, train, n_worms: int = 6, seed: int = 0, grid=(0.0, 0.1, 0.2, 0.3, 0.4, 0.5)):
+        """Choose one measurement-noise share for all classes so that 'spread' at random moments
+        matches the training worms (5th, 50th, 95th percentiles) [L]."""
+        from dataclasses import replace as _replace
+        from ..bench.perturbational import pci_set
+        rng = np.random.default_rng(seed)
+        npre, npost = window(train[0].dt)
+
+        def at_random(rec):
+            fr = rng.integers(npre, rec.n_frames - npost, len(rec.stims))
+            return _replace(rec, stims=[(k, int(f)) for (k, _), f in zip(rec.stims, fr)])
+
+        pick = [train[i] for i in rng.choice(len(train), size=min(n_worms, len(train)), replace=False)]
+        target = np.percentile(np.concatenate([pci_set(at_random(r)).spread for r in pick]), [5, 50, 95])
+        kernels, self.kernels = self.kernels, {}
+        self.obs_noise = True
+        best = None
+        for f in grid:
+            self.noise_frac = np.full(len(self.var.classes), f)
+            got = np.percentile(np.concatenate([pci_set(at_random(self.simulate(r, np.random.default_rng(7)))).spread
+                                                for r in pick]), [5, 50, 95])
+            loss = float(np.sum((got - target) ** 2))
+            if best is None or loss < best[0]:
+                best = (loss, f, got)
+        self.kernels = kernels
+        self.noise_frac = np.full(len(self.var.classes), best[1])
+        self.info.update({"obs_share": best[1], "random_spread_target": np.round(target, 3).tolist(),
+                          "random_spread_model": np.round(best[2], 3).tolist()})
         return self
 
     def simulate(self, rec: PumpProbe, rng: np.random.Generator) -> PumpProbe:
@@ -406,7 +495,8 @@ class HybridKernel:
             bg = self.var.simulate(quiet, rng)
             self.var.noise_sd = keep
         else:
-            bg = self.var.simulate(quiet, rng)          # ongoing activity, no stimulation
+            gain = self._gain(quiet.n_frames + 200, rng) if self.regime else None
+            bg = self.var.simulate(quiet, rng, noise_gain=gain)   # ongoing activity, no stimulation
         x = bg.x.copy()
         if self.obs_noise:
             ci = {c: i for i, c in enumerate(self.var.classes)}
