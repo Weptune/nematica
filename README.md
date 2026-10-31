@@ -356,6 +356,44 @@ not constrain the effective coupling that the recordings reveal.
   weights rather than zero them), weighted by synapse counts, and a wiring mask that
   allows two-step paths.
 
+**The connectome as a prior. Design, written before running (Oct 31).** Instead of zeroing
+non-synaptic weights, give them a larger ridge penalty: rho times the penalty of synaptic
+ones (rho = 1 is the full model, rho to infinity the hard mask). rho is chosen jointly with
+the ridge on validation worms from {1, 3, 10, 30, 100}, separately for the connectome and
+for each of the three shuffled wirings, and the same penalty pattern is used in each
+worm's shrinkage toward the pooled fit (`WiredVAR(rhos=...)`). Expectations: (1) if the
+connectome prior helps, validation picks rho > 1 for it and it beats the shuffled priors on
+forecasting and realism; (2) because the prior keeps indirect couplings available, it
+should not lose the dimensionality the hard masks lost, and could match or beat full
+coupling; (3) if validation picks rho = 1 everywhere, the anatomy adds nothing a
+data-driven fit does not already find, and that is the answer.
+
+**Results** (`docs/figures/wiring_prior_combined.csv`, `wiring_prior_forecast.csv`,
+`l8_fair_wiring_prior.csv`):
+
+| prior | rho chosen | pairwise inside | dimension | Level 8 held-out / in-sample | one-step R^2 | 30 s R^2 |
+|---|---|---|---|---|---|---|
+| none (full) | 1 | 10 of 10 | 1.34 | 0.620 / 0.499 | 0.4910 | 0.1009 |
+| connectome | 30, 30, 30 | 9 of 10 | 1.86 | 0.701 / 0.627 | 0.4970 | 0.1007 |
+| shuffled, seed 0 | 30, 30, 30 | 9 of 10 | 1.98 | 0.727 / 0.653 | 0.4967 | 0.1006 |
+| shuffled, seed 1 | 30, 30, 30 | 9 of 10 | 1.95 | 0.716 / 0.645 | 0.4966 | 0.1012 |
+| shuffled, seed 2 | 30, 30, 30 | 9 of 10 | 1.88 | not run | 0.4966 | 0.1009 |
+
+- Validation picked rho = 30 for the connectome and for every shuffled wiring alike, in
+  every rotation: penalising most couplings helps one-step forecasting (0.497 vs 0.491 for
+  full) whichever couplings are spared, so most of the gain is generic regularisation,
+  not anatomy (expectation 1 only half held).
+- The anatomical part is again small and consistent: the connectome prior forecasts a
+  little better than every shuffled prior, is the least over-dimensional (1.86 vs 1.88 to
+  1.98), and has the lower classifier AUC in every rotation (0.768, 0.691, 0.644 against
+  0.802, 0.718, 0.661 and 0.785, 0.706, 0.656).
+- Expectation 2 failed: the rho that forecasts best makes every model too
+  high-dimensional and more detectable than full coupling. This is arc 1's lesson
+  again: selected for forecasting, a model gets less realistic.
+- **Arc 3 so far:** the real wiring beats random wiring of the same density on every
+  measure, in every rotation, but the advantage is small, and on realism no wiring
+  constraint yet beats letting the data choose the coupling.
+
 ## Arc 5: a worm that senses copper
 
 `nematica/systems/closed_loop.py`, `scripts/run_closed_loop.py`. The calcium brain model

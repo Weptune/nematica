@@ -165,3 +165,22 @@ def test_wiring_masks_and_masked_fit():
     assert m.info["inputs_per_class_mean"] == 0
     s = m.generate(train[0], np.random.default_rng(0), which=0, burn=20)
     assert np.isfinite(s.x[:n][s.observed[:n]] if s.x.shape[0] > n else s.x).any()
+
+
+def test_wiring_prior_interpolates_between_full_and_mask():
+    from nematica.systems.wiring import (WiredVAR, PriorForecaster, MaskedForecaster, diagonal_wiring,
+                                         feature_mask, _penalised_solve, _masked_solve)
+    rng = np.random.default_rng(0)
+    X = rng.standard_normal((400, 6))
+    Y = X @ rng.standard_normal((6, 3)) + 0.1 * rng.standard_normal((400, 3))
+    allowed = rng.random((6, 3)) < 0.5
+    G, B = X.T @ X, X.T @ Y
+    full = np.linalg.solve(G + np.eye(6), B)
+    assert np.allclose(_penalised_solve(G, B, np.ones((6, 3)), 1.0), full)
+    big = _penalised_solve(G, B, np.where(allowed, 1.0, 1e9), 1.0)
+    assert np.allclose(big, _masked_solve(G, B, allowed, 1.0), atol=1e-6)
+    train = [worm(s) for s in range(1, 6)]
+    space = StateSpace.from_train(train, min_fraction=0.5)
+    m = WiredVAR(PriorForecaster("var2", space, LagFeatures(space.k, 2, False), rhos=(1.0, 10.0)), fixed_lam=300,
+                 wiring=lambda names: diagonal_wiring(len(names)), label="diagprior").fit(train, [train[0]])
+    assert m.info["rho"] in (1.0, 10.0) and np.isfinite(m.W[0]).all()

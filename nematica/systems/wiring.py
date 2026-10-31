@@ -75,6 +75,18 @@ def feature_mask(A: np.ndarray, lags: int) -> np.ndarray:
     return np.vstack([Ak.T for _ in range(lags)])   # entry [l*k + j, c] = Ak[c, j]
 
 
+def _penalised_solve(G, B, mult, ridge, prior=None):
+    """Column-separable ridge with per-entry penalty multipliers: W[:, c] minimises
+    |Y_c - X w|^2 + ridge * sum mult[:, c] (w - prior_c)^2."""
+    F, k = mult.shape
+    W = np.empty((F, k))
+    for c in range(k):
+        D = ridge * mult[:, c]
+        rhs = B[:, c] if prior is None else B[:, c] + D * prior[:, c]
+        W[:, c] = np.linalg.solve(G + np.diag(D), rhs)
+    return W
+
+
 def _masked_solve(G, B, allowed, ridge, prior=None):
     """Column-separable ridge: W[:, c] uses only features allowed[:, c]."""
     F, k = allowed.shape
@@ -93,6 +105,36 @@ class MaskedForecaster(Forecaster):
 
     def _solve(self, X, Y, M, ridge):
         return _masked_solve(X.T @ X, X.T @ Y, self.allowed, ridge)
+
+
+@dataclass
+class PriorForecaster(Forecaster):
+    """Pooled model with the wiring as a prior: penalty multiplier 1 on allowed weights and
+    rho on the others; rho chosen jointly with the ridge on validation worms."""
+    allowed: np.ndarray | None = None
+    rhos: tuple = (1.0, 3.0, 10.0, 30.0, 100.0)
+    rho: float = 1.0
+
+    def mult(self, rho=None):
+        return np.where(self.allowed, 1.0, self.rho if rho is None else rho)
+
+    def fit(self, train, val, ridges=(0.01, 0.1, 1, 10, 100, 1000)):
+        X, Y, M = self._xy(train)
+        Xv, Yv, Mv = self._xy(val)
+        G, B = X.T @ X, X.T @ Y
+        best = None
+        for rho in self.rhos:
+            for r in ridges:
+                W = _penalised_solve(G, B, self.mult(rho), r)
+                r2 = _masked_r2(Yv, Xv @ W, Mv, self.space.core.size)
+                if best is None or r2 > best[1]:
+                    best = (r, r2, W, rho)
+        self.ridge, self.rho, self.Wout = best[0], best[3], best[2]
+        R = (Y - X @ self.Wout) * M
+        cov = R.T @ R / max(len(R), 1) + 1e-6 * np.eye(R.shape[1])
+        self.L = np.linalg.cholesky(cov)
+        self.info = {"ridge": best[0], "rho": best[3], "val_r2_1step": round(best[1], 4)}
+        return self
 
 
 @dataclass
@@ -116,12 +158,17 @@ class WiredVAR(IndividualVAR):
         self.connections = {"classes": len(A), "inputs_per_class_mean": round(off / len(A), 2),
                             "density": round(off / (len(A) * (len(A) - 1)), 3)}
         super().fit(train, val, lams)
-        self.info.update(self.connections)
+        self.info.update(self.fit_info())
         return self
 
+    def fit_info(self):
+        return {**self.connections, **({"rho": self.pooled.rho} if isinstance(self.pooled, PriorForecaster) else {})}
+
     def _fit_one(self, F, Y, lam):
+        if isinstance(self.pooled, PriorForecaster):
+            return _penalised_solve(F.T @ F, F.T @ Y, self.pooled.mult(), lam, prior=self.pooled.Wout)
         return _masked_solve(F.T @ F, F.T @ Y, self.pooled.allowed, lam, prior=self.pooled.Wout)
 
 
 __all__ = ["class_wiring", "shuffled_wiring", "diagonal_wiring", "feature_mask", "WiredVAR",
-           "MaskedForecaster"]
+           "MaskedForecaster", "PriorForecaster"]

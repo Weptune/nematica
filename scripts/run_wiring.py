@@ -27,8 +27,8 @@ from nematica.data import load_copper_dir  # noqa: E402
 from nematica.data.canonical import canonical_classes  # noqa: E402
 from nematica.data.splits import load_folds  # noqa: E402
 from nematica.systems.forecasters import CalciumStateSpace, Debounced, LagFeatures  # noqa: E402
-from nematica.systems.wiring import (MaskedForecaster, WiredVAR, class_wiring, diagonal_wiring,  # noqa: E402
-                                     shuffled_wiring)
+from nematica.systems.wiring import (MaskedForecaster, PriorForecaster, WiredVAR, class_wiring,  # noqa: E402
+                                     diagonal_wiring, shuffled_wiring)
 
 LAGS = 10
 WIRINGS = {
@@ -39,14 +39,23 @@ WIRINGS = {
 }
 
 
+PRIOR = ("connectome", "shuffled0", "shuffled1", "shuffled2")   # wirings tried as priors
+
+
 def wired(label, train):
+    """label: a WIRINGS key (hard mask) or "prior_" + key (wiring as a ridge prior)."""
     cs = CalciumStateSpace.from_train(train, gamma=0.5)
-    return WiredVAR(MaskedForecaster(f"var{LAGS}", cs, LagFeatures(cs.k, LAGS, False)), fixed_lam=300,
-                    wiring=WIRINGS[label], label=label)
+    key = label[6:] if label.startswith("prior_") else label
+    cls = PriorForecaster if label.startswith("prior_") else MaskedForecaster
+    return WiredVAR(cls(f"var{LAGS}", cs, LagFeatures(cs.k, LAGS, False)), fixed_lam=300,
+                    wiring=WIRINGS[key], label=label)
+
+
+LABELS = list(WIRINGS)
 
 
 def build(train):
-    return {"real_other_worms": None, **{f"wired_{k}": Debounced(wired(k, train)) for k in WIRINGS}}
+    return {"real_other_worms": None, **{f"wired_{k}": Debounced(wired(k, train)) for k in LABELS}}
 
 
 def main() -> int:
@@ -55,7 +64,13 @@ def main() -> int:
     ap.add_argument("--folds", required=True)
     ap.add_argument("--out", default="results/wiring")
     ap.add_argument("--seeds", type=int, default=2)
+    ap.add_argument("--prior", action="store_true", help="wirings as ridge priors instead of hard masks")
     args = ap.parse_args()
+    global LABELS
+    if args.prior:
+        LABELS = [f"prior_{k}" for k in PRIOR]
+        if args.out == "results/wiring":
+            args.out = "results/wiring_prior"
     recs = load_copper_dir(Path(args.data))
     by = {r.uid: r for r in recs}
     classes = tuple(canonical_classes(recs, 0.25))
@@ -70,9 +85,9 @@ def main() -> int:
         val_uids = [rest[len(rest) // 3], rest[2 * len(rest) // 3]]
         S = lambda uids: [from_recording(by[u], classes) for u in uids]  # noqa: E731
         pool, train, val = S(pool_uids), S([u for u in rest if u not in val_uids]), S(val_uids)
-        for label in WIRINGS:
+        for label in LABELS:
             m = wired(label, train).fit(train, val)
-            rows.append({"wiring": label, "rotation": fi, **m.connections,
+            rows.append({"wiring": label, "rotation": fi, **m.fit_info(),
                          "one_step_r2": round(m.pooled.one_step_r2(pool), 4),
                          "r2_30s": round(m.pooled.multi_step_r2(pool, horizon=50, stride=25, context=50), 4)})
             print(rows[-1], flush=True)
@@ -91,9 +106,9 @@ def main() -> int:
     print()
     print_table(combined)
     print("\nForecasting on held-out worms (mean over rotations):")
-    for label in WIRINGS:
+    for label in LABELS:
         v = [r for r in rows if r["wiring"] == label]
-        print(f"  {label:11s} one-step R2 {np.mean([r['one_step_r2'] for r in v]):.4f}   "
+        print(f"  {label:20s} rho {[r.get('rho', '-') for r in v]} one-step R2 {np.mean([r['one_step_r2'] for r in v]):.4f}   "
               f"30 s R2 {np.mean([r['r2_30s'] for r in v]):.4f}   inputs/class {v[0]['inputs_per_class_mean']}")
     return 0
 

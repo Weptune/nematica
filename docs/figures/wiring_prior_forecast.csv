@@ -1,0 +1,13 @@
+wiring,rotation,classes,inputs_per_class_mean,density,rho,one_step_r2,r2_30s
+prior_connectome,0,50,6.52,0.133,30.0,0.4933,0.0996
+prior_shuffled0,0,50,6.52,0.133,30.0,0.4929,0.1003
+prior_shuffled1,0,50,6.52,0.133,30.0,0.493,0.1006
+prior_shuffled2,0,50,6.52,0.133,30.0,0.4931,0.1003
+prior_connectome,1,48,6.62,0.141,30.0,0.5272,0.1083
+prior_shuffled0,1,48,6.62,0.141,30.0,0.5271,0.1081
+prior_shuffled1,1,48,6.62,0.141,30.0,0.5267,0.1086
+prior_shuffled2,1,48,6.62,0.141,30.0,0.5267,0.1083
+prior_connectome,2,49,6.41,0.134,30.0,0.4704,0.0941
+prior_shuffled0,2,49,6.41,0.134,30.0,0.4701,0.0935
+prior_shuffled1,2,49,6.41,0.134,30.0,0.47,0.0944
+prior_shuffled2,2,49,6.41,0.134,30.0,0.4701,0.0942
