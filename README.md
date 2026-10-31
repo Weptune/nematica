@@ -1358,6 +1358,22 @@ active, and every model gives every neuron the same restlessness. The next ingre
 per-class quiet and active states (each class with its own share of quiet time), to be
 pre-registered.
 
+**Per-class quiet states (written before scoring on held-out worms).** A decomposition on
+pool 1 (diagnostic, not pre-registered) located the restlessness: it is the ongoing dynamics,
+not the causal kernels (background alone: 93% of classes cross the threshold in 30 s, PCI
+0.81; real 65%, 0.67), and the white measurement noise that fixed spread *raises* PCI (0.89),
+so spread and complexity pull against each other. New ingredient: each class has its own
+quiet and active stretches; in a quiet stretch it decouples from the rest and settles. Each
+class's share of quiet time starts from how often it stays out of a random 30 s window in
+the training worms, and its scale, how still a quiet class is, and the measurement-noise
+share are calibrated jointly on training worms to match three things at random moments: the
+share of classes that cross the threshold, the spread, and the PCI
+(`hybrid_kernels_quietobsfit`). On calibration without measurement noise it already gives
+73% of classes and PCI 0.64 (real 65%, 0.67), with spread too high. Expectation: echo
+complexity inside in at least 2 of 3 pools, and the poke test still passed (pattern and
+spread inside in at least 2 of 3): the first model to match a real brain's perturbational
+complexity.
+
 **Signal or noise? (written before computing it).** A model can fail the poke test in two
 different ways: its *average* echo is wrong (it does not know the causal structure), or its
 average echo is right but each single echo is buried in the wrong kind of variability.

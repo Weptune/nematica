@@ -184,10 +184,12 @@ class ClassVAR:
 
     # -------------------------------------------------------------- stimulation
     def simulate(self, rec: PumpProbe, rng: np.random.Generator, burn: int = 200,
-                 noise_gain: np.ndarray | None = None) -> PumpProbe:
+                 noise_gain: np.ndarray | None = None, quiet: np.ndarray | None = None) -> PumpProbe:
         """A simulated version of `rec`: the model's classes observed in this worm, one row
         each, stimulated on the worm's schedule. `noise_gain` (length burn + frames) scales
-        the driving noise frame by frame (quiet and active regimes)."""
+        the driving noise frame by frame (quiet and active regimes). `quiet` (classes x
+        (burn + frames), boolean): where true, that class is decoupled and settles, drifting
+        slowly toward its baseline with small noise [A]."""
         C, p = len(self.classes), self.lags
         idx = {c: i for i, c in enumerate(self.classes)}
         T = rec.n_frames
@@ -240,6 +242,11 @@ class ClassVAR:
         for t in range(p, T + burn):
             nxt = self._step(z, t, A, b)
             nxt += self.noise_sd * self._shock(rng, C) * (1.0 if noise_gain is None else noise_gain[t])
+            if quiet is not None:
+                q = quiet[:, t]
+                if q.any():
+                    nxt[q] = (getattr(self, "quiet_decay", 0.97) * z[q, t - 1]
+                              + getattr(self, "quiet_noise", 0.15) * self.noise_sd[q] * rng.standard_normal(int(q.sum())))
             nxt[~seen] = 0.0
             tt = t - burn
             if tt in pulse:
@@ -342,7 +349,8 @@ class HybridKernel:
 
     def __init__(self, lags: int = 3, shrink: float = 2.0, mask: str | None = None, seed: int = 0,
                  background: str = "spontaneous", obs_noise: bool = False, heavy: bool = False,
-                 regimes: bool = False, obs_fit: bool = False, lowrank: int = 0, obs_smooth: float = 0.0):
+                 regimes: bool = False, obs_fit: bool = False, lowrank: int = 0, obs_smooth: float = 0.0,
+                 class_quiet: bool = False, quiet_fit: bool = False, quiet_obs_fit: bool = False):
         self.lags, self.shrink, self.mask, self.seed = lags, shrink, mask, seed
         self.background = background     # which frames the ongoing-dynamics VAR learns from
         self.obs_noise = obs_noise       # split each class's variability into slow dynamics and
@@ -354,12 +362,18 @@ class HybridKernel:
         self.regime = None
         self.lowrank = lowrank           # ongoing dynamics from a few shared modes (LowRankVAR) if > 0
         self.obs_smooth = obs_smooth     # AR(1) coefficient of the measurement noise (0 = white)
+        self.class_quiet = class_quiet   # each class its own quiet/active chain, quiet share from
+                                         # training worms (_quiet_shares) [L]; dwell 60 frames [A]
+        self.quiet_share = None
+        self.quiet_obs_fit = quiet_obs_fit   # the same, jointly with a measurement-noise share
+        self.quiet_fit = quiet_fit       # per-class quiet strength calibrated on training worms to
+                                         # match their echo structure at random moments [L]
         self.obs_fit = obs_fit           # measurement-noise share chosen on training worms so that
                                          # 'spread' at random moments matches them [L]
         self.name = ("hybrid_kernels" + (f"_{mask}" if mask else "") + ("" if background == "spontaneous" else f"_bg{background}")
                      + ("_obs" if obs_noise else "") + ("_heavy" if heavy else "") + ("_regimes" if regimes else "")
                      + ("_obsfit" if obs_fit else "") + (f"_lowrank{lowrank}" if lowrank else "")
-                     + (f"_smooth{obs_smooth:g}" if obs_smooth else ""))
+                     + (f"_smooth{obs_smooth:g}" if obs_smooth else "") + ("_classquiet" if class_quiet else "") + ("_quietfit" if quiet_fit else "") + ("_quietobsfit" if quiet_obs_fit else ""))
 
     def _gain(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """A two-state Markov chain (quiet, active) with the calibrated share of quiet time and
@@ -405,6 +419,43 @@ class HybridKernel:
         self.info.update({"regime": best[1], "random_spread_target": np.round(target, 3).tolist(),
                           "random_spread_model": np.round(best[2], 3).tolist()})
         return self
+
+    @staticmethod
+    def _quiet_shares(recs, classes, n_windows: int = 40, seed: int = 0) -> np.ndarray:
+        """Per class, the share of random 30 s windows (in stimulation-free stretches where
+        possible) in which the class never moves more than 3 pre-window fluctuation sizes from
+        its level in the 5 s before: how often it simply stays out. Median over worms [L]."""
+        rng = np.random.default_rng(seed)
+        npre, npost = window(recs[0].dt)
+        out = {c: [] for c in classes}
+        for r in recs:
+            z = class_matrix(r, classes)
+            T = z.shape[1]
+            starts = rng.integers(npre, T - npost, n_windows)
+            for i, c in enumerate(classes):
+                if not np.isfinite(z[i]).any():
+                    continue
+                pres = [z[i, f - npre:f] for f in starts]
+                dev = np.concatenate([p - np.nanmean(p) for p in pres])
+                sd = np.nanstd(dev)
+                if not sd > 0:
+                    continue
+                stay = [np.nanmax(np.abs(z[i, f:f + npost] - np.nanmean(z[i, f - npre:f]))) <= 3 * sd for f in starts]
+                out[c].append(float(np.mean(stay)))
+        return np.array([np.median(out[c]) if out[c] else 0.0 for c in classes])
+
+    def _quiet_mask(self, n: int, rng: np.random.Generator, dwell: float = 60.0) -> np.ndarray:
+        q = np.clip(self.quiet_share, 0.0, 0.95)
+        C = len(q)
+        leave_q = np.full(C, 1.0 / dwell)
+        leave_a = np.where(q < 1, (1.0 / dwell) * q / np.clip(1 - q, 1e-6, None), 1.0)
+        st = rng.random(C) < q
+        out = np.empty((C, n), bool)
+        for t in range(n):
+            out[:, t] = st
+            flip = rng.random(C) < np.where(st, leave_q, leave_a)
+            st = st ^ flip
+        return out
 
     @staticmethod
     def _noise_fractions(recs, classes) -> np.ndarray:
@@ -453,10 +504,62 @@ class HybridKernel:
             idx = {c: i for i, c in enumerate(cls)}
             self.kernels = {k: v for k, v in self.kernels.items() if A[idx[k[1]], idx[k[0]]]}
         self.info = {**self.var.info, "kernels": len(self.kernels)}
+        if self.class_quiet or self.quiet_fit or self.quiet_obs_fit:
+            self.quiet_share = self._quiet_shares(list(train) + list(val), self.var.classes)
+            self.info["median_quiet_share"] = round(float(np.median(self.quiet_share)), 3)
+        if self.quiet_fit:
+            self.calibrate_quiet(list(train))
+        if self.quiet_obs_fit:
+            self.calibrate_quiet(list(train), obs_grid=(0.0, 0.05, 0.1, 0.2))
         if self.regimes:
             self.calibrate_regimes(list(train))
         if self.obs_fit:
             self.calibrate_obs(list(train))
+        return self
+
+    def calibrate_quiet(self, train, n_worms: int = 6, seed: int = 0, obs_grid=(None,)):
+        """Scale the per-class quiet shares and set how still a quiet class is, so that at
+        random moments (no poke) the model matches the training worms on three things: the
+        share of classes that cross 3 pre-window SDs in 30 s, the spread, and the PCI [L]."""
+        from dataclasses import replace as _replace
+        from ..bench.perturbational import event_matrices
+        rng = np.random.default_rng(seed)
+        npre, npost = window(train[0].dt)
+
+        def at_random(rec):
+            fr = rng.integers(npre, rec.n_frames - npost, len(rec.stims))
+            return _replace(rec, stims=[(k, int(f)) for (k, _), f in zip(rec.stims, fr)])
+
+        def triple(evs):
+            B = [np.abs(np.nan_to_num(e["R"])) > 3 for e in evs]
+            return np.array([np.median([b.any(axis=1).mean() for b in B]), np.median([e["spread"] for e in evs]),
+                             np.median([e["pci"] for e in evs])])
+
+        pick = [train[i] for i in rng.choice(len(train), size=min(n_worms, len(train)), replace=False)]
+        target = triple([e for r in pick for e in event_matrices(at_random(r), keep=True)])
+        base = self.quiet_share.copy()
+        kernels, self.kernels = self.kernels, {}
+        best = None
+        for scale in (1.0, 1.5, 2.0, 2.5, 3.0):
+            for qn in (0.03, 0.1):
+                for ob in obs_grid:
+                    self.quiet_share = np.clip(base * scale, 0, 0.95)
+                    self.var.quiet_noise, self.var.quiet_decay = qn, 0.99
+                    if ob is not None:
+                        self.obs_noise = ob > 0
+                        self.noise_frac = np.full(len(self.var.classes), ob)
+                    got = triple([e for r in pick for e in event_matrices(at_random(self.simulate(r, np.random.default_rng(7))), keep=True)])
+                    loss = float(np.sum(((got - target) / np.array([0.1, 0.05, 0.1])) ** 2))
+                    if best is None or loss < best[0]:
+                        best = (loss, scale, qn, ob, got)
+        self.kernels = kernels
+        self.quiet_share = np.clip(base * best[1], 0, 0.95)
+        self.var.quiet_noise, self.var.quiet_decay = best[2], 0.99
+        if best[3] is not None:
+            self.obs_noise = best[3] > 0
+            self.noise_frac = np.full(len(self.var.classes), best[3])
+        self.info.update({"quiet_scale": best[1], "quiet_noise": best[2], "obs_share": best[3],
+                          "quiet_target": np.round(target, 3).tolist(), "quiet_model": np.round(best[4], 3).tolist()})
         return self
 
     def calibrate_obs(self, train, n_worms: int = 6, seed: int = 0, grid=(0.0, 0.1, 0.2, 0.3, 0.4, 0.5)):
@@ -494,15 +597,17 @@ class HybridKernel:
         npre, npost = window(rec.dt)
         quiet = replace(rec, stims=[])
         gain = self._gain(quiet.n_frames + 200, rng) if self.regime else None
+        qmask = self._quiet_mask(quiet.n_frames + 200, rng) if self.quiet_share is not None else None
+        kw = {"quiet": qmask} if qmask is not None else {}
         if self.obs_noise:
             # dynamics driven only by the non-measurement part of the residuals; the measurement
             # part is added afterwards as white noise of the same total size [A]
             keep = self.var.noise_sd.copy()
             self.var.noise_sd = keep * np.sqrt(1 - self.noise_frac)
-            bg = self.var.simulate(quiet, rng, noise_gain=gain)
+            bg = self.var.simulate(quiet, rng, noise_gain=gain, **kw)
             self.var.noise_sd = keep
         else:
-            bg = self.var.simulate(quiet, rng, noise_gain=gain)   # ongoing activity, no stimulation
+            bg = self.var.simulate(quiet, rng, noise_gain=gain, **kw)   # ongoing activity, no stimulation
         x = bg.x.copy()
         if self.obs_noise:
             ci = {c: i for i, c in enumerate(self.var.classes)}
