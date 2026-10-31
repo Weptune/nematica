@@ -38,6 +38,32 @@ class BenchSample:
                            self.dt, self.origin, beh)
 
 
+def _arena_heading(rec) -> dict:
+    """Whole-body orientation O (circular mean of segment angles), its change per frame
+    ("turn", rad) and how directly the worm faces the copper ("facing_out", cosine between
+    facing and the outward arena normal). In the copper set the image frame is rotated 180
+    degrees from the stage frame, so the facing direction in stage coordinates is O itself:
+    it matches the direction of travel during forward crawling (mean cosine 0.54 over
+    worms, every worm > 0.26; O + pi gives -0.54) [M]."""
+    post = getattr(rec, "posture", None) or {}
+    arena = (getattr(rec, "meta", None) or {}).get("arena")
+    if "segment_angle" not in post or "stage_xy_mm" not in post or arena is None:
+        return {}
+    seg = np.asarray(post["segment_angle"], float)
+    with np.errstate(invalid="ignore"):
+        z = np.nanmean(np.exp(1j * seg), axis=1)
+    ok = np.isfinite(z)
+    if ok.sum() < 2:
+        return {}
+    O = np.angle(z)
+    idx = np.arange(len(O))
+    O = np.interp(idx, idx[ok], np.unwrap(O[ok]))
+    xy = np.asarray(post["stage_xy_mm"], float) - np.asarray(arena["center_mm"], float)
+    normal = np.arctan2(xy[:, 1], xy[:, 0])
+    turn = np.diff(O, append=O[-1])
+    return {"facing_out": np.cos(O - normal), "turn": (turn + np.pi) % (2 * np.pi) - np.pi}
+
+
 def from_recording(rec: Recording, classes: Sequence[str], min_confidence: float = 2.0,
                    name: Optional[str] = None) -> BenchSample:
     x = zscore_rows(class_matrix(rec, classes, min_confidence))
@@ -45,6 +71,7 @@ def from_recording(rec: Recording, classes: Sequence[str], min_confidence: float
            if k in ("velocity", "reversing", "head_angle", "head_curvature")}
     if "dist_to_boundary_mm" in rec.behaviour:          # arena experiments only
         beh["dist_to_boundary"] = np.asarray(rec.behaviour["dist_to_boundary_mm"], float)
+        beh.update(_arena_heading(rec))
     if "reversing" not in beh and rec.reversals:
         rv = np.zeros(rec.n_frames)
         for a, b in rec.reversals:

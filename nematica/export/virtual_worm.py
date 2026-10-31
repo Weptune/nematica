@@ -46,8 +46,26 @@ def _features(vel, rev, v_scale, i):
                      1.5 * rev[i], 1.0 * rev[j3]])
 
 
-def _causal_features(v, v_prev, rev, rev_prev, v_scale):
-    return np.array([v / v_scale, v_prev / v_scale, 1.5 * rev, 1.0 * rev_prev])
+POST_REV_FRAMES = 3.0     # decay of the "just finished a reversal" feature, frames [A]
+
+
+def _causal_features(v, v_prev, rev, rev_prev, v_scale, post=0.0):
+    """post: exp(-frames since the last reversal ended / POST_REV_FRAMES) while crawling
+    forward, else 0. Real worms turn more right after a reversal (mean |turn| 0.174 vs
+    0.124 rad per frame over the next 5 frames) [M]; this lets the matcher pick those clips."""
+    return np.array([v / v_scale, v_prev / v_scale, 1.5 * rev, 1.0 * rev_prev, 1.5 * post])
+
+
+def _post_reversal(rev):
+    out = np.zeros(len(rev))
+    since = np.inf
+    for i in range(len(rev)):
+        if rev[i] > 0.5:
+            since = np.inf
+        else:
+            since = 0 if (i > 0 and rev[i - 1] > 0.5) else since + 1
+            out[i] = np.exp(-since / POST_REV_FRAMES) if np.isfinite(since) else 0.0
+    return out
 
 
 @dataclass
@@ -72,13 +90,15 @@ class MotionLibrary:
             rev = (r.behaviour["reversing"] > 0.5).astype(float)
             lengths.append(length)
             orient = np.angle(np.mean(np.exp(1j * ang), axis=1))      # whole-body orientation
+            post = _post_reversal(rev)
             for i in range(len(vel) - LOOKAHEAD):
                 if not (good[i] and good[i + 1]):
                     continue
                 shapes.append(_wrap(ang[i] - orient[i]))
                 turn.append(_wrap(orient[i + 1] - orient[i]))
                 feats.append(_features(vel, rev, v_scale, i))
-                cfeats.append(_causal_features(vel[i], vel[max(i - 1, 0)], rev[i], rev[max(i - 1, 0)], v_scale))
+                cfeats.append(_causal_features(vel[i], vel[max(i - 1, 0)], rev[i], rev[max(i - 1, 0)], v_scale,
+                                              post[i]))
                 worm.append(wi)
                 frame.append(i)
         return cls(np.array(shapes), np.array(turn), np.array(feats), np.array(worm), np.array(frame),
@@ -147,10 +167,16 @@ class MotionStepper:
         self.cur = None
         self.continued = 0
         self.steps = 0
+        self.since_rev = np.inf
 
     def step(self, v, v_prev, rev, rev_prev):
         lib = self.lib
-        f = _causal_features(v, v_prev, float(rev), float(rev_prev), lib.v_scale)
+        if rev > 0.5:
+            self.since_rev = np.inf
+        else:
+            self.since_rev = 0 if rev_prev > 0.5 else self.since_rev + 1
+        post = np.exp(-self.since_rev / POST_REV_FRAMES) if np.isfinite(self.since_rev) else 0.0
+        f = _causal_features(v, v_prev, float(rev), float(rev_prev), lib.v_scale, post)
         d, cand = self.tree.query(f, k=32)
         cur = self.cur
         nxt = None if cur is None else self.pos_of.get((int(lib.worm[cur]), int(lib.frame[cur]) + 1))

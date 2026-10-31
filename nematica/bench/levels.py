@@ -191,6 +191,39 @@ def l5_reversal(a: BenchSample, b: BenchSample) -> float:
 
 
 
+
+# ---- behaviour: reversal statistics ------------------------------------------------------
+# Added after closed-loop work showed that thresholding a noisy reversal channel doubles the
+# onset rate without any level noticing. Needs behaviour["reversing"] (0/1 per frame).
+
+def _reversal_bouts(s: BenchSample):
+    rv = s.behaviour.get("reversing")
+    if rv is None or len(rv) < 10:
+        return None
+    r = (np.asarray(rv) > 0.5).astype(int)
+    edges = np.diff(np.concatenate([[0], r, [0]]))
+    starts, ends = np.flatnonzero(edges == 1), np.flatnonzero(edges == -1)
+    minutes = len(r) * s.dt / 60
+    return len(starts) / minutes, (ends - starts) * s.dt
+
+
+def b_reversal_rate(a: BenchSample, b: BenchSample) -> float:
+    """|log ratio| of reversal onsets per minute."""
+    ra, rb = _reversal_bouts(a), _reversal_bouts(b)
+    if ra is None or rb is None or ra[0] == 0 or rb[0] == 0:
+        return np.nan
+    return float(abs(np.log(ra[0] / rb[0])))
+
+
+def b_reversal_duration(a: BenchSample, b: BenchSample) -> float:
+    """KS distance between reversal duration distributions (>= 5 reversals each)."""
+    from scipy.stats import ks_2samp
+    ra, rb = _reversal_bouts(a), _reversal_bouts(b)
+    if ra is None or rb is None or len(ra[1]) < 5 or len(rb[1]) < 5:
+        return np.nan
+    return float(ks_2samp(ra[1], rb[1]).statistic)
+
+
 # Level 6 (environment) is tested at the population level: see environment.py.
 
 LEVELS = {
@@ -210,4 +243,8 @@ LEVELS = {
                     "what": "which neuron classes track velocity"},
     "L5.reversal": {"level": 5, "fn": l5_reversal, "primary": False,
                     "what": "which neuron classes change during reversals"},
+    "B.rev_rate": {"level": 5, "fn": b_reversal_rate, "primary": False,
+                   "what": "how often the worm starts a reversal"},
+    "B.rev_duration": {"level": 5, "fn": b_reversal_duration, "primary": False,
+                       "what": "how long reversals last"},
 }

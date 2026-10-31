@@ -36,7 +36,7 @@ def test_linear_forecaster_learns_and_generates():
     s = m.generate(test[0], np.random.default_rng(0), burn=50)
     assert s.x.shape == test[0].x.shape
     assert np.isnan(s.x[~test[0].observed]).all()                   # template mask applied
-    assert set(s.behaviour) == {"velocity", "reversing"}
+    assert set(s.behaviour) == {"velocity", "reversing", "reversing_drive"}
 
 
 def test_lag_state_matches_training_features():

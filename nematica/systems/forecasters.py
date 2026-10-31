@@ -72,9 +72,22 @@ class StateSpace:
             out[self.core] += self.add_slow(source, T)
         out[~template.observed] = np.nan
         beh = v[-2:, :T] * self.beh_sd[:, None] + self.beh_mean[:, None]
-        behaviour = {"velocity": beh[0], "reversing": (beh[1] > 0.5).astype(float)}
+        lo, hi = getattr(self, "rev_thresholds", None) or (0.5, 0.5)
+        behaviour = {"velocity": beh[0], "reversing": hysteresis(beh[1], lo, hi),
+                     "reversing_drive": beh[1]}
         return BenchSample(f"{name}:{template.origin}", self.classes, zscore_rows(out),
                            template.dt, origin=None, behaviour=behaviour)
+
+
+def hysteresis(drive: np.ndarray, lo: float, hi: float) -> np.ndarray:
+    """Binary reversal state from a continuous channel: switch on above `hi`, off below `lo`.
+    With lo == hi this is a plain threshold."""
+    out = np.zeros(len(drive))
+    on = False
+    for i, x in enumerate(drive):
+        on = x > hi if not on else x >= lo
+        out[i] = on
+    return out
 
 
 @dataclass
@@ -599,3 +612,66 @@ class SlowFastVAR:
 
     def one_step_r2(self, samples):
         return self.inner.one_step_r2([self._split(s)[0] for s in samples])
+
+
+# ---------------------------------------------------------------- reversal decoding
+
+class Debounced:
+    """A per-worm model whose reversals come from a continuous channel, decoded with
+    hysteresis instead of a single threshold (which flickers: about 3 times the real onset
+    rate, with bouts a quarter of the real length). The two thresholds are chosen on the
+    TRAINING worms only: generate one sample per training worm and pick (lo, hi) so the
+    generated onset rate and median bout length match those worms' own [L]."""
+
+    def __init__(self, model, lo_grid=None, hi_grid=None):
+        self.model = model
+        self.lo_grid = np.linspace(-0.3, 0.6, 19) if lo_grid is None else lo_grid
+        self.hi_grid = np.linspace(0.3, 1.5, 25) if hi_grid is None else hi_grid
+        self.info: dict = {}
+
+    @property
+    def name(self) -> str:
+        return self.model.name + "_hyst"
+
+    @property
+    def names(self):
+        return self.model.names
+
+    @staticmethod
+    def _stats(rv, dt):
+        r = (np.asarray(rv) > 0.5).astype(int)
+        e = np.diff(np.concatenate([[0], r, [0]]))
+        st, en = np.flatnonzero(e == 1), np.flatnonzero(e == -1)
+        return len(st), len(r) * dt / 60, (en - st) * dt
+
+    def fit(self, train, val):
+        self.model.fit(train, val)
+        space = self.model.pooled.space
+        n, minutes, durs = zip(*(self._stats(s.behaviour["reversing"], s.dt) for s in train))
+        target = np.array([np.log(sum(n) / sum(minutes)), np.log(np.median(np.concatenate(durs)))])
+        rng = np.random.default_rng(12345)
+        space.rev_thresholds = None
+        drives = [(self.model.generate(s, rng, which=i).behaviour["reversing_drive"], s.dt)
+                  for i, s in enumerate(train)]
+        best = None
+        for lo in self.lo_grid:
+            for hi in self.hi_grid:
+                if hi < lo:
+                    continue
+                n, minutes, durs = zip(*(self._stats(hysteresis(d, lo, hi), dt) for d, dt in drives))
+                if sum(n) < 5:
+                    continue
+                got = np.array([np.log(sum(n) / sum(minutes)), np.log(np.median(np.concatenate(durs)))])
+                loss = float(np.sum((got - target) ** 2))
+                if best is None or loss < best[0]:
+                    best = (loss, lo, hi, got)
+        space.rev_thresholds = (float(best[1]), float(best[2]))
+        self.info = {**getattr(self.model, "info", {}), "rev_lo": round(best[1], 3), "rev_hi": round(best[2], 3),
+                     "train_rate_per_min": round(float(np.exp(target[0])), 2),
+                     "fit_rate_per_min": round(float(np.exp(best[3][0])), 2),
+                     "train_median_s": round(float(np.exp(target[1])), 2),
+                     "fit_median_s": round(float(np.exp(best[3][1])), 2)}
+        return self
+
+    def generate(self, template, rng, which, **kw):
+        return self.model.generate(template, rng, which=which, **kw)

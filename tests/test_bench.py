@@ -176,3 +176,20 @@ def test_occupancy_separates_worms_that_stay_away_from_copper():
         "dist_to_boundary": mu + 0.3 * rng.standard_normal(500)})
     near, far = [mk(0.2) for _ in range(4)], [mk(2.0) for _ in range(4)]
     assert d_occupancy(far, [mk(2.0) for _ in range(4)]) < 0.1 < d_occupancy(near, far)
+
+
+def test_reversal_statistics_and_hysteresis():
+    from nematica.bench.levels import b_reversal_duration, b_reversal_rate
+    from nematica.bench.sample import BenchSample
+    from nematica.systems.forecasters import hysteresis
+
+    def smp(rv):
+        return BenchSample("x", ("A",), np.zeros((1, len(rv))), 0.6, behaviour={"reversing": np.asarray(rv, float)})
+    slow = np.tile(np.r_[np.zeros(90), np.ones(10)], 10)        # 1 onset per minute, 6 s bouts
+    fast = np.tile(np.r_[np.zeros(45), np.ones(5)], 20)         # 2 per minute, 3 s bouts
+    assert b_reversal_rate(smp(slow), smp(slow)) == 0
+    assert abs(b_reversal_rate(smp(slow), smp(fast)) - np.log(2)) < 1e-9
+    assert b_reversal_duration(smp(slow), smp(fast)) == 1.0
+    noisy = np.r_[np.full(20, 0.0), 0.6, 0.45, 0.6, 0.45, 0.9, 0.4, 0.3, 0.6, 0.1, np.full(10, 0.0)]
+    assert np.sum(np.diff(hysteresis(noisy, 0.5, 0.5)) == 1) == 4                    # flickers
+    assert np.sum(np.diff(np.r_[0, hysteresis(noisy, 0.25, 0.75)]) == 1) == 1          # one bout

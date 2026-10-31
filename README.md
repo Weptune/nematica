@@ -32,7 +32,8 @@ are to each other, which means it learned the average worm, not a worm.
 | 2 | `L2.correlation`, `L2.dimension` | Do the right classes move together, with realistic dimensionality? |
 | 4 | `L4.leadlag`, `L4.dwell` | Who leads and who follows; how long reversal-command states last |
 | 5 | `L5.encoding`, `L5.reversal` | Which classes track velocity and change during reversals |
-| 6 | `L6.encounter`, `L6.approach` | Does the brain respond like a real one when the head meets the copper boundary? Does reversing rise near it? (population level) |
+| behaviour | `B.rev_rate`, `B.rev_duration` | How often the worm starts a reversal, and how long reversals last |
+| 6 | `L6.encounter`, `L6.approach`, `L6.occupancy` | Does the brain respond like a real one when the head meets the copper boundary? Does reversing rise near it? Does the worm spend realistic time near copper? (population level) |
 | 8 | `L8.discriminability` | Can a classifier, cross-validated by worm, tell 30 s windows of the system from real ones? |
 
 Verdicts: **inside** (indistinguishable from another real worm), **outside**, or **too
@@ -40,8 +41,9 @@ typical** (significantly closer to every real worm than real worms are to each o
 
 ## Results so far (copper test worms)
 
-- The ruler hits every designed calibration outcome: 44 of 44 at the pairwise levels and
-  5 of 5 at Level 6. Real worms from another lab's unstimulated sessions score inside
+- The ruler hits every designed calibration outcome at the pairwise levels (including the
+  two reversal-statistics metrics, whose expectations were written before they were run)
+  and 8 of 8 at Level 6. Real worms from another lab's unstimulated sessions score inside
   everywhere.
 - In the copper arena, ASH (the canonical nociceptor) is the strongest responder when the
   head meets the boundary, followed by AWC. Two random halves of the worms agree on the
@@ -133,6 +135,19 @@ Other findings (`scripts/run_arc1.py`, `scripts/run_cv.py`; tables in `docs/figu
   forecasting criterion), a far more flexible model still produces an average worm; the
   per-worm linear model remains the most realistic one so far. Tables:
   `docs/figures/gru_combined.csv`, `gru_l8.csv`. PyTorch is optional (`pip install -e ".[gru]"`).
+- **Reversal statistics catch the 8/8 model, and a decoder fixes it: 10 of 10.** Two
+  behaviour metrics were added (onset rate per minute, `B.rev_rate`; bout-length
+  distribution, `B.rev_duration`) after the closed-loop work showed that thresholding a
+  noisy reversal channel goes unnoticed by the other levels. The calibration expectations
+  were written first and all matched (frame shuffle outside, neural-only perturbations
+  inside, other real worms inside). On the rotating pools the calcium model fails both
+  (distance ratios 4.85 and 2.04): it reverses 8 times a minute for 1.8 s, against 2.9 times
+  for 6.6 s in real worms, though the share of time reversing is about right (36% vs 31%).
+  It flickers. Reading the same channel with hysteresis (start above `hi`, stop below `lo`,
+  both fitted on training worms only: 0.25 and 0.75) gives 2.7 per minute and 6 s bouts, and
+  the model is **inside on all 10 pairwise levels** (`Debounced`, `scripts/run_reversals.py`,
+  `docs/figures/reversals_combined.csv`). The switching VAR, whose reversals are discrete
+  states, already passed both (8 of 10 overall).
 - A correction: on the single frozen 6-worm test pool the per-worm model looked fully
   inside on these levels; the rotating pools show that at the forecasting-chosen shrinkage
   it is still slightly too typical. The shrinkage sweep explains why.
@@ -179,6 +194,7 @@ python scripts/run_cv.py --data $copper --folds configs/splits/copper2026_cv3.ya
 python scripts/run_shrinkage.py --data $copper --folds configs/splits/copper2026_cv3.yaml
 python scripts/plot_shrinkage.py                                     # results/shrinkage/shrinkage.png
 python scripts/run_calcium.py --data $copper --folds configs/splits/copper2026_cv3.yaml
+python scripts/run_reversals.py --data $copper --folds configs/splits/copper2026_cv3.yaml
 ```
 
 ## Replay lab
