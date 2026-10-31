@@ -193,3 +193,32 @@ def test_reversal_statistics_and_hysteresis():
     noisy = np.r_[np.full(20, 0.0), 0.6, 0.45, 0.6, 0.45, 0.9, 0.4, 0.3, 0.6, 0.1, np.full(10, 0.0)]
     assert np.sum(np.diff(hysteresis(noisy, 0.5, 0.5)) == 1) == 4                    # flickers
     assert np.sum(np.diff(np.r_[0, hysteresis(noisy, 0.25, 0.75)]) == 1) == 1          # one bout
+
+
+class _UntrustedModel:              # stands in for a class from an untrusted code base
+    pass
+
+
+def test_safe_pickle_and_published_lds(tmp_path):
+    import pickle
+
+    from nematica.bench.sample import BenchSample
+    from nematica.data.safe_pickle import load
+    from nematica.systems.published import CreamerLDS
+
+    m = _UntrustedModel()
+    m.A = np.eye(3) * 0.5
+    blob = pickle.dumps(m)
+    path = tmp_path / "m.pkl"
+    path.write_bytes(blob.replace(b"test_bench", b"evil_modul"))   # module that does not exist
+    got = load(path)
+    assert type(got).__name__ == "_UntrustedModel" and np.allclose(got.A, 0.5 * np.eye(3))
+
+    np.savez(tmp_path / "toy.npz", A=0.9 * np.eye(4), Q=0.1 * np.eye(4), R=0.01 * np.eye(4),
+             cell_ids=np.array(["AVAL", "AVAR", "RIML", "ASHL"]), sample_rate=2.0)
+    classes = ("AVA", "AVB", "RIM")
+    tpl = BenchSample("t", classes, np.zeros((3, 300)), 0.6, behaviour={})
+    sys_ = CreamerLDS("toy", folder=tmp_path, burn_s=10).fit([tpl], [tpl])
+    s = sys_.generate(tpl, np.random.default_rng(0))
+    assert sys_.members == {"AVA": [0, 1], "RIM": [2]}
+    assert np.isfinite(s.x[0]).all() and np.isnan(s.x[1]).all() and s.x.shape == (3, 300)

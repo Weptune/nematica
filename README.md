@@ -195,6 +195,8 @@ python scripts/run_shrinkage.py --data $copper --folds configs/splits/copper2026
 python scripts/plot_shrinkage.py                                     # results/shrinkage/shrinkage.png
 python scripts/run_calcium.py --data $copper --folds configs/splits/copper2026_cv3.yaml
 python scripts/run_reversals.py --data $copper --folds configs/splits/copper2026_cv3.yaml
+python scripts/fetch_creamer_lds.py
+python scripts/run_published.py --data $copper --folds configs/splits/copper2026_cv3.yaml
 ```
 
 ## Replay lab
@@ -250,6 +252,35 @@ Results, held-out pools combined (`docs/figures/closed_loop.csv`):
   driven by the brain, so the brain's lead-lag and reversal encoding fail. Next: per-worm
   hazards and a brain term that keeps the calibrated rate.
 
+## Leaderboard: published models
+
+`nematica/systems/published.py`, `scripts/fetch_creamer_lds.py`, `scripts/run_published.py`.
+First entry: the three linear dynamical systems of Creamer, Leifer & Pillow (2024,
+bioRxiv 10.1101/2024.09.22.614271, MIT licence), fitted to the Randi et al. (2023)
+optogenetic atlas: weights restricted to the connectome, unrestricted, or restricted to a
+shuffled connectome. Their trained parameters are read from the authors' pickles as plain
+data (`nematica/data/safe_pickle.py`: none of their code is imported or run), and the models
+are run with stimulation off to produce spontaneous activity. They make no behaviour, so the
+behaviour levels are not scored. Rotating pools (`docs/figures/published_combined.csv`):
+
+| Model | Inside (of 6) | Correlation | Dimension | Timescale |
+|---|---|---|---|---|
+| connectome-constrained | 0 | 1.43 | 2.92 | 1.56 |
+| fully connected | 1 | 1.46 | 1.24 (inside) | 1.51 |
+| shuffled connectome | 0 | 1.56 | 4.04 | 1.62 |
+
+(numbers are distance ratios: 1 = as far as another real worm)
+
+- **Not a fair test yet, and the caveat is the point:** these models describe immobilised
+  worms, and the reference worms here crawl freely. A model of a still brain is far from a
+  crawling one, as it should be. The comparison that matters for arc 3 (what the wiring
+  buys) is against immobilised reference worms; the Randi recordings are on OSF, which
+  neither this workspace nor the lab machine can reach yet.
+- Within that caveat, the wiring helps on what it should: the real connectome beats the
+  shuffled one on correlations (1.43 vs 1.56) and much more on dimensionality (2.92 vs
+  4.04). The unconstrained model has the most realistic dimensionality.
+- c302 (OpenWorm) is not scored yet.
+
 ## "Which one is real?" (prototype)
 
 Two worms crawl side by side on agar. One is a held-out real worm (body, path and brain
@@ -291,3 +322,5 @@ human viewers.
   Interactome (BSD 3-Clause, `data_assets/kunert2014/LICENSE`).
 - Skuhersky et al. 2022 neuron atlas (paper CC BY 4.0), downloaded by script, not
   redistributed.
+- Creamer, Leifer & Pillow 2024 trained models (MIT licence, Copyright (c) 2026 Matthew S.
+  Creamer), downloaded by `scripts/fetch_creamer_lds.py`, not redistributed.
