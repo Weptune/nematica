@@ -16,3 +16,4 @@ lab/public/data/
 *.egg-info/
 lab/node_modules
 web/data/local.js
+web/data/echo.js

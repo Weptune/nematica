@@ -52,6 +52,7 @@
   const cvLive = host.querySelector("canvas.live"), cvCopy = host.querySelector("canvas.copy");
   let bmLive = bitmap(real, LUT.live), bmCopy = bitmap(brains[current], LUT.copy);
   let progress = reduce ? 1 : 0;
+  let showPokes = null;
 
   function size(cv) {
     const r = cv.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1);
@@ -85,6 +86,7 @@
   function render() {
     draw(cvLive, bmLive, "#3dd69b");
     draw(cvCopy, bmCopy, "#f062b4");
+    if (typeof showPokes === "function") showPokes();
   }
   function layout() { size(cvLive); size(cvCopy); render(); }
 
@@ -101,6 +103,27 @@
     axis.appendChild(sp);
   }
   host.querySelector(".worm").textContent = `Worm ${D.worm.slice(0, 8)}, held out from training`;
+
+  // class names along the right edge, a few that anchor the eye
+  const KEY = ["AVA", "AVE", "RIM", "AIB", "RIB", "AVB", "RME", "SMDV", "SMDD", "RMDV", "ASH", "AWB", "RID", "URY", "OLQ", "IL2"];
+  host.querySelectorAll(".rows").forEach((rows) => {
+    const shown = [];
+    KEY.forEach((c) => {
+      const r = D.classes.indexOf(c);
+      if (r < 0) return;
+      const yPct = ((r + 0.5) / nC) * 100;
+      if (shown.some((y) => Math.abs(y - yPct) < 7)) return;
+      shown.push(yPct);
+      const sp = document.createElement("span"); sp.style.top = yPct + "%"; sp.textContent = c; rows.appendChild(sp);
+    });
+  });
+  // pokes along the top, named, appearing as the playhead passes them
+  const lane = host.querySelector(".pokes .lane");
+  const pokeEls = D.stims.map((st) => {
+    const p = document.createElement("span"); p.className = "p"; p.style.left = (st.frame / nT) * 100 + "%"; p.textContent = st.cls; p.title = `${st.cls} switched on at ${Math.round(st.frame * D.dt)} s`;
+    lane.appendChild(p); return { p, f: st.frame / nT };
+  });
+  showPokes = () => pokeEls.forEach((o) => o.p.classList.toggle("seen", o.f <= progress + 1e-6));
 
   // readout on hover
   const read = host.querySelector(".scope-read");

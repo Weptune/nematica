@@ -11,7 +11,7 @@
 </head>
 <body>
 
-<header class="bar" id="bar">
+<header class="bar on-field" id="bar">
   <a class="wordmark" href="index.html" aria-label="NEMATICA home">
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.2" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".55"/><circle cx="12" cy="12" r="5.2" fill="none" stroke="#0a7a5a" stroke-width="2.2"/><circle cx="17.2" cy="12" r="2.1" fill="#c8489c"/></svg>
     NEMATICA
@@ -24,13 +24,12 @@
   </nav>
 </header>
 
-<main class="page">
-  <div class="sheet">
-    <h1 class="title">A ruler for brains, measured in real worms.</h1>
-    <p class="standfirst">There is no single right answer for what a worm's brain should do; healthy worms differ. So NEMATICA never asks whether a brain matches a worm. It asks whether the brain differs from real worms by about as much as real worms differ from each other.</p>
-  </div>
+<section class="masthead grain"><div class="in"><h1 class="title">A ruler for brains, measured in real worms.</h1>
+    <p class="standfirst">There is no single right answer for what a worm's brain should do; healthy worms differ. So NEMATICA never asks whether a brain matches a worm. It asks whether the brain differs from real worms by about as much as real worms differ from each other.</p></div></section>
 
-  <div class="sheet with-toc" style="margin-top:clamp(32px,5vw,64px)">
+<main class="page">
+
+  <div class="sheet with-toc">
     <nav class="toc" aria-label="Contents">
       <ol>
         <li><a href="#ruler">The ruler</a></li>
@@ -123,8 +122,9 @@
   </div>
 </main>
 
-<footer class="foot">
+<footer class="foot grain">
   <div class="in">
+    <p class="big" aria-hidden="true">NEMATICA</p>
     <p>NEMATICA. Every prediction is written down before the experiment runs, and results that went against us are kept.</p>
     <nav aria-label="Footer"><a href="index.html">Home</a><a href="findings.html">Findings</a><a href="log.html">Research log</a><a href="https://github.com/Weptune/nematica">Code on GitHub</a></nav>
   </div>
@@ -132,6 +132,7 @@
 
 <script src="data/results.js"></script>
 <script src="assets/charts.js"></script>
+<script src="data/local.js" onerror="void 0"></script>
 <script src="assets/site.js"></script>
 </body>
 </html>

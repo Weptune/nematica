@@ -5,6 +5,8 @@ Two outputs:
   web/data/local.js     one held-out real worm and two artificial brains run on the same
                         stimulation schedule, for the opening figure. Derived from third-party
                         recordings, so it stays local (gitignored); the site works without it.
+  web/data/echo.js      average echoes of every poked pair over one held-out group, real and simulated,
+                        with neuron positions from the local atlas copy (also local only).
 
 Usage:
   python scripts/export_site.py                       # results.js only
@@ -138,21 +140,91 @@ def local(data: str, folds_path: str, frames: int) -> dict:
             "real": pack(real[order]), "brains": brains, "stims": stims}
 
 
+def echoes(data: str, folds_path: str, fold: int = 0) -> dict:
+    """Average echo of every (poked class, responding class) pair over one held-out group: real
+    worms, and two artificial brains run on the same worms with the same pokes. Neuron classes are
+    placed at their mean soma position in the head (Skuhersky et al. 2022 atlas, local copy)."""
+    from nematica.bench.causal import response_set
+    from nematica.data.pumpprobe import load_pumpprobe_dir, neuron_class
+    from nematica.data.splits import load_folds
+    from nematica.export.atlas import load_atlas
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from run_same_worms import make_model
+
+    atlas = load_atlas()
+    pos: dict = {}
+    for n, (ap, dv, lr) in atlas.items():
+        if ap > 160:            # head only
+            continue
+        pos.setdefault(neuron_class(n), []).append((ap, dv))
+    pos = {c: (float(np.mean([p[0] for p in v])), float(np.mean([p[1] for p in v]))) for c, v in pos.items()}
+
+    recs = {r.uid: r for r in load_pumpprobe_dir(data)}
+    folds = load_folds(folds_path)["folds"]
+    pool = [recs[u] for u in folds[fold]]
+    rest = sorted(u for i, f in enumerate(folds) if i != fold for u in f)
+    val_uids = rest[::5]
+    train = [recs[u] for u in rest if u not in val_uids]
+    val = [recs[u] for u in val_uids]
+
+    def average(sets):
+        acc: dict = {}
+        for rs in sets:
+            for k, tr in rs.traces.items():
+                acc.setdefault(k, []).append(tr)
+        return {k: (np.nanmean(np.vstack(v), axis=0), len(v)) for k, v in acc.items()}
+
+    sets = {"real": average([response_set(r) for r in pool])}
+    for spec in ("hybrid_kernels_regimes_obsfit", "var3_spontaneous"):
+        m = make_model(spec).fit(train, val)
+        sims = [m.simulate(r, np.random.default_rng(300 + i)) for i, r in enumerate(pool)]
+        sets[spec] = average([response_set(s) for s in sims])
+        print("echoes:", spec, flush=True)
+    real = sets["real"]
+    stim_n: dict = {}
+    for (a, b), (_, n) in real.items():
+        stim_n[a] = max(stim_n.get(a, 0), n)
+    stims = sorted(a for a, n in stim_n.items() if n >= 3 and a in pos)
+    resp = sorted({b for (a, b) in real if a in stims and b in pos})
+    T = len(next(iter(real.values()))[0])
+    step = 2                                   # 1 s per sample
+    nt = len(range(0, T, step))
+    out = {}
+    for key, ss in sets.items():
+        arr = np.full((len(stims), len(resp), nt), np.nan)
+        for i, a in enumerate(stims):
+            for j, b in enumerate(resp):
+                v = ss.get((a, b))
+                if v is not None and (key != "real" or v[1] >= 2) and a != b:
+                    arr[i, j] = v[0][::step][:nt]
+        q = np.where(np.isfinite(arr), np.clip(np.round(arr / 3.0 * 127), -127, 127), -128).astype(np.int8)
+        out[key] = base64.b64encode(q.tobytes()).decode()
+    return {"stims": stims, "resp": resp, "pos": {c: [round(pos[c][0], 1), round(pos[c][1], 1)] for c in set(stims) | set(resp)},
+            "nt": nt, "dtSample": 1.0, "scale": 3.0, "sets": out, "nWorms": len(pool),
+            "labels": {"real": f"Real worms, average of {len(pool)}", "hybrid_kernels_regimes_obsfit": "Hybrid brain",
+                       "var3_spontaneous": "Linear brain"}}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--local", action="store_true")
     ap.add_argument("--data", default="data/raw/randi2023_wt_npz")
     ap.add_argument("--folds", default="configs/splits/pumpprobe_cv3.yaml")
     ap.add_argument("--frames", type=int, default=960)
+    ap.add_argument("--echo-only", action="store_true")
     args = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "results.js").write_text("window.NEMATICA_RESULTS = " + json.dumps(results(), separators=(",", ":")) + ";\n",
                                     encoding="utf-8")
     print("wrote", OUT / "results.js")
     if args.local:
-        (OUT / "local.js").write_text("window.NEMATICA_LOCAL = " + json.dumps(local(args.data, args.folds, args.frames),
-                                      separators=(",", ":")) + ";\n", encoding="utf-8")
-        print("wrote", OUT / "local.js")
+        if not args.echo_only:
+            (OUT / "local.js").write_text("window.NEMATICA_LOCAL = " + json.dumps(local(args.data, args.folds, args.frames),
+                                          separators=(",", ":")) + ";\n", encoding="utf-8")
+            print("wrote", OUT / "local.js")
+        (OUT / "echo.js").write_text("window.NEMATICA_ECHO = " + json.dumps(echoes(args.data, args.folds),
+                                     separators=(",", ":")) + ";\n", encoding="utf-8")
+        print("wrote", OUT / "echo.js")
     return 0
 
 

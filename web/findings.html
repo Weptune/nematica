@@ -11,7 +11,7 @@
 </head>
 <body>
 
-<header class="bar" id="bar">
+<header class="bar on-field" id="bar">
   <a class="wordmark" href="index.html" aria-label="NEMATICA home">
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.2" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".55"/><circle cx="12" cy="12" r="5.2" fill="none" stroke="#0a7a5a" stroke-width="2.2"/><circle cx="17.2" cy="12" r="2.1" fill="#c8489c"/></svg>
     NEMATICA
@@ -24,13 +24,12 @@
   </nav>
 </header>
 
-<main class="page">
-  <div class="sheet">
-    <h1 class="title">Looking like a brain and working like one are different things.</h1>
-    <p class="standfirst">We fitted artificial brains to whole-brain recordings of living worms, then tested them on worms they had never seen: first by watching, then by switching single neurons on with light. Every prediction below was written down before the experiment ran, and the results that went against us are kept.</p>
-  </div>
+<section class="masthead grain"><div class="in"><h1 class="title">Looking like a brain and working like one are different things.</h1>
+    <p class="standfirst">We fitted artificial brains to whole-brain recordings of living worms, then tested them on worms they had never seen: first by watching, then by switching single neurons on with light. Every prediction below was written down before the experiment ran, and the results that went against us are kept.</p></div></section>
 
-  <div class="sheet with-toc" style="margin-top:clamp(32px,5vw,64px)">
+<main class="page">
+
+  <div class="sheet with-toc">
     <nav class="toc" aria-label="Contents">
       <ol>
         <li><a href="#watching">Looking alive is not enough</a></li>
@@ -108,7 +107,7 @@
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 7</span>Who joins the echo after a poke</p></div>
       <div data-chart="echoShape"></div>
-      <figcaption>Diagnostic on held-out group 1. The hybrid is the brain that passes the poke test.</figcaption>
+      <figcaption>Diagnostic on held-out group 1. The hybrid is the brain that passes the poke test. To watch individual echoes spread through the head, use the <a href="index.html#echo-section">echo explorer</a> on the home page.</figcaption>
     </figure>
 
     <!-- 6 -->
@@ -133,8 +132,9 @@
   </div>
 </main>
 
-<footer class="foot">
+<footer class="foot grain">
   <div class="in">
+    <p class="big" aria-hidden="true">NEMATICA</p>
     <p>NEMATICA. Every prediction is written down before the experiment runs, and results that went against us are kept.</p>
     <nav aria-label="Footer"><a href="index.html">Home</a><a href="method.html">Method</a><a href="log.html">Research log</a><a href="https://github.com/Weptune/nematica">Code on GitHub</a></nav>
   </div>
@@ -142,6 +142,7 @@
 
 <script src="data/results.js"></script>
 <script src="assets/charts.js"></script>
+<script src="data/local.js" onerror="void 0"></script>
 <script src="assets/site.js"></script>
 </body>
 </html>

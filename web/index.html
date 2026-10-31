@@ -24,7 +24,7 @@
   </nav>
 </header>
 
-<section class="hero" aria-labelledby="h">
+<section class="hero grain" aria-labelledby="h">
   <div class="hero-grid">
     <div>
       <h1 id="h">A copied brain can look alive and still be wrong.</h1>
@@ -33,6 +33,7 @@
         <a class="btn primary" href="findings.html">Read the findings</a>
         <a class="btn ghost" href="method.html">How the test works</a>
       </div>
+      <div class="hero-meta"><span><b>113</b> worms recorded while single neurons were switched on with light</span><span>Data from Randi et al., <i>Nature</i> 2023</span></div>
     </div>
     <div class="scope" id="scope">
       <div class="scope-head">
@@ -43,16 +44,17 @@
         </div>
       </div>
       <div class="scope-body">
-        <div class="channel live"><span class="tag">Real worm</span><canvas class="live" aria-label="Recorded activity of 52 neuron classes over eight minutes"></canvas></div>
-        <div class="channel copy"><span class="tag">Artificial brain</span><canvas class="copy" aria-label="Simulated activity of the same classes under the same pokes"></canvas></div>
-        <div class="scope-axis"><span></span><div class="ticks"></div></div>
+        <div class="pokes"><span></span><div class="lane"></div><span></span></div>
+        <div class="channel live"><span class="tag">Real worm</span><canvas class="live" aria-label="Recorded activity of 52 neuron classes over eight minutes"></canvas><div class="rows"></div></div>
+        <div class="channel copy"><span class="tag">Artificial brain</span><canvas class="copy" aria-label="Simulated activity of the same classes under the same pokes"></canvas><div class="rows"></div></div>
+        <div class="scope-axis"><span></span><div class="ticks"></div><span></span></div>
       </div>
       <div class="scope-read" aria-hidden="true"></div>
     </div>
   </div>
   <div class="hero-grid" style="align-items:start">
     <div></div>
-    <p class="scope-caption"><b style="color:var(--field-ink);font-weight:600">Figure 1.</b> Fifty-two neuron classes of one worm the models never saw, eight minutes of recording, while single neurons were switched on with light (white lines). Below, an artificial brain run through the same eight minutes with the same pokes. Each row is a neuron class, brighter is more active. The hybrid brain answers pokes the way real worms do, yet its neurons flicker where real ones hold long quiet and active stretches. The linear brain looks closer to the real worm at rest and answers the pokes wrongly. Hover to read the activity; switch brains above.</p>
+    <p class="scope-caption"><b style="color:var(--field-ink);font-weight:600">Figure 1.</b> Fifty-two neuron classes of one worm the models never saw, eight minutes of recording, while single neurons were switched on with light (white lines; the poked neuron is named above). Below, an artificial brain run through the same eight minutes with the same pokes. Each row is a neuron class, brighter is more active. The hybrid brain answers pokes the way real worms do, yet its neurons flicker where real ones hold long quiet and active stretches. The linear brain looks closer to the real worm at rest and answers the pokes wrongly. Hover to read the activity; switch brains above.</p>
   </div>
 </section>
 
@@ -92,7 +94,37 @@
       </a>
     </div>
 
-    <div class="gap-xl"></div>
+  </div>
+</main>
+
+<section class="interlude grain" aria-labelledby="echo-h" id="echo-section">
+  <div class="in">
+    <div class="intro">
+      <h2 id="echo-h">Poke one neuron. Watch the echo.</h2>
+      <p>Each map is the head of a worm, nose to the left, with every neuron class at its real position. Choose a neuron to switch on and watch the average response spread over the next 30 seconds: <strong>in real worms, and in two artificial brains run on the same worms with the same pokes</strong>. Real echoes stay local. The linear brain's average echo is faint and lands in the wrong places; the hybrid answers in roughly the right places, and too strongly.</p>
+    </div>
+    <div class="echo-panel" id="echo">
+      <div class="echo-bar">
+        <span class="poked-now">Poked: <b class="echo-poked">ASH</b></span>
+        <button type="button" class="echo-play" aria-pressed="false">Play</button>
+        <input type="range" class="echo-scrub" min="0" max="30" step="1" value="0" aria-label="Time after the poke">
+        <span class="echo-time">0 s after the poke</span>
+      </div>
+      <div class="echo-chips" role="group" aria-label="Neuron to poke"></div>
+      <div class="echo-maps"></div>
+      <div class="echo-legend">
+        <span class="k"><i style="background:#3dd69b"></i>Real worms: rises</span>
+        <span class="k"><i style="background:#f062b4"></i>Artificial brain: rises</span>
+        <span class="k"><i style="background:#8fb8ff"></i>Falls</span>
+        <span class="k"><i style="border:1px dashed #3a4c56"></i>Not measured for this poke</span>
+      </div>
+    </div>
+    <p class="echo-caption"><b style="color:var(--field-ink);font-weight:600">Figure 2.</b> Average response of each neuron class after the chosen class is switched on, over the held-out group of worms (real) and the same worms simulated (artificial). Size and glow show the response in standard deviations of each class's activity. Agreement is the correlation, across responding classes, of the first 15 seconds of response with the real average, for this poke and pooled over all pokes. Pooled, the hybrid brain reaches about 0.4 and the linear brain about 0.06; the poke test's window for a real-like brain is 0.3 to 0.5. Click any outlined neuron in a map to poke it.</p>
+  </div>
+</section>
+
+<main class="page" style="padding-top:0">
+  <div class="sheet">
 
     <h2 class="sec-name">Scorecard</h2>
     <div>
@@ -101,7 +133,7 @@
     </div>
     <figure class="plate wide" style="grid-column:side-start/note-end">
       <div class="plate-head">
-        <p class="plate-title"><span class="fn">Figure 2</span>Each mark is one held-out group of worms</p>
+        <p class="plate-title"><span class="fn">Figure 3</span>Each mark is one held-out group of worms</p>
         <div class="legend" data-legend></div>
       </div>
       <div class="table-wrap" style="margin:0"><div data-chart="scorecard"></div></div>
@@ -131,8 +163,9 @@ Neural signal propagation atlas of Caenorhabditis elegans. Nature 623, 406 to 41
   </div>
 </main>
 
-<footer class="foot">
+<footer class="foot grain">
   <div class="in">
+    <p class="big" aria-hidden="true">NEMATICA</p>
     <p>NEMATICA. Every prediction is written down before the experiment runs, and results that went against us are kept.</p>
     <nav aria-label="Footer"><a href="findings.html">Findings</a><a href="method.html">Method</a><a href="log.html">Research log</a><a href="https://github.com/Weptune/nematica">Code on GitHub</a></nav>
   </div>
@@ -140,8 +173,10 @@ Neural signal propagation atlas of Caenorhabditis elegans. Nature 623, 406 to 41
 
 <script src="data/results.js"></script>
 <script src="data/local.js" onerror="void 0"></script>
+<script src="data/echo.js" onerror="void 0"></script>
 <script src="assets/charts.js"></script>
 <script src="assets/scope.js"></script>
+<script src="assets/echo.js"></script>
 <script src="assets/site.js"></script>
 </body>
 </html>

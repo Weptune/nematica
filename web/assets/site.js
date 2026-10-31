@@ -1,10 +1,14 @@
 (function () {
   "use strict";
   // the top bar sits on the dark field until the hero has scrolled away
-  const bar = document.getElementById("bar"), hero = document.querySelector(".hero");
-  if (bar && hero) {
-    const io = new IntersectionObserver(([e]) => bar.classList.toggle("on-field", e.isIntersecting), { rootMargin: "-60px 0px 0px 0px" });
-    io.observe(hero);
+  // the top bar turns dark whenever it sits over a dark section
+  const bar = document.getElementById("bar");
+  const dark = [...document.querySelectorAll(".hero, .interlude, .masthead, footer.foot")];
+  if (bar && dark.length) {
+    let raf = 0;
+    const check = () => { raf = 0; const y = 30; bar.classList.toggle("on-field", dark.some((d) => { const r = d.getBoundingClientRect(); return r.top <= y && r.bottom >= y; })); };
+    addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(check); }, { passive: true });
+    check();
   }
   // verdict legends
   document.querySelectorAll("[data-legend]").forEach((n) => window.NematicaCharts && window.NematicaCharts.verdictLegend(n));
@@ -18,4 +22,40 @@
     }, { rootMargin: "-20% 0px -70% 0px" });
     secs.forEach((s) => io.observe(s));
   }
+})();
+// the closing wordmark is filled with the recorded worm's own activity, when the local data is present
+(function () {
+  const D = window.NEMATICA_LOCAL, big = document.querySelector("footer.foot .big");
+  if (!D || !big) return;
+  const s = atob(D.real), nC = D.classes.length, nT = D.frames;
+  const c = document.createElement("canvas"); c.width = nT; c.height = nC;
+  const ctx = c.getContext("2d"), img = ctx.createImageData(nT, nC);
+  const g = [120, 255, 192], base = [88, 108, 114];
+  for (let i = 0; i < nC * nT; i++) {
+    const q = s.charCodeAt(i), t = q ? Math.max(0, Math.min(1, (q / 255 - 0.3) / 0.6)) : 0;
+    const k = Math.pow(t, 1.2);
+    img.data[i * 4] = base[0] + (g[0] - base[0]) * k; img.data[i * 4 + 1] = base[1] + (g[1] - base[1]) * k;
+    img.data[i * 4 + 2] = base[2] + (g[2] - base[2]) * k; img.data[i * 4 + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+  big.style.backgroundImage = `url(${c.toDataURL()})`;
+  big.classList.add("filled");
+  big.title = "Filled with eight minutes of a real worm's brain activity";
+})();
+// inner-page mastheads carry a strip of the recorded worm's activity along their lower edge
+(function () {
+  const D = window.NEMATICA_LOCAL, m = document.querySelector(".masthead");
+  if (!D || !m) return;
+  const s = atob(D.real), nC = D.classes.length, nT = D.frames;
+  const c = document.createElement("canvas"); c.width = nT; c.height = nC; c.className = "mast-strip";
+  c.setAttribute("aria-hidden", "true");
+  const ctx = c.getContext("2d"), img = ctx.createImageData(nT, nC);
+  const field = [13, 22, 27], g = [61, 214, 155];
+  for (let i = 0; i < nC * nT; i++) {
+    const q = s.charCodeAt(i), t = q ? Math.max(0, Math.min(1, (q / 255 - 0.32) / 0.6)) : 0, k = Math.pow(t, 1.5);
+    img.data[i * 4] = field[0] + (g[0] - field[0]) * k; img.data[i * 4 + 1] = field[1] + (g[1] - field[1]) * k;
+    img.data[i * 4 + 2] = field[2] + (g[2] - field[2]) * k; img.data[i * 4 + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+  m.appendChild(c);
 })();
