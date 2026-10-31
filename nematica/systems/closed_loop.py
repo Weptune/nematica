@@ -65,7 +65,7 @@ class SensoryVAR:
                  sense_ridge_mults=(1.0,), steer: bool = False, steer_window: int = 17,
                  copper_limit: bool = False, steer_scales=None, heading_noise: float = 0.0,
                  stage_speed: bool = False, lags: int = LAGS, slow_taus=(0.0,), sense_targets=None,
-                 ash_stage: bool = False, ash_taus=(2.0, 5.0, 17.0, 50.0)):
+                 ash_stage: bool = False, ash_taus=(2.0, 5.0, 17.0, 50.0), ash_inputs: bool = True):
         """hazard_from: "brain" (core classes and velocity), "speed" (velocity only) or "none"
         (constant rates); copper proximity is added to any of them when `senses` is on.
         directional: add proximity x facing-the-copper to the senses.
@@ -98,6 +98,9 @@ class SensoryVAR:
         # the full ASH. A one-step fit of copper inputs inside the dynamics gives a response
         # far too small and slow (encounter rise 0.21 vs real 0.71).
         self.ash_stage, self.ash_taus = ash_stage, tuple(ash_taus)
+        # ash_inputs=False: the copper component is added to ASH's output only (recorded ASH
+        # and the reversal hazard); nothing copper-related enters the brain's dynamics
+        self.ash_inputs = ash_inputs
         self.w_c = None
         self.speed_q_worm: dict = {}
         self.d_limit = -np.inf
@@ -113,7 +116,8 @@ class SensoryVAR:
             + ("_tonic" if any(_taus(t) for t in self.slow_taus) and self.senses else "") \
             + ("_pen" if self.sense_ridge_mults == (1.0,) and self.hazard_from == "command_ash" else "") \
             + ("_into_" + "_".join(self.sense_targets) if self.sense_targets and self.senses else "") \
-            + ("_ashstage" if self.ash_stage and self.senses else "")
+            + ("_ashstage" if self.ash_stage and self.senses else "") \
+            + ("_outonly" if self.ash_stage and not self.ash_inputs and self.senses else "")
         if self.reversals == "hysteresis":
             return n + "_hyst" + ("_dir" if self.directional and self.senses else "")
         return n + ("" if self.hazard_from == "brain" else "_" + self.hazard_from) \
@@ -169,7 +173,7 @@ class SensoryVAR:
                 v[a] -= self._ash_c(s)          # the brain models ASH minus its copper response
         T = v.shape[1]
         cols = [v[:, self.lags - 1 - l: T - 1 - l].T for l in range(self.lags)]
-        if self.senses:
+        if self._brain_inputs:
             e = self._sense(s)
             cols.append(e[:, self.lags - 1: T - 1].T)
         F = np.hstack(cols)
@@ -209,9 +213,14 @@ class SensoryVAR:
             parts.append(e)
         return np.concatenate(parts + [[1.0]])
 
+    @property
+    def _brain_inputs(self) -> bool:
+        """Whether copper-derived signals enter the brain's dynamics as inputs."""
+        return self.senses and not (self.ash_stage and not self.ash_inputs)
+
     def _features(self, hist, e_prev):
         f = np.concatenate(hist[::-1])
-        return np.concatenate([f, e_prev]) if self.senses else f
+        return np.concatenate([f, e_prev]) if self._brain_inputs else f
 
     # ------------------------------------------------------------------ fit
     def _sense_cols(self):
@@ -321,7 +330,7 @@ class SensoryVAR:
             X = np.vstack([a[0] for a in tr])
             Y = np.vstack([a[1] for a in tr])
             G0 = X.T @ X
-            for mult in (self.sense_ridge_mults if self.senses else (1.0,)):
+            for mult in (self.sense_ridge_mults if self._brain_inputs else (1.0,)):
                 pen = np.ones(X.shape[1])
                 pen[n_brain:] = mult
                 for r in self.ridges:

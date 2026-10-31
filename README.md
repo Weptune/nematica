@@ -565,6 +565,14 @@ closed loop this breaks the brain's statistics like v10 did: 6 of 10 pairwise, 2
 copper, Level 6 inside. Feeding any copper-derived signal to all neurons does this; v11's
 constraint (copper only into ASH's own dynamics) remains the best compromise.
 
+**Version 14** adds the fitted ASH copper response to ASH's output only (recorded ASH and
+the reversal hazard), with nothing copper-related entering the brain's dynamics
+(`docs/figures/closed_loop_v14.csv`): 9 of 10 (lead-lag 1.08), encounter just outside
+(0.964), 14.9% near copper. Across five quite different ways of bringing copper in (v7, v9,
+v11, v13, v14), lead-lag sits at 1.05 to 1.09, so it is probably not about how copper
+reaches ASH but about the closed loop itself (reversals decided by a hazard and written
+back into the brain). Arc 5 rests here for now with v11 as the reference closed loop.
+
 
 ## Leaderboard: published models
 

@@ -1,0 +1,14 @@
+system,metric,level,primary,system_median,bio_median,shift,shift_lo,shift_hi,percentile_of_bio,n_partitions,verdict,distance_ratio,self_spread_ratio,folds
+closed_loop_senses_ashstage_outonly,L6.encounter,6,True,1.0333,0.5355,0.5053,0.0521,0.8888,0.964,421,outside,,,
+closed_loop_senses_ashstage_outonly,L6.approach,6,False,0.2267,0.1975,0.0444,-0.1296,0.1758,0.642,450,inside,,,
+closed_loop_senses_ashstage_outonly,L6.occupancy,6,True,0.3969,0.2401,0.1498,-0.2897,0.4097,0.762,450,inside,,,
+closed_loop_senses_command_ash_dir_steer_limit_pen_ashstage_outonly,L1.distribution,1,True,,,0.0029,-0.0037,0.0076,,,inside,1.024,0.885,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_pen_ashstage_outonly,L1.timescale,1,False,,,0.0707,-0.0534,0.1488,,,inside,1.108,0.72,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_pen_ashstage_outonly,L2.correlation,2,True,,,-0.0019,-0.0304,0.039,,,inside,0.998,0.992,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_pen_ashstage_outonly,L2.dimension,2,False,,,0.066,-0.0303,0.1349,,,inside,1.421,0.923,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_pen_ashstage_outonly,L4.leadlag,4,True,,,0.0535,0.0188,0.1005,,,outside,1.079,1.141,outside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_pen_ashstage_outonly,L4.dwell,4,False,,,0.0077,-0.048,0.0522,,,inside,1.03,0.993,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_pen_ashstage_outonly,L5.encoding,5,True,,,0.0118,-0.0426,0.0321,,,inside,1.04,1.103,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_pen_ashstage_outonly,L5.reversal,5,False,,,-0.0118,-0.0481,0.0153,,,inside,0.963,0.902,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_pen_ashstage_outonly,B.rev_rate,5,False,,,0.087,-0.0705,0.1594,,,inside,1.414,1.158,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_pen_ashstage_outonly,B.rev_duration,5,False,,,0.0041,-0.043,0.0566,,,inside,1.016,0.864,inside/inside/inside
