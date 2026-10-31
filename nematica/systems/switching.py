@@ -32,13 +32,16 @@ def _lagged(v: np.ndarray, lags: int) -> np.ndarray:
     return np.hstack(cols + [np.ones((T - lags, 1))])
 
 
-def _logistic_fit(X: np.ndarray, y: np.ndarray, l2: float = 1.0, iters: int = 50) -> np.ndarray:
-    """L2-regularised logistic regression by Newton's method (intercept = last column, unpenalised)."""
+def _logistic_fit(X: np.ndarray, y: np.ndarray, l2: float = 1.0, iters: int = 50,
+                  offset: np.ndarray | None = None) -> np.ndarray:
+    """L2-regularised logistic regression by Newton's method (intercept = last column,
+    unpenalised); `offset` is a fixed term added to the linear predictor."""
+    off = np.zeros(len(y)) if offset is None else offset
     w = np.zeros(X.shape[1])
     pen = np.full(X.shape[1], l2)
     pen[-1] = 0.0
     for _ in range(iters):
-        p = 1 / (1 + np.exp(-np.clip(X @ w, -30, 30)))
+        p = 1 / (1 + np.exp(-np.clip(X @ w + off, -30, 30)))
         g = X.T @ (p - y) + pen * w
         H = (X * (p * (1 - p))[:, None]).T @ X + np.diag(pen) + 1e-6 * np.eye(len(w))
         step = np.linalg.solve(H, g)

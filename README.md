@@ -266,9 +266,22 @@ AVE, AIB, RIM, AVB, RIB) against reversals independent of the brain
 A real trade-off: when the command neurons decide when to reverse, the brain-behaviour
 coupling is right (lead-lag 1.05, reversal encoding 0.95), but copper avoidance collapses.
 Fitted on real worms, the hazard learns that copper raises reversals mainly by raising
-command-neuron activity (its direct copper term turns slightly negative); the model brain's
-own response to copper is too weak to carry that. No closed-loop model passes everything
-yet.
+command-neuron activity (its direct copper term turns slightly negative), and in the
+closed loop the model's command neurons do not rise near copper the way real ones do.
+
+**Version 4** fits the hazard in two stages: the copper effect on reversals alone first
+(as observed overall), then the command neurons set the timing around it with the copper
+terms held fixed [A] (`--variants v4`, `docs/figures/closed_loop_v4.csv`). Inside on all
+10 pairwise levels and on Level 6 encounter and approach; time near copper 28.7%,
+occupancy narrowly outside (0.967 of partitions). Better, not passing.
+
+Why the model brain's command neurons miss copper: in the fitted brain, copper's one-step
+effect on AVA, AIB and RIM is almost zero, but its steady-state effect through the brain's
+own dynamics is large and positive (AVA +0.68, AIB +0.74 SD at the copper line), and part
+of it flows through the brain's reversal channel (+0.34). In hazard mode that channel is
+overwritten by the discrete reversal state, which cuts the path. Next: let the reversal
+state be decided from the brain's own reversal channel plus the copper term, so the
+pathway stays intact.
 
 ## Leaderboard: published models
 

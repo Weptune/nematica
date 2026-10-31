@@ -46,7 +46,8 @@ class SensoryVAR:
     def __init__(self, gamma: float = 0.5, lam: float = 300.0, senses: bool = True,
                  hazard_from: str = "brain", ridges=(0.01, 0.1, 1, 10, 100, 1000),
                  directional: bool = False, reversals: str = "hazard", speed_map: bool = False,
-                 sense_scales=(SENSE_SCALE_MM,), per_worm_rates: bool = False):
+                 sense_scales=(SENSE_SCALE_MM,), per_worm_rates: bool = False,
+                 sense_ridge_mults=(1.0,)):
         """hazard_from: "brain" (core classes and velocity), "speed" (velocity only) or "none"
         (constant rates); copper proximity is added to any of them when `senses` is on.
         directional: add proximity x facing-the-copper to the senses.
@@ -59,6 +60,7 @@ class SensoryVAR:
         self.sense_scales = tuple(sense_scales)
         self.scale = self.sense_scales[0]
         self.per_worm_rates = per_worm_rates
+        self.sense_ridge_mults = tuple(sense_ridge_mults)
         self.offsets: dict = {}
         self.names: list = []
         self.info: dict = {}
@@ -93,7 +95,7 @@ class SensoryVAR:
         n_core = self.space.core.size
         if self.hazard_from == "brain":
             return np.arange(n_core + 1)
-        if self.hazard_from == "command":
+        if self.hazard_from in ("command", "command_fixed"):
             names = [self.space.classes[c] for c in self.space.core]
             return np.array([i for i, c in enumerate(names) if c in self.COMMAND] + [n_core])
         return np.array([n_core]) if self.hazard_from == "speed" else np.array([], dtype=int)
@@ -120,7 +122,21 @@ class SensoryVAR:
     def _fit_hazards(self, train):
         """Reversal hazards: from forward, P(start next frame); from reversing, P(end next
         frame); logistic, pooled over training worms [L]."""
-        return [_logistic_fit(*self._hazard_data(train, state), l2=10.0) for state in (0, 1)]
+        if self.hazard_from != "command_fixed" or not self.senses:
+            return [_logistic_fit(*self._hazard_data(train, state), l2=10.0) for state in (0, 1)]
+        # two stages: the copper effect as observed overall (senses only), then the command
+        # neurons set the timing around it with the copper terms held fixed [A: the model
+        # brain does not reproduce the copper -> command-neuron pathway, so a hazard that
+        # routes copper through those neurons loses it]
+        out = []
+        n_rows = len(self._hz_rows())
+        for state in (0, 1):
+            X, y = self._hazard_data(train, state)
+            Xr, Xs, one = X[:, :n_rows], X[:, n_rows:-1], X[:, -1:]
+            w1 = _logistic_fit(np.hstack([Xs, one]), y, l2=10.0)
+            w2 = _logistic_fit(np.hstack([Xr, one]), y, l2=10.0, offset=Xs @ w1[:-1])
+            out.append(np.concatenate([w2[:-1], w1[:-1], w2[-1:]]))
+        return out
 
     def _choose_scale(self, train, val):
         """Sense length scale: the candidate whose hazards best predict the validation worms'
@@ -147,17 +163,24 @@ class SensoryVAR:
         X = np.vstack([a[0] for a in tr])
         Y = np.vstack([a[1] for a in tr])
         G0 = X.T @ X
+        n_brain = self.space.k * LAGS
         best = None
-        for r in self.ridges:
-            W = np.linalg.solve(G0 + r * np.eye(X.shape[1]), X.T @ Y)
-            num = den = 0.0
-            for F, Yv, M in va:
-                P = F @ W
-                num += np.sum(((Yv - P)[:, :n_core] ** 2)[M[:, :n_core]])
-                den += np.sum(((Yv - Yv.mean(0))[:, :n_core] ** 2)[M[:, :n_core]])
-            r2 = 1 - num / den
-            if best is None or r2 > best[1]:
-                best = (r, r2, W)
+        # the copper inputs may get their own (smaller) penalty: one ridge for everything
+        # shrinks the few sensory weights as hard as the many neural ones [L: chosen on
+        # validation worms with the rest]
+        for mult in (self.sense_ridge_mults if self.senses else (1.0,)):
+            pen = np.ones(X.shape[1])
+            pen[n_brain:] = mult
+            for r in self.ridges:
+                W = np.linalg.solve(G0 + r * np.diag(pen), X.T @ Y)
+                num = den = 0.0
+                for F, Yv, M in va:
+                    P = F @ W
+                    num += np.sum(((Yv - P)[:, :n_core] ** 2)[M[:, :n_core]])
+                    den += np.sum(((Yv - Yv.mean(0))[:, :n_core] ** 2)[M[:, :n_core]])
+                r2 = 1 - num / den
+                if best is None or r2 > best[1]:
+                    best = (r, r2, W, mult)
         self.W_pool = best[2]
         self.W, self.L, self.names = {}, {}, []
         for s, (F, Yt, M) in zip(train, tr):
@@ -167,7 +190,8 @@ class SensoryVAR:
             self.W[s.origin], self.L[s.origin] = W, np.linalg.cholesky(cov)
             self.names.append(s.origin)
         self.hazard = self._fit_hazards(train)
-        self.info = {"ridge": best[0], "val_r2": round(float(best[1]), 4), "sense_scale_mm": self.scale}
+        self.info = {"ridge": best[0], "val_r2": round(float(best[1]), 4), "sense_scale_mm": self.scale,
+                     "sense_ridge_mult": best[3]}
         if scale_scores:
             self.info["scale_val_ll"] = {k: round(v, 1) for k, v in scale_scores.items()}
         if self.reversals == "hysteresis":

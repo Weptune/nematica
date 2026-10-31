@@ -1,0 +1,14 @@
+system,metric,level,primary,system_median,bio_median,shift,shift_lo,shift_hi,percentile_of_bio,n_partitions,verdict,distance_ratio,self_spread_ratio,folds
+closed_loop_senses_command_fixed,L6.encounter,6,True,0.8167,0.5355,0.2624,-0.0671,0.5335,0.922,421,inside,,,
+closed_loop_senses_command_fixed,L6.approach,6,False,0.205,0.1975,0.0135,-0.1766,0.1379,0.547,450,inside,,,
+closed_loop_senses_command_fixed,L6.occupancy,6,True,0.9913,0.2401,0.7388,0.0396,1.1979,0.967,450,outside,,,
+closed_loop_senses_command_fixed_dir,L1.distribution,1,True,,,0.0036,-0.0032,0.0074,,,inside,1.031,0.907,inside/inside/inside
+closed_loop_senses_command_fixed_dir,L1.timescale,1,False,,,0.0656,-0.0614,0.141,,,inside,1.1,0.759,inside/inside/inside
+closed_loop_senses_command_fixed_dir,L2.correlation,2,True,,,-0.0073,-0.036,0.0314,,,inside,0.99,1.006,inside/inside/inside
+closed_loop_senses_command_fixed_dir,L2.dimension,2,False,,,0.0244,-0.0601,0.0854,,,inside,1.156,0.886,inside/inside/inside
+closed_loop_senses_command_fixed_dir,L4.leadlag,4,True,,,0.0381,-0.0006,0.0808,,,inside,1.056,1.108,inside/inside/inside
+closed_loop_senses_command_fixed_dir,L4.dwell,4,False,,,0.0068,-0.0501,0.0449,,,inside,1.024,1.031,inside/inside/inside
+closed_loop_senses_command_fixed_dir,L5.encoding,5,True,,,0.0026,-0.0451,0.0289,,,inside,1.01,1.091,inside/inside/inside
+closed_loop_senses_command_fixed_dir,L5.reversal,5,False,,,-0.0208,-0.0534,0.0101,,,inside,0.934,0.899,inside/inside/inside
+closed_loop_senses_command_fixed_dir,B.rev_rate,5,False,,,0.038,-0.1015,0.1054,,,inside,1.172,1.02,inside/inside/inside
+closed_loop_senses_command_fixed_dir,B.rev_duration,5,False,,,-0.0112,-0.0558,0.0375,,,inside,0.977,0.821,inside/inside/inside
