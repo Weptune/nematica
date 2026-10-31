@@ -28,7 +28,7 @@ questions, one arc per question:
 | 3. What the wiring buys | Does the real connectome make models more realistic? | Real wiring beats random wiring of the same density on every measure, by small margins; no wiring constraint beats data-chosen coupling at class resolution. |
 | 4. Causal Turing test | Do models respond to perturbations like real brains? | Not started: needs the optogenetic atlas (Randi 2023, on OSF, not reachable from here). |
 | 5. Closed loop | Can a model brain drive a body in a real environment and behave like a worm? | Nearly: in the copper arena, all environment levels and 9 of 10 pairwise; copper's effect runs through ASH in real worms, and the model's ASH responds too slowly. |
-| 6. Swarm (in progress) | Does it hold when many model brains interact? | Swarm engine built (32 closed-loop worms, touch and exclusion as stated assumptions). Individual worms make very different crowds; a swarm of the pooled "average worm" is more crowded than any typical mix. Scoring against real multi-worm tracking (Level 7) awaits the data. |
+| 6. Swarm (in progress) | Does it hold when many model brains interact? | Swarm engine built (32 closed-loop worms, touch and exclusion as stated assumptions). Individual worms make very different crowds; a swarm of the pooled "average worm" is more crowded than a mix of the worms it was fitted on. Scoring against real multi-worm tracking (Level 7) awaits the data. |
 
 Outputs: the benchmark (calibrated levels, fair classifier test, a leaderboard of
 published models), the findings above with their pre-written expectations and negative
