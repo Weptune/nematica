@@ -27,7 +27,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from nematica.bench.cv import cv_score, print_table  # noqa: E402
-from nematica.data import load_copper_dir  # noqa: E402
+from nematica.data import load_any_dir  # noqa: E402
 from nematica.data.canonical import canonical_classes  # noqa: E402
 from nematica.data.splits import load_folds  # noqa: E402
 from nematica.systems.forecasters import (CalciumStateSpace, Debounced, Forecaster,  # noqa: E402
@@ -51,7 +51,7 @@ def main() -> int:
     ap.add_argument("--out", default="results/lags")
     ap.add_argument("--seeds", type=int, default=2)
     args = ap.parse_args()
-    recs = load_copper_dir(Path(args.data))
+    recs = load_any_dir(Path(args.data))
     classes = tuple(canonical_classes(recs, 0.25))
     combined, flat = cv_score(recs, classes, load_folds(args.folds)["folds"], build, args.seeds)
     out = Path(args.out)

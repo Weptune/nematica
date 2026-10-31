@@ -56,6 +56,7 @@ choice made on training and validation worms only, except where marked post hoc)
 | Same, coupling restricted to the connectome (arc 3) | 8 of 10 | 0.68 held-out, 0.57 in-sample (shuffled wiring: 0.69 to 0.72, 0.59 to 0.64) | not modelled |
 | Same, connectome as a forecasting-chosen prior (arc 3) | 9 of 10 | 0.70 held-out (shuffled priors 0.72, 0.73) | not modelled |
 | VAR(10), copper-trained, scored on Atanas 2023 worms | 6 of 10 (copper worms themselves: 7) | 0.87 (copper worms: 0.735) | not modelled |
+| VAR(10) trained and tested within Atanas 2023 (replication) | 5 of 10 (VAR(3): 6) | 0.70 held-out, 0.57 in-sample (VAR(3) 0.79, 0.77; control 0.56) | not modelled |
 | Closed loop v7 (3-frame brain senses copper, steers, reverses) | 9 of 10 | 0.95 (v6, frozen split) | occupancy and approach inside; 14 to 17% of time near copper (real 3.2%) |
 | Closed loop v8 (10-frame brain) | 9 of 10 | not yet run | occupancy and approach inside; 11% near copper; encounter outside |
 | Closed loop v9 (copper acts only through ASH and the brain) | 8 of 10 | not yet run | **all three Level 6 metrics inside**; 10.4% near copper |
@@ -338,6 +339,31 @@ than the copper control has learned something specific to the copper recordings.
   levels but clearly worse on dimensionality, dwell and the classifier. A within-Atanas
   replication of the main result (train and test on Atanas worms) would separate dataset
   shift from model error directly.
+
+**Replication within Atanas 2023. Design, written before running (Oct 31).** The whole
+pipeline, unchanged, on the 30 Atanas worms (baseline and heat-stimulated together):
+three date-spread rotating pools of 10 (`configs/splits/atanas2023_cv3.yaml`, hash
+e1d02f6e843e2774, 5, 5 and 6 heat worms per pool), the ruler's calibration systems on
+the frozen Atanas split, the per-worm calcium-drive VAR(3) and VAR(10) with hysteresis
+reversals (`run_lags.py`), and the fair Level 8 (`run_l8_fair.py`). Expectations: if the
+copper results are about worms rather than one dataset, (1) the calibrations hit their
+designed outcomes, (2) VAR(10) is inside on all or nearly all pairwise levels, (3) its
+in-sample classifier AUC is near chance and lower than VAR(3)'s.
+
+**Results: a partial replication** (`docs/figures/ruler_atanas.csv`,
+`lags_atanas_combined.csv`, `l8_fair_atanas.csv`):
+- (1) held: all 44 designed calibration outcomes match on Atanas.
+- (2) failed: with the settings chosen on copper unchanged (shrinkage 300, calcium decay
+  0.5, hysteresis), VAR(3) is inside on 6 of 10 levels and VAR(6) and VAR(10) on 5 of 10
+  (timescale 1.11 to 1.18, lead-lag 1.08 to 1.09 and AVA bouts 1.19 to 1.25 outside,
+  reversal bout lengths too typical, dimensionality outside for the longer memories;
+  activity values, correlations, velocity encoding and reversal-linked activity inside).
+- (3) held: in-sample classifier AUC 0.573 for VAR(10) against 0.768 for VAR(3), and
+  held-out 0.703 against 0.785 (real control on these pools 0.562).
+So longer memory makes the model much harder to detect in both datasets, but the full
+10 of 10 on copper is partly specific to copper or to settings tuned on it. Next: choose
+the settings per rotation by in-sample realism on the training worms only, the same
+procedure on both datasets, and see whether that recovers the pairwise levels on Atanas.
 
 ## Arc 3: what the wiring buys
 

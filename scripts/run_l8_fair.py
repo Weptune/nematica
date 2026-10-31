@@ -31,7 +31,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from nematica.bench import from_recording  # noqa: E402
 from nematica.bench.discriminability import core_classes, discriminability  # noqa: E402
-from nematica.data import load_copper_dir  # noqa: E402
+from nematica.data import load_any_dir  # noqa: E402
 from nematica.data.canonical import canonical_classes  # noqa: E402
 from nematica.data.splits import load_folds  # noqa: E402
 from nematica.export.virtual_worm import MotionLibrary  # noqa: E402
@@ -69,7 +69,7 @@ def main() -> int:
     ap.add_argument("--perm", type=int, default=60)
     ap.add_argument("--out", default="results/l8_fair")
     args = ap.parse_args()
-    recs = load_copper_dir(Path(args.data))
+    recs = load_any_dir(Path(args.data))
     by = {r.uid: r for r in recs}
     classes = tuple(canonical_classes(recs, 0.25))
     folds = load_folds(args.folds)["folds"]

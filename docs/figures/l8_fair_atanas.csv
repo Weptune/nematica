@@ -1,0 +1,16 @@
+model,rotation,comparison,auc,p
+real,0,control,0.637,0.0656
+hyst,0,held_out,0.853,0.0164
+hyst,0,in_sample,0.75,0.0164
+hyst10,0,held_out,0.798,0.0164
+hyst10,0,in_sample,0.511,0.459
+real,1,control,0.46,0.6066
+hyst,1,held_out,0.86,0.0164
+hyst,1,in_sample,0.746,0.0328
+hyst10,1,held_out,0.78,0.0164
+hyst10,1,in_sample,0.551,0.3115
+real,2,control,0.588,0.1475
+hyst,2,held_out,0.643,0.082
+hyst,2,in_sample,0.809,0.0164
+hyst10,2,held_out,0.53,0.3934
+hyst10,2,in_sample,0.656,0.0492
