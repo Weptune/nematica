@@ -1270,6 +1270,15 @@ Expectation: dimension comes inside, rest reaches at least 5 of 6 in at least 2 
 and the poke test is still passed (pattern and spread inside in at least 2 of 3): one brain
 that is real-like both watched and poked.
 
+Result (`results/same_worms_pci`, gathered in `docs/figures/ingredients.csv`): the poke test
+is still passed (pattern inside 3 of 3, spread inside 2 of 3) and dimensionality improves
+(ratio to real 1.3 to 1.4 instead of 1.6 to 2.1; inside in 2 of 3), but rest stays at 3 of 6:
+correlations become too typical in every pool (0.89 to 0.94 of the real spread) and lead-lag
+falls outside in every pool. Expectation not met. A few shared modes make every simulated
+worm's correlations the *average* worm's correlations: the low-rank brain is too typical,
+arc 1's lesson again. The next ingredient is individuality: each simulated worm's background
+its own, as in the per-worm VARs that pass all 10 levels on the copper data.
+
 Result, pool 1: pattern inside again (0.916, 54th percentile), but spread *worse* (30%):
 expectation not met, and the remaining pools are not needed to see it. Looking at why: the
 spread level counts responses above 3 times each neuron's fluctuation size just before the
