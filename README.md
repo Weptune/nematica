@@ -1435,6 +1435,16 @@ of the expectation met. A learned nonlinear brain finds calm by itself, which no
 ingredient did, but a short training run on about 140 stimulation-free stretches does not
 give it realistic ongoing dynamics.
 
+**A better-trained nonlinear brain (written before running).** Two changes to the GRU: twice
+the training (3,000 steps), and free-running training (scheduled sampling: by the end, half
+of its inputs are its own previous samples rather than the data), so the slow drift that
+builds up when it runs on its own is what it learns to avoid. `hybrid_kernels_gru64ss`, and
+the same with per-class quiet stretches calibrated as before (`hybrid_kernels_gru64ss_quietfit`).
+Expectations: for the first, timescale and distributions come inside and rest reaches at
+least 4 of 6 in at least 2 of 3 pools with the poke test still passed; for the second, echo
+complexity inside in at least 2 of 3 pools. A brain that does all three (rest at least 5 of
+6, poke test, complexity) would be confirmed on a second frozen split before being claimed.
+
 **Signal or noise? (written before computing it).** A model can fail the poke test in two
 different ways: its *average* echo is wrong (it does not know the causal structure), or its
 average echo is right but each single echo is buried in the wrong kind of variability.

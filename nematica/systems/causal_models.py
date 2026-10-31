@@ -366,7 +366,7 @@ class HybridKernel:
                  background: str = "spontaneous", obs_noise: bool = False, heavy: bool = False,
                  regimes: bool = False, obs_fit: bool = False, lowrank: int = 0, obs_smooth: float = 0.0,
                  class_quiet: bool = False, quiet_fit: bool = False, quiet_obs_fit: bool = False,
-                 individual: bool = False, gru: int = 0):
+                 individual: bool = False, gru: int = 0, gru_sampled: bool = False, gru_steps: int = 1500):
         self.lags, self.shrink, self.mask, self.seed = lags, shrink, mask, seed
         self.background = background     # which frames the ongoing-dynamics VAR learns from
         self.obs_noise = obs_noise       # split each class's variability into slow dynamics and
@@ -386,6 +386,7 @@ class HybridKernel:
                                          # own VAR, shrunk toward the pooled one (lambda 300) [L]
         self.indiv = []
         self.gru = gru                   # ongoing dynamics from AtlasGRU (hidden size) if > 0
+        self.gru_sampled, self.gru_steps = gru_sampled, gru_steps
         self.quiet_fit = quiet_fit       # per-class quiet strength calibrated on training worms to
                                          # match their echo structure at random moments [L]
         self.obs_fit = obs_fit           # measurement-noise share chosen on training worms so that
@@ -393,7 +394,7 @@ class HybridKernel:
         self.name = ("hybrid_kernels" + (f"_{mask}" if mask else "") + ("" if background == "spontaneous" else f"_bg{background}")
                      + ("_obs" if obs_noise else "") + ("_heavy" if heavy else "") + ("_regimes" if regimes else "")
                      + ("_obsfit" if obs_fit else "") + (f"_lowrank{lowrank}" if lowrank else "")
-                     + (f"_smooth{obs_smooth:g}" if obs_smooth else "") + ("_classquiet" if class_quiet else "") + ("_quietfit" if quiet_fit else "") + ("_quietobsfit" if quiet_obs_fit else "") + ("_indiv" if individual else "") + (f"_gru{gru}" if gru else ""))
+                     + (f"_smooth{obs_smooth:g}" if obs_smooth else "") + ("_classquiet" if class_quiet else "") + ("_quietfit" if quiet_fit else "") + ("_quietobsfit" if quiet_obs_fit else "") + ("_indiv" if individual else "") + (f"_gru{gru}" + ("ss" if gru_sampled else "") if gru else ""))
 
     def _gain(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """A two-state Markov chain (quiet, active) with the calibrated share of quiet time and
@@ -501,7 +502,7 @@ class HybridKernel:
     def fit(self, train, val):
         from ..bench.perturbational import event_matrices
         if self.gru:
-            self.var = AtlasGRU(hidden=self.gru).fit(train, val)
+            self.var = AtlasGRU(hidden=self.gru, sampled=self.gru_sampled, steps=self.gru_steps).fit(train, val)
         elif self.lowrank:
             self.var = LowRankVAR(k=self.lowrank, lags=self.lags, frames=self.background).fit(train, val)
         else:
@@ -786,10 +787,13 @@ class AtlasGRU:
     Same simulate() interface as ClassVAR. PyTorch is imported lazily."""
 
     def __init__(self, hidden: int = 64, steps: int = 1500, chunk: int = 40, batch: int = 32, lr: float = 2e-3,
-                 input_noise: float = 0.1, min_fraction: float = 0.3, seed: int = 0):
+                 input_noise: float = 0.1, min_fraction: float = 0.3, seed: int = 0, sampled: bool = False):
         self.hidden, self.steps, self.chunk, self.batch, self.lr = hidden, steps, chunk, batch, lr
         self.input_noise, self.min_fraction, self.seed = input_noise, min_fraction, seed
-        self.name = f"gru{hidden}"
+        self.sampled = sampled   # free-running training: inputs are partly the model's own samples
+                                 # (scheduled sampling, rising to half by the end), so errors that
+                                 # build up when it runs on its own are what it learns to avoid [A]
+        self.name = f"gru{hidden}" + ("ss" if sampled else "")
 
     def _segments(self, recs):
         segs = []
@@ -852,9 +856,23 @@ class AtlasGRU:
             tgt, m = x[:, 1:], o[:, 1:]
             return (((tgt - mu) ** 2 / lv.exp() + lv) * m).sum() / m.sum().clamp(min=1)
 
+        def nll_sampled(x, o, p_own):
+            # step through the chunk; each input is the data or, with probability p_own, the
+            # model's own sample from the previous step
+            h, prev, loss, cnt = None, x[:, :1], 0.0, 0.0
+            for t in range(x.shape[1] - 1):
+                mu, lv, h = self.net(prev, o[:, t:t + 1], h)
+                tgt, m = x[:, t + 1:t + 2], o[:, t + 1:t + 2]
+                loss = loss + (((tgt - mu) ** 2 / lv.exp() + lv) * m).sum()
+                cnt = cnt + m.sum()
+                own = (mu + (0.5 * lv).exp() * torch.randn_like(mu)).detach()
+                use = (torch.rand(x.shape[0], 1, 1) < p_own).float()
+                prev = use * own + (1 - use) * (tgt + self.input_noise * torch.randn_like(tgt))
+            return loss / cnt.clamp(min=1)
+
         for step in range(self.steps):
             x, o = batch(segs, self.batch)
-            loss = nll(x, o)
+            loss = nll_sampled(x, o, 0.5 * step / self.steps) if self.sampled else nll(x, o)
             opt.zero_grad()
             loss.backward()
             torch.nn.utils.clip_grad_norm_(self.net.parameters(), 1.0)
@@ -888,6 +906,10 @@ class AtlasGRU:
                 g = 1.0 if noise_gain is None else noise_gain[t]
                 nxt = mu.numpy().ravel() + g * scale * sd * rng.standard_normal(C)
                 nxt = np.clip(nxt, -8, 8)
+                if quiet is not None and quiet[:, t].any():
+                    q = quiet[:, t]
+                    nxt[q] = (getattr(self, "quiet_decay", 0.97) * z[q, t - 1]
+                              + getattr(self, "quiet_noise", 0.15) * rng.standard_normal(int(q.sum())))
                 nxt[~seen] = 0.0
                 z[:, t] = nxt
                 x = torch.tensor(nxt, dtype=torch.float32).view(1, 1, C)
