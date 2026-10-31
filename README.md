@@ -1199,6 +1199,20 @@ from the stimulation windows** (`hybrid_kernels_bgstim`), whose VARs had realist
 levels (17%). Expectation: pattern stays inside in at least 2 of 3 pools and spread comes
 inside in at least 2 of 3, which would be the first pass of the poke test.
 
+Result, pool 1: pattern inside again (0.916, 54th percentile), but spread *worse* (30%):
+expectation not met, and the remaining pools are not needed to see it. Looking at why: the
+spread level counts responses above 3 times each neuron's fluctuation size just before the
+poke, and a VAR turns all of its noise into slow wandering, while real recordings also
+contain fast measurement noise that does not propagate. A model without measurement noise
+wanders too far relative to its own jitter.
+
+**Next ingredient (written before running): measurement noise** (`hybrid_kernels_obs`). The
+share of each class's variance that is white measurement noise is estimated from real
+stimulation-free activity (autocovariance at lags 0 to 2: a median of 6%), removed from the
+dynamics' driving noise and added back as white noise on the output. Expectation: spread
+comes inside in at least 2 of 3 pools while pattern stays inside in at least 2 of 3: the
+first pass of the poke test.
+
 **Signal or noise? (written before computing it).** A model can fail the poke test in two
 different ways: its *average* echo is wrong (it does not know the causal structure), or its
 average echo is right but each single echo is buried in the wrong kind of variability.

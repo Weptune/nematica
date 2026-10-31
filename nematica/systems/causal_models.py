@@ -326,14 +326,40 @@ class HybridKernel:
     wiring matrix (class_wiring: A[to, from]); None allows every pair."""
 
     def __init__(self, lags: int = 3, shrink: float = 2.0, mask: str | None = None, seed: int = 0,
-                 background: str = "spontaneous"):
+                 background: str = "spontaneous", obs_noise: bool = False):
         self.lags, self.shrink, self.mask, self.seed = lags, shrink, mask, seed
         self.background = background     # which frames the ongoing-dynamics VAR learns from
-        self.name = "hybrid_kernels" + (f"_{mask}" if mask else "") + ("" if background == "spontaneous" else f"_bg{background}")
+        self.obs_noise = obs_noise       # split each class's variability into slow dynamics and
+                                         # white measurement noise (see _noise_fractions) [A]
+        self.name = ("hybrid_kernels" + (f"_{mask}" if mask else "") + ("" if background == "spontaneous" else f"_bg{background}")
+                     + ("_obs" if obs_noise else ""))
+
+    @staticmethod
+    def _noise_fractions(recs, classes) -> np.ndarray:
+        """Per class, the share of variance that is white measurement noise, from the
+        autocovariance of stimulation-free activity: for slow dynamics plus white noise,
+        gamma(0) = signal + noise while gamma(1)^2 / gamma(2) estimates the signal alone.
+        Median over worms, clipped to [0, 0.8]."""
+        fr = {c: [] for c in classes}
+        for r in recs:
+            z = class_matrix(r, classes)
+            m = spontaneous_mask(r)
+            for i, c in enumerate(classes):
+                v = z[i, m]
+                v = v[np.isfinite(v)]
+                if v.size < 200:
+                    continue
+                v = v - v.mean()
+                g0, g1, g2 = (np.mean(v * v), np.mean(v[1:] * v[:-1]), np.mean(v[2:] * v[:-2]))
+                if g2 > 1e-9 and g0 > 0:
+                    fr[c].append(float(np.clip((g0 - g1 ** 2 / g2) / g0, 0, 0.8)))
+        return np.array([np.median(fr[c]) if fr[c] else 0.0 for c in classes])
 
     def fit(self, train, val):
         from ..bench.perturbational import event_matrices
         self.var = ClassVAR(lags=self.lags, frames=self.background).fit(train, val)
+        if self.obs_noise:
+            self.noise_frac = self._noise_fractions(list(train) + list(val), self.var.classes)
         acc: dict = {}
         for r in list(train) + list(val):
             for e in event_matrices(r, keep=True):
@@ -357,8 +383,21 @@ class HybridKernel:
         from dataclasses import replace
         npre, npost = window(rec.dt)
         quiet = replace(rec, stims=[])
-        bg = self.var.simulate(quiet, rng)              # ongoing activity, no stimulation
+        if self.obs_noise:
+            # dynamics driven only by the non-measurement part of the residuals; the measurement
+            # part is added afterwards as white noise of the same total size [A]
+            keep = self.var.noise_sd.copy()
+            self.var.noise_sd = keep * np.sqrt(1 - self.noise_frac)
+            bg = self.var.simulate(quiet, rng)
+            self.var.noise_sd = keep
+        else:
+            bg = self.var.simulate(quiet, rng)          # ongoing activity, no stimulation
         x = bg.x.copy()
+        if self.obs_noise:
+            ci = {c: i for i, c in enumerate(self.var.classes)}
+            f = np.array([self.noise_frac[ci[c]] for c in bg.classes])
+            sdx = x.std(axis=1, keepdims=True)
+            x = x + rng.standard_normal(x.shape) * sdx * np.sqrt(f / np.clip(1 - f, 0.2, None))[:, None]
         T = x.shape[1]
         row = {c: i for i, c in enumerate(bg.classes)}
         stims = [(k, f) for k, f in rec.stims if rec.classes[k] in row and f - npre >= 0 and f + npost <= T]
