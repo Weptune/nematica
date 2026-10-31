@@ -14,7 +14,7 @@ import Arena from './Arena'
 // held-out worm; the other's brain and behaviour come from a model, with body shapes borrowed
 // from real training worms. Under each, the key command neurons and the reversal state.
 
-const BASE = 'which2/'
+const BASE = (new URLSearchParams(location.search).get('set') || 'which2') + '/'
 const WINDOW_S = 90
 const VERDICT = { inside: 'inside', 'too typical': 'too typical', outside: 'outside', 'not scored': 'n/a' }
 
@@ -28,7 +28,7 @@ function WormView({ replay, drivesClock }) {
       <Arena replay={replay} />
       <Worm body={body} replay={replay} />
       <Neurons body={body} replay={replay} />
-      <FollowHead body={body} zoom={2.1} />
+      <FollowHead body={body} zoom={replay?.arena ? 3.4 : 2.1} />
       <EffectComposer multisampling={4}>
         <Bloom mipmapBlur intensity={1.1} luminanceThreshold={0.6} luminanceSmoothing={0.25} radius={0.65} />
         <Noise premultiply blendFunction={BlendFunction.ADD} opacity={0.1} />
@@ -152,7 +152,9 @@ export default function WhichReal() {
       <header className="which-head">
         <div className="brand">NEMATICA</div>
         <div className="title">Which one is real?</div>
-        <div className="subtitle">Two worms crawling on agar. One is a recording of a real worm. The other one's brain activity, speed and reversals come from a model; its body shapes are borrowed from other real worms. Watch how the neurons under each worm line up with its reversals (orange).</div>
+        <div className="subtitle">{index?.rounds?.length && BASE === 'which3/'
+          ? "Two worms crawling inside a copper ring, which worms avoid. One is a recording of a real worm. The other one's brain is a model that senses the copper and decides when to reverse and where to steer; only its body shapes are borrowed from real worms. Watch how the neurons under each worm line up with its reversals (orange)."
+          : "Two worms crawling on agar. One is a recording of a real worm. The other one's brain activity, speed and reversals come from a model; its body shapes are borrowed from other real worms. Watch how the neurons under each worm line up with its reversals (orange)."}</div>
       </header>
       <div className="tally mono">round {k + 1} / {index.rounds.length} · score {score.right} / {score.played}</div>
       <div className="controls">

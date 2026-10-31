@@ -231,7 +231,7 @@ def class_levels(sample_x: np.ndarray, classes, neurons, a: int, n: int) -> list
 
 def write_bundle(path: Path, uid: str, source: str, t: np.ndarray, angles: np.ndarray, length_mm: float,
                  head_path: np.ndarray, velocity: np.ndarray, reversing: np.ndarray, neurons: list,
-                 levels: list, notes: dict) -> int:
+                 levels: list, notes: dict, arena: dict | None = None) -> int:
     bundle = {
         "format": "nematica-replay/1",
         "uid": uid,
@@ -243,7 +243,7 @@ def write_bundle(path: Path, uid: str, source: str, t: np.ndarray, angles: np.nd
         "body": {"k": int(angles.shape[1]), "length_mm": round(float(length_mm), 4),
                  "angles": np.round(angles, 4).ravel().tolist(), "tracked": [1] * len(t)},
         "path_mm": np.round(head_path, 4).ravel().tolist(),
-        "arena": None,
+        "arena": arena,
         "behaviour": {"velocity": np.round(velocity, 4).tolist(),
                       "reversing": (reversing > 0.5).astype(int).tolist()},
         "neurons": [{**nr, "level": np.round(lv, 3).tolist()} for nr, lv in zip(neurons, levels)],

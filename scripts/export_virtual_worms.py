@@ -34,8 +34,14 @@ from nematica.data.canonical import canonical_classes  # noqa: E402
 from nematica.export.atlas import load_atlas, position_for  # noqa: E402
 from nematica.export.replay import _resample_posture  # noqa: E402
 from nematica.export.virtual_worm import MotionLibrary, class_levels, write_bundle  # noqa: E402
+from nematica.systems.closed_loop import SensoryVAR  # noqa: E402
 from nematica.systems.forecasters import (CalciumStateSpace, Debounced, Forecaster,  # noqa: E402
                                           IndividualVAR, LagFeatures)
+
+V7 = dict(senses=True, hazard_from="command_fixed", directional=True, speed_map=True,
+          sense_scales=(0.25, 0.5, 1, 2, 4), per_worm_rates=True, steer=True, copper_limit=True,
+          steer_scales=(0.5, 1, 2, 4, 8), stage_speed=True)
+CL_LABEL = "closed loop v7: the brain model senses copper, decides reversals and steers its own body"
 
 MODEL_LABEL = "per-worm linear dynamics on the calcium drive, reversals read with hysteresis"
 METRIC_NAMES = {
@@ -61,7 +67,13 @@ def main() -> int:
     ap.add_argument("--duration-s", type=float, default=420.0)
     ap.add_argument("--scorecard", default="docs/figures/reversals_combined.csv")
     ap.add_argument("--seed", type=int, default=2026)
+    ap.add_argument("--closed-loop", action="store_true",
+                    help="model worm = closed-loop v7 in the real worm's own arena, copper ring shown")
     args = ap.parse_args()
+    if args.closed_loop and args.out == "lab/public/data/which2":
+        args.out = "lab/public/data/which3"
+    if args.closed_loop and args.scorecard == "docs/figures/reversals_combined.csv":
+        args.scorecard = "docs/figures/closed_loop_v7.csv"
 
     recs = load_copper_dir(Path(args.data))
     split = load_split(args.split)
@@ -71,14 +83,32 @@ def main() -> int:
     train, val, test = S(split["train"]), S(split["val"]), S(split["test"])
     cs = CalciumStateSpace.from_train(train, gamma=0.5)
     model = Debounced(IndividualVAR(Forecaster("var3", cs, LagFeatures(cs.k, 3, False)), fixed_lam=300)).fit(train, val)
-    sims = [model.generate(s, np.random.default_rng(100 + i), which=i) for i, s in enumerate(test)]
     library = MotionLibrary.from_recordings([by[u] for u in split["train"]])
+    cl_runs = {}
+    if args.closed_loop:
+        model = SensoryVAR(**V7).fit(train, val)
+        model.calibrate_steering(train, [(by[u].meta["arena"]["radius_mm"], float(by[u].behaviour["dist_from_center_mm"][0]),
+                                          by[u].t) for u in split["train"]], library,
+                                 mults=(1, 2, 3, 4, 5, 6, 8, 12), target="drift")
+        sims = []
+        for i, (s, u) in enumerate(zip(test, split["test"])):
+            r = by[u]
+            smp, ang_cl, path_cl, _ = model.simulate(s, r.meta["arena"]["radius_mm"],
+                                                     float(r.behaviour["dist_from_center_mm"][0]), library,
+                                                     np.random.default_rng(100 + i), i, r.t)
+            sims.append(smp)
+            cl_runs[u] = (ang_cl, path_cl)
+        print("closed loop:", {k: v for k, v in model.info.items() if k in ("sense_scale_mm", "steer_scale_mm", "k_steer", "steer_mult")})
+    else:
+        sims = [model.generate(s, np.random.default_rng(100 + i), which=i) for i, s in enumerate(test)]
 
     card = []
     p = Path(args.scorecard)
     if p.exists():
         for r in csv.DictReader(p.open(encoding="utf-8")):
-            if r["system"] == "calcium_g0.5_indiv_lam300_hyst":
+            if r["system"] == "calcium_g0.5_indiv_lam300_hyst" or (
+                    args.closed_loop and r["system"].startswith("closed_loop_senses") and "metric" in r
+                    and r["metric"] in METRIC_NAMES):
                 card.append({"metric": r["metric"], "what": METRIC_NAMES.get(r["metric"], r["metric"]),
                              "verdict": r["verdict"], "ratio": float(r["distance_ratio"])})
     core = core_classes(test + train + val, 12)
@@ -111,37 +141,56 @@ def main() -> int:
         ang, length, _ = _resample_posture(rec.posture["segment_angle"])
         path = -rec.posture["stage_xy_mm"][a:a + n]
         path = path - path[0]
+        arena_real = arena_model = None
+        if args.closed_loop:
+            R = float(rec.meta["arena"]["radius_mm"])
+            # lab world frame = minus the stage frame, starting at the origin (export/replay.py)
+            arena_real = {"centre_mm": np.round(-np.asarray(rec.meta["arena"]["center_mm"])
+                                                + rec.posture["stage_xy_mm"][a], 4).tolist(), "radius_mm": R}
         real_file = f"round_{i + 1}_real.json"
         write_bundle(out / real_file, f"real:{uid}", "real recording (held-out test worm)", t,
                      unwrap_angles(ang[a:a + n]), length, path, rec.behaviour["velocity"][a:a + n],
                      rec.behaviour["reversing"][a:a + n], neurons, class_levels(real.x, classes, neurons, a, n),
-                     {**notes_common, "body": "tracked posture and stage path [M]"})
+                     {**notes_common, "body": "tracked posture and stage path [M]"}, arena=arena_real)
 
         # model worm: generated brain and behaviour, motion-matched body
         vel, rev = sim.behaviour["velocity"][a:a + n], sim.behaviour["reversing"][a:a + n]
-        orient0 = float(np.angle(np.mean(np.exp(1j * ang[a]))))
-        m_ang, m_path, cont = library.synthesize(vel, rev, t, heading0=orient0, seed=i)
+        if args.closed_loop:
+            ang_cl, path_cl = cl_runs[uid]
+            m_ang, m_path, cont = ang_cl[a:a + n], path_cl[a:a + n] - path_cl[a], float("nan")
+            arena_model = {"centre_mm": np.round(-path_cl[a], 4).tolist(), "radius_mm": R}
+        else:
+            orient0 = float(np.angle(np.mean(np.exp(1j * ang[a]))))
+            m_ang, m_path, cont = library.synthesize(vel, rev, t, heading0=orient0, seed=i)
         model_file = f"round_{i + 1}_model.json"
-        write_bundle(out / model_file, f"model:{uid}", f"model: {MODEL_LABEL}", t, unwrap_angles(m_ang),
-                     library.length_mm, m_path, vel, rev, neurons, class_levels(sim.x, classes, neurons, a, n),
+        write_bundle(out / model_file, f"model:{uid}", f"model: {CL_LABEL if args.closed_loop else MODEL_LABEL}", t,
+                     unwrap_angles(m_ang), library.length_mm, m_path, vel, rev, neurons,
+                     class_levels(sim.x, classes, neurons, a, n),
                      {**notes_common, "body": "velocity and reversal state generated by the model [L]; body shapes "
-                      "and steering motion-matched from real training worms [borrowed M]"})
+                      "motion-matched from real training worms [borrowed M]" + (
+                          "; steering, copper sensing and the path are the model's own, in this worm's arena [L]"
+                          if args.closed_loop else "; steering motion-matched [borrowed M]")}, arena=arena_model)
 
         real_side = "left" if rng.random() < 0.5 else "right"
         rounds.append({"round": i + 1, "left": real_file if real_side == "left" else model_file,
                        "right": model_file if real_side == "left" else real_file,
                        "answer": real_side, "real_uid": uid, "neurons": len(neurons),
-                       "clip_continuation": round(cont, 3),
+                       "clip_continuation": None if cont != cont else round(cont, 3),
                        "reversal_fraction": {"real": round(float((rec.behaviour['reversing'][a:a + n] > 0.5).mean()), 3),
                                              "model": round(float((rev > 0.5).mean()), 3)}})
         print(f"round {i + 1}: {uid}, {len(neurons)} neurons, {n} frames, real on the {real_side}, "
               f"model body continued its clip {100 * cont:.0f}% of frames")
-    index = {"version": "nematica-which/2", "rounds": rounds, "model": MODEL_LABEL, "scorecard": card,
+    note = ("Both worms crawl in the real worm's own copper arena (ring). The model worm's brain senses the copper, "
+            "decides when to reverse and steers its body; only its body shapes are borrowed from real training "
+            "worms." if args.closed_loop else
+            "Neither worm shows the copper ring: this model does not sense copper. Both brains use the "
+            "same neurons, shown class by class. The model's body shapes and steering are borrowed "
+            "from real training worms; its speed and reversals come from its own brain.")
+    index = {"version": "nematica-which/2", "rounds": rounds,
+             "model": CL_LABEL if args.closed_loop else MODEL_LABEL, "scorecard": card,
              "key_neurons": KEY_NEURONS,
              "l8": {"model_auc": l8_model.get("auc"), "real_auc": l8_real.get("auc")},
-             "note": "Neither worm shows the copper ring: the model cannot sense copper yet. Both brains use the "
-                     "same neurons, shown class by class. The model's body shapes and steering are borrowed "
-                     "from real training worms; its speed and reversals come from its own brain."}
+             "note": note}
     (out / "index.json").write_text(json.dumps(index, indent=1), encoding="utf-8")
     print(f"Level 8: model AUC {l8_model.get('auc')}, other real worms {l8_real.get('auc')}. Wrote {out}/index.json")
     return 0

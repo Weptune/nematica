@@ -367,8 +367,8 @@ single fixed shift of the tracked position, (0.613, 0.462) mm, makes it reproduc
 recorded distance to 0.023 mm rms in every worm (0.54 mm without), and the shift is the
 same in all 27 worms to within 0.005 mm; a shift along the body or a different arena
 centre does not fit. The loader now applies it (`COPPER_STAGE_OFFSET_MM`), so tracked
-paths, the arena circle and the recorded distance agree (this also corrects the copper
-ring position in the replay lab by about 0.77 mm). With corrected geometry v6 is still 10
+paths, the arena circle and the recorded distance agree (the replay lab already fitted
+this offset worm by worm, so its copper ring was right; that fit now finds about zero). With corrected geometry v6 is still 10
 of 10 pairwise, encounter and approach inside, occupancy narrowly outside (0.969), and
 time near copper 33.7% (27.3% before the fix; run-to-run variation at this level is large).
 
@@ -445,6 +445,14 @@ cd lab; npm install; npm run dev        # then open http://localhost:5173/?mode=
 
 The answer for each round is in the round index, so this is a demo, not yet a fair test of
 human viewers.
+
+
+**Copper version** (`python scripts/export_virtual_worms.py --closed-loop ...`, then open
+the lab at `?mode=which&set=which3`): the model worm is the v7 closed-loop worm, simulated
+in the real worm's own copper arena (same radius, same starting distance), and both worms
+are shown inside their copper rings. Its brain senses the copper and decides when to
+reverse and where to steer; only body shapes are borrowed. The reveal shows the v7
+scorecard (9 of 10 pairwise; occupancy and approach inside).
 
 ## Rules that keep the benchmark honest
 
