@@ -21,7 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from nematica.bench.causal import response_set, score_sets  # noqa: E402
 from nematica.data.pumpprobe import load_pumpprobe_dir  # noqa: E402
 from nematica.data.splits import load_folds  # noqa: E402
-from nematica.systems.causal_models import ClassVAR  # noqa: E402
+from nematica.systems.causal_models import ClassVAR, CreamerCausal  # noqa: E402
 
 
 def main() -> int:
@@ -36,6 +36,8 @@ def main() -> int:
     folds = load_folds(args.folds)["folds"]
     makers = {f"var{L}_{fr}": (lambda L=L, fr=fr: ClassVAR(lags=L, frames=fr))
               for L in (1, 3, 6) for fr in ("spontaneous", "all")}
+    for v in ("connectome_constrained", "fully_connected", "shuffled_constrained"):
+        makers[f"creamer2024_{v}"] = (lambda v=v: CreamerCausal(v))
     rows = []
     for fi, pool_uids in enumerate(folds):
         t0 = time.time()

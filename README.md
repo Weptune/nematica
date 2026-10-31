@@ -952,6 +952,57 @@ spontaneous class activity, even one that has seen the stimulations, does not kn
 signals spread through this brain. That is the causal Turing test's first answer, and the
 reason the test is needed: these same model families pass most spontaneous levels.
 
+**The published atlas models, expectations written before scoring.** The three linear
+dynamical systems of Creamer, Leifer and Pillow (2024: connectome-constrained, fully
+connected, and constrained to a shuffled connectome), 154 named neurons, fitted to this
+atlas, put through the same stimulation protocol at neuron level. They were fitted to atlas
+worms, probably including the ones scored here, so this is in-sample. Expectations: much
+closer to real worms than the class VARs on pattern (inside or near the edge); the
+connectome-constrained model closer than the shuffled one in every pool.
+
+**Two more pieces of the original atlas archive** (Randi et al. 2023, OSF e2syt; local
+only). (1) 18 recordings of *unc-31* mutants, which cannot release neuropeptides from dense
+core vesicles, stimulated with the same protocol: 15 have neuron identities and are used.
+(2) 2 recordings of unstimulated immobilised worms (10 minutes each); too few to fit a
+model on, kept for later.
+
+**unc-31 against wild type, written before running:**
+
+1. *Through the ruler.* unc-31 worms' response sets, scored as a "system" against each
+   wild-type pool. Expectation: inside on pattern and kinetics (they are real worms, and the
+   mutation changes a minority of pairs while single-worm patterns are noisy); no prior on
+   magnitude. If unc-31 worms are inside, the ruler cannot see the mutation one worm at a
+   time, which says something about its resolution.
+2. *Does anatomy predict responses?* For each worm, how well class-level wiring (Kunert et
+   al. 2014, chemical or electrical, as in arc 3) separates responding pairs: the AUC of
+   response size for wired against unwired pairs, minus the mean AUC over 20 shuffled
+   wirings with the same number of inputs per class. Expectations: (a) the excess is above
+   zero in wild type, but small; (b) it is larger in unc-31 worms than in wild type, as the
+   atlas paper reported that anatomy predicts responses better without neuropeptides.
+
+**unc-31 results, and a lesson about preprocessing** (`scripts/run_unc31.py`,
+`docs/figures/unc31_vs_wt.csv`, `docs/figures/wiring_predicts_responses.csv`). The first run
+compared unc-31 worms (from the original archive) with wild-type worms from the Creamer
+packaging, and unc-31 came out *outside* on magnitude and kinetics in every pool. That was
+not biology: the two packagings hold the same raw values, but the Creamer version blanks
+18 to 50% of each neuron's frames (low-confidence tracking) and some uncertain labels,
+while the original archive keeps them. With wild type taken from the same original
+archive (113 worms, converted the same way), the comparison is like for like:
+
+- unc-31 worms are **inside on all three levels** in every pool (kinetics too typical in
+  one). Expectation 1 met: one worm at a time, the ruler cannot tell a neuropeptide-release
+  mutant from wild type. That is a statement about resolution: single-worm response sets
+  are noisy, and the mutation's effects are on a minority of pairs.
+- Wiring predicts response size slightly better than shuffled wiring in wild type (median
+  AUC excess +0.014, above zero in 73 of 105 worms, Wilcoxon p = 1e-5): expectation 2a met.
+  In unc-31 the excess is +0.010 (9 of 15, p = 0.02): **not larger** than wild type
+  (p = 0.48). Expectation 2b not met at this resolution (class level, AUC per worm, 15
+  mutant worms).
+
+The model scores above use the Creamer packaging throughout (real and simulated worms on
+the same recordings), so they are internally consistent; they will be repeated on the
+original archive.
+
 ## Arc 6: from one brain to a swarm
 
 **Question.** Does the ruler's verdict hold when many model brains share one world? Real

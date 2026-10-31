@@ -172,3 +172,63 @@ class ClassVAR:
         x = z[[idx[c] for c in own], burn:]
         return PumpProbe(uid=rec.uid, x=x, names=own, classes=own, stims=stims_out, dt=rec.dt,
                          all_stim_frames=list(rec.all_stim_frames))
+
+
+class CreamerCausal:
+    """The published Creamer, Leifer & Pillow (2024) linear dynamical systems (fitted to this
+    atlas, 154 named neurons, 2 Hz, one lag) under the same stimulation protocol: the
+    stimulated neuron is clamped to its pre-pulse value plus its own measured response, the
+    rest evolve with the published dynamics and noise (y = x + v). Neuron-level rows for the
+    worm's named neurons the model has. The published parameters were fitted to atlas worms,
+    possibly including the scored ones [L: in-sample unless shown otherwise]."""
+
+    def __init__(self, variant: str = "connectome_constrained", folder=None):
+        from .published import DEFAULT_DIR
+        from pathlib import Path
+        z = np.load(Path(folder or DEFAULT_DIR) / f"{variant}.npz")
+        self.variant = variant
+        self.name = f"creamer2024_{variant}"
+        self.A, self.Q, self.R = z["A"], z["Q"], z["R"]
+        self.cells = [str(c) for c in z["cell_ids"]]
+        self.Lq = np.linalg.cholesky(self.Q + 1e-12 * np.eye(len(self.Q)))
+        self.sr = np.sqrt(np.clip(np.diag(self.R), 0, None))
+        self.info = {"neurons": len(self.cells),
+                     "radius": round(float(np.max(np.abs(np.linalg.eigvals(self.A)))), 4)}
+
+    def fit(self, train=None, val=None):
+        return self
+
+    def simulate(self, rec: PumpProbe, rng: np.random.Generator, burn: int = 600) -> PumpProbe:
+        from ..data.pumpprobe import neuron_class
+        n = len(self.cells)
+        cell_of = {c.upper(): i for i, c in enumerate(self.cells)}
+        T = rec.n_frames
+        npre, npost = window(rec.dt)
+        sd = np.nanstd(rec.x, axis=1)
+        own = sorted({rec.names[j].upper() for j, c in enumerate(rec.classes) if c and rec.names[j].upper() in cell_of})
+        row_of = {nm: i for i, nm in enumerate(own)}
+        clamp, stims_out = {}, []
+        for k, f in rec.stims:
+            nm = rec.names[k].upper()
+            if nm not in cell_of or nm not in row_of or f - npre < 0 or f + npost > T or not sd[k] > 0:
+                continue
+            tr = (rec.x[k, f:f + npost] - np.nanmean(rec.x[k, f - npre:f])) / sd[k]
+            for t, v in enumerate(tr):
+                if np.isfinite(v):
+                    clamp[f + t] = (cell_of[nm], f, float(v))
+            stims_out.append((row_of[nm], f))
+        x = np.zeros(n)
+        out = np.empty((n, T))
+        base = {}
+        for t in range(-burn, T):
+            x = self.A @ x + self.Lq @ rng.standard_normal(n)
+            if t in clamp:
+                ci, f0, v = clamp[t]
+                if (ci, f0) not in base:
+                    base[(ci, f0)] = float(out[ci, t - 1]) if t > 0 else 0.0
+                x[ci] = base[(ci, f0)] + v
+            if t >= 0:
+                out[:, t] = x + self.sr * rng.standard_normal(n)
+        rows = [cell_of[nm] for nm in own]
+        return PumpProbe(uid=rec.uid, x=out[rows], names=own, classes=[neuron_class(nm) for nm in own],
+                         stims=stims_out, dt=rec.dt, all_stim_frames=list(rec.all_stim_frames))
