@@ -51,13 +51,16 @@ class ClassVAR:
     def __init__(self, lags: int = 3, frames: str = "spontaneous", min_fraction: float = 0.3,
                  ridges=(1.0, 10.0, 100.0, 1000.0, 10000.0), max_radius: float = 0.99,
                  protocol: str = "clamp", fixed_ridge: float | None = None, coupling: str = "full",
-                 features: str = "linear", penalty: str = "ridge", theta: float = 1.0):
+                 features: str = "linear", penalty: str = "ridge", theta: float = 1.0,
+                 innovations: str = "gaussian"):
         self.lags, self.frames, self.min_fraction, self.ridges = lags, frames, min_fraction, ridges
         self.max_radius, self.protocol, self.fixed_ridge = max_radius, protocol, fixed_ridge
         self.coupling = coupling       # "full", or "diagonal": each class driven only by its own past
         self.features = features       # "linear", or "relu": plus rectified copies of the last frame,
                                        # so influence can depend on whether a source is strongly active
         self.penalty, self.theta = penalty, theta     # "ridge" or "lasso" (sparse coupling)
+        self.innovations = innovations                # "gaussian", or "student": heavy-tailed shocks,
+                                                      # mostly small with occasional large ones
         if penalty == "lasso":
             self.ridges = (1e-3, 3e-3, 1e-2, 3e-2)
         self.name = (f"var{lags}_{frames}" + ("" if coupling == "full" else f"_{coupling}")
@@ -141,8 +144,12 @@ class ClassVAR:
         R = Y - X @ self.W
         self.noise_sd = np.sqrt(np.nanmean(R ** 2, axis=0))
         self.noise_sd[~np.isfinite(self.noise_sd)] = 1.0
+        with np.errstate(invalid="ignore", divide="ignore"):
+            k = np.nanmean(R ** 4, axis=0) / np.nanmean(R ** 2, axis=0) ** 2 - 3.0
+        # Student-t degrees of freedom matching each class's residual excess kurtosis (6 / (nu - 4))
+        self.nu = np.where(np.isfinite(k) & (k > 0.2), np.clip(4.0 + 6.0 / np.maximum(k, 1e-6), 4.1, 30.0), 30.0)
         self.radius = self.spectral_radius()
-        self.info = {"radius": round(self.radius, 4), "ridge": best[0], "val_r2": round(float(best[1]), 4), "classes": len(self.classes),
+        self.info = {"radius": round(self.radius, 4), "ridge": best[0], "median_nu": round(float(np.median(self.nu)), 2), "val_r2": round(float(best[1]), 4), "classes": len(self.classes),
                      "rows": int(X.shape[0])}
         return self
 
@@ -157,6 +164,12 @@ class ClassVAR:
         if p > 1:
             comp[C:, :-C] = np.eye((p - 1) * C)
         return float(np.abs(np.linalg.eigvals(comp)).max())
+
+    def _shock(self, rng, C):
+        if self.innovations == "student":
+            nu = self.nu
+            return rng.standard_t(nu) * np.sqrt((nu - 2) / nu)      # unit variance
+        return rng.standard_normal(C)
 
     def _step(self, z, t, A, b):
         p = self.lags
@@ -224,7 +237,7 @@ class ClassVAR:
         base = {}
         for t in range(p, T + burn):
             nxt = self._step(z, t, A, b)
-            nxt += self.noise_sd * rng.standard_normal(C)
+            nxt += self.noise_sd * self._shock(rng, C)
             nxt[~seen] = 0.0
             tt = t - burn
             if tt in pulse:
@@ -326,13 +339,14 @@ class HybridKernel:
     wiring matrix (class_wiring: A[to, from]); None allows every pair."""
 
     def __init__(self, lags: int = 3, shrink: float = 2.0, mask: str | None = None, seed: int = 0,
-                 background: str = "spontaneous", obs_noise: bool = False):
+                 background: str = "spontaneous", obs_noise: bool = False, heavy: bool = False):
         self.lags, self.shrink, self.mask, self.seed = lags, shrink, mask, seed
         self.background = background     # which frames the ongoing-dynamics VAR learns from
         self.obs_noise = obs_noise       # split each class's variability into slow dynamics and
                                          # white measurement noise (see _noise_fractions) [A]
+        self.heavy = heavy               # heavy-tailed shocks in the ongoing dynamics
         self.name = ("hybrid_kernels" + (f"_{mask}" if mask else "") + ("" if background == "spontaneous" else f"_bg{background}")
-                     + ("_obs" if obs_noise else ""))
+                     + ("_obs" if obs_noise else "") + ("_heavy" if heavy else ""))
 
     @staticmethod
     def _noise_fractions(recs, classes) -> np.ndarray:
@@ -357,7 +371,8 @@ class HybridKernel:
 
     def fit(self, train, val):
         from ..bench.perturbational import event_matrices
-        self.var = ClassVAR(lags=self.lags, frames=self.background).fit(train, val)
+        self.var = ClassVAR(lags=self.lags, frames=self.background,
+                            innovations="student" if self.heavy else "gaussian").fit(train, val)
         if self.obs_noise:
             self.noise_frac = self._noise_fractions(list(train) + list(val), self.var.classes)
         acc: dict = {}

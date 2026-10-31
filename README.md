@@ -1199,6 +1199,25 @@ from the stimulation windows** (`hybrid_kernels_bgstim`), whose VARs had realist
 levels (17%). Expectation: pattern stays inside in at least 2 of 3 pools and spread comes
 inside in at least 2 of 3, which would be the first pass of the poke test.
 
+Result: pattern inside in 2 of 3 pools (0.906, 0.919, 0.922), spread outside in all 3 (25%):
+the expectation is not met, and the hybrid with measurement noise behaves like the hybrid
+without it. A further check with heavy-tailed shocks in the dynamics (Student-t, fitted to the
+residuals' kurtosis) did not change spread either.
+
+**What the spread level is really measuring.** Reading "responses" at random moments, with
+no poke at all, gives the answer: real brains score a median of 14% (5th percentile 6%),
+model brains 25% (5th percentile 18%). Real poke echoes score 16%, so most of the spread
+level is not the echo; it is how ongoing activity evolves over 30 s compared with its jitter
+just before. **Real worm brains are often quiet over half a minute and sometimes eventful;
+every model brain tested is always busy.** That is a property of ongoing activity that the
+six ordinary activity levels do not catch (they look at distributions, correlations and
+timescales, not at how calm or eventful a stretch of activity is), and it connects directly
+to the next measures below: a brain that is "always busy" is a different kind of system from
+one that settles and wakes.
+
+So far, then: cause and effect can be given to a model (the hybrid's echo patterns are
+real-like), but a real brain's way of being quiet cannot yet, by any ingredient tried.
+
 Result, pool 1: pattern inside again (0.916, 54th percentile), but spread *worse* (30%):
 expectation not met, and the remaining pools are not needed to see it. Looking at why: the
 spread level counts responses above 3 times each neuron's fluctuation size just before the
