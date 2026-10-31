@@ -1483,6 +1483,23 @@ new pools; the linear brain stays outside on echo pattern in 3 of 3 and inside o
 the passing hybrid fails the pattern or spread in 2 or more new pools, the site will stop
 calling it a brain that passes the poke test.
 
+Result (`docs/figures/same_worms_recording_blocks1.csv`; new pools 1, 2, 3):
+
+| brain | activity levels inside | echo pattern | echo spread | echo complexity |
+|---|---|---|---|---|
+| passing hybrid | 4, 5, 4 of 6 | inside 3 of 3 | inside 3 of 3 | outside 3 of 3 |
+| plain hybrid | 4, 4, 6 of 6 | inside 2 of 3 | outside 3 of 3 | outside 3 of 3 |
+| linear brain from rest | 3, 4, 5 of 6 | outside 3 of 3 | outside 3 of 3 | outside 3 of 3 |
+
+**All expectations met: the poke-test pass replicates on a second split**, in all three new
+pools, as does the headline (the linear brain learned from rest is real-like at rest in 2 of 3
+pools and wrong about cause and effect in all three). The passing hybrid also looks a little
+more real at rest here (4 to 5 of 6, against 3 to 4 on the first split), and in one new pool
+the plain hybrid is inside on all six activity levels while its echo pattern is inside too:
+the first time any brain has matched real worms on every watching test and on the echo
+pattern at once, though its echo spread and complexity are still outside. That combination
+is one pool on one split, so it is noted, not claimed.
+
 **Signal or noise? (written before computing it).** A model can fail the poke test in two
 different ways: its *average* echo is wrong (it does not know the causal structure), or its
 average echo is right but each single echo is buried in the wrong kind of variability.
