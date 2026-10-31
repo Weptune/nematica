@@ -607,113 +607,180 @@ class SensoryVAR:
         self.info.update({"rev_lo": round(best[1], 3), "rev_hi": round(best[2], 3)})
 
     # ------------------------------------------------------------------ closed loop
+    def agent(self, template: BenchSample, arena_radius_mm: float, start_dist_mm: float,
+              library: MotionLibrary, rng: np.random.Generator, which: int, burn: int = 300,
+              clip: float = 8.0, origin: str | None = None) -> "BrainAgent":
+        """One closed-loop worm that advances a frame at a time (see BrainAgent)."""
+        return BrainAgent(self, template, arena_radius_mm, start_dist_mm, library, rng, which,
+                          burn=burn, clip=clip, origin=origin)
+
     def simulate(self, template: BenchSample, arena_radius_mm: float, start_dist_mm: float,
                  library: MotionLibrary, rng: np.random.Generator, which: int, t: np.ndarray,
                  burn: int = 300, clip: float = 8.0):
         """Returns the BenchSample (neural, behaviour incl. dist_to_boundary), body angles (T, K),
         head path (T, 2) in arena coordinates (centre at the origin)."""
-        origin = self.names[which % len(self.names)]
-        W, L = self.W[origin], self.L[origin]
-        off = self.offsets.get(origin, (0.0, 0.0))
-        sq = self.speed_q_worm.get(origin, self.speed_q)
-        sp = self.space
-        k = sp.k
-        bm, bs = sp.beh_mean, sp.beh_sd
+        a = self.agent(template, arena_radius_mm, start_dist_mm, library, rng, which, burn=burn, clip=clip)
         T = template.x.shape[1]
-        stepper = MotionStepper(library, seed=int(rng.integers(1 << 30)))
-        # start: head at the template worm's starting distance from the centre, random place and heading
-        phi = rng.uniform(0, 2 * np.pi)
-        head = start_dist_mm * np.array([np.cos(phi), np.sin(phi)])
-        H = rng.uniform(0, 2 * np.pi)
-        hist = [np.zeros(k) for _ in range(self.lags)]
-        d_prev = d_now = arena_radius_mm - np.hypot(*head)
-        facing = lambda: float(np.cos(H + np.pi - np.arctan2(head[1], head[0])))  # noqa: E731
-        fo = np.array([facing(), facing()]) if self.directional else None
-        # burn-in of the brain while the worm rests at its start
-        stage = self.ash_stage and self.w_c is not None and self.senses
-        if stage:
-            ash_i = self._ash_index()
-            x0 = float(np.exp(-max(d_now, -0.5) / self.scale))
-            ash_k = np.full(len(self.ash_taus), x0)              # kernel states of ASH's copper response
-        for _ in range(burn):
-            e = sense(np.array([d_now, d_now]), fo, self.scale, self.slow_tau)[:, -1]
-            if stage:
-                e = np.array([float(self.w_c @ ash_k - self.c_off)])
-            v = np.clip(self._features(hist, e) @ W + L @ rng.standard_normal(k), -clip, clip)
-            v[-1] = (0 - bm[1]) / bs[1]
-            hist = hist[1:] + [v]
-        out = np.empty((k, T))
-        angles = np.empty((T, library.shapes.shape[1]))
-        path = np.empty((T, 2))
-        dist = np.empty(T)
-        vel_prev, rev_prev = 0.0, 0.0
-        n_core = sp.core.size
-        state = 0
-        z_rev = [(0 - bm[1]) / bs[1], (1 - bm[1]) / bs[1]]          # reversal channel values
-        hyst = self.reversals == "hysteresis"
-        slow = np.full(len(_taus(self.slow_tau)), float(np.exp(-max(d_now, -0.5) / self.scale)))  # kernel states
-        states = np.zeros(T)
         for i in range(T):
-            x_now = np.exp(-max(d_now, -0.5) / self.scale)
-            x_prev = np.exp(-max(d_prev, -0.5) / self.scale)
-            taus = _taus(self.slow_tau)
-            if taus:
-                slow += (x_now - slow) / np.asarray(taus)
-            e = np.array([x_now, x_now - x_prev] + ([x_now * facing()] if self.directional else [])
-                         + list(slow))
-            if stage:
-                ash_k += (x_now - ash_k) / np.asarray(self.ash_taus)
-                c_now = float(self.w_c @ ash_k - self.c_off)
-                e = np.array([c_now])
-            v = np.clip(self._features(hist, e) @ W + L @ rng.standard_normal(k), -clip, clip)
-            if hyst:                       # the brain's own channel decides, read with hysteresis
-                raw = v[-1] * bs[1] + bm[1]
-                lo, hi = self.thresholds
-                state = int(raw >= lo) if state else int(raw > hi)
-            else:
-                v[-1] = z_rev[state]
-            hist = hist[1:] + [v]
-            vh = v
-            if stage:
-                vh = v.copy()
-                vh[ash_i] += c_now                              # full ASH = brain part + copper response
-            out[:, i] = vh
-            if self.speed_map:
-                from scipy.special import ndtr
-                u = float(ndtr(v[-2] if state == 0 else -v[-2]))
-                speed = float(np.interp(u, np.linspace(0.005, 0.995, 199), sq[state]))
-            else:
-                speed = abs(float(np.clip(v[-2] * bs[0] + bm[0], -0.4, 0.4)))
-            vel = -speed if state == 1 else speed
-            rev = float(state)
-            states[i] = state
-            if not hyst and d_now < self.d_limit:
-                # impassable copper [A]: move whichever way leads back inside (reverse when
-                # facing out, crawl forward when facing in)
-                state = 1 if facing() > 0 else 0
-            elif not hyst:
-                pred = float(self._features(hist, e) @ W[:, -1]) if self._uses_drive else 0.0
-                hz = self._hz_vec(vh, self._hz_rows(), pred, e) @ self.hazard[state] + off[state]
-                if rng.random() < 1 / (1 + np.exp(-np.clip(hz, -30, 30))):
-                    state = 1 - state
-            shape, turn = stepper.step(vel, vel_prev, rev, rev_prev)
-            angles[i] = shape + H
-            path[i] = head
-            dist[i] = d_now
-            if i + 1 < T:
-                dt = float(t[i + 1] - t[i])
-                fwd = angles[i, 0] + np.pi
-                head = head + vel * dt * np.array([np.cos(fwd), np.sin(fwd)])
-                H += turn
-                if self.heading_noise:
-                    H += self.heading_noise * rng.standard_normal()
-                if self.steer and self.senses:
-                    psi = H + np.pi - np.arctan2(head[1], head[0])
-                    H += self.k_steer * np.exp(-max(d_now, -0.5) / (self.steer_scale or self.scale)) * np.sin(psi)
-                d_prev, d_now = d_now, arena_radius_mm - np.hypot(*head)
-            vel_prev, rev_prev = vel, rev
-        s = sp.decode(out, template, self.name, source=origin)
-        s.name = f"{self.name}:{origin}"
-        s.behaviour["dist_to_boundary"] = dist
-        s.behaviour["reversing"] = states
-        return s, angles, path, stepper.continued / max(stepper.steps - 1, 1)
+            a.think()
+            a.move(float(t[i + 1] - t[i]) if i + 1 < T else None)
+        return a.result()
+
+
+class BrainAgent:
+    """A closed-loop model worm stepped one frame at a time, so that many can share an arena
+    (arc 6). Each frame is split in two so that a swarm engine can arbitrate between worms:
+
+        think(touch)   brain step, reversal decision, body posture; proposes the head's move
+        move(dt, blocked)   commits the move (or holds the head still when `blocked`) and
+                            updates heading and copper distance
+
+    With touch=False and blocked=False throughout, the frame sequence and the random draws are
+    exactly those of the original single-worm simulation (checked by a regression test).
+
+    `touch` is a contact sense [A, arc 6]: while forward, a frame in which the head touches
+    another worm starts a reversal with probability `p_touch` (on top of the brain's own
+    hazard). Calibrated later against real multi-worm data."""
+
+    def __init__(self, m: SensoryVAR, template: BenchSample, arena_radius_mm: float, start_dist_mm: float,
+                 library: MotionLibrary, rng: np.random.Generator, which: int, burn: int = 300,
+                 clip: float = 8.0, origin: str | None = None, p_touch: float = 0.0):
+        self.m, self.template, self.R, self.lib, self.rng, self.clip = m, template, arena_radius_mm, library, rng, clip
+        self.origin = origin or m.names[which % len(m.names)]
+        self.W, self.L = m.W[self.origin], m.L[self.origin]
+        self.off = m.offsets.get(self.origin, (0.0, 0.0))
+        self.sq = m.speed_q_worm.get(self.origin, m.speed_q)
+        self.p_touch = p_touch
+        sp = m.space
+        k = sp.k
+        self.bm, self.bs = sp.beh_mean, sp.beh_sd
+        self.T = template.x.shape[1]
+        self.stepper = MotionStepper(library, seed=int(rng.integers(1 << 30)))
+        phi = rng.uniform(0, 2 * np.pi)
+        self.head = start_dist_mm * np.array([np.cos(phi), np.sin(phi)])
+        self.H = rng.uniform(0, 2 * np.pi)
+        self.hist = [np.zeros(k) for _ in range(m.lags)]
+        self.d_prev = self.d_now = arena_radius_mm - np.hypot(*self.head)
+        self.stage = m.ash_stage and m.w_c is not None and m.senses
+        fo = np.array([self.facing(), self.facing()]) if m.directional else None
+        if self.stage:
+            self.ash_i = m._ash_index()
+            x0 = float(np.exp(-max(self.d_now, -0.5) / m.scale))
+            self.ash_k = np.full(len(m.ash_taus), x0)
+        bm, bs = self.bm, self.bs
+        for _ in range(burn):           # burn-in of the brain while the worm rests at its start
+            e = sense(np.array([self.d_now, self.d_now]), fo, m.scale, m.slow_tau)[:, -1]
+            if self.stage:
+                e = np.array([float(m.w_c @ self.ash_k - m.c_off)])
+            v = np.clip(m._features(self.hist, e) @ self.W + self.L @ rng.standard_normal(k), -clip, clip)
+            v[-1] = (0 - bm[1]) / bs[1]
+            self.hist = self.hist[1:] + [v]
+        T = self.T
+        self.out = np.empty((k, T))
+        self.angles = np.empty((T, library.shapes.shape[1]))
+        self.path = np.empty((T, 2))
+        self.dist = np.empty(T)
+        self.states = np.zeros(T)
+        self.touched = np.zeros(T, bool)
+        self.vel_prev, self.rev_prev = 0.0, 0.0
+        self.state = 0
+        self.z_rev = [(0 - bm[1]) / bs[1], (1 - bm[1]) / bs[1]]
+        self.hyst = m.reversals == "hysteresis"
+        self.slow = np.full(len(_taus(m.slow_tau)), float(np.exp(-max(self.d_now, -0.5) / m.scale)))
+        self.i = 0
+        self.vel = 0.0
+        self.turn = 0.0
+
+    def facing(self) -> float:
+        """Cosine between the heading and the outward arena normal at the head."""
+        return float(np.cos(self.H + np.pi - np.arctan2(self.head[1], self.head[0])))
+
+    def body(self) -> np.ndarray:
+        """Body points (K + 1, 2), head first, from the current posture (after think())."""
+        a = self.angles[self.i]
+        seg = self.lib.length_mm / len(a)
+        steps = seg * np.stack([np.cos(a), np.sin(a)], axis=1)
+        return self.head + np.vstack([np.zeros(2), np.cumsum(steps, axis=0)])
+
+    def proposed_head(self, dt: float) -> np.ndarray:
+        fwd = self.angles[self.i, 0] + np.pi
+        return self.head + self.vel * dt * np.array([np.cos(fwd), np.sin(fwd)])
+
+    def think(self, touch: bool = False):
+        m, rng, W, L, bm, bs = self.m, self.rng, self.W, self.L, self.bm, self.bs
+        i, k = self.i, m.space.k
+        d_now, d_prev = self.d_now, self.d_prev
+        x_now = np.exp(-max(d_now, -0.5) / m.scale)
+        x_prev = np.exp(-max(d_prev, -0.5) / m.scale)
+        taus = _taus(m.slow_tau)
+        if taus:
+            self.slow += (x_now - self.slow) / np.asarray(taus)
+        e = np.array([x_now, x_now - x_prev] + ([x_now * self.facing()] if m.directional else [])
+                     + list(self.slow))
+        if self.stage:
+            self.ash_k += (x_now - self.ash_k) / np.asarray(m.ash_taus)
+            c_now = float(m.w_c @ self.ash_k - m.c_off)
+            e = np.array([c_now])
+        v = np.clip(m._features(self.hist, e) @ W + L @ rng.standard_normal(k), -self.clip, self.clip)
+        state = self.state
+        if self.hyst:
+            raw = v[-1] * bs[1] + bm[1]
+            lo, hi = m.thresholds
+            state = int(raw >= lo) if state else int(raw > hi)
+        else:
+            v[-1] = self.z_rev[state]
+        self.hist = self.hist[1:] + [v]
+        vh = v
+        if self.stage:
+            vh = v.copy()
+            vh[self.ash_i] += c_now
+        self.out[:, i] = vh
+        if m.speed_map:
+            from scipy.special import ndtr
+            u = float(ndtr(v[-2] if state == 0 else -v[-2]))
+            speed = float(np.interp(u, np.linspace(0.005, 0.995, 199), self.sq[state]))
+        else:
+            speed = abs(float(np.clip(v[-2] * bs[0] + bm[0], -0.4, 0.4)))
+        vel = -speed if state == 1 else speed
+        rev = float(state)
+        self.states[i] = state
+        self.touched[i] = touch
+        if not self.hyst and d_now < m.d_limit:
+            state = 1 if self.facing() > 0 else 0
+        elif not self.hyst:
+            pred = float(m._features(self.hist, e) @ W[:, -1]) if m._uses_drive else 0.0
+            hz = m._hz_vec(vh, m._hz_rows(), pred, e) @ m.hazard[state] + self.off[state]
+            if rng.random() < 1 / (1 + np.exp(-np.clip(hz, -30, 30))):
+                state = 1 - state
+            elif touch and state == 0 and self.p_touch > 0 and rng.random() < self.p_touch:
+                state = 1                                   # contact-triggered reversal [A]
+        self.state = state
+        shape, turn = self.stepper.step(vel, self.vel_prev, rev, self.rev_prev)
+        self.angles[i] = shape + self.H
+        self.path[i] = self.head
+        self.dist[i] = d_now
+        self.vel, self.rev, self.turn = vel, rev, turn
+
+    def move(self, dt: float | None, blocked: bool = False):
+        m = self.m
+        if dt is not None:
+            if not blocked:
+                self.head = self.proposed_head(dt)
+            self.H += self.turn
+            if m.heading_noise:
+                self.H += m.heading_noise * self.rng.standard_normal()
+            if m.steer and m.senses:
+                psi = self.H + np.pi - np.arctan2(self.head[1], self.head[0])
+                self.H += m.k_steer * np.exp(-max(self.d_now, -0.5) / (m.steer_scale or m.scale)) * np.sin(psi)
+            self.d_prev, self.d_now = self.d_now, self.R - np.hypot(*self.head)
+        self.vel_prev, self.rev_prev = self.vel, self.rev
+        self.i += 1
+
+    def result(self, n: int | None = None):
+        m = self.m
+        n = self.i if n is None else n
+        s = m.space.decode(self.out[:, :n], self.template, m.name, source=self.origin)
+        s.name = f"{m.name}:{self.origin}"
+        s.behaviour["dist_to_boundary"] = self.dist[:n]
+        s.behaviour["reversing"] = self.states[:n]
+        return s, self.angles[:n], self.path[:n], self.stepper.continued / max(self.stepper.steps - 1, 1)

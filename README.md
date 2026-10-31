@@ -813,6 +813,63 @@ reaches ASH but about the closed loop itself (reversals decided by a hazard and 
 back into the brain). Arc 5 rests here for now with v11 as the reference closed loop.
 
 
+## Arc 6: from one brain to a swarm
+
+**Question.** Does the ruler's verdict hold when many model brains share one world? Real
+worms on a plate meet, touch, back off and sometimes clump. A model that is right one worm
+at a time could still be wrong as a crowd, and the crowd is a new place to ask arc 2's
+question: does individuality matter? If every worm in a swarm is the average worm, does
+the swarm behave differently from a swarm of distinct individuals?
+
+**What gets built (no new data needed).**
+
+- `nematica/swarm/engine.py`: N closed-loop worms in one copper arena, each a v11 brain
+  (`SensoryVAR`) with a motion-matched body, stepped together one frame (0.6 s) at a time.
+  The single-worm simulation was split into a per-frame agent (`BrainAgent`: `think` then
+  `move`); with no interactions it reproduces the old simulation exactly (same random
+  draws, checked to the bit).
+- Interactions, all stated assumptions [A] until they can be calibrated against real
+  multi-worm tracking (Ding et al. 2019, Level 7):
+  - *exclusion*: a head may not move closer to another worm's body than the contact
+    distance (0.1 mm, about two body widths); it holds still instead;
+  - *touch*: while crawling forward, a frame in which the head is within the contact
+    distance of another worm starts a reversal with probability 0.3, on top of the brain's
+    own reversal hazard (anterior touch makes real worms reverse);
+  - *density* (other heads within one body length) is measured, never fed to the brain.
+- Swarm statistics (`nematica/swarm/metrics.py`): time in contact, fraction of worms in a
+  cluster (bodies touching, connected components of 2 or more), cluster sizes,
+  nearest-neighbour head distance, reversal onsets per minute against local density, time
+  near copper, and the spread of each worm's own statistics across the swarm.
+
+**First experiment: twins versus average worms.** For each frozen rotation, models are
+fitted on the training worms as in arc 5. Swarms of 32 worms, 16 minutes:
+
+| swarm | brains |
+|---|---|
+| twins | each training worm's own model, twice (16 worms x 2) |
+| average | 32 copies of the pooled model (pooled dynamics, median reversal offsets, pooled speeds) |
+
+each run with interactions on and with interactions off (worms pass through each other:
+the chance-encounter baseline), 3 seeds per rotation.
+
+**Expectations, written before any run.**
+
+1. (check of construction) Twins spread more: the between-worm SD of reversal rate is at
+   least 1.5 times larger in twin swarms than in average swarms.
+2. (check of construction) With interactions on, reversal onsets per minute rise with local
+   density; with interactions off they do not (within seed variation).
+3. (check of construction) Interactions lower time in contact compared with pass-through
+   swarms, because touched worms back off.
+4. (the open question, no strong prior) Swarm-level means (time in contact, fraction in
+   clusters, nearest-neighbour distance, time near copper) differ between twin and average
+   swarms by less than two seed-to-seed SDs, but twin swarms are more heterogeneous: the
+   between-worm SD of time in contact is larger for twins. If means also differ clearly,
+   individuality changes the collective, not just the individuals.
+
+Nothing here is scored against real swarms yet: these are model-against-model comparisons.
+The scored test (Level 7) needs real multi-worm tracking.
+
+
 ## Leaderboard: published models
 
 `nematica/systems/published.py`, `scripts/fetch_creamer_lds.py`, `scripts/run_published.py`.
