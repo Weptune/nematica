@@ -1589,6 +1589,16 @@ apart, the same as for unwired pairs in general (57.0%). This is consistent with
 authors' finding that signals often propagate where no wire exists (Randi et al. 2023); here
 it becomes a test of brain copies.
 
+**Can the wiring predict where a poke's echo goes?** (Exploratory, not pre-registered;
+`scripts/analyse_wiring_echo.py`, `docs/figures/wiring_echo.csv`.) Split the worms into two
+random halves; in one half, mark which poked pairs give a reliable echo (|t| > 2); ask how well
+each predictor ranks those pairs, as an area under the ROC curve (0.5 is a coin flip), over 20
+random halves. **Whether a wire exists: 0.508 [0.495, 0.520]. The number of synapses: 0.508.
+Two wired steps: 0.505. The echoes of the other half of the worms: 0.620 [0.600, 0.638].** At
+the level of neuron classes and calcium imaging, the wiring diagram predicts where a poke's
+echo goes no better than chance, while other worms' pokes do. Binomial tests for enrichment of
+wired pairs among reliable echoes: p = 0.24 (|t| > 3), p = 0.09 (|t| > 4).
+
 **The model test (written before running).** The brain that passes the poke test
 (`hybrid_kernels_regimes_obsfit`: causal links learned from pokes, dynamics learned from
 watching, measurement noise, calm and active states) is rebuilt with its causal links
@@ -1600,6 +1610,10 @@ restricted, everything else identical:
 | `..._shuffled_...` | random wiring with each class's number of inputs kept |
 | `..._unwiredn_...` | as many links as the wired version, drawn at random from unwired pairs |
 | `..._unwired_...` | every unwired pair (both classes in the connectome), no wired ones |
+
+Every version keeps each class's echo onto its own other members (left-right partners), as
+the wiring mask does. (A first launch dropped those for the unwired versions; it was stopped,
+its one result deleted, and rerun.)
 
 Scored on all eleven levels on both frozen splits (`pumpprobe_cv3`, `pumpprobe_cv3_blocks1`),
 responses in units of pre-stimulus fluctuations as for the ingredient hunt. Expectations:

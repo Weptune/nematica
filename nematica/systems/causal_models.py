@@ -541,7 +541,8 @@ class HybridKernel:
                     keep = wired + unwired
                 else:
                     raise ValueError(f"unknown mask {self.mask}")
-                keep = set(keep)
+                # a class's own echo (its other members answering) is kept, as the wiring mask keeps it
+                keep = set(keep) | {k for k in self.kernels if k[0] == k[1]}
                 self.kernels = {k: v for k, v in self.kernels.items() if k in keep}
                 self.info_mask = {"wired": len(wired), "unwired": len(unwired)}
         self.info = {**self.var.info, "kernels": len(self.kernels), **getattr(self, "info_mask", {})}
