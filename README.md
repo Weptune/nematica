@@ -1050,6 +1050,10 @@ scorecard (9 of 10 pairwise; all three Level 6 metrics inside).
 
 ## Sources and licences
 
+NEMATICA's own code is released under the MIT licence (`LICENSE`). The licence covers the
+code only: every dataset and third-party model below keeps its own terms, and copies of
+third-party data stay local unless their terms allow redistribution.
+
 - Copper-boundary whole-brain recordings: Baskoylu et al. 2026, Dryad
   10.5061/dryad.w9ghx3g4v (CC0).
 - Atanas et al. 2023, *Cell*: brain-wide representations of behavior (Flavell lab).
