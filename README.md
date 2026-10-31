@@ -1158,6 +1158,23 @@ worms; compared with how well one real worm's echoes correlate with that average
 0.31). If a model's averaged echo reaches 0.31, its failure is about trial-to-trial
 variability, not cause and effect, and the headline will be restated accordingly.
 
+Result (`scripts/run_signal_noise.py`, `docs/figures/signal_noise_f0.csv`; pool 1, original
+archive, response units of pre-stimulus fluctuations, where one real worm correlates with
+the atlas average at 0.26):
+
+| brain | single simulated worm vs atlas average | 10 repeats averaged vs atlas average |
+|---|---|---|
+| VAR(3), learned from rest | 0.04 | 0.05 |
+| VAR(3), rectified features | 0.05 | 0.09 |
+| VAR(3), learned from pokes | 0.07 | 0.12 |
+| published, fully connected | 0.16 | 0.20 |
+
+Averaging away the noise barely helps: even ten repeats of the whole experiment give an echo
+that agrees with the atlas less than *one* real worm does. **The failure is about cause and
+effect, not trial-to-trial noise**, so the headline stands as stated. The published model,
+fitted to the atlas itself, comes closest; learning from pokes helps the VAR (0.05 to 0.12)
+but far from enough.
+
 ## Signatures of a mind: perturbational complexity
 
 Nobody can measure consciousness directly, and whether a worm experiences anything is an
