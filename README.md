@@ -546,6 +546,25 @@ in-sample; v12 0.665 held-out (0.759, 0.648, 0.587; p 0.02, 0.03, 0.21) and 0.48
 in-sample. With the 10-frame brain, a classifier cannot tell the closed-loop worm's brain
 from the worms it imitates, while it moves in its own arena and senses copper.
 
+**A correction and a robustness check for v11.** ASH is labelled in 9 of 16 training
+worms of rotation 3, under the 60% needed to enter the model's core neurons, so in the
+original v9 and v11 runs that rotation had no ASH: no copper input to the brain and no ASH
+in the hazard (copper acted there only through steering and the copper limit). The state
+space now keeps classes a model depends on (`include=("ASH",)`). Rerun with ASH present in
+all rotations, v11 gives the same picture: 9 of 10 pairwise (lead-lag 1.08), all three
+Level 6 metrics inside, 16.2% near copper (`docs/figures/closed_loop_v13.csv`).
+
+**Version 13: a separate sensory stage for ASH** (output error). Even driven by recorded
+copper, a one-step fit gives ASH an encounter response far too small (rise 0.21, real
+0.71), because ASH's own history explains most of each step. v13 instead fits ASH's copper
+component directly to its level on training worms, as a sum of exponential kernels of
+proximity; the fitted kernels rise fast and adapt (weights +2.73 at about 3 s, -3.46 at
+about 30 s), the encounter response doubles (0.33, peak about 5 s after contact), the
+brain models the rest of ASH, and the other neurons receive the copper component. In
+closed loop this breaks the brain's statistics like v10 did: 6 of 10 pairwise, 28% near
+copper, Level 6 inside. Feeding any copper-derived signal to all neurons does this; v11's
+constraint (copper only into ASH's own dynamics) remains the best compromise.
+
 
 ## Leaderboard: published models
 

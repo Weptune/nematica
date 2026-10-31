@@ -40,11 +40,18 @@ class StateSpace:
     beh_sd: np.ndarray
 
     @classmethod
-    def from_train(cls, train: Sequence[BenchSample], min_fraction: float = 0.6) -> "StateSpace":
+    def from_train(cls, train: Sequence[BenchSample], min_fraction: float = 0.6, include=()) -> "StateSpace":
+        """Core classes: observed in at least `min_fraction` of training worms, plus any in
+        `include` observed in at least one (a model that depends on a class, e.g. ASH for
+        copper sensing, must not lose it in rotations where it is labelled a little less often)."""
         frac = np.mean([s.observed for s in train], axis=0)
         vel = np.concatenate([s.behaviour["velocity"] for s in train])
         rev = np.concatenate([s.behaviour["reversing"] for s in train])
-        return cls(train[0].classes, np.flatnonzero(frac >= min_fraction),
+        keep = frac >= min_fraction
+        for c in include:
+            if c in train[0].classes and frac[train[0].classes.index(c)] > 0:
+                keep[train[0].classes.index(c)] = True
+        return cls(train[0].classes, np.flatnonzero(keep),
                    np.array([vel.mean(), rev.mean()]), np.array([vel.std(), rev.std()]))
 
     @property
@@ -101,8 +108,8 @@ class WarpedStateSpace(StateSpace):
     worm_q: dict = field(default_factory=dict)          # origin -> {core row -> sorted values}
 
     @classmethod
-    def from_train(cls, train, min_fraction: float = 0.6) -> "WarpedStateSpace":
-        base = StateSpace.from_train(train, min_fraction)
+    def from_train(cls, train, min_fraction: float = 0.6, include=()) -> "WarpedStateSpace":
+        base = StateSpace.from_train(train, min_fraction, include)
         sp = cls(base.classes, base.core, base.beh_mean, base.beh_sd)
         grid = np.linspace(0, 1, 201)
         for r, ci in enumerate(sp.core):
@@ -151,9 +158,9 @@ class CalciumStateSpace(WarpedStateSpace):
     gamma: float = 0.6
 
     @classmethod
-    def from_train(cls, train, min_fraction: float = 0.6, gamma: float = 0.6) -> "CalciumStateSpace":
+    def from_train(cls, train, min_fraction: float = 0.6, gamma: float = 0.6, include=()) -> "CalciumStateSpace":
         drive = [cls._drive_sample(s, gamma) for s in train]
-        w = WarpedStateSpace.from_train(drive, min_fraction)
+        w = WarpedStateSpace.from_train(drive, min_fraction, include)
         sp = cls(w.classes, w.core, w.beh_mean, w.beh_sd, w.pooled_q, w.worm_q)
         sp.gamma = gamma
         return sp

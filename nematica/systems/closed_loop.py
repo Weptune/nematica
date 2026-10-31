@@ -39,14 +39,22 @@ def sense(d: np.ndarray, facing_out: np.ndarray | None = None, scale: float = SE
     x = np.exp(-np.maximum(np.asarray(d, float), -0.5) / scale)
     dx = np.diff(x, prepend=x[:1])
     rows = [x, dx] if facing_out is None else [x, dx, x * np.asarray(facing_out, float)]
-    if slow_tau > 0:                    # tonic input: proximity smoothed over slow_tau frames
+    for tau in _taus(slow_tau):         # proximity smoothed over tau frames (one row per kernel)
         ema = np.empty_like(x)
         acc = x[0]
         for i, xi in enumerate(x):
-            acc += (xi - acc) / slow_tau
+            acc += (xi - acc) / tau
             ema[i] = acc
         rows.append(ema)
     return np.vstack(rows)
+
+
+def _taus(slow_tau) -> tuple:
+    """slow_tau may be 0 (none), one time constant, or a tuple of them (a sum of
+    exponential kernels whose weights the regression fits)."""
+    if isinstance(slow_tau, (tuple, list)):
+        return tuple(t for t in slow_tau if t > 0)
+    return (slow_tau,) if slow_tau and slow_tau > 0 else ()
 
 
 class SensoryVAR:
@@ -56,7 +64,8 @@ class SensoryVAR:
                  sense_scales=(SENSE_SCALE_MM,), per_worm_rates: bool = False,
                  sense_ridge_mults=(1.0,), steer: bool = False, steer_window: int = 17,
                  copper_limit: bool = False, steer_scales=None, heading_noise: float = 0.0,
-                 stage_speed: bool = False, lags: int = LAGS, slow_taus=(0.0,), sense_targets=None):
+                 stage_speed: bool = False, lags: int = LAGS, slow_taus=(0.0,), sense_targets=None,
+                 ash_stage: bool = False, ash_taus=(2.0, 5.0, 17.0, 50.0)):
         """hazard_from: "brain" (core classes and velocity), "speed" (velocity only) or "none"
         (constant rates); copper proximity is added to any of them when `senses` is on.
         directional: add proximity x facing-the-copper to the senses.
@@ -83,6 +92,13 @@ class SensoryVAR:
         # copper input only into these classes' rows (e.g. ("ASH",)): every other neuron gets
         # copper only through the brain's own dynamics [A: sensory neurons receive the stimulus]
         self.sense_targets = tuple(sense_targets) if sense_targets else None
+        # sensory stage (output error) [A]: ASH's copper-driven component c(t) = sum of
+        # exponential kernels of proximity, fitted to ASH's level on training worms; the
+        # brain models the rest of ASH, the other neurons receive c(t), and the hazard sees
+        # the full ASH. A one-step fit of copper inputs inside the dynamics gives a response
+        # far too small and slow (encounter rise 0.21 vs real 0.71).
+        self.ash_stage, self.ash_taus = ash_stage, tuple(ash_taus)
+        self.w_c = None
         self.speed_q_worm: dict = {}
         self.d_limit = -np.inf
         self.offsets: dict = {}
@@ -94,21 +110,63 @@ class SensoryVAR:
         n = "closed_loop_" + ("senses" if self.senses else "blind")
         tail = ("_steer" if self.steer and self.senses else "") + ("_limit" if self.copper_limit and self.senses else "") \
             + (f"_lags{self.lags}" if self.lags != LAGS else "") \
-            + ("_tonic" if any(t > 0 for t in self.slow_taus) and self.senses else "") \
+            + ("_tonic" if any(_taus(t) for t in self.slow_taus) and self.senses else "") \
             + ("_pen" if self.sense_ridge_mults == (1.0,) and self.hazard_from == "command_ash" else "") \
-            + ("_into_" + "_".join(self.sense_targets) if self.sense_targets and self.senses else "")
+            + ("_into_" + "_".join(self.sense_targets) if self.sense_targets and self.senses else "") \
+            + ("_ashstage" if self.ash_stage and self.senses else "")
         if self.reversals == "hysteresis":
             return n + "_hyst" + ("_dir" if self.directional and self.senses else "")
         return n + ("" if self.hazard_from == "brain" else "_" + self.hazard_from) \
             + ("_dir" if self.directional and self.senses else "") + tail
 
+    def _ash_kernels(self, d):
+        x = np.exp(-np.maximum(np.asarray(d, float), -0.5) / self.scale)
+        out = np.empty((len(self.ash_taus), len(x)))
+        for j, tau in enumerate(self.ash_taus):
+            acc = x[0]
+            for i, xi in enumerate(x):
+                acc += (xi - acc) / tau
+                out[j, i] = acc
+        return out
+
+    def _ash_c(self, s: BenchSample):
+        return self.w_c @ self._ash_kernels(s.behaviour["dist_to_boundary"]) - self.c_off
+
+    def _ash_index(self):
+        names = [self.space.classes[c] for c in self.space.core]
+        return names.index("ASH")
+
+    def _fit_ash_stage(self, train):
+        a = self._ash_index()
+        K, Y = [], []
+        for s in train:
+            v, mask = self.space.encode(s)
+            if not mask[a]:
+                continue
+            K.append(self._ash_kernels(s.behaviour["dist_to_boundary"]))
+            Y.append(v[a])
+        K, Y = np.hstack(K), np.concatenate(Y)
+        X = np.vstack([K, np.ones(K.shape[1])]).T
+        w = np.linalg.solve(X.T @ X + 1.0 * np.diag(np.r_[np.ones(len(K)), 0.0]), X.T @ Y)
+        self.w_c = w[:-1]
+        self.c_off = float(np.mean(self.w_c @ K))
+        self.info_ash = {"ash_kernel_weights": [round(float(x), 3) for x in self.w_c],
+                         "ash_stage_r2": round(float(1 - np.var(Y - X @ w) / np.var(Y)), 4)}
+
     def _sense(self, s: BenchSample):
+        if self.ash_stage and self.w_c is not None:
+            return self._ash_c(s)[None, :]
         return sense(s.behaviour["dist_to_boundary"], s.behaviour["facing_out"] if self.directional else None,
                      self.scale, self.slow_tau)
 
     # ------------------------------------------------------------------ data
     def _xy(self, s: BenchSample):
         v, mask = self.space.encode(s)
+        if self.ash_stage and self.w_c is not None and self.senses:
+            a = self._ash_index()
+            if mask[a]:
+                v = v.copy()
+                v[a] -= self._ash_c(s)          # the brain models ASH minus its copper response
         T = v.shape[1]
         cols = [v[:, self.lags - 1 - l: T - 1 - l].T for l in range(self.lags)]
         if self.senses:
@@ -243,8 +301,12 @@ class SensoryVAR:
         return scores
 
     def fit(self, train, val):
-        self.space = CalciumStateSpace.from_train(train, gamma=self.gamma)
+        needs_ash = self.senses and (self.ash_stage or self.hazard_from == "command_ash"
+                                     or (self.sense_targets and "ASH" in self.sense_targets))
+        self.space = CalciumStateSpace.from_train(train, gamma=self.gamma, include=("ASH",) if needs_ash else ())
         scale_scores = self._choose_scale(train, val) if self.senses and len(self.sense_scales) > 1 else None
+        if self.ash_stage and self.senses:
+            self._fit_ash_stage(train)
         n_core = self.space.core.size
         n_brain = self.space.k * self.lags
         best = None
@@ -283,7 +345,8 @@ class SensoryVAR:
             self.W[s.origin], self.L[s.origin] = W, np.linalg.cholesky(cov)
             self.names.append(s.origin)
         self.hazard = self._fit_hazards(train)
-        self.info = {"ridge": best[0], "val_r2": round(float(best[1]), 4), "sense_scale_mm": self.scale,
+        self.info = {**getattr(self, "info_ash", {}), "ridge": best[0], "val_r2": round(float(best[1]), 4),
+                     "sense_scale_mm": self.scale,
                      "slow_tau_frames": self.slow_tau,
                      "sense_ridge_mult": best[3]}
         if scale_scores:
@@ -469,7 +532,11 @@ class SensoryVAR:
             hist = hist[1:] + [v]
             states[i] = state
             pred = float(self._features(hist, e) @ W[:, -1]) if self._uses_drive else 0.0
-            hz = self._hz_vec(v, rows, pred, e) @ self.hazard[state] + off[state]
+            vh = v
+            if self.ash_stage and self.w_c is not None and self.senses:
+                vh = v.copy()
+                vh[self._ash_index()] += e_all[0, i]          # hazard sees the full ASH
+            hz = self._hz_vec(vh, rows, pred, e) @ self.hazard[state] + off[state]
             if rng.random() < 1 / (1 + np.exp(-np.clip(hz, -30, 30))):
                 state = 1 - state
         return states
@@ -554,8 +621,15 @@ class SensoryVAR:
         facing = lambda: float(np.cos(H + np.pi - np.arctan2(head[1], head[0])))  # noqa: E731
         fo = np.array([facing(), facing()]) if self.directional else None
         # burn-in of the brain while the worm rests at its start
+        stage = self.ash_stage and self.w_c is not None and self.senses
+        if stage:
+            ash_i = self._ash_index()
+            x0 = float(np.exp(-max(d_now, -0.5) / self.scale))
+            ash_k = np.full(len(self.ash_taus), x0)              # kernel states of ASH's copper response
         for _ in range(burn):
             e = sense(np.array([d_now, d_now]), fo, self.scale, self.slow_tau)[:, -1]
+            if stage:
+                e = np.array([float(self.w_c @ ash_k - self.c_off)])
             v = np.clip(self._features(hist, e) @ W + L @ rng.standard_normal(k), -clip, clip)
             v[-1] = (0 - bm[1]) / bs[1]
             hist = hist[1:] + [v]
@@ -568,15 +642,20 @@ class SensoryVAR:
         state = 0
         z_rev = [(0 - bm[1]) / bs[1], (1 - bm[1]) / bs[1]]          # reversal channel values
         hyst = self.reversals == "hysteresis"
-        slow = float(np.exp(-max(d_now, -0.5) / self.scale))     # tonic copper state at the start
+        slow = np.full(len(_taus(self.slow_tau)), float(np.exp(-max(d_now, -0.5) / self.scale)))  # kernel states
         states = np.zeros(T)
         for i in range(T):
             x_now = np.exp(-max(d_now, -0.5) / self.scale)
             x_prev = np.exp(-max(d_prev, -0.5) / self.scale)
-            if self.slow_tau > 0:
-                slow += (x_now - slow) / self.slow_tau
+            taus = _taus(self.slow_tau)
+            if taus:
+                slow += (x_now - slow) / np.asarray(taus)
             e = np.array([x_now, x_now - x_prev] + ([x_now * facing()] if self.directional else [])
-                         + ([slow] if self.slow_tau > 0 else []))
+                         + list(slow))
+            if stage:
+                ash_k += (x_now - ash_k) / np.asarray(self.ash_taus)
+                c_now = float(self.w_c @ ash_k - self.c_off)
+                e = np.array([c_now])
             v = np.clip(self._features(hist, e) @ W + L @ rng.standard_normal(k), -clip, clip)
             if hyst:                       # the brain's own channel decides, read with hysteresis
                 raw = v[-1] * bs[1] + bm[1]
@@ -585,7 +664,11 @@ class SensoryVAR:
             else:
                 v[-1] = z_rev[state]
             hist = hist[1:] + [v]
-            out[:, i] = v
+            vh = v
+            if stage:
+                vh = v.copy()
+                vh[ash_i] += c_now                              # full ASH = brain part + copper response
+            out[:, i] = vh
             if self.speed_map:
                 from scipy.special import ndtr
                 u = float(ndtr(v[-2] if state == 0 else -v[-2]))
@@ -601,7 +684,7 @@ class SensoryVAR:
                 state = 1 if facing() > 0 else 0
             elif not hyst:
                 pred = float(self._features(hist, e) @ W[:, -1]) if self._uses_drive else 0.0
-                hz = self._hz_vec(v, self._hz_rows(), pred, e) @ self.hazard[state] + off[state]
+                hz = self._hz_vec(vh, self._hz_rows(), pred, e) @ self.hazard[state] + off[state]
                 if rng.random() < 1 / (1 + np.exp(-np.clip(hz, -30, 30))):
                     state = 1 - state
             shape, turn = stepper.step(vel, vel_prev, rev, rev_prev)
