@@ -1,0 +1,10 @@
+model,rotation,comparison,auc,p
+real,0,control,0.5,0.5738
+cl12,0,held_out,0.759,0.0164
+cl12,0,in_sample,0.43,0.7705
+real,1,control,0.442,0.7377
+cl12,1,held_out,0.648,0.0328
+cl12,1,in_sample,0.482,0.541
+real,2,control,0.434,0.7541
+cl12,2,held_out,0.587,0.2131
+cl12,2,in_sample,0.529,0.3607

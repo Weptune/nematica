@@ -34,7 +34,14 @@ from nematica.bench.discriminability import core_classes, discriminability  # no
 from nematica.data import load_copper_dir  # noqa: E402
 from nematica.data.canonical import canonical_classes  # noqa: E402
 from nematica.data.splits import load_folds  # noqa: E402
+from nematica.export.virtual_worm import MotionLibrary  # noqa: E402
+from nematica.systems.closed_loop import SensoryVAR  # noqa: E402
 from nematica.systems.forecasters import CalciumStateSpace, Debounced, Forecaster, IndividualVAR, LagFeatures  # noqa: E402
+
+CL11 = dict(senses=True, hazard_from="command_ash", directional=True, speed_map=True,
+            sense_scales=(0.25, 0.5, 1, 2, 4), per_worm_rates=True, steer=True, copper_limit=True,
+            steer_scales=(0.5, 1, 2, 4, 8), stage_speed=True, sense_ridge_mults=(1.0, 0.1, 0.01, 0.0),
+            slow_taus=(0.0, 8.0, 25.0, 50.0), sense_targets=("ASH",))
 
 
 def build(name, train):
@@ -42,6 +49,8 @@ def build(name, train):
     if name.startswith("hyst"):                       # hyst, hyst6, hyst10: lag order
         lags = int(name[4:] or 3)
         return Debounced(IndividualVAR(Forecaster(f"var{lags}", cs, LagFeatures(cs.k, lags, False)), fixed_lam=300))
+    if name in ("cl11", "cl12"):                     # closed loop v11 (3 lags) or v12 (10 lags)
+        return SensoryVAR(**CL11, lags=10 if name == "cl12" else 3)
     if name == "heavy":
         return Debounced(IndividualVAR(Forecaster("var3", cs, LagFeatures(cs.k, 3, False)), fixed_lam=300,
                                        innovations="student"))
@@ -74,8 +83,20 @@ def main() -> int:
         print(f"rotation {fi} control AUC {c['auc']:.3f}", flush=True)
         for name in args.models.split(","):
             m = build(name, train).fit(train, val)
-            held = [m.generate(s, np.random.default_rng(100 * fi + i), which=i) for i, s in enumerate(pool)]
-            own = [m.generate(s, np.random.default_rng(500 * fi + i), which=i) for i, s in enumerate(train)]
+            if name.startswith("cl"):
+                # closed loop: each worm simulated in its own arena (radius, starting distance)
+                lib = MotionLibrary.from_recordings([by[u] for u in train_uids])
+                arena = lambda u: (by[u].meta["arena"]["radius_mm"],  # noqa: E731
+                                   float(by[u].behaviour["dist_from_center_mm"][0]), by[u].t)
+                m.calibrate_steering(train, [arena(u) for u in train_uids], lib,
+                                     mults=(1, 2, 3, 4, 5, 6, 8, 12), target="drift")
+                sim = lambda s, u, seed, i: m.simulate(s, *arena(u)[:2], lib, np.random.default_rng(seed),  # noqa: E731
+                                                       i, arena(u)[2])[0]
+                held = [sim(s, u, 100 * fi + i, i) for i, (s, u) in enumerate(zip(pool, pool_uids))]
+                own = [sim(s, u, 500 * fi + i, i) for i, (s, u) in enumerate(zip(train, train_uids))]
+            else:
+                held = [m.generate(s, np.random.default_rng(100 * fi + i), which=i) for i, s in enumerate(pool)]
+                own = [m.generate(s, np.random.default_rng(500 * fi + i), which=i) for i, s in enumerate(train)]
             for comp, real, sims in (("held_out", pool, held), ("in_sample", train, own)):
                 r = discriminability(real, sims, core, n_perm=args.perm, seed=fi)
                 rows.append({"model": name, "rotation": fi, "comparison": comp, "auc": r["auc"], "p": r["p"]})

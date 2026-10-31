@@ -1,0 +1,14 @@
+system,metric,level,primary,system_median,bio_median,shift,shift_lo,shift_hi,percentile_of_bio,n_partitions,verdict,distance_ratio,self_spread_ratio,folds
+closed_loop_senses_into_ash_lags10,L6.encounter,6,True,1.0222,0.5355,0.4788,0.0589,0.9326,0.974,421,outside,,,
+closed_loop_senses_into_ash_lags10,L6.approach,6,False,0.2357,0.1975,0.0399,-0.1479,0.2396,0.642,450,inside,,,
+closed_loop_senses_into_ash_lags10,L6.occupancy,6,True,0.4781,0.2401,0.2335,-0.2446,0.5226,0.76,450,inside,,,
+closed_loop_senses_command_ash_dir_steer_limit_lags10_tonic_into_ASH,L1.distribution,1,True,,,0.0037,-0.0026,0.0081,,,inside,1.032,0.916,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_lags10_tonic_into_ASH,L1.timescale,1,False,,,0.0001,-0.1255,0.0592,,,inside,1.0,0.821,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_lags10_tonic_into_ASH,L2.correlation,2,True,,,0.0188,-0.0134,0.0582,,,inside,1.032,1.038,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_lags10_tonic_into_ASH,L2.dimension,2,False,,,0.0652,-0.0326,0.1261,,,inside,1.405,0.928,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_lags10_tonic_into_ASH,L4.leadlag,4,True,,,0.0465,0.0107,0.0858,,,outside,1.069,1.121,outside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_lags10_tonic_into_ASH,L4.dwell,4,False,,,0.0367,-0.0374,0.0749,,,inside,1.117,1.111,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_lags10_tonic_into_ASH,L5.encoding,5,True,,,0.0257,-0.0222,0.0514,,,inside,1.088,1.209,outside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_lags10_tonic_into_ASH,L5.reversal,5,False,,,-0.0025,-0.0378,0.0254,,,inside,0.996,0.969,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_lags10_tonic_into_ASH,B.rev_rate,5,False,,,0.098,-0.0623,0.1776,,,inside,1.462,1.137,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_lags10_tonic_into_ASH,B.rev_duration,5,False,,,-0.0187,-0.0615,0.0288,,,inside,0.947,0.864,inside/inside/inside

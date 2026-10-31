@@ -57,7 +57,8 @@ choice made on training and validation worms only, except where marked post hoc)
 | Closed loop v8 (10-frame brain) | 9 of 10 | not yet run | occupancy and approach inside; 11% near copper; encounter outside |
 | Closed loop v9 (copper acts only through ASH and the brain) | 8 of 10 | not yet run | **all three Level 6 metrics inside**; 10.4% near copper |
 | Closed loop v10 (v9 + tonic copper input) | 6 of 10 | not yet run | all three Level 6 inside; 25% near copper |
-| **Closed loop v11 (copper enters only through ASH)** | **9 of 10** | not yet run | **all three Level 6 inside**; 13% near copper |
+| **Closed loop v11 (copper enters only through ASH)** | **9 of 10** | 0.82 held-out, 0.79 in-sample | **all three Level 6 inside**; 13% near copper |
+| Closed loop v12 (v11 with the 10-frame brain) | 9 of 10 | **0.67 held-out, 0.48 in-sample** | occupancy and approach inside, encounter outside; 19% near copper |
 
 What these say:
 1. **Forecasting is not fidelity.** The model that forecasts best is too typical; letting
@@ -522,6 +523,28 @@ command neurons lead ASH (antisymmetric correlation at 6 s, AVE to ASH +0.138 ag
 -0.165), plausibly because reversals near copper back the worm off and the next approach
 raises ASH again, so ASH follows the commands instead of preceding them. Pattern
 correlation with real lead-lag falls to 0.77 (v7: 0.96).
+
+**Timing around events shows the actual cause** (all pools, activity aligned to events):
+
+| | ASH peak (rise) | AVA peak (rise) |
+|---|---|---|
+| encounter (head first within 1 mm), real | +5.4 s (+0.69) | +11.4 s (+0.10) |
+| encounter, v11 | +12.0 s (+0.43) | no rise |
+| reversal onset within 1 mm of copper, real | +0.6 s (+0.03) | +6.6 s (+0.62) |
+| reversal onset within 1 mm of copper, v11 | +11.4 s (+0.17) | +6.6 s (+0.41) |
+
+Real ASH responds within seconds of meeting copper and is already up when a reversal
+starts; the model's ASH responds too slowly (its copper input is dominated by the 30 s
+tonic term validation chose), peaking seconds after the reversal. So the remaining
+lead-lag miss is the speed of the sensory response, not the re-approach guessed above.
+
+**Version 12** (v11 with the 10-frame brain; `docs/figures/closed_loop_v12.csv`): 9 of 10
+(lead-lag 1.07), encounter back outside (0.974), 18.7% near copper: worse than v11 on
+Level 6. **Fair Level 8 for the closed loop** (`docs/figures/l8_fair_cl11.csv`,
+`l8_fair_cl12.csv`; `run_l8_fair.py --models cl11,cl12`): v11 0.816 held-out, 0.787
+in-sample; v12 0.665 held-out (0.759, 0.648, 0.587; p 0.02, 0.03, 0.21) and 0.480
+in-sample. With the 10-frame brain, a classifier cannot tell the closed-loop worm's brain
+from the worms it imitates, while it moves in its own arena and senses copper.
 
 
 ## Leaderboard: published models
