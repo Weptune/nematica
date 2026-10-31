@@ -290,15 +290,15 @@ class Component extends DCLogic {
           { name: 'A worm without neuropeptides', body: 'One worm at a time, our tests cannot tell the unc-31 mutant from a normal worm.' }
         ] },
         { title: 'IN PROGRESS', color: prog, items: [
-          { name: 'An artificial brain that answers like a real one', body: 'A hybrid that learns ongoing dynamics by watching and causal links by poking is the first with real-looking echo patterns. It still fails one thing: real brains are often quiet for half a minute, and every artificial brain is always busy.' },
-          { name: 'Signatures of a mind', body: 'Perturbational complexity is done; ongoing-activity complexity, integration and whole-brain states are next.' },
+          { name: 'An artificial brain that answers like a real one', body: 'Passed the poke test in all three held-out groups. It needed four things: causal links learned from pokes, ongoing activity learned by watching, noise that does not spread, and a brain that alternates between calm and active stretches. It still fails perturbational complexity, and looks less real at rest than simpler models.' },
+          { name: 'Signatures of a mind', body: 'At rest, artificial brains match real ones on all three consciousness-science measures (complexity, integration, repertoire of brain states). Poked, their echo complexity is still wrong.' },
           { name: 'A brain driving a body', body: 'An artificial brain senses copper and steers a virtual worm: 9 of 10 tests pass, but it steps onto the copper far too often.' },
           { name: 'Swarms of artificial worms', body: '32 artificial brains in one arena. Individual worms make very different crowds; nothing is scored against real crowds yet.' }
         ] },
         { title: 'NOT BUILT YET', color: todo, items: [
           { name: 'Poke it yourself, on the web', body: 'Built in the lab app (pick a neuron, watch the echo spread in a real and two artificial brains); not yet on this page.' },
           { name: 'Real crowds as the reference', body: 'Scoring swarms against real multi-worm tracking needs data we have not loaded yet.' },
-          { name: 'An artificial brain that passes the whole poke test', body: 'Real-looking echo patterns are reached; a real brain\'s calm is not yet. That is the open challenge.' },
+          { name: 'One artificial brain that passes everything', body: 'The best brain at rest fails the poke test; the brain that passes the poke test is weaker at rest and fails perturbational complexity. Merging them is the open challenge.' },
           { name: 'A public leaderboard and write-up', body: 'A package anyone can run on their own model, and a report of the results.' }
         ] }
       ],
@@ -306,7 +306,7 @@ class Component extends DCLogic {
         { big: '185', label: 'real worm brains from four public datasets' },
         { big: '3,062', label: 'single-neuron stimulations analysed for their echoes' },
         { big: '0.50', label: 'a classifier\'s score telling our best copy from the worms it imitates (0.5 is chance)' },
-        { big: '1', label: 'artificial brain so far whose echoes have a real worm\'s pattern, and none with its calm' }
+        { big: '1', label: 'artificial brain so far that passes the poke test, after four ingredients; it still fails echo complexity' }
       ]
     };
   }
