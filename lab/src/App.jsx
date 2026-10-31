@@ -3,8 +3,14 @@ import { useLab } from './store'
 import { loadIndex, loadReplay } from './replay'
 import Scene from './Scene'
 import Overlay from './Overlay'
+import WhichReal from './WhichReal'
 
 export default function App() {
+  if (new URLSearchParams(location.search).get('mode') === 'which') return <WhichReal />
+  return <Replay />
+}
+
+function Replay() {
   const replay = useLab((s) => s.replay)
   const setReplay = useLab((s) => s.setReplay)
   const [index, setIndex] = useState(null)

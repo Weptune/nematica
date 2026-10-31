@@ -23,6 +23,9 @@ python scripts/export_replay.py data/raw/doi_10_5061_dryad_w9ghx3g4v__v20260415 
 
 ## URL options
 
+- `?mode=which` the "Which one is real?" prototype (export rounds with
+  `python scripts/export_which_real.py` first)
+
 - `?uid=2024-06-18-12` pick a recording
 - `?t=240` start time in seconds, `&paused=1` start paused
 - `&neuron=AVAL` pin a neuron (name or class)

@@ -13,3 +13,4 @@ lab/dist/
 data_assets/skuhersky2022_atlas.csv
 lab/public/data/
 *.egg-info/
+lab/node_modules
