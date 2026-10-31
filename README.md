@@ -41,7 +41,7 @@ questions, one arc per question:
 | 1. Forecasting is not fidelity | Does the best forecaster make the most realistic worm? | No: forecasting-optimal models are too typical; realism needs each worm to keep its own dynamics. |
 | 2. Digital twins | Can a model be a particular worm? | Per-worm models pass all 10 pairwise levels on the copper set, and a classifier cannot tell them from the worms they imitate; on a second dataset (Atanas 2023) the classifier result replicates but the pairwise levels only partly do (5 to 6 of 10). |
 | 3. What the wiring buys | Does the real connectome make models more realistic? | Real wiring beats random wiring of the same density on every measure, by small margins; no wiring constraint beats data-chosen coupling at class resolution. |
-| 4. Causal Turing test | Do models respond to perturbations like real brains? | No: models that pass the activity tests on the same worms answer single-neuron pokes wrongly (wrong neurons, two to four times too widespread), including the published atlas models. Perturbational complexity (the consciousness-science measure): real echoes are sparse and differentiated; published models' are wide and stereotyped. |
+| 4. Causal Turing test | Do models respond to perturbations like real brains? | Models that pass the activity tests (and the consciousness-science signatures of ongoing activity) answer pokes wrongly, including the published atlas models; watching a worm does not reveal its own causal fingerprint. The first model to pass the poke test needed causal links learned from pokes, dynamics learned by watching, non-propagating noise and calm/active regimes; it still fails perturbational complexity. Perturbational complexity (the consciousness-science measure): real echoes are sparse and differentiated; published models' are wide and stereotyped. |
 | 5. Closed loop | Can a model brain drive a body in a real environment and behave like a worm? | Nearly: in the copper arena, all environment levels and 9 of 10 pairwise; copper's effect runs through ASH in real worms, and the model's ASH responds too slowly. |
 | 6. Swarm (in progress) | Does it hold when many model brains interact? | Swarm engine built (32 closed-loop worms, touch and exclusion as stated assumptions). Individual worms make very different crowds; a swarm of the pooled "average worm" is more crowded than a mix of the worms it was fitted on. Scoring against real multi-worm tracking (Level 7) awaits the data. |
 
@@ -1235,6 +1235,30 @@ of the poke test; the combination does at least as well. Calibration shows the m
 "calm" is set by how much fast, non-propagating noise sits on top of the slow dynamics,
 which the autocovariance estimate (6%) understated.
 
+**Result: the first artificial brain to pass the poke test** (`docs/figures/ingredients.csv`):
+
+| model | rest (of 6) | pattern (real 0.89 to 0.91) | spread | magnitude | kinetics | perturbational complexity |
+|---|---|---|---|---|---|---|
+| hybrid + measurement noise | 3, 4, 4 | 0.892, 0.909, 0.907: inside 3 of 3 | 19 to 20%: inside 1 of 3 | outside 2 of 3 | inside 3 of 3 | outside 3 of 3 |
+| **hybrid + measurement noise + quiet/active regimes** | 3, 3, 4 | **0.884, 0.912, 0.910: inside 3 of 3** | **20 to 21%: inside 3 of 3** | inside 2 of 3 | inside 3 of 3 | outside 3 of 3 |
+
+By the definition written before any of these ingredients was tried (pattern and spread
+inside in at least 2 of 3 pools), **the hybrid with measurement noise and quiet/active regimes
+passes the poke test, in all three held-out pools**, and passes magnitude and kinetics too.
+(An earlier version ignored the regimes whenever measurement noise was on; it was fixed and
+rerun, and only the fixed results are shown.)
+
+What it took, in order of discovery: causal links learned *from pokes*, as links rather than
+as one-step dynamics; ongoing dynamics learned *by watching*; fast noise that does not
+propagate; and a brain that alternates between calm and active stretches. No single
+ingredient was enough.
+
+What it still fails, honestly: perturbational complexity (the PCI distribution of its echoes
+is outside in every pool), and it is weaker at rest than the plain VAR (3 or 4 of the 6
+activity levels, against 5). So it is the mirror image of the headline only in part: the
+first model that answers a poke like a real worm is not yet the one that looks most like a
+real worm at rest. One brain model that does both is the next target.
+
 Result, pool 1: pattern inside again (0.916, 54th percentile), but spread *worse* (30%):
 expectation not met, and the remaining pools are not needed to see it. Looking at why: the
 spread level counts responses above 3 times each neuron's fluctuation size just before the
@@ -1375,6 +1399,10 @@ structured by discrete states (forward, reverse, turn). Repertoire: no strong pr
   pool, VAR(10) on 8 of 9 (integration slightly low in one pool). Expectation (complexity
   outside, above real) not met: the models' ongoing activity is as complex, as integrated
   and as varied in its global states as real worms' activity.
+
+**Results on the Atanas dataset** (`docs/figures/mind_atanas.csv`): calibrations again 24 of
+27 designed outcomes (the same integration misses); VAR(3) inside on all three signatures in
+every pool; VAR(10) inside on complexity and repertoire everywhere, integration low in 2 of 3.
 
 This sharpens the headline rather than softening it: by every measure of *ongoing* activity
 used here, including the ones consciousness science uses, these artificial brains are
