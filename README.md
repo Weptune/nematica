@@ -960,6 +960,24 @@ worms, probably including the ones scored here, so this is in-sample. Expectatio
 closer to real worms than the class VARs on pattern (inside or near the edge); the
 connectome-constrained model closer than the shuffled one in every pool.
 
+Result (`scripts/run_causal_models.py --models creamer2024_...`,
+`docs/figures/causal_models_creamer.csv`):
+
+| published model | pattern (real pairs 0.85 to 0.88) | magnitude | kinetics |
+|---|---|---|---|
+| connectome-constrained | outside in 3 of 3 (0.97 to 0.98) | outside 3 of 3 | inside 3 of 3 |
+| fully connected | outside in 3 of 3 (0.93 to 0.95) | outside 3 of 3 | outside 2, inside 1 |
+| shuffled connectome | outside in 3 of 3 (0.98 to 0.99) | outside 3 of 3 | inside 3 of 3 |
+
+The connectome-constrained model is closer than the shuffled one in every pool (met), but
+none is near real worms: simulated worms' patterns correlate with real worms at 0.01 to
+0.07, against 0.12 between real worms. The "inside or near the edge" expectation is not
+met. Two cautions before reading this as "the published models fail": the protocol here
+clamps the stimulated neuron to its measured response, while the authors model
+stimulation as an input and infer hidden states; and the magnitude level may penalise any
+stationary model, because real neurons' SDs include slow drifts that models do not have.
+Both are being checked.
+
 **Two more pieces of the original atlas archive** (Randi et al. 2023, OSF e2syt; local
 only). (1) 18 recordings of *unc-31* mutants, which cannot release neuropeptides from dense
 core vesicles, stimulated with the same protocol: 15 have neuron identities and are used.
