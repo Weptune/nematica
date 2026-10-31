@@ -951,6 +951,13 @@ experiment, merged with seed 0: the mixing effect under interactions counts as e
 if the twin swarm's contact and cluster fraction are both below the clone mean in at least
 8 of the 9 rotation-seeds; otherwise it is reported as not established.
 
+Result (`docs/figures/swarm_clones_seed1.csv`, `_seed2.csv`): **not established.** With
+interactions, the mixed swarm's contact is below the clone mean in 7 of 9 rotation-seeds
+(mean gap -0.003) and its cluster fraction in 6 of 9 (mean -0.009). The direction holds on
+average, but the gap is small against seed noise and misses the criterion. Without
+interactions the gaps are centred on zero (5 of 9 for both), as before. The firm finding is
+the additive one: a swarm is roughly the average of its members, and members differ a lot.
+
 **Sensitivity to the assumed interaction rules (expectation written before the runs).**
 Twin and average swarms in one rotation (rotation 0, 2 seeds) with the touch probability
 at 0.1, 0.3 and 0.6 and the contact distance at 0.05, 0.1 and 0.2 mm, one changed at a
