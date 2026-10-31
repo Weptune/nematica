@@ -527,6 +527,32 @@ class HybridKernel:
                 if self.mask == "shuffled":
                     A = shuffled_wiring(A, self.seed)
                 self.kernels = {k: v for k, v in self.kernels.items() if A[idx[k[1]], idx[k[0]]]}
+            elif self.mask.endswith("k"):
+                # the wiring question asked only where the wiring is known: links involving a class
+                # absent from this connectome (mostly pharyngeal neurons) are kept in every version
+                known = class_members_known(cls)
+                kn = lambda k: bool(known[idx[k[0]]] and known[idx[k[1]]])
+                base = self.mask[:-1]
+                if base == "shuffled":
+                    ki = np.where(known)[0]
+                    S = np.eye(len(cls), dtype=bool)
+                    S[np.ix_(ki, ki)] = shuffled_wiring(A[np.ix_(ki, ki)], self.seed)
+                    A = S
+                wired = [k for k in self.kernels if k[0] != k[1] and kn(k) and A[idx[k[1]], idx[k[0]]]]
+                unwired = [k for k in self.kernels if k[0] != k[1] and kn(k) and not A[idx[k[1]], idx[k[0]]]]
+                if base in ("wired", "shuffled"):
+                    keep = wired
+                elif base == "unwired":
+                    keep = unwired
+                elif base == "unwiredn":
+                    rng = np.random.default_rng(self.seed)
+                    n_w = sum(1 for k in self.kernels if k[0] != k[1] and kn(k) and class_wiring(cls)[idx[k[1]], idx[k[0]]])
+                    keep = [unwired[i] for i in rng.choice(len(unwired), size=min(n_w, len(unwired)), replace=False)]
+                else:
+                    raise ValueError(f"unknown mask {self.mask}")
+                keep = set(keep) | {k for k in self.kernels if k[0] == k[1] or not kn(k)}
+                self.kernels = {k: v for k, v in self.kernels.items() if k in keep}
+                self.info_mask = {"wired": len(wired), "unwired": len(unwired), "kept": len(self.kernels)}
             else:
                 # links between classes that are both in the connectome but have no synapse or gap junction
                 known = class_members_known(cls)

@@ -1625,6 +1625,20 @@ and the brain built only from unwired links passes echo pattern in at least 2 of
 each split. If the wired-only brain passes, the headline below will say the wiring diagram is
 enough at this resolution.
 
+**A flaw in the design above, found before its results were in (written before running the
+fix).** 36% of the measured pairs involve a neuron class that this connectome does not
+contain (mostly pharyngeal neurons: I1 to I6, M1 to M5, MC, MI, NSM, which the Kunert somatic
+matrices leave out; also naming mismatches such as AWCON and AWCOFF). The masks above drop
+every such link, so all four restricted brains lose about a third of the echo for a reason
+that has nothing to do with the wiring; the first results (all four outside on echo pattern
+in the first pool of each split) cannot separate the two. They are kept and reported, but the
+wiring question is asked again with versions that keep every link involving an unknown class
+and restrict only the links between classes the connectome covers (`wiredk`, `shuffledk`,
+`unwiredk`, `unwirednk`; same definitions otherwise). Expectations for these, unchanged from
+above: wired-only fails echo pattern in at least 2 of 3 pools on each split, as do shuffled and
+count-matched unwired, with wired-only no more than 0.02 above count-matched unwired in echo
+agreement; unwired-only passes echo pattern in at least 2 of 3 on each split.
+
 ## Signatures of a mind: perturbational complexity
 
 Nobody can measure consciousness directly, and whether a worm experiences anything is an
