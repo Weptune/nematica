@@ -1407,6 +1407,22 @@ per-worm models that pass all 10 levels on the copper data), chosen by worm. Cal
 are no longer too typical, rest reaches at least 5 of 6 in at least 2 of 3 pools, and the
 poke test is still passed (pattern and spread inside in at least 2 of 3).
 
+Result: correlations stop being too typical (inside in 2 of 3), and the poke test is still
+passed (pattern inside in 2 of 3, too typical in the third; spread inside in all 3), but rest
+falls to 1 or 2 of 6: one worm's stimulation-free frames (about 850) are too few for its own
+VAR, whose dynamics come out too slow (timescale 1.4 to 1.7 times real, bout lengths and
+lead-lag outside). Expectation not met. Individuality needs more data per worm than the
+atlas's stimulation-free stretches give.
+
+**A nonlinear background (written before running).** `hybrid_kernels_gru64`: the causal
+kernels on top of a GRU learned from the training worms' stimulation-free stretches, which
+predicts both the next frame and how large its fluctuation will be, so calm can be calm
+(`AtlasGRU`; no regimes, no measurement noise, nothing calibrated by hand). On a quick check
+(pool 1, 6 worms, a shorter training run) its spread at random moments is already real-like
+(12% against 13%), with too many classes crossing the threshold (87% against 62%) and echo
+complexity still too high (0.88 against 0.67). Expectation: the poke test is passed (pattern
+and spread inside in at least 2 of 3) with rest at least 4 of 6; complexity: no strong prior.
+
 **Signal or noise? (written before computing it).** A model can fail the poke test in two
 different ways: its *average* echo is wrong (it does not know the causal structure), or its
 average echo is right but each single echo is buried in the wrong kind of variability.

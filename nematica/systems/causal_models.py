@@ -366,7 +366,7 @@ class HybridKernel:
                  background: str = "spontaneous", obs_noise: bool = False, heavy: bool = False,
                  regimes: bool = False, obs_fit: bool = False, lowrank: int = 0, obs_smooth: float = 0.0,
                  class_quiet: bool = False, quiet_fit: bool = False, quiet_obs_fit: bool = False,
-                 individual: bool = False):
+                 individual: bool = False, gru: int = 0):
         self.lags, self.shrink, self.mask, self.seed = lags, shrink, mask, seed
         self.background = background     # which frames the ongoing-dynamics VAR learns from
         self.obs_noise = obs_noise       # split each class's variability into slow dynamics and
@@ -385,6 +385,7 @@ class HybridKernel:
         self.individual = individual     # each simulated worm's background is one training worm's
                                          # own VAR, shrunk toward the pooled one (lambda 300) [L]
         self.indiv = []
+        self.gru = gru                   # ongoing dynamics from AtlasGRU (hidden size) if > 0
         self.quiet_fit = quiet_fit       # per-class quiet strength calibrated on training worms to
                                          # match their echo structure at random moments [L]
         self.obs_fit = obs_fit           # measurement-noise share chosen on training worms so that
@@ -392,7 +393,7 @@ class HybridKernel:
         self.name = ("hybrid_kernels" + (f"_{mask}" if mask else "") + ("" if background == "spontaneous" else f"_bg{background}")
                      + ("_obs" if obs_noise else "") + ("_heavy" if heavy else "") + ("_regimes" if regimes else "")
                      + ("_obsfit" if obs_fit else "") + (f"_lowrank{lowrank}" if lowrank else "")
-                     + (f"_smooth{obs_smooth:g}" if obs_smooth else "") + ("_classquiet" if class_quiet else "") + ("_quietfit" if quiet_fit else "") + ("_quietobsfit" if quiet_obs_fit else "") + ("_indiv" if individual else ""))
+                     + (f"_smooth{obs_smooth:g}" if obs_smooth else "") + ("_classquiet" if class_quiet else "") + ("_quietfit" if quiet_fit else "") + ("_quietobsfit" if quiet_obs_fit else "") + ("_indiv" if individual else "") + (f"_gru{gru}" if gru else ""))
 
     def _gain(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """A two-state Markov chain (quiet, active) with the calibrated share of quiet time and
@@ -499,7 +500,9 @@ class HybridKernel:
 
     def fit(self, train, val):
         from ..bench.perturbational import event_matrices
-        if self.lowrank:
+        if self.gru:
+            self.var = AtlasGRU(hidden=self.gru).fit(train, val)
+        elif self.lowrank:
             self.var = LowRankVAR(k=self.lowrank, lags=self.lags, frames=self.background).fit(train, val)
         else:
             self.var = ClassVAR(lags=self.lags, frames=self.background,
@@ -770,4 +773,124 @@ class LowRankVAR:
             z[:, t] = np.where(seen, self.U @ s[:, t] + e, 0.0)
         x = z[[idx[c] for c in own], burn:]
         return PumpProbe(uid=rec.uid, x=x, names=own, classes=own, stims=[], dt=rec.dt,
+                         all_stim_frames=list(rec.all_stim_frames))
+
+
+class AtlasGRU:
+    """A nonlinear background learned from the atlas worms (ingredient hunt, 'genuinely
+    nonlinear dynamics'): a GRU reads the class activity of the last frame (and which classes
+    are observed) and outputs the mean and the log-variance of the next frame, so the size of
+    the fluctuations can depend on the brain's state (calm stretches can be calm). Trained on
+    contiguous stimulation-free stretches of the training worms (at least 40 frames), Gaussian
+    negative log-likelihood on observed classes, with input noise for stable free running [A].
+    Same simulate() interface as ClassVAR. PyTorch is imported lazily."""
+
+    def __init__(self, hidden: int = 64, steps: int = 1500, chunk: int = 40, batch: int = 32, lr: float = 2e-3,
+                 input_noise: float = 0.1, min_fraction: float = 0.3, seed: int = 0):
+        self.hidden, self.steps, self.chunk, self.batch, self.lr = hidden, steps, chunk, batch, lr
+        self.input_noise, self.min_fraction, self.seed = input_noise, min_fraction, seed
+        self.name = f"gru{hidden}"
+
+    def _segments(self, recs):
+        segs = []
+        for r in recs:
+            z = class_matrix(r, self.classes)
+            m = spontaneous_mask(r)
+            t = 0
+            T = len(m)
+            while t < T:
+                if m[t]:
+                    u = t
+                    while u < T and m[u]:
+                        u += 1
+                    if u - t >= self.chunk + 1:
+                        segs.append(z[:, t:u])
+                    t = u
+                else:
+                    t += 1
+        return segs
+
+    def fit(self, train, val):
+        import torch
+        from collections import Counter
+        torch.manual_seed(self.seed)
+        cnt = Counter(c for r in train for c in set(r.classes) if c)
+        self.classes = sorted(c for c, n in cnt.items() if n >= self.min_fraction * len(train))
+        C = len(self.classes)
+        segs = self._segments(list(train))
+        vsegs = self._segments(list(val)) or segs[:2]
+        nn = torch.nn
+
+        class Net(nn.Module):
+            def __init__(s):
+                super().__init__()
+                s.gru = nn.GRU(2 * C, self.hidden, batch_first=True)
+                s.out = nn.Linear(self.hidden, 2 * C)
+
+            def forward(s, x, obs, h=None):
+                y, h = s.gru(torch.cat([x, obs], -1), h)
+                o = s.out(y)
+                return o[..., :C], o[..., C:].clamp(-6, 3), h
+
+        self.net = Net()
+        opt = torch.optim.Adam(self.net.parameters(), lr=self.lr)
+        rng = np.random.default_rng(self.seed)
+
+        def batch(pool, n):
+            xs, os_ = [], []
+            for _ in range(n):
+                s = pool[rng.integers(len(pool))]
+                a = rng.integers(0, s.shape[1] - self.chunk - 1 + 1)
+                w = s[:, a:a + self.chunk + 1].T
+                xs.append(np.nan_to_num(w))
+                os_.append(np.isfinite(w).astype(np.float32))
+            return torch.tensor(np.array(xs), dtype=torch.float32), torch.tensor(np.array(os_))
+
+        def nll(x, o):
+            inp = x[:, :-1] + self.input_noise * torch.randn_like(x[:, :-1])
+            mu, lv, _ = self.net(inp, o[:, :-1])
+            tgt, m = x[:, 1:], o[:, 1:]
+            return (((tgt - mu) ** 2 / lv.exp() + lv) * m).sum() / m.sum().clamp(min=1)
+
+        for step in range(self.steps):
+            x, o = batch(segs, self.batch)
+            loss = nll(x, o)
+            opt.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(self.net.parameters(), 1.0)
+            opt.step()
+        with torch.no_grad():
+            x, o = batch(vsegs, 64)
+            self.info = {"hidden": self.hidden, "segments": len(segs), "val_nll": round(float(nll(x, o)), 4),
+                         "classes": C}
+        self.noise_sd = np.ones(C)
+        self.noise_sd0 = self.noise_sd.copy()
+        return self
+
+    def simulate(self, rec: PumpProbe, rng: np.random.Generator, burn: int = 200,
+                 noise_gain: np.ndarray | None = None, quiet: np.ndarray | None = None) -> PumpProbe:
+        import torch
+        C = len(self.classes)
+        idx = {c: i for i, c in enumerate(self.classes)}
+        own = [c for c in sorted(set(rec.classes)) if c in idx]
+        seen = np.zeros(C, bool)
+        seen[[idx[c] for c in own]] = True
+        obs = torch.tensor(seen.astype(np.float32)).view(1, 1, C)
+        T = rec.n_frames
+        z = np.zeros((C, T + burn), dtype=np.float32)
+        h = None
+        x = torch.zeros(1, 1, C)
+        scale = self.noise_sd / np.where(self.noise_sd0 > 0, self.noise_sd0, 1.0)
+        with torch.no_grad():
+            for t in range(1, T + burn):
+                mu, lv, h = self.net(x, obs, h)
+                sd = np.exp(0.5 * lv.numpy().ravel())
+                g = 1.0 if noise_gain is None else noise_gain[t]
+                nxt = mu.numpy().ravel() + g * scale * sd * rng.standard_normal(C)
+                nxt = np.clip(nxt, -8, 8)
+                nxt[~seen] = 0.0
+                z[:, t] = nxt
+                x = torch.tensor(nxt, dtype=torch.float32).view(1, 1, C)
+        out = z[[idx[c] for c in own], burn:].astype(float)
+        return PumpProbe(uid=rec.uid, x=out, names=own, classes=own, stims=[], dt=rec.dt,
                          all_stim_frames=list(rec.all_stim_frames))
