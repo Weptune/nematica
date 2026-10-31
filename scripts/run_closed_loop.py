@@ -38,7 +38,7 @@ def main() -> int:
     ap.add_argument("--folds", required=True)
     ap.add_argument("--out", default="results/closed_loop")
     ap.add_argument("--seeds", type=int, default=2)
-    ap.add_argument("--variants", default="v2", choices=("v2", "v3", "v4", "v5", "v6"))
+    ap.add_argument("--variants", default="v2", choices=("v2", "v3", "v4", "v5", "v6", "v7"))
     args = ap.parse_args()
     recs = load_copper_dir(Path(args.data))
     classes = tuple(canonical_classes(recs, 0.25))
@@ -68,6 +68,13 @@ def main() -> int:
                                          steer=True, copper_limit=True, steer_scales=(0.5, 1, 2, 4, 8),
                                          stage_speed=True),
                     "blind_limit": dict(senses=False, **v2, per_worm_rates=True)}
+    if args.variants == "v7":
+        # v7: v6 with the steering gain set so simulated training worms drift away from
+        # copper (0.5 to 2 mm) as fast as the real training worms do
+        variants = {"senses_steer_drift": dict(senses=True, **{**v2, "hazard_from": "command_fixed"},
+                                               per_worm_rates=True, steer=True, copper_limit=True,
+                                               steer_scales=(0.5, 1, 2, 4, 8), stage_speed=True,
+                                               steer_target="drift")}
     if args.variants == "v4":
         # v4: command neurons set reversal timing around a copper effect fitted first, alone
         variants = {"senses_command_fixed": dict(senses=True, **{**v2, "hazard_from": "command_fixed"},
@@ -85,11 +92,14 @@ def main() -> int:
         lib = MotionLibrary.from_recordings([by[u] for u in train_uids])
         ref = build_reference(pool)
         for vname, kw in variants.items():
+            kw = dict(kw)
+            target = kw.pop("steer_target", "slope")
             m = SensoryVAR(**kw).fit(train, val)
             if kw.get("steer"):
                 m.calibrate_steering(train, [(by[u].meta["arena"]["radius_mm"],
                                               float(by[u].behaviour["dist_from_center_mm"][0]), by[u].t)
-                                             for u in train_uids], lib)
+                                             for u in train_uids], lib, target=target,
+                                     mults=(1, 2, 4, 8, 16) if target == "slope" else (1, 2, 3, 4, 5, 6, 8, 12))
             print(f"  fold {fi} {vname}: {m.info}", flush=True)
             built = {}
             for i, (s, uid) in enumerate(zip(pool, pool_uids)):

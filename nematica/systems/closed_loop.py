@@ -316,18 +316,26 @@ class SensoryVAR:
         self.info.update({"heading_noise": self.heading_noise, "heading_target_deg": round(float(np.degrees(target)), 1),
                           "heading_sim_deg": {k: round(float(np.degrees(v)), 1) for k, v in res.items()}})
 
-    def calibrate_steering(self, train, arenas, library, mults=(1, 2, 4, 8, 16), seed=0):
+    @staticmethod
+    def radial_drift(dists, lag: int = 33, lo: float = 0.5, hi: float = 2.0) -> float:
+        """Mean change in distance to copper over `lag` frames, from frames between lo and hi mm."""
+        rows = np.concatenate([np.stack([d[:-lag], d[lag:] - d[:-lag]], 1) for d in dists])
+        sel = (rows[:, 0] >= lo) & (rows[:, 0] < hi)
+        return float(rows[sel, 1].mean()) if sel.any() else np.nan
+
+    def calibrate_steering(self, train, arenas, library, mults=(1, 2, 4, 8, 16), seed=0, target: str = "slope"):
         """Indirect inference on TRAINING worms [L]: the regression slope is attenuated by
         posture noise, so simulate each training worm in its own arena (`arenas`: list of
         (radius_mm, start_dist_mm, t)) at k = mult x fitted slope, measure the same slope on
         the simulated trajectories, and keep the multiplier that reproduces the real one."""
         if not (self.steer and self.senses):
             return
-        k0, target = self.k_steer, self.k_steer
-        res = {}
+        k0, target_slope = self.k_steer, self.k_steer
+        target_drift = self.radial_drift([np.asarray(s.behaviour["dist_to_boundary"]) for s in train])
+        res, drift = {}, {}
         for mult in mults:
             self.k_steer = mult * k0
-            X, Y = [], []
+            X, Y, D = [], [], []
             for i, (s, (radius, start, t)) in enumerate(zip(train, arenas)):
                 smp, ang, path, _ = self.simulate(s, radius, start, library, np.random.default_rng(seed + i), i, t)
                 O = np.unwrap(np.angle(np.mean(np.exp(1j * ang), axis=1)))
@@ -335,12 +343,21 @@ class SensoryVAR:
                 x, y = self._steer_slope(smp.behaviour["dist_to_boundary"], side, np.diff(O, append=O[-1]))
                 X.append(x)
                 Y.append(y)
+                D.append(smp.behaviour["dist_to_boundary"])
             X, Y = np.concatenate(X), np.concatenate(Y)
             res[mult] = float(X @ Y / (X @ X))
-        best = min(res, key=lambda m: abs(res[m] - target))
+            drift[mult] = self.radial_drift(D)
+        if target == "drift":
+            # match the training worms' outward drift between 0.5 and 2 mm from copper over
+            # 20 s, an arena-scale statistic the turning slope does not pin down [L]
+            best = min(drift, key=lambda m: abs(drift[m] - target_drift))
+        else:
+            best = min(res, key=lambda m: abs(res[m] - target_slope))
         self.k_steer = best * k0
-        self.info.update({"k_steer": round(self.k_steer, 4), "steer_mult": best,
-                          "steer_sim_slopes": {m: round(v, 4) for m, v in res.items()}})
+        self.info.update({"k_steer": round(self.k_steer, 4), "steer_mult": best, "steer_target": target,
+                          "steer_sim_slopes": {m: round(v, 4) for m, v in res.items()},
+                          "steer_sim_drift": {m: round(v, 3) for m, v in drift.items()},
+                          "steer_real_drift": round(target_drift, 3)})
 
     def _fit_steering(self, train, val=None):
         """Slow steering away from copper [L]. Real worms near copper turn away over tens of

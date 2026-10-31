@@ -112,7 +112,15 @@ Other findings (`scripts/run_arc1.py`, `scripts/run_cv.py`; tables in `docs/figu
   model is **inside on 8 of 8 levels** combined over the three pools, skew 0.86 (real 0.84).
   γ was one of three values fixed in advance (0.5, 0.7, 0.85); choosing it on two pools and
   scoring the third gives 8/8, 7/8 and 8/8.
-- **But a classifier still tells it apart (Level 8 AUC 0.94; other real worms 0.68).** The
+- **But a classifier still tells it apart (Level 8 AUC 0.94; other real worms 0.68).**
+  (Update, Oct 31: much of this is individuality. Smoothness of 30 s windows ranges from
+  0.49 to 0.83 between real worms, and the frozen test worms happen to be less smooth than
+  the training worms (median lag-1 autocorrelation 0.64 vs 0.72). Against the very
+  training worms it imitates, the model scores AUC 0.73, close to the real-worm control;
+  it is about 0.03 smoother than its own sources, the same direction in which training and
+  test worms already differ, so the gaps compound against held-out worms. The drive
+  increments of real worms are also heavy-tailed (excess kurtosis 1.7, model 0), which a
+  Gaussian model cannot show.) The
   giveaway is short-timescale structure: within 30 s windows the model's lag-1
   autocorrelation is 0.755 against 0.656 in real worms (that feature alone gives AUC 0.88).
   Real worms have more power at both ends of the spectrum (33% of power in periods over
@@ -349,6 +357,22 @@ time near copper 33.7% (27.3% before the fix; run-to-run variation at this level
 `docs/figures/l8_closed_loop.csv`): AUC 0.952, against 0.94 for the open-loop model and
 0.68 for other real worms. Closing the loop does not change how detectable the brain
 activity is; the giveaway is still the short-timescale spectrum (arc 1).
+
+**Why real worms take so long to reach copper.** Real worms start a median 1.9 mm from
+copper and take a median 393 s to first come within 0.5 mm (8 of 27 never do in 16
+minutes); model worms got there in 103 s, all of them. Measuring the drift of distance to
+copper over 20 s at each distance shows why: between 0.5 and 2 mm real worms drift away
+from copper (+0.22, +0.17, +0.10 mm per 20 s), crossing over at about 2 mm, while v6 model
+worms drift slightly toward it. The steering gain fitted to frame-by-frame turning
+reproduces that turning but not this drift.
+
+**Version 7** sets the steering gain by indirect inference on a different training-worm
+statistic, the outward drift between 0.5 and 2 mm, instead of the turning slope (it needs
+about 4 times the fitted gain, so the real drift involves more than the body turning that
+can be measured) (`--variants v7`, `docs/figures/closed_loop_v7.csv`). Time near copper
+15.3% (v6: 27 to 34%; real 3.2%, or 9.1% by the uncorrected tracked position), **occupancy
+inside**, approach inside, encounter just outside (0.962), pairwise 9 of 10 (lead-lag
+1.06, just over the line). Closest so far; not yet a full pass.
 
 ## Leaderboard: published models
 
