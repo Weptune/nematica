@@ -18,12 +18,12 @@ a{color:#6EE7A0}a:hover{color:#A7F3C8}
 <div style="background: #07100E; color: #E8F1EC; font-family: 'Space Grotesk', system-ui, sans-serif; min-height: 100vh">
 
 <header style="max-width: 1200px; margin: 0 auto; padding: 28px 32px; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center">
-<div style="font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: 0.32em; font-weight: 500">NEMATICA</div>
-<nav aria-label="Sections" style="display: flex; flex-wrap: wrap; gap: 28px; font-size: 15px">
-<a href="#aim" style="text-decoration: none">What we are doing</a>
-<a href="#poke" style="text-decoration: none">The finding</a>
-<a href="#mind" style="text-decoration: none">Signatures of a mind</a>
-<a href="#status" style="text-decoration: none">Built so far</a>
+<a href="Main.dc.html" style="font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: 0.32em; font-weight: 500; color: #E8F1EC; text-decoration: none">NEMATICA</a>
+<nav aria-label="Pages" style="display: flex; flex-wrap: wrap; gap: 26px; font-size: 15px">
+<a href="Findings.dc.html" style="text-decoration: none; color: #6EE7A0; font-weight: 500">Findings</a>
+<a href="Poke.dc.html" style="text-decoration: none; color: #6EE7A0; font-weight: 500">Poke it yourself</a>
+<a href="Method.dc.html" style="text-decoration: none; color: #6EE7A0; font-weight: 500">How the test works</a>
+<a href="Research.dc.html" style="text-decoration: none; color: #6EE7A0; font-weight: 500">Research log</a>
 <a href="https://github.com/Weptune/nematica" style="text-decoration: none">GitHub</a>
 </nav>
 </header>
@@ -36,6 +36,7 @@ a{color:#6EE7A0}a:hover{color:#A7F3C8}
 <div style="display: flex; flex-wrap: wrap; gap: 14px">
 <a href="#poke" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 24px; border-radius: 999px; background: #6EE7A0; color: #04130C; font-weight: 700; font-size: 17px; text-decoration: none">See what happened</a>
 <a href="#aim" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 24px; border-radius: 999px; border: 1px solid #2F4A41; color: #E8F1EC; font-weight: 500; font-size: 17px; text-decoration: none">What we are trying to do</a>
+<a href="Poke.dc.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 24px; border-radius: 999px; border: 1px solid #2F4A41; color: #E8F1EC; font-weight: 500; font-size: 17px; text-decoration: none">Poke a brain yourself</a>
 </div>
 </div>
 
@@ -153,6 +154,7 @@ a{color:#6EE7A0}a:hover{color:#A7F3C8}
 </sc-for>
 </div>
 <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #9DB3AA; max-width: 900px">Each row is one type of neuron; each column is one second after a light pulse to the SMD neurons. Green cells rose, orange cells fell; brighter means a larger change. The same holds across all 113 worms and all three groups of held-out worms: the artificial brain's echoes agree with real worms at about 0.01 on our pattern score (a correlation), while two real worms agree with each other at about 0.10. Even the published models built for this very atlas reach only 0.03 to 0.08.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 14px"><a href="Findings.dc.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border-radius: 999px; background: #6EE7A0; color: #04130C; font-weight: 700; font-size: 16px; text-decoration: none">All findings</a><a href="Poke.dc.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border-radius: 999px; border: 1px solid #2F4A41; color: #E8F1EC; font-size: 16px; text-decoration: none">Poke it yourself</a></div>
 </section>
 
 <section id="mind" style="background: #0B1513; border-top: 1px solid #1A2B26; border-bottom: 1px solid #1A2B26">
@@ -183,7 +185,7 @@ a{color:#6EE7A0}a:hover{color:#A7F3C8}
 <div style="display: flex; flex-direction: column; gap: 18px; max-width: 820px">
 <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.18em; color: #9DB3AA">WHAT IS BUILT, AND WHAT IS NOT</div>
 <h2 style="margin: 0; font-size: 46px; line-height: 1.06; letter-spacing: -0.03em; font-weight: 700">An honest status board.</h2>
-<p style="margin: 0; font-size: 18px; line-height: 1.6; color: #B9CCC4">Every prediction is written down before the experiment runs, and results that go against us stay in.</p>
+<p style="margin: 0; font-size: 18px; line-height: 1.6; color: #B9CCC4">Every prediction is written down before the experiment runs, and results that go against us stay in. <a href="Research.dc.html">The research log</a> has every line of work; <a href="Method.dc.html">how the test works</a> explains the ruler.</p>
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 24px; align-items: start">
 <sc-for list="{{status}}" as="col" hint-placeholder-count="3">
@@ -296,7 +298,7 @@ class Component extends DCLogic {
           { name: 'Swarms of artificial worms', body: '32 artificial brains in one arena. Individual worms make very different crowds; nothing is scored against real crowds yet.' }
         ] },
         { title: 'NOT BUILT YET', color: todo, items: [
-          { name: 'Poke it yourself, on the web', body: 'Built in the lab app (pick a neuron, watch the echo spread in a real and two artificial brains); not yet on this page.' },
+          { name: 'Poke it yourself, live', body: 'The site shows recorded echoes for ten neurons; stimulating any neuron of your choice in a live model is not built yet.' },
           { name: 'Real crowds as the reference', body: 'Scoring swarms against real multi-worm tracking needs data we have not loaded yet.' },
           { name: 'One artificial brain that passes everything', body: 'The best brain at rest fails the poke test; the brain that passes the poke test is weaker at rest and fails perturbational complexity. Merging them is the open challenge.' },
           { name: 'A public leaderboard and write-up', body: 'A package anyone can run on their own model, and a report of the results.' }

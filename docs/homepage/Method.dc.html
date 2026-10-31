@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How the NEMATICA test works</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#07100E}
+a{color:#6EE7A0}a:hover{color:#A7F3C8}
+</style>
+</helmet>
+<div style="background: #07100E; color: #E8F1EC; font-family: 'Space Grotesk', system-ui, sans-serif; min-height: 100vh">
+<header style="max-width: 1200px; margin: 0 auto; padding: 28px 32px; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center">
+<a href="Main.dc.html" style="font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: 0.32em; font-weight: 500; color: #E8F1EC; text-decoration: none">NEMATICA</a>
+<nav aria-label="Pages" style="display: flex; flex-wrap: wrap; gap: 26px; font-size: 15px">
+<a href="Findings.dc.html" style="text-decoration: none; color: #6EE7A0; font-weight: 500">Findings</a>
+<a href="Poke.dc.html" style="text-decoration: none; color: #6EE7A0; font-weight: 500">Poke it yourself</a>
+<a href="Method.dc.html" aria-current="page" style="text-decoration: none; color: #E8F1EC; font-weight: 700">How the test works</a>
+<a href="Research.dc.html" style="text-decoration: none; color: #6EE7A0; font-weight: 500">Research log</a>
+<a href="https://github.com/Weptune/nematica" style="text-decoration: none">GitHub</a>
+</nav>
+</header>
+
+<section style="max-width: 1200px; margin: 0 auto; padding: 40px 32px 72px; display: flex; flex-direction: column; gap: 22px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.18em; color: #9DB3AA">HOW THE TEST WORKS</div>
+<h1 style="margin: 0; font-size: 58px; line-height: 1.03; letter-spacing: -0.035em; font-weight: 700; max-width: 960px">A ruler for brains, measured in real worms.</h1>
+<p style="margin: 0; font-size: 19px; line-height: 1.6; color: #B9CCC4; max-width: 860px">No two real worm brains behave alike, so "close to a real brain" needs a unit. Ours is how different real worms are from each other. For every test, we measure how far an artificial brain is from each real worm, and how far real worms are from one another.</p>
+<div style="display: flex; gap: 6px; min-height: 92px; margin-top: 8px">
+<div style="flex: 1 1 0; border-radius: 14px 4px 4px 14px; background: #1B2A3A; padding: 14px 16px; display: flex; flex-direction: column; justify-content: space-between"><div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #A9C4E8">TOO TYPICAL</div><div style="font-size: 15px; color: #D5E3F2">closer to every worm than worms are to each other: an average worm, which no real worm is</div></div>
+<div style="flex: 2 1 0; border-radius: 4px; background: #133326; border: 1px solid #2E6B4F; padding: 14px 16px; display: flex; flex-direction: column; justify-content: space-between"><div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #6EE7A0">INSIDE · PASS</div><div style="font-size: 15px; color: #DDF5E8">as different from real worms as they are from each other</div></div>
+<div style="flex: 1.4 1 0; border-radius: 4px 14px 14px 4px; background: #2F1E10; padding: 14px 16px; display: flex; flex-direction: column; justify-content: space-between"><div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #F5C27A">OUTSIDE</div><div style="font-size: 15px; color: #F6E1C4">further from real worms than they are from each other</div></div>
+</div>
+<p style="margin: 0; font-size: 15px; line-height: 1.6; color: #9DB3AA; max-width: 860px">The verdict comes from a bootstrap over worms: resampling which real worms are in the comparison, the artificial brain must sit within the spread of real worm-to-worm distances.</p>
+</section>
+
+<section style="background: #0B1513; border-top: 1px solid #1A2B26; border-bottom: 1px solid #1A2B26">
+<div style="max-width: 1200px; margin: 0 auto; padding: 80px 32px; display: flex; flex-direction: column; gap: 28px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.18em; color: #9DB3AA">THE TESTS</div>
+<h2 style="margin: 0; font-size: 40px; line-height: 1.08; letter-spacing: -0.02em; font-weight: 700">Five families of tests, from ordinary activity to signatures of a mind.</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 16px">
+<sc-for list="{{families}}" as="f" hint-placeholder-count="5">
+<div style="background: #0D1916; border: 1px solid #1F332D; border-radius: 18px; padding: 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; gap: 10px; align-items: baseline"><div style="font-size: 21px; font-weight: 700">{{f.title}}</div><div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #6EE7A0">{{f.tag}}</div></div>
+<div style="font-size: 15px; line-height: 1.55; color: #B9CCC4">{{f.body}}</div>
+<sc-for list="{{f.items}}" as="i" hint-placeholder-count="3">
+<div style="font-size: 14px; line-height: 1.45; color: #C9DAD3; border-top: 1px solid #1F332D; padding-top: 8px"><span style="font-family: 'JetBrains Mono', monospace; color: #9DB3AA">{{i.k}}</span> · {{i.v}}</div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+
+<section style="max-width: 1200px; margin: 0 auto; padding: 80px 32px; display: flex; flex-direction: column; gap: 24px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.18em; color: #9DB3AA">TESTING THE TEST</div>
+<h2 style="margin: 0; font-size: 40px; line-height: 1.08; letter-spacing: -0.02em; font-weight: 700; max-width: 900px">Before scoring any model, we break real brains on purpose.</h2>
+<p style="margin: 0; font-size: 17px; line-height: 1.6; color: #B9CCC4; max-width: 860px">Each family of tests is checked with altered real recordings whose correct verdict is written down in advance: shuffling time must fail the timing tests, scrambling which neuron was stimulated must fail the echo pattern, tripling every response must fail echo size. A test that does not catch what it is designed to catch is reported, not hidden.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px">
+<sc-for list="{{calib}}" as="c" hint-placeholder-count="4">
+<div style="background: #0D1916; border: 1px solid #1F332D; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-size: 40px; font-weight: 700; letter-spacing: -0.02em; color: #6EE7A0">{{c.big}}</div>
+<div style="font-size: 15px; line-height: 1.45; color: #C9DAD3">{{c.label}}</div>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section style="background: #0B1513; border-top: 1px solid #1A2B26; border-bottom: 1px solid #1A2B26">
+<div style="max-width: 1200px; margin: 0 auto; padding: 80px 32px; display: flex; flex-wrap: wrap; gap: 48px">
+<div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.18em; color: #9DB3AA">RULES THAT KEEP IT HONEST</div>
+<sc-for list="{{rules}}" as="r" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; gap: 4px; border-left: 2px solid #2E6B4F; padding-left: 14px"><div style="font-size: 17px; font-weight: 700">{{r.t}}</div><div style="font-size: 15px; line-height: 1.5; color: #B9CCC4">{{r.b}}</div></div>
+</sc-for>
+</div>
+<div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.18em; color: #9DB3AA">DATA WE BUILD ON</div>
+<sc-for list="{{data}}" as="d" hint-placeholder-count="5">
+<div style="background: #0D1916; border: 1px solid #1F332D; border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px"><div style="font-size: 16px; font-weight: 700">{{d.t}}</div><div style="font-size: 14px; line-height: 1.5; color: #B9CCC4">{{d.b}}</div></div>
+</sc-for>
+<div style="font-size: 13px; line-height: 1.5; color: #9DB3AA">NEMATICA's code is open (MIT). Data stay with their owners under their own terms and are not redistributed here.</div>
+</div>
+</div>
+</section>
+<footer style="max-width: 1200px; margin: 0 auto; padding: 56px 32px 72px; border-top: 1px solid #1A2B26; display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: center">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; letter-spacing: 0.32em">NEMATICA</div>
+<div style="font-size: 15px; color: #9DB3AA"><a href="Main.dc.html" style="text-decoration: none">Home</a> · <a href="Findings.dc.html" style="text-decoration: none">Findings</a> · <a href="Poke.dc.html" style="text-decoration: none">Poke it yourself</a> · <a href="Method.dc.html" style="text-decoration: none">How the test works</a> · <a href="Research.dc.html" style="text-decoration: none">Research log</a> · <a href="https://github.com/Weptune/nematica" style="text-decoration: none">GitHub</a></div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3400}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      families: [
+        { title: 'Ongoing activity', tag: '10 TESTS', body: 'Watching the brain at rest or crawling: does its activity look like a real worm\'s?',
+          items: [{ k: 'activity', v: 'value distributions and timescales of each neuron type' }, { k: 'structure', v: 'which neurons move together; how many dimensions activity uses' }, { k: 'timing', v: 'who leads whom; how long the backing-up command lasts' }, { k: 'behaviour', v: 'which neurons track speed and reversals; reversal rate and length' }] },
+        { title: 'Body and world', tag: '3 TESTS + CLASSIFIER', body: 'A brain driving a virtual body near copper, which worms avoid, and a classifier trying to tell its brain from real ones.',
+          items: [{ k: 'environment', v: 'encounters with copper, approach, time spent near it' }, { k: 'classifier', v: 'can a trained classifier, cross-validated by worm, tell the brains apart?' }] },
+        { title: 'The poke', tag: '3 TESTS', body: 'One neuron is switched on with light; how does the rest of the brain answer, compared with real worms given the same pulse?',
+          items: [{ k: 'pattern', v: 'which neurons go up or down, and by how much relative to each other' }, { k: 'size', v: 'how big the responses are' }, { k: 'kinetics', v: 'how fast they rise and fade' }] },
+        { title: 'Echo complexity', tag: '2 TESTS', body: 'The perturbational complexity index, used to judge consciousness in unresponsive patients, applied to every poke.',
+          items: [{ k: 'complexity', v: 'how compressible the pattern of significant responses is' }, { k: 'spread', v: 'how much of the brain answers' }] },
+        { title: 'Signatures at rest', tag: '3 TESTS', body: 'Measures consciousness research reads from ongoing activity.',
+          items: [{ k: 'complexity', v: 'Lempel-Ziv complexity, which falls under anaesthesia' }, { k: 'integration', v: 'how much the brain\'s parts share' }, { k: 'repertoire', v: 'how many whole-brain states it visits' }] }
+      ],
+      calib: [
+        { big: '44 / 44', label: 'designed outcomes hit by the activity tests, on each of two datasets' },
+        { big: '31 / 33', label: 'by the poke tests (both misses were a design error, reported)' },
+        { big: '18 / 21', label: 'by the echo-complexity tests' },
+        { big: '24 / 27', label: 'by the signatures at rest, on each of two datasets' }
+      ],
+      rules: [
+        { t: 'Predictions first', b: 'Every experiment\'s expected result is written into the README before it runs.' },
+        { t: 'Held-out worms only', b: 'Models are trained on some worms and scored on others, in three frozen groups.' },
+        { t: 'Settings chosen on training worms', b: 'Anything tuned is tuned on training worms, never on the worms that score it.' },
+        { t: 'Assumptions labelled', b: 'Every quantity is marked measured, inferred, learned or assumed.' },
+        { t: 'Negative results stay', b: 'Failed predictions, fixed bugs and corrected claims are kept in the record.' }
+      ],
+      data: [
+        { t: 'Whole-brain recordings near copper', b: 'Baskoylu et al. 2026, Dryad (CC0): 27 freely moving worms.' },
+        { t: 'Freely moving whole-brain recordings', b: 'Atanas et al. 2023, Cell: 30 worms.' },
+        { t: 'Signal-propagation atlas', b: 'Randi et al. 2023, Nature (OSF): 113 wild-type and 15 unc-31 worms, one neuron stimulated at a time; also as packaged by Creamer et al.' },
+        { t: 'Published brain models', b: 'Creamer, Leifer and Pillow 2024 (MIT licence).' },
+        { t: 'Wiring and positions', b: 'Kunert, Shlizerman and Kutz 2014 connectome model; Skuhersky et al. 2022 neuron atlas.' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

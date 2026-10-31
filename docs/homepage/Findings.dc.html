@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NEMATICA findings</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#07100E}
+a{color:#6EE7A0}a:hover{color:#A7F3C8}
+</style>
+</helmet>
+<div style="background: #07100E; color: #E8F1EC; font-family: 'Space Grotesk', system-ui, sans-serif; min-height: 100vh">
+<header style="max-width: 1200px; margin: 0 auto; padding: 28px 32px; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center">
+<a href="Main.dc.html" style="font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: 0.32em; font-weight: 500; color: #E8F1EC; text-decoration: none">NEMATICA</a>
+<nav aria-label="Pages" style="display: flex; flex-wrap: wrap; gap: 26px; font-size: 15px">
+<a href="Findings.dc.html" aria-current="page" style="text-decoration: none; color: #E8F1EC; font-weight: 700">Findings</a>
+<a href="Poke.dc.html" style="text-decoration: none; color: #6EE7A0; font-weight: 500">Poke it yourself</a>
+<a href="Method.dc.html" style="text-decoration: none; color: #6EE7A0; font-weight: 500">How the test works</a>
+<a href="Research.dc.html" style="text-decoration: none; color: #6EE7A0; font-weight: 500">Research log</a>
+<a href="https://github.com/Weptune/nematica" style="text-decoration: none">GitHub</a>
+</nav>
+</header>
+
+<section style="max-width: 1200px; margin: 0 auto; padding: 40px 32px 72px; display: flex; flex-direction: column; gap: 24px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.18em; color: #9DB3AA">WHAT WE FOUND</div>
+<h1 style="margin: 0; font-size: 60px; line-height: 1.02; letter-spacing: -0.035em; font-weight: 700; max-width: 980px">Looking like a brain and working like one are different things.</h1>
+<p style="margin: 0; font-size: 19px; line-height: 1.6; color: #B9CCC4; max-width: 860px">Everything below was tested on held-out worms the models never saw, and every prediction was written down before the experiment ran. Results that went against us are kept.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 12px">
+<div style="background: #0D1916; border: 1px solid #1F332D; border-radius: 18px; padding: 24px; display: flex; flex-direction: column; gap: 8px"><div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #6EE7A0">WATCHING</div><div style="font-size: 22px; font-weight: 700; line-height: 1.25">Artificial brains pass every test of ongoing activity, including consciousness-science measures.</div></div>
+<div style="background: #0D1916; border: 1px solid #1F332D; border-radius: 18px; padding: 24px; display: flex; flex-direction: column; gap: 8px"><div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #F5A524">POKING</div><div style="font-size: 22px; font-weight: 700; line-height: 1.25">The same brains answer a single-neuron poke wrongly, and watching cannot tell which ones will.</div></div>
+<div style="background: #0D1916; border: 1px solid #1F332D; border-radius: 18px; padding: 24px; display: flex; flex-direction: column; gap: 8px"><div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #A9C4E8">BUILDING</div><div style="font-size: 22px; font-weight: 700; line-height: 1.25">A brain that answers pokes like a real one needed four ingredients, and still lacks one property.</div></div>
+</div>
+</section>
+
+<section style="background: #0B1513; border-top: 1px solid #1A2B26; border-bottom: 1px solid #1A2B26">
+<div style="max-width: 1200px; margin: 0 auto; padding: 88px 32px; display: flex; flex-wrap: wrap; gap: 48px; align-items: center">
+<div style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.18em; color: #9DB3AA">1 · WATCHING CANNOT CERTIFY A COPY</div>
+<h2 style="margin: 0; font-size: 40px; line-height: 1.08; letter-spacing: -0.02em; font-weight: 700">How real a brain looks at rest says nothing about how it answers a poke.</h2>
+<p style="margin: 0; font-size: 17px; line-height: 1.6; color: #B9CCC4">Each dot is one artificial brain scored on one group of held-out worms: how far its ongoing activity is from real worms (left is more real), against how wrong its echoes are when one neuron is switched on (higher is more real). 88 brain scores, rank correlation about zero (-0.06).</p>
+<p style="margin: 0; font-size: 17px; line-height: 1.6; color: #B9CCC4">A model of a worm's own resting activity predicts that same worm's echoes no better than other worms' models do. Yet each worm's echoes are repeatable (36 of 43 worms): brains have causal fingerprints that watching does not reveal.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; color: #C9DAD3">
+<span><span style="display: inline-block; width: 10px; height: 10px; border-radius: 999px; background: #6EE7A0"></span> learned from rest</span>
+<span><span style="display: inline-block; width: 10px; height: 10px; border-radius: 999px; background: #A9C4E8"></span> single ingredients</span>
+<span><span style="display: inline-block; width: 10px; height: 10px; border-radius: 999px; background: #C9A0F0"></span> published atlas models</span>
+<span><span style="display: inline-block; width: 10px; height: 10px; border-radius: 999px; background: #F5A524"></span> hybrids</span>
+</div>
+</div>
+<figure style="flex: 1 1 560px; min-width: 0; margin: 0; background: #0D1916; border: 1px solid #1F332D; border-radius: 18px; padding: 20px">
+<svg viewBox="0 0 760 450" style="width: 100%; height: auto; display: block" role="img" aria-label="Scatter of 88 artificial brain scores: rest realism against poke realism, with no relationship">
+<rect x="60" y="111.6" width="680" height="31.2" fill="#6EE7A0" fill-opacity="0.12"></rect>
+<text x="736" y="105.6" text-anchor="end" fill="#6EE7A0" font-family="JetBrains Mono, monospace" font-size="12">real worm to real worm</text>
+<line x1="60" y1="390" x2="740" y2="390" stroke="#2F4A41"></line>
+<line x1="60" y1="30" x2="60" y2="390" stroke="#2F4A41"></line>
+<text x="400" y="430" text-anchor="middle" fill="#9DB3AA" font-family="JetBrains Mono, monospace" font-size="13">at rest: distance from real worms →</text>
+<text x="22" y="210" text-anchor="middle" fill="#9DB3AA" font-family="JetBrains Mono, monospace" font-size="13" transform="rotate(-90 22 210)">poked: closer to real worms →</text>
+<sc-for list="{{pts}}" as="p" hint-placeholder-count="40">
+<circle cx="{{p.x}}" cy="{{p.y}}" r="6" fill="{{p.c}}" fill-opacity="0.85"></circle>
+</sc-for>
+</svg>
+</figure>
+</div>
+</section>
+
+<section style="max-width: 1200px; margin: 0 auto; padding: 88px 32px; display: flex; flex-direction: column; gap: 32px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.18em; color: #9DB3AA">2 · THE INGREDIENT HUNT</div>
+<h2 style="margin: 0; font-size: 40px; line-height: 1.08; letter-spacing: -0.02em; font-weight: 700; max-width: 900px">What it took to build a brain that answers a poke like a real worm.</h2>
+<p style="margin: 0; font-size: 17px; line-height: 1.6; color: #B9CCC4; max-width: 860px">Nonlinear neurons, sparse wiring and training directly on pokes each failed alone. The first artificial brain to pass the poke test, in all three groups of held-out worms, needed four things together:</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
+<sc-for list="{{ingredients}}" as="g" hint-placeholder-count="4">
+<div style="background: #0D1916; border: 1px solid #1F332D; border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 8px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 28px; color: #2F4A41">{{g.n}}</div>
+<div style="font-size: 19px; font-weight: 700">{{g.title}}</div>
+<div style="font-size: 15px; line-height: 1.5; color: #B9CCC4">{{g.body}}</div>
+</div>
+</sc-for>
+</div>
+<h3 style="margin: 24px 0 0; font-size: 26px; font-weight: 700">But every fix costs something</h3>
+<div style="overflow-x: auto; border: 1px solid #1F332D; border-radius: 14px">
+<table style="width: 100%; border-collapse: collapse; font-size: 15px; min-width: 640px">
+<thead><tr style="background: #0F1D19; text-align: left"><th style="padding: 14px 18px; color: #9DB3AA; font-weight: 500">Ingredient</th><th style="padding: 14px 18px; color: #9DB3AA; font-weight: 500">What it fixes</th><th style="padding: 14px 18px; color: #9DB3AA; font-weight: 500">What it costs</th></tr></thead>
+<tbody>
+<sc-for list="{{tradeoffs}}" as="r" hint-placeholder-count="6">
+<tr style="border-top: 1px solid #1F332D"><td style="padding: 14px 18px; font-weight: 500">{{r.a}}</td><td style="padding: 14px 18px; color: #C9DAD3">{{r.b}}</td><td style="padding: 14px 18px; color: #F5C27A">{{r.c}}</td></tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</section>
+
+<section style="background: #0B1513; border-top: 1px solid #1A2B26; border-bottom: 1px solid #1A2B26">
+<div style="max-width: 1200px; margin: 0 auto; padding: 88px 32px; display: flex; flex-direction: column; gap: 28px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.18em; color: #9DB3AA">3 · SIGNATURES OF A MIND</div>
+<h2 style="margin: 0; font-size: 40px; line-height: 1.08; letter-spacing: -0.02em; font-weight: 700; max-width: 900px">In a real brain, most of the brain stays out of each echo.</h2>
+<p style="margin: 0; font-size: 17px; line-height: 1.6; color: #B9CCC4; max-width: 860px">Consciousness research judges unresponsive patients by the complexity of the brain's echo to a magnetic pulse (the perturbational complexity index). Applied to worms, it is the one property no artificial brain matches yet. The reason is simple to state: after a poke, a third of a real brain's neuron types never respond, and the ones that do keep responding; in every model, almost every neuron type flickers briefly.</p>
+<div style="overflow-x: auto; border: 1px solid #1F332D; border-radius: 14px">
+<table style="width: 100%; border-collapse: collapse; font-size: 15px; min-width: 640px">
+<thead><tr style="background: #0F1D19; text-align: left"><th style="padding: 14px 18px; color: #9DB3AA; font-weight: 500">30 s after a poke</th><th style="padding: 14px 18px; color: #9DB3AA; font-weight: 500">How long a response lasts</th><th style="padding: 14px 18px; color: #9DB3AA; font-weight: 500">Neuron types that respond at all</th></tr></thead>
+<tbody>
+<tr style="border-top: 1px solid #1F332D"><td style="padding: 14px 18px; font-weight: 500; color: #6EE7A0">Real worms</td><td style="padding: 14px 18px">1.5 s (median), 3.3 s (mean)</td><td style="padding: 14px 18px">66%</td></tr>
+<tr style="border-top: 1px solid #1F332D"><td style="padding: 14px 18px; font-weight: 500">Brain learned from rest</td><td style="padding: 14px 18px">1.0 s, 2.6 s</td><td style="padding: 14px 18px">93%</td></tr>
+<tr style="border-top: 1px solid #1F332D"><td style="padding: 14px 18px; font-weight: 500">Brain that passes the poke test</td><td style="padding: 14px 18px">0.5 s, 1.7 s</td><td style="padding: 14px 18px">95%</td></tr>
+</tbody>
+</table>
+</div>
+<p style="margin: 0; font-size: 15px; line-height: 1.6; color: #9DB3AA; max-width: 860px; border-left: 2px solid #2F4A41; padding-left: 14px">At rest, the same artificial brains match real worms on all three consciousness-science measures of ongoing activity (complexity, integration, repertoire of whole-brain states), on two datasets. Nothing here claims a worm or a model is conscious; these are the measurable properties that, in people, separate a responsive brain from an unresponsive one.</p>
+</div>
+</section>
+<footer style="max-width: 1200px; margin: 0 auto; padding: 56px 32px 72px; border-top: 1px solid #1A2B26; display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: center">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; letter-spacing: 0.32em">NEMATICA</div>
+<div style="font-size: 15px; color: #9DB3AA"><a href="Main.dc.html" style="text-decoration: none">Home</a> · <a href="Findings.dc.html" style="text-decoration: none">Findings</a> · <a href="Poke.dc.html" style="text-decoration: none">Poke it yourself</a> · <a href="Method.dc.html" style="text-decoration: none">How the test works</a> · <a href="Research.dc.html" style="text-decoration: none">Research log</a> · <a href="https://github.com/Weptune/nematica" style="text-decoration: none">GitHub</a></div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const D = {"pts": [{"x": 97.8, "y": 345.4, "c": "#6EE7A0"}, {"x": 119.1, "y": 337.4, "c": "#A9C4E8"}, {"x": 128.6, "y": 332.4, "c": "#A9C4E8"}, {"x": 154.3, "y": 324.2, "c": "#6EE7A0"}, {"x": 175.6, "y": 323.3, "c": "#6EE7A0"}, {"x": 185.1, "y": 338.2, "c": "#6EE7A0"}, {"x": 188.6, "y": 87.4, "c": "#F5A524"}, {"x": 209.9, "y": 140.4, "c": "#F5A524"}, {"x": 220.5, "y": 163.9, "c": "#F5A524"}, {"x": 227.3, "y": 321.4, "c": "#A9C4E8"}, {"x": 231.5, "y": 368.9, "c": "#C9A0F0"}, {"x": 236.2, "y": 302.2, "c": "#C9A0F0"}, {"x": 236.8, "y": 147.8, "c": "#F5A524"}, {"x": 237.4, "y": 328.3, "c": "#6EE7A0"}, {"x": 245.7, "y": 367.2, "c": "#6EE7A0"}, {"x": 259.0, "y": 320.9, "c": "#F5A524"}, {"x": 267.5, "y": 346.3, "c": "#A9C4E8"}, {"x": 276.7, "y": 361.0, "c": "#F5A524"}, {"x": 277.0, "y": 365.0, "c": "#C9A0F0"}, {"x": 281.7, "y": 329.3, "c": "#6EE7A0"}, {"x": 284.1, "y": 344.6, "c": "#6EE7A0"}, {"x": 285.6, "y": 337.2, "c": "#C9A0F0"}, {"x": 313.4, "y": 341.0, "c": "#C9A0F0"}, {"x": 338.2, "y": 333.4, "c": "#A9C4E8"}, {"x": 345.9, "y": 106.1, "c": "#F5A524"}, {"x": 347.4, "y": 342.2, "c": "#6EE7A0"}, {"x": 391.7, "y": 229.7, "c": "#C9A0F0"}, {"x": 448.8, "y": 112.6, "c": "#F5A524"}, {"x": 465.6, "y": 355.2, "c": "#6EE7A0"}, {"x": 476.3, "y": 86.9, "c": "#F5A524"}, {"x": 86.6, "y": 337.7, "c": "#F5A524"}, {"x": 95.5, "y": 312.0, "c": "#F5A524"}, {"x": 122.1, "y": 328.1, "c": "#6EE7A0"}, {"x": 127.1, "y": 320.9, "c": "#6EE7A0"}, {"x": 158.5, "y": 172.1, "c": "#F5A524"}, {"x": 159.0, "y": 172.3, "c": "#F5A524"}, {"x": 166.7, "y": 336.5, "c": "#6EE7A0"}, {"x": 204.3, "y": 319.7, "c": "#A9C4E8"}, {"x": 207.5, "y": 355.0, "c": "#6EE7A0"}, {"x": 241.8, "y": 324.0, "c": "#6EE7A0"}, {"x": 242.7, "y": 320.2, "c": "#6EE7A0"}, {"x": 250.7, "y": 359.3, "c": "#C9A0F0"}, {"x": 273.2, "y": 324.5, "c": "#A9C4E8"}, {"x": 274.1, "y": 355.9, "c": "#6EE7A0"}, {"x": 290.3, "y": 146.6, "c": "#F5A524"}, {"x": 290.6, "y": 155.3, "c": "#F5A524"}, {"x": 325.2, "y": 153.8, "c": "#F5A524"}, {"x": 336.7, "y": 362.6, "c": "#C9A0F0"}, {"x": 343.2, "y": 313.7, "c": "#6EE7A0"}, {"x": 346.8, "y": 329.8, "c": "#C9A0F0"}, {"x": 352.1, "y": 316.6, "c": "#6EE7A0"}, {"x": 359.2, "y": 315.8, "c": "#A9C4E8"}, {"x": 416.9, "y": 308.4, "c": "#6EE7A0"}, {"x": 418.0, "y": 311.8, "c": "#A9C4E8"}, {"x": 422.2, "y": 157.9, "c": "#F5A524"}, {"x": 434.3, "y": 331.7, "c": "#C9A0F0"}, {"x": 445.8, "y": 272.4, "c": "#C9A0F0"}, {"x": 461.2, "y": 341.3, "c": "#A9C4E8"}, {"x": 570.6, "y": 180.7, "c": "#C9A0F0"}, {"x": 101.4, "y": 332.9, "c": "#F5A524"}, {"x": 103.5, "y": 362.6, "c": "#F5A524"}, {"x": 138.3, "y": 352.1, "c": "#6EE7A0"}, {"x": 143.4, "y": 183.4, "c": "#F5A524"}, {"x": 150.8, "y": 179.0, "c": "#F5A524"}, {"x": 153.7, "y": 346.6, "c": "#6EE7A0"}, {"x": 194.2, "y": 353.3, "c": "#6EE7A0"}, {"x": 218.8, "y": 351.1, "c": "#C9A0F0"}, {"x": 229.7, "y": 156.2, "c": "#F5A524"}, {"x": 240.9, "y": 346.6, "c": "#6EE7A0"}, {"x": 252.2, "y": 142.8, "c": "#F5A524"}, {"x": 270.5, "y": 150.7, "c": "#F5A524"}, {"x": 281.7, "y": 340.8, "c": "#A9C4E8"}, {"x": 283.8, "y": 345.8, "c": "#6EE7A0"}, {"x": 293.6, "y": 330.7, "c": "#6EE7A0"}, {"x": 302.1, "y": 346.3, "c": "#A9C4E8"}, {"x": 321.4, "y": 336.2, "c": "#6EE7A0"}, {"x": 335.5, "y": 352.3, "c": "#C9A0F0"}, {"x": 335.8, "y": 345.1, "c": "#6EE7A0"}, {"x": 340.6, "y": 338.9, "c": "#C9A0F0"}, {"x": 346.5, "y": 219.8, "c": "#C9A0F0"}, {"x": 346.5, "y": 156.2, "c": "#F5A524"}, {"x": 354.2, "y": 365.3, "c": "#C9A0F0"}, {"x": 356.8, "y": 330.5, "c": "#6EE7A0"}, {"x": 390.5, "y": 380.6, "c": "#6EE7A0"}, {"x": 404.4, "y": 339.4, "c": "#A9C4E8"}, {"x": 423.9, "y": 343.4, "c": "#A9C4E8"}, {"x": 441.4, "y": 295.4, "c": "#C9A0F0"}, {"x": 724.9, "y": 345.6, "c": "#A9C4E8"}]};
+    return {
+      pts: D.pts,
+      ingredients: [
+        { n: '01', title: 'Cause and effect, learned from pokes', body: 'Each pair of neuron types gets the average echo seen when one is switched on in other worms. Predicting the next half second never learned this, even from pokes.' },
+        { n: '02', title: 'Ongoing activity, learned by watching', body: 'Background dynamics fitted to stimulation-free activity, which is what watching can teach.' },
+        { n: '03', title: 'Noise that does not spread', body: 'A share of fast measurement-like noise, chosen on training worms, so the brain is not always drifting.' },
+        { n: '04', title: 'Calm and active stretches', body: 'Real brains are often quiet for half a minute; every model without this was always busy.' }
+      ],
+      tradeoffs: [
+        { a: 'Causal links learned from pokes', b: 'Echo pattern', c: 'Nothing measurable' },
+        { a: 'Fast noise that does not spread', b: 'How far echoes spread', c: 'Echo complexity gets worse' },
+        { a: 'Calm and active stretches', b: 'The range of echo sizes', c: 'A little realism at rest' },
+        { a: 'A few shared brain-wide modes', b: 'Dimensionality', c: 'Correlations become too typical' },
+        { a: 'Quiet stretches for each neuron type', b: 'Echo complexity, most of the way', c: 'Realism at rest collapses' },
+        { a: 'Each worm its own background', b: 'Correlations stop being average', c: 'Timing becomes too slow' },
+        { a: 'A learned nonlinear brain (GRU)', b: 'Spread and size, nothing hand-tuned', c: 'Realism at rest; complexity unchanged' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

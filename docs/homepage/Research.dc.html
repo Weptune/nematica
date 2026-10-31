@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NEMATICA research log</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#07100E}
+a{color:#6EE7A0}a:hover{color:#A7F3C8}
+</style>
+</helmet>
+<div style="background: #07100E; color: #E8F1EC; font-family: 'Space Grotesk', system-ui, sans-serif; min-height: 100vh">
+<header style="max-width: 1200px; margin: 0 auto; padding: 28px 32px; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center">
+<a href="Main.dc.html" style="font-family: 'JetBrains Mono', monospace; font-size: 15px; letter-spacing: 0.32em; font-weight: 500; color: #E8F1EC; text-decoration: none">NEMATICA</a>
+<nav aria-label="Pages" style="display: flex; flex-wrap: wrap; gap: 26px; font-size: 15px">
+<a href="Findings.dc.html" style="text-decoration: none; color: #6EE7A0; font-weight: 500">Findings</a>
+<a href="Poke.dc.html" style="text-decoration: none; color: #6EE7A0; font-weight: 500">Poke it yourself</a>
+<a href="Method.dc.html" style="text-decoration: none; color: #6EE7A0; font-weight: 500">How the test works</a>
+<a href="Research.dc.html" aria-current="page" style="text-decoration: none; color: #E8F1EC; font-weight: 700">Research log</a>
+<a href="https://github.com/Weptune/nematica" style="text-decoration: none">GitHub</a>
+</nav>
+</header>
+
+<section style="max-width: 1200px; margin: 0 auto; padding: 40px 32px 56px; display: flex; flex-direction: column; gap: 22px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.18em; color: #9DB3AA">RESEARCH LOG</div>
+<h1 style="margin: 0; font-size: 58px; line-height: 1.03; letter-spacing: -0.035em; font-weight: 700; max-width: 960px">One question, asked six ways.</h1>
+<p style="margin: 0; font-size: 19px; line-height: 1.6; color: #B9CCC4; max-width: 860px">How do you know an artificial brain is right? Each line of work applies the same ruler to a harder version of that question. The full record, with every prediction, number and correction, is in the repository's README.</p>
+</section>
+<section style="max-width: 1200px; margin: 0 auto; padding: 0 32px 88px; display: flex; flex-direction: column; gap: 16px">
+<sc-for list="{{arcs}}" as="a" hint-placeholder-count="6">
+<div style="background: #0D1916; border: 1px solid #1F332D; border-radius: 18px; padding: 26px; display: flex; flex-wrap: wrap; gap: 24px">
+<div style="flex: 0 0 72px; font-family: 'JetBrains Mono', monospace; font-size: 38px; font-weight: 500; color: #2F4A41">{{a.n}}</div>
+<div style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center"><div style="font-size: 24px; font-weight: 700">{{a.title}}</div><div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 4px 10px; border-radius: 999px; background: {{a.bg}}; color: {{a.fg}}">{{a.status}}</div></div>
+<div style="font-size: 17px; color: #C9DAD3; line-height: 1.5">{{a.q}}</div>
+<div style="font-size: 15px; color: #9DB3AA; line-height: 1.6">{{a.finding}}</div>
+</div>
+</div>
+</sc-for>
+<div style="display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px">
+<a href="Findings.dc.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border-radius: 999px; background: #6EE7A0; color: #04130C; font-weight: 700; font-size: 16px; text-decoration: none">See the main findings</a>
+<a href="https://github.com/Weptune/nematica" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border-radius: 999px; border: 1px solid #2F4A41; color: #E8F1EC; font-size: 16px; text-decoration: none">Read the full record on GitHub</a>
+</div>
+</section>
+<footer style="max-width: 1200px; margin: 0 auto; padding: 56px 32px 72px; border-top: 1px solid #1A2B26; display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: center">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; letter-spacing: 0.32em">NEMATICA</div>
+<div style="font-size: 15px; color: #9DB3AA"><a href="Main.dc.html" style="text-decoration: none">Home</a> · <a href="Findings.dc.html" style="text-decoration: none">Findings</a> · <a href="Poke.dc.html" style="text-decoration: none">Poke it yourself</a> · <a href="Method.dc.html" style="text-decoration: none">How the test works</a> · <a href="Research.dc.html" style="text-decoration: none">Research log</a> · <a href="https://github.com/Weptune/nematica" style="text-decoration: none">GitHub</a></div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2600}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const A = ['ANSWERED', '#133326', '#6EE7A0'], P = ['IN PROGRESS', '#2F1E10', '#F5C27A'], W = ['WAITING FOR DATA', '#1B2A3A', '#A9C4E8'];
+    const arc = (n, s, title, q, finding) => ({ n, title, q, finding, status: s[0], bg: s[1], fg: s[2] });
+    return {
+      arcs: [
+        arc('01', A, 'Forecasting is not fidelity', 'Does the model that best predicts the next moment make the most realistic worm?',
+            'No. The best forecasters are too typical: they reproduce an average worm. Realism needs each worm to keep its own dynamics.'),
+        arc('02', A, 'Digital copies of individual worms', 'Can a model be one particular worm?',
+            'On the copper dataset, per-worm models pass all 10 activity tests and a classifier cannot tell them from the worms they copy. On a second dataset, only 5 of 10.'),
+        arc('03', A, 'What the wiring diagram buys', 'Does the real connectome make models more realistic?',
+            'Real wiring beats random wiring of the same density in every test, by small margins; with causal data, most of a poke\'s echo travels between neurons that are not directly wired.'),
+        arc('04', P, 'The causal Turing test', 'Do artificial brains answer a poke like real ones?',
+            'Models that pass every test of ongoing activity answer pokes wrongly, and watching cannot tell which will. A brain built from four ingredients passes the poke test; none yet matches the echo complexity used to assess consciousness.'),
+        arc('05', P, 'A brain driving a body', 'Can an artificial brain sense copper and steer a virtual worm like a real one?',
+            '9 of 10 tests and all environment tests pass, but the virtual worm steps onto the copper far too often: the copper-sensing neuron reacts too slowly.'),
+        arc('06', W, 'From one brain to a swarm', 'Does it hold when many artificial brains share an arena?',
+            'Individual worms make very different crowds, and a crowd of average worms is misleading. Scoring against real crowds needs multi-worm tracking data.')
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
