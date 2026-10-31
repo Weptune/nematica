@@ -17,7 +17,7 @@ from pathlib import Path
 
 import numpy as np
 
-FRAME_S = 0.5   # [A] frame interval: stimulations are 61 to 62 frames (about 31 s) apart, as published
+FRAME_S = 0.5   # [M] frame interval: the original OSF files carry time stamps 0.5 s apart
 
 # classes whose members carry a dorsal/ventral letter before the side (RMDDL, SMDVR, IL1VL)
 _DV_CLASSES = {"RMD", "SMD", "SMB", "SIA", "SIB", "SAA", "URY", "URA", "OLQ", "CEP", "IL1", "IL2", "RME", "GLR"}

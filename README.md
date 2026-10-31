@@ -823,8 +823,7 @@ response of every other neuron is a direct measurement of how activity spreads.
 
 **Data** (`nematica/data/pumpprobe.py`; local only, not redistributed). The Creamer et al.
 2025 packaging of the atlas: 110 recordings, a median of 3,800 frames (about 32 minutes at
-0.5 s per frame [A: frame interval taken from the stimulation spacing of about 31 s and the
-published protocol]), a median of 122 tracked and 62 named neurons per worm, 5,618
+0.5 s per frame [M: the original atlas files on OSF carry time stamps, 0.5 s apart]), a median of 122 tracked and 62 named neurons per worm, 5,618
 stimulations, of which 3,135 hit a named neuron (negative target indices, 1,164 of them,
 mark targets that were not tracked; they are dropped). Neurons are pooled into the same
 classes as every other level (AVAL and AVAR are AVA; dorsal and ventral members such as
@@ -877,6 +876,15 @@ behaving-worm datasets do worse than models fitted on atlas worms; (d) the conne
 mask or prior beats shuffled wiring on pattern more clearly than it did on spontaneous
 activity.
 
+**A change to the plan, made before any model was fitted.** Stimulations come every 31 s
+and each response window is 30 s, so only about a fifth of each recording (a median of 850
+frames) is free of stimulation. That is still about 60,000 frames over the training worms,
+enough for a pooled model, so "fitted on spontaneous activity" stays as planned. A second
+version of the same model is fitted on *all* frames, stimulations included: it can learn
+propagation directly from the stimulated neurons' activity, as the published atlas models
+do. Expectation, written now: the all-frames model beats the spontaneous-only model on
+pattern.
+
 **Calibration results** (`scripts/run_causal_calib.py`, `docs/figures/causal_calibration.csv`;
 3 rotating pools of 36 to 37 worms, frozen in `configs/splits/pumpprobe_cv3.yaml`): **31 of
 33 designed outcomes hit.** Shuffled stimulation times and permuted targets fail the
@@ -919,6 +927,30 @@ to 0.71, at the 14th to 17th percentile of real pairs: too typical), and its res
 too small (magnitude outside). So the target is clear: a good model is not one that
 reproduces the average atlas, but one whose simulated worms differ from real worms as much
 as real worms differ from each other.
+
+**First models: VAR(3) at class level** (`nematica/systems/causal_models.py`,
+`scripts/run_causal_models.py`, `docs/figures/causal_models.csv`). A pooled ridge VAR(3) on
+class activity of the atlas training worms, one fitted on spontaneous frames and one on all
+frames; each pool worm simulated with the model's own noise and stimulated on its own
+schedule (the stimulated class follows its neuron's measured response). Two assumptions
+had to be added, both stated in the code: classes a worm does not show stay at zero in
+simulation, as missing classes did in training; and the fitted dynamics, slightly
+explosive (spectral radius 1.07 to 1.13, from slow drifts in the recordings), are scaled to
+radius 0.99 where needed.
+
+| model | pattern (distance; real pairs 0.85 to 0.88) | magnitude | kinetics |
+|---|---|---|---|
+| VAR(3), spontaneous frames | outside in 3 of 3 pools (0.96 to 0.97) | outside in 3 of 3 | inside 1, too typical 2 |
+| VAR(3), all frames | outside in 3 of 3 (0.96 to 0.97) | outside in 3 of 3 | inside 2, too typical 1 |
+
+Against the expectations: (b) met, and more strongly than "partly": both models' simulated
+responses correlate with real worms at only 0.03 to 0.04, against 0.12 between real worms.
+The all-frames model is closer than the spontaneous one in every pool, as expected, but by
+a hair (0.004 to 0.011). Magnitudes are too large: model worms respond about twice as
+strongly as real worms in units of each neuron's own variability. A linear model of
+spontaneous class activity, even one that has seen the stimulations, does not know how
+signals spread through this brain. That is the causal Turing test's first answer, and the
+reason the test is needed: these same model families pass most spontaneous levels.
 
 ## Arc 6: from one brain to a swarm
 
