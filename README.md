@@ -26,7 +26,7 @@ questions, one arc per question:
 | 1. Forecasting is not fidelity | Does the best forecaster make the most realistic worm? | No: forecasting-optimal models are too typical; realism needs each worm to keep its own dynamics. |
 | 2. Digital twins | Can a model be a particular worm? | Per-worm models pass all 10 pairwise levels on the copper set, and a classifier cannot tell them from the worms they imitate; on a second dataset (Atanas 2023) the classifier result replicates but the pairwise levels only partly do (5 to 6 of 10). |
 | 3. What the wiring buys | Does the real connectome make models more realistic? | Real wiring beats random wiring of the same density on every measure, by small margins; no wiring constraint beats data-chosen coupling at class resolution. |
-| 4. Causal Turing test | Do models respond to perturbations like real brains? | Not started: needs the optogenetic atlas (Randi 2023, on OSF, not reachable from here). |
+| 4. Causal Turing test | Do models respond to perturbations like real brains? | Started: the optogenetic atlas (Randi 2023, as packaged by Creamer et al. 2025) is in hand; design and expectations written before scoring. |
 | 5. Closed loop | Can a model brain drive a body in a real environment and behave like a worm? | Nearly: in the copper arena, all environment levels and 9 of 10 pairwise; copper's effect runs through ASH in real worms, and the model's ASH responds too slowly. |
 | 6. Swarm (in progress) | Does it hold when many model brains interact? | Swarm engine built (32 closed-loop worms, touch and exclusion as stated assumptions). Individual worms make very different crowds; a swarm of the pooled "average worm" is more crowded than a mix of the worms it was fitted on. Scoring against real multi-worm tracking (Level 7) awaits the data. |
 
@@ -812,6 +812,113 @@ v11, v13, v14), lead-lag sits at 1.05 to 1.09, so it is probably not about how c
 reaches ASH but about the closed loop itself (reversals decided by a hazard and written
 back into the brain). Arc 5 rests here for now with v11 as the reference closed loop.
 
+
+## Arc 4: the causal Turing test
+
+**Question.** Do model brains respond to perturbations like real brains? Every level so
+far scores spontaneous activity, which a model can match without getting cause and effect
+right. In the signal-propagation atlas (Randi et al. 2023), one neuron at a time is
+stimulated optogenetically in immobilised worms while the whole head is imaged; the
+response of every other neuron is a direct measurement of how activity spreads.
+
+**Data** (`nematica/data/pumpprobe.py`; local only, not redistributed). The Creamer et al.
+2025 packaging of the atlas: 110 recordings, a median of 3,800 frames (about 32 minutes at
+0.5 s per frame [A: frame interval taken from the stimulation spacing of about 31 s and the
+published protocol]), a median of 122 tracked and 62 named neurons per worm, 5,618
+stimulations, of which 3,135 hit a named neuron (negative target indices, 1,164 of them,
+mark targets that were not tracked; they are dropped). Neurons are pooled into the same
+classes as every other level (AVAL and AVAR are AVA; dorsal and ventral members such as
+RMDDL and RMDVR are RMD), so models fitted on our other datasets can be scored here.
+
+**Responses.** For each stimulation of class *i* and each other named neuron of class *j*:
+the change from its mean over the 5 s before the pulse, in units of that neuron's SD over
+the recording, from 0 to 30 s after; averaged per worm over events and over the members of
+each class. A worm's *response set* is all its (*i*, *j*) traces. The unit of measurement,
+as everywhere, is worm-to-worm variation: how different two real worms' response sets are,
+over the pairs both measured.
+
+**Levels** (each a distance between two response sets over shared pairs):
+
+| level | what it asks |
+|---|---|
+| `C1.pattern` | Which neurons go up, which go down, and by how much relative to each other? 1 minus the correlation of mean responses (0 to 15 s) across shared pairs. |
+| `C2.magnitude` | How big are responses overall? Absolute log ratio of the median absolute response. |
+| `C3.kinetics` | How fast do responses rise and decay? Distance between the average normalised time courses of the strongest shared responses. |
+
+**Calibrations, with outcomes designed in advance** (real held-out worms, altered):
+
+| calibration | pattern | magnitude | kinetics |
+|---|---|---|---|
+| real held-out worms, unaltered | inside | inside | inside |
+| stimulation times shuffled (responses read at random frames) | outside | either | either |
+| stimulated neuron identities permuted within each worm | outside | inside | either |
+| responses scaled by 3 | inside | outside | inside |
+| responses time-reversed within the window | either | inside | outside |
+
+**Models to test, in order:**
+
+1. Models fitted on the spontaneous activity of other atlas worms (all frames more than
+   30 s from any stimulation), stimulated by clamping the target class to its own measured
+   response: VAR at class level, pooled and per worm.
+2. The same model families fitted on our copper and Atanas datasets (freely moving worms,
+   different strain and conditions): does a brain model learned from behaving worms
+   predict how signals propagate?
+3. Arc 3's connectome versus shuffled wiring as a hard mask and as a prior: does anatomy
+   predict causal responses better than random wiring of the same density? Arc 3 could not
+   separate them on spontaneous activity; causal data is the direct test.
+4. The published Creamer et al. models, which were fitted to this atlas (scored on worms
+   they did not see, where that can be determined).
+
+**Expectations, written before any model is scored:** (a) the calibrations hit their
+designed outcomes; (b) models fitted on spontaneous activity get the pattern only partly
+right (pattern outside or near the edge), because correlation is not causation and
+stimulation drives neurons outside their spontaneous range; (c) models fitted on the
+behaving-worm datasets do worse than models fitted on atlas worms; (d) the connectome
+mask or prior beats shuffled wiring on pattern more clearly than it did on spontaneous
+activity.
+
+**Calibration results** (`scripts/run_causal_calib.py`, `docs/figures/causal_calibration.csv`;
+3 rotating pools of 36 to 37 worms, frozen in `configs/splits/pumpprobe_cv3.yaml`): **31 of
+33 designed outcomes hit.** Shuffled stimulation times and permuted targets fail the
+pattern level in every pool; tripled responses fail magnitude and pass pattern; time
+reversal fails kinetics. The two misses are both "time reversed should pass magnitude": it
+fails in 2 of 3 pools. That was a design error, not a ruler error: reversing a decaying
+response moves its weak tail into the 0 to 15 s window, so its size really changes.
+
+One fix was made after the first run, and is reported: the kinetics level first chose its
+"strongest shared responses" by raw size, so tripling a worm's responses changed which
+pairs were compared and failed kinetics in one pool (30 of 33). It now chooses by rank
+within each set, which no scaling can change.
+
+What the calibrations also show, plainly:
+
+- **Worms agree only weakly on the pattern.** Two real worms' response patterns correlate
+  at about 0.12 (pattern distance 0.85 to 0.88), against about 0 for shuffled times. Each
+  worm measures each pair from only a few stimulations, so single-worm patterns are noisy;
+  the atlas papers pooled worms for this reason. The level still separates real responses
+  from noise in every pool, but the band of "inside" is wide.
+- **Kinetics cannot tell responses from noise.** Responses read at random frames have the
+  same average normalised time course as real ones; only time reversal is caught. It is
+  kept as a weak level and not used for claims on its own.
+
+**A note on scoring models fairly.** A model's *expected* response is noise-free, while
+each real worm's responses are averages of a few noisy stimulations. A model scored on
+expected responses would look too typical for that reason alone. So models are scored the
+way worms are measured: each model runs the whole recording with its own noise, is
+stimulated on the worm's own schedule, and its responses go through the same pipeline.
+
+**First baseline: the atlas average.** Each worm's responses predicted by the mean response
+of each pair over the *training* worms (the other two pools): what any model that learned
+the average atlas perfectly would say. Expectations, written before it was run: too typical
+on pattern (an average correlates with each worm better than worms do with each other);
+outside on magnitude (averaging over worms shrinks responses).
+
+Result (`docs/figures/causal_baselines.csv`): both expectations met in all three pools.
+The atlas average correlates with each held-out worm at about 0.31 (pattern distance 0.68
+to 0.71, at the 14th to 17th percentile of real pairs: too typical), and its responses are
+too small (magnitude outside). So the target is clear: a good model is not one that
+reproduces the average atlas, but one whose simulated worms differ from real worms as much
+as real worms differ from each other.
 
 ## Arc 6: from one brain to a swarm
 

@@ -1,0 +1,10 @@
+fold,system,metric,system_median,bio_median,bio_p05,bio_p95,percentile_of_bio,shift_lo,shift_hi,p_greater,n_pairs,verdict
+0,atlas_mean,C1.pattern,0.6907,0.8843,0.597,1.1296,0.139,-0.2228,-0.1612,1.0,1096,too typical
+0,atlas_mean,C2.magnitude,0.6919,0.2457,0.0245,0.7939,0.918,0.3721,0.534,0.0,1096,outside
+0,atlas_mean,C3.kinetics,0.1384,0.1258,0.0603,0.2366,0.595,-0.005,0.0354,0.0,1096,inside
+1,atlas_mean,C1.pattern,0.6825,0.8462,0.5712,1.1062,0.146,-0.1923,-0.1305,1.0,1028,too typical
+1,atlas_mean,C2.magnitude,0.6666,0.3114,0.0224,0.929,0.844,0.2623,0.4497,0.0,1028,outside
+1,atlas_mean,C3.kinetics,0.1331,0.1304,0.0609,0.2478,0.51,-0.0157,0.0248,0.0441,1028,inside
+2,atlas_mean,C1.pattern,0.7062,0.8778,0.5464,1.1421,0.169,-0.2054,-0.1477,1.0,942,too typical
+2,atlas_mean,C2.magnitude,0.7828,0.2826,0.0237,0.8711,0.913,0.3825,0.6134,0.0,942,outside
+2,atlas_mean,C3.kinetics,0.1487,0.1315,0.0693,0.2578,0.608,-0.0019,0.0323,0.0,942,inside
