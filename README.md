@@ -55,6 +55,7 @@ choice made on training and validation worms only, except where marked post hoc)
 | Same with 10 frames of memory | **10 of 10** | **0.62 held-out (not distinguishable in 2 of 3 pools), 0.50 in-sample** | not modelled |
 | Same, coupling restricted to the connectome (arc 3) | 8 of 10 | 0.68 held-out, 0.57 in-sample (shuffled wiring: 0.69 to 0.72, 0.59 to 0.64) | not modelled |
 | Same, connectome as a forecasting-chosen prior (arc 3) | 9 of 10 | 0.70 held-out (shuffled priors 0.72, 0.73) | not modelled |
+| VAR(10), copper-trained, scored on Atanas 2023 worms | 6 of 10 (copper worms themselves: 7) | 0.87 (copper worms: 0.735) | not modelled |
 | Closed loop v7 (3-frame brain senses copper, steers, reverses) | 9 of 10 | 0.95 (v6, frozen split) | occupancy and approach inside; 14 to 17% of time near copper (real 3.2%) |
 | Closed loop v8 (10-frame brain) | 9 of 10 | not yet run | occupancy and approach inside; 11% near copper; encounter outside |
 | Closed loop v9 (copper acts only through ASH and the brain) | 8 of 10 | not yet run | **all three Level 6 metrics inside**; 10.4% near copper |
@@ -295,6 +296,48 @@ python scripts/fetch_atlas.py
 python scripts/export_replay.py data/raw/doi_10_5061_dryad_w9ghx3g4v__v20260415 --split configs/splits/copper2026.yaml --out lab/public/data
 cd lab; npm install; npm run dev
 ```
+
+## Generalisation: copper-trained models against another dataset
+
+**Design, written before running (Oct 31).** Do the models learn worms, or this dataset?
+Models are trained on all 27 copper worms (25 training, 2 validation, as in the rotations)
+and generate worms on the templates of the 14 unstimulated (baseline) worms of Atanas et
+al. 2023 (same lab and microscope family, different experiments: no copper arena,
+different session protocol). Sample j comes from copper worm j's model. They are scored
+with the ruler against those 14 Atanas worms as the reference, on all 10 pairwise levels,
+and with the classifier (model vs Atanas worms). The real control is the copper worms
+themselves scored against the Atanas worms the same way; the Atanas heat-stimulated worms
+are scored too, as a second real comparison (`scripts/run_cross_dataset.py`).
+Expectations: if the models learned worms rather than this dataset, they should do about
+as well as the copper worms themselves do against Atanas worms (same levels inside or
+outside, similar distance ratios and classifier AUC); a model that does clearly worse
+than the copper control has learned something specific to the copper recordings.
+
+**Results** (`docs/figures/cross_dataset.csv`; reference: 14 Atanas baseline worms):
+
+| | pairwise inside | timescale | correlation | dimension | AVA bouts (dwell) | classifier AUC |
+|---|---|---|---|---|---|---|
+| copper real worms (control) | 7 of 10 | 1.21 out | 1.17 out | 1.57 out | 1.24 | 0.735 |
+| Atanas heat-stimulated worms | 10 of 10 | 1.00 | 1.09 | 1.21 | 1.11 | 0.681 |
+| copper-trained VAR(3) | 6 of 10 | 1.43 out | 1.15 out | 2.75 out | 1.50 out | 0.933 |
+| copper-trained VAR(10) | 6 of 10 | 1.26 out | 1.18 out | 3.00 out | 1.47 out | 0.873 |
+
+- **The two datasets differ.** Real copper worms are themselves outside the Atanas worms on
+  timescales, correlations and dimensionality, and a classifier separates the two sets of
+  real worms (0.735): different experiments leave a mark that the worm-to-worm ruler can see.
+  (Heat-stimulated Atanas worms, by contrast, are inside everywhere next to unstimulated
+  ones.)
+- **The models inherit that shift, and add their own errors.** They miss the same three
+  levels the copper worms miss, with similar correlation distances (1.15 to 1.18 vs 1.17),
+  so in that respect they learned copper worms rather than something artificial. On top of
+  it they miss AVA bout durations, are much more over-dimensional (2.75 to 3.0 vs 1.57), and
+  are far easier to detect (0.87 to 0.93 vs 0.735). The 10-frame model generalises better
+  than the 3-frame one on timescales and on the classifier, matching its better in-dataset
+  results.
+- Expectation partly held: the models do about as well as the copper control on most
+  levels but clearly worse on dimensionality, dwell and the classifier. A within-Atanas
+  replication of the main result (train and test on Atanas worms) would separate dataset
+  shift from model error directly.
 
 ## Arc 3: what the wiring buys
 
