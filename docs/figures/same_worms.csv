@@ -1,0 +1,109 @@
+fold,kind,system,metric,level,primary,system_median,bio_median,bio_p05,bio_p95,ceiling_median,percentile_of_bio,shift,shift_lo,shift_hi,p_greater,p_less,n_pairs,n_templates,self_spread_ratio,verdict
+0,activity,var3_all,L1.distribution,1,True,0.1462,0.1432,0.1036,0.2287,0.1267,0.532,0.003,-0.0054,0.0116,0.0047,0.9953,1332,37,0.423,inside
+0,activity,var3_all,L1.timescale,1,False,0.8114,0.8539,0.4641,1.518,0.5168,0.437,-0.0425,-0.1314,0.0382,0.9877,0.0123,1332,37,0.327,inside
+0,activity,var3_all,L2.correlation,2,True,0.7991,0.8211,0.6327,1.0052,0.6363,0.422,-0.022,-0.0501,0.0099,0.9997,0.0003,1332,37,0.657,inside
+0,activity,var3_all,L2.dimension,2,False,0.3232,0.2389,0.0198,1.0909,0.2083,0.626,0.0843,0.0103,0.1498,0.0,1.0,1332,37,1.296,outside
+0,activity,var3_all,L4.leadlag,4,True,0.9806,0.9665,0.8222,1.0803,0.893,0.577,0.0141,-0.0007,0.0262,0.0,1.0,1332,37,0.931,inside
+0,activity,var3_all,L4.dwell,4,False,0.1637,0.2241,0.0907,0.4286,0.1793,0.324,-0.0604,-0.1042,-0.015,1.0,0.0,420,37,0.345,too typical
+0,causal,var3_all,C1.pattern,,,0.9834,0.9038,0.6959,1.0799,,0.775,,0.0478,0.1067,0.0,,1144,,,outside
+0,causal,var3_all,C2.magnitude,,,0.557,0.17,0.0133,0.7064,,0.912,,0.333,0.4409,0.0,,1144,,,outside
+0,causal,var3_all,C3.kinetics,,,0.0792,0.0789,0.0364,0.217,,0.506,,-0.008,0.0091,0.1283,,1144,,,inside
+0,activity,var3_spontaneous,L1.distribution,1,True,0.1454,0.1432,0.1036,0.2287,0.1267,0.524,0.0022,-0.0064,0.0107,0.0099,0.9901,1332,37,0.404,inside
+0,activity,var3_spontaneous,L1.timescale,1,False,0.9697,0.8539,0.4641,1.518,0.5168,0.622,0.1159,-0.0122,0.2393,0.0,1.0,1332,37,0.35,inside
+0,activity,var3_spontaneous,L2.correlation,2,True,0.8723,0.8211,0.6327,1.0052,0.6363,0.734,0.0511,0.0259,0.0878,0.0,1.0,1332,37,0.737,outside
+0,activity,var3_spontaneous,L2.dimension,2,False,0.3845,0.2389,0.0198,1.0909,0.2083,0.698,0.1457,0.0655,0.215,0.0,1.0,1332,37,1.109,outside
+0,activity,var3_spontaneous,L4.leadlag,4,True,0.9783,0.9665,0.8222,1.0803,0.893,0.562,0.0117,-0.0052,0.0245,0.0001,0.9999,1332,37,0.775,inside
+0,activity,var3_spontaneous,L4.dwell,4,False,0.2046,0.2241,0.0907,0.4286,0.1793,0.433,-0.0194,-0.0699,0.0377,0.813,0.1871,420,37,0.296,inside
+0,causal,var3_spontaneous,C1.pattern,,,0.9914,0.9038,0.6959,1.0799,,0.799,,0.0574,0.1141,0.0,,1144,,,outside
+0,causal,var3_spontaneous,C2.magnitude,,,0.5504,0.17,0.0133,0.7064,,0.901,,0.3271,0.4401,0.0,,1144,,,outside
+0,causal,var3_spontaneous,C3.kinetics,,,0.0776,0.0789,0.0364,0.217,,0.487,,-0.0092,0.0066,0.2371,,1144,,,inside
+0,activity,creamer2024_fully_connected,L1.distribution,1,True,0.1634,0.1432,0.1036,0.2287,0.1267,0.697,0.0202,0.0122,0.028,0.0,1.0,1332,37,0.78,outside
+0,activity,creamer2024_fully_connected,L1.timescale,1,False,0.7378,0.8539,0.4641,1.518,0.5168,0.323,-0.116,-0.1751,-0.0664,1.0,0.0,1332,37,0.437,too typical
+0,activity,creamer2024_fully_connected,L2.correlation,2,True,0.7486,0.8211,0.6327,1.0052,0.6363,0.257,-0.0725,-0.0934,-0.0502,1.0,0.0,1332,37,0.677,too typical
+0,activity,creamer2024_fully_connected,L2.dimension,2,False,0.1795,0.2389,0.0198,1.0909,0.2083,0.398,-0.0594,-0.1074,-0.007,1.0,0.0,1332,37,0.537,too typical
+0,activity,creamer2024_fully_connected,L4.leadlag,4,True,0.9633,0.9665,0.8222,1.0803,0.893,0.483,-0.0033,-0.0168,0.0097,0.7807,0.2193,1332,37,0.973,inside
+0,activity,creamer2024_fully_connected,L4.dwell,4,False,0.2425,0.2241,0.0907,0.4286,0.1793,0.538,0.0185,-0.0403,0.0831,0.0072,0.9928,420,37,0.328,inside
+0,causal,creamer2024_fully_connected,C1.pattern,,,0.9417,0.9038,0.6959,1.0799,,0.624,,0.0107,0.0652,0.0,,1144,,,outside
+0,causal,creamer2024_fully_connected,C2.magnitude,,,0.1954,0.17,0.0133,0.7064,,0.563,,-0.0207,0.0725,0.0147,,1144,,,inside
+0,causal,creamer2024_fully_connected,C3.kinetics,,,0.0874,0.0789,0.0364,0.217,,0.588,,-0.0001,0.0179,0.0,,1144,,,inside
+0,activity,creamer2024_connectome_constrained,L1.distribution,1,True,0.1628,0.1432,0.1036,0.2287,0.1267,0.686,0.0196,0.0119,0.0283,0.0,1.0,1332,37,0.766,outside
+0,activity,creamer2024_connectome_constrained,L1.timescale,1,False,0.8269,0.8539,0.4641,1.518,0.5168,0.458,-0.027,-0.1031,0.0288,0.9999,0.0001,1332,37,0.429,inside
+0,activity,creamer2024_connectome_constrained,L2.correlation,2,True,0.7691,0.8211,0.6327,1.0052,0.6363,0.324,-0.052,-0.0736,-0.0285,1.0,0.0,1332,37,0.598,too typical
+0,activity,creamer2024_connectome_constrained,L2.dimension,2,False,0.3088,0.2389,0.0198,1.0909,0.2083,0.608,0.0699,-0.003,0.134,0.0,1.0,1332,37,0.38,inside
+0,activity,creamer2024_connectome_constrained,L4.leadlag,4,True,0.9865,0.9665,0.8222,1.0803,0.893,0.613,0.0199,0.0047,0.0338,0.0,1.0,1332,37,0.982,outside
+0,activity,creamer2024_connectome_constrained,L4.dwell,4,False,0.2365,0.2241,0.0907,0.4286,0.1793,0.529,0.0124,-0.0444,0.0744,0.0096,0.9904,420,37,0.328,inside
+0,causal,creamer2024_connectome_constrained,C1.pattern,,,0.9741,0.9038,0.6959,1.0799,,0.744,,0.0414,0.0957,0.0,,1144,,,outside
+0,causal,creamer2024_connectome_constrained,C2.magnitude,,,0.1905,0.17,0.0133,0.7064,,0.556,,-0.0232,0.0667,0.0185,,1144,,,inside
+0,causal,creamer2024_connectome_constrained,C3.kinetics,,,0.0794,0.0789,0.0364,0.217,,0.508,,-0.0078,0.0097,0.0487,,1144,,,inside
+1,activity,var3_all,L1.distribution,1,True,0.1554,0.1518,0.1056,0.2681,0.1297,0.538,0.0036,-0.0081,0.0157,0.0161,0.9839,1260,37,0.402,inside
+1,activity,var3_all,L1.timescale,1,False,0.8843,1.0447,0.4935,2.7586,0.5899,0.373,-0.1603,-0.2638,0.023,1.0,0.0,1260,37,0.218,inside
+1,activity,var3_all,L2.correlation,2,True,0.7567,0.8211,0.6535,0.9779,0.6407,0.254,-0.0644,-0.0837,-0.0363,1.0,0.0,1260,37,0.65,too typical
+1,activity,var3_all,L2.dimension,2,False,0.5419,0.2978,0.0265,1.5774,0.1669,0.7,0.2441,0.1225,0.3108,0.0,1.0,1260,37,0.227,outside
+1,activity,var3_all,L4.leadlag,4,True,0.9818,0.9732,0.828,1.0877,0.8855,0.557,0.0086,-0.0022,0.0218,0.0004,0.9996,1260,37,0.962,inside
+1,activity,var3_all,L4.dwell,4,False,0.1791,0.1999,0.0877,0.4636,0.2132,0.442,-0.0209,-0.0763,0.0334,0.9364,0.0637,380,37,0.389,inside
+1,causal,var3_all,C1.pattern,,,0.9809,0.8931,0.6686,1.0814,,0.809,,0.0628,0.1214,0.0,,1004,,,outside
+1,causal,var3_all,C2.magnitude,,,0.6416,0.1856,0.0124,0.7206,,0.932,,0.388,0.5249,0.0,,1004,,,outside
+1,causal,var3_all,C3.kinetics,,,0.0817,0.0865,0.0424,0.1991,,0.454,,-0.0135,0.0051,0.8918,,1004,,,inside
+1,activity,var3_spontaneous,L1.distribution,1,True,0.1534,0.1518,0.1056,0.2681,0.1297,0.519,0.0015,-0.0097,0.0132,0.1042,0.8959,1260,37,0.331,inside
+1,activity,var3_spontaneous,L1.timescale,1,False,1.0122,1.0447,0.4935,2.7586,0.5899,0.479,-0.0324,-0.2003,0.2444,0.1658,0.8343,1260,37,0.173,inside
+1,activity,var3_spontaneous,L2.correlation,2,True,0.816,0.8211,0.6535,0.9779,0.6407,0.483,-0.0051,-0.0248,0.0172,0.4606,0.5395,1260,37,0.529,inside
+1,activity,var3_spontaneous,L2.dimension,2,False,0.517,0.2978,0.0265,1.5774,0.1669,0.681,0.2191,0.0992,0.2856,0.0,1.0,1260,37,0.246,outside
+1,activity,var3_spontaneous,L4.leadlag,4,True,0.9816,0.9732,0.828,1.0877,0.8855,0.557,0.0084,-0.0031,0.0208,0.0004,0.9996,1260,37,0.736,inside
+1,activity,var3_spontaneous,L4.dwell,4,False,0.2178,0.1999,0.0877,0.4636,0.2132,0.563,0.0178,-0.0485,0.0802,0.0047,0.9953,380,37,0.261,inside
+1,causal,var3_spontaneous,C1.pattern,,,0.9857,0.8931,0.6686,1.0814,,0.825,,0.0665,0.1259,0.0,,1004,,,outside
+1,causal,var3_spontaneous,C2.magnitude,,,0.6569,0.1856,0.0124,0.7206,,0.936,,0.4017,0.5403,0.0,,1004,,,outside
+1,causal,var3_spontaneous,C3.kinetics,,,0.0789,0.0865,0.0424,0.1991,,0.432,,-0.0157,0.001,0.9928,,1004,,,inside
+1,activity,creamer2024_fully_connected,L1.distribution,1,True,0.1708,0.1518,0.1056,0.2681,0.1297,0.673,0.019,0.0067,0.0295,0.0,1.0,1260,37,0.727,outside
+1,activity,creamer2024_fully_connected,L1.timescale,1,False,0.8321,1.0447,0.4935,2.7586,0.5899,0.324,-0.2126,-0.2705,-0.1141,1.0,0.0,1260,37,0.378,too typical
+1,activity,creamer2024_fully_connected,L2.correlation,2,True,0.7464,0.8211,0.6535,0.9779,0.6407,0.208,-0.0746,-0.0957,-0.0496,1.0,0.0,1260,37,0.695,too typical
+1,activity,creamer2024_fully_connected,L2.dimension,2,False,0.21,0.2978,0.0265,1.5774,0.1669,0.365,-0.0878,-0.2056,-0.0459,1.0,0.0,1260,37,0.455,too typical
+1,activity,creamer2024_fully_connected,L4.leadlag,4,True,0.9637,0.9732,0.828,1.0877,0.8855,0.43,-0.0094,-0.0208,0.0041,0.9425,0.0575,1260,37,0.976,inside
+1,activity,creamer2024_fully_connected,L4.dwell,4,False,0.2605,0.1999,0.0877,0.4636,0.2132,0.658,0.0605,-0.0073,0.1181,0.0,1.0,380,37,0.442,inside
+1,causal,creamer2024_fully_connected,C1.pattern,,,0.9199,0.8931,0.6686,1.0814,,0.598,,0.0029,0.0587,0.0,,990,,,outside
+1,causal,creamer2024_fully_connected,C2.magnitude,,,0.2497,0.1856,0.0124,0.7206,,0.618,,0.0075,0.1139,0.0,,990,,,outside
+1,causal,creamer2024_fully_connected,C3.kinetics,,,0.0965,0.0865,0.0424,0.1991,,0.596,,-0.0003,0.022,0.0,,990,,,inside
+1,activity,creamer2024_connectome_constrained,L1.distribution,1,True,0.1709,0.1518,0.1056,0.2681,0.1297,0.673,0.0191,0.007,0.0293,0.0,1.0,1260,37,0.715,outside
+1,activity,creamer2024_connectome_constrained,L1.timescale,1,False,0.896,1.0447,0.4935,2.7586,0.5899,0.379,-0.1487,-0.2276,-0.0159,1.0,0.0,1260,37,0.397,too typical
+1,activity,creamer2024_connectome_constrained,L2.correlation,2,True,0.7635,0.8211,0.6535,0.9779,0.6407,0.276,-0.0575,-0.0803,-0.0284,1.0,0.0,1260,37,0.592,too typical
+1,activity,creamer2024_connectome_constrained,L2.dimension,2,False,0.3434,0.2978,0.0265,1.5774,0.1669,0.546,0.0456,-0.072,0.1133,0.0372,0.9628,1260,37,0.425,inside
+1,activity,creamer2024_connectome_constrained,L4.leadlag,4,True,0.9847,0.9732,0.828,1.0877,0.8855,0.586,0.0115,0.0006,0.0229,0.0,1.0,1260,37,0.988,outside
+1,activity,creamer2024_connectome_constrained,L4.dwell,4,False,0.2574,0.1999,0.0877,0.4636,0.2132,0.653,0.0575,-0.0078,0.1178,0.0,1.0,380,37,0.437,inside
+1,causal,creamer2024_connectome_constrained,C1.pattern,,,0.9686,0.8931,0.6686,1.0814,,0.775,,0.0486,0.1065,0.0,,990,,,outside
+1,causal,creamer2024_connectome_constrained,C2.magnitude,,,0.242,0.1856,0.0124,0.7206,,0.608,,0.0026,0.1017,0.0001,,990,,,outside
+1,causal,creamer2024_connectome_constrained,C3.kinetics,,,0.0829,0.0865,0.0424,0.1991,,0.458,,-0.0117,0.0047,0.8202,,990,,,inside
+2,activity,var3_all,L1.distribution,1,True,0.1513,0.147,0.1013,0.4805,0.1333,0.541,0.0043,-0.0064,0.0176,0.0116,0.9884,1260,36,0.451,inside
+2,activity,var3_all,L1.timescale,1,False,0.854,0.9743,0.487,3.8094,0.5033,0.37,-0.1204,-0.2674,-0.0174,1.0,0.0,1260,36,0.25,too typical
+2,activity,var3_all,L2.correlation,2,True,0.8015,0.8384,0.6524,1.0341,0.6192,0.359,-0.037,-0.0681,-0.0104,1.0,0.0,1260,36,0.653,too typical
+2,activity,var3_all,L2.dimension,2,False,0.3944,0.2152,0.0165,2.4764,0.1192,0.703,0.1792,0.1025,0.2356,0.0,1.0,1260,36,0.439,outside
+2,activity,var3_all,L4.leadlag,4,True,0.982,0.9731,0.8642,1.0873,0.9192,0.554,0.0089,-0.0018,0.0223,0.001,0.999,1260,36,0.972,inside
+2,activity,var3_all,L4.dwell,4,False,0.1783,0.2177,0.0866,0.7159,0.166,0.399,-0.0394,-0.1234,0.0051,1.0,0.0,600,36,0.429,inside
+2,causal,var3_all,C1.pattern,,,0.9903,0.9064,0.6764,1.1317,,0.79,,0.0597,0.1107,0.0,,938,,,outside
+2,causal,var3_all,C2.magnitude,,,0.5839,0.1924,0.0199,0.87,,0.881,,0.3085,0.4727,0.0,,938,,,outside
+2,causal,var3_all,C3.kinetics,,,0.0901,0.0948,0.0429,0.2706,,0.459,,-0.0178,0.0081,0.5901,,938,,,inside
+2,activity,var3_spontaneous,L1.distribution,1,True,0.1499,0.147,0.1013,0.4805,0.1333,0.53,0.0028,-0.0098,0.0147,0.2016,0.7985,1260,36,0.378,inside
+2,activity,var3_spontaneous,L1.timescale,1,False,0.9423,0.9743,0.487,3.8094,0.5033,0.47,-0.0321,-0.2073,0.11,0.9885,0.0115,1260,36,0.221,inside
+2,activity,var3_spontaneous,L2.correlation,2,True,0.829,0.8384,0.6524,1.0341,0.6192,0.452,-0.0095,-0.0353,0.0155,0.964,0.036,1260,36,0.634,inside
+2,activity,var3_spontaneous,L2.dimension,2,False,0.4009,0.2152,0.0165,2.4764,0.1192,0.708,0.1857,0.1061,0.2446,0.0,1.0,1260,36,0.454,outside
+2,activity,var3_spontaneous,L4.leadlag,4,True,0.9836,0.9731,0.8642,1.0873,0.9192,0.576,0.0105,-0.001,0.0253,0.0001,0.9999,1260,36,0.82,inside
+2,activity,var3_spontaneous,L4.dwell,4,False,0.1953,0.2177,0.0866,0.7159,0.166,0.457,-0.0224,-0.1075,0.026,0.9989,0.0011,600,36,0.411,inside
+2,causal,var3_spontaneous,C1.pattern,,,0.9933,0.9064,0.6764,1.1317,,0.796,,0.0631,0.1146,0.0,,938,,,outside
+2,causal,var3_spontaneous,C2.magnitude,,,0.6198,0.1924,0.0199,0.87,,0.902,,0.3477,0.5112,0.0,,938,,,outside
+2,causal,var3_spontaneous,C3.kinetics,,,0.0896,0.0948,0.0429,0.2706,,0.459,,-0.0186,0.0068,0.6722,,938,,,inside
+2,activity,creamer2024_fully_connected,L1.distribution,1,True,0.1656,0.147,0.1013,0.4805,0.1333,0.694,0.0186,0.0086,0.0277,0.0,1.0,1260,36,0.791,outside
+2,activity,creamer2024_fully_connected,L1.timescale,1,False,0.8566,0.9743,0.487,3.8094,0.5033,0.376,-0.1178,-0.2241,-0.0432,1.0,0.0,1260,36,0.461,too typical
+2,activity,creamer2024_fully_connected,L2.correlation,2,True,0.7781,0.8384,0.6524,1.0341,0.6192,0.271,-0.0603,-0.0824,-0.0386,1.0,0.0,1260,36,0.715,too typical
+2,activity,creamer2024_fully_connected,L2.dimension,2,False,0.2115,0.2152,0.0165,2.4764,0.1192,0.497,-0.0037,-0.0855,0.0556,0.8778,0.1223,1260,36,0.773,inside
+2,activity,creamer2024_fully_connected,L4.leadlag,4,True,0.9759,0.9731,0.8642,1.0873,0.9192,0.524,0.0028,-0.009,0.0181,0.219,0.7811,1260,36,0.987,inside
+2,activity,creamer2024_fully_connected,L4.dwell,4,False,0.2912,0.2177,0.0866,0.7159,0.166,0.627,0.0735,-0.0191,0.1279,0.0,1.0,600,36,0.444,inside
+2,causal,creamer2024_fully_connected,C1.pattern,,,0.9396,0.9064,0.6764,1.1317,,0.641,,0.009,0.0604,0.0,,922,,,outside
+2,causal,creamer2024_fully_connected,C2.magnitude,,,0.2274,0.1924,0.0199,0.87,,0.563,,-0.0196,0.086,0.0027,,922,,,inside
+2,causal,creamer2024_fully_connected,C3.kinetics,,,0.1028,0.0948,0.0429,0.2706,,0.561,,-0.0053,0.0218,0.0004,,922,,,inside
+2,activity,creamer2024_connectome_constrained,L1.distribution,1,True,0.1676,0.147,0.1013,0.4805,0.1333,0.714,0.0206,0.0097,0.0297,0.0,1.0,1260,36,0.732,outside
+2,activity,creamer2024_connectome_constrained,L1.timescale,1,False,0.8582,0.9743,0.487,3.8094,0.5033,0.376,-0.1161,-0.2452,-0.0368,1.0,0.0,1260,36,0.449,too typical
+2,activity,creamer2024_connectome_constrained,L2.correlation,2,True,0.7893,0.8384,0.6524,1.0341,0.6192,0.31,-0.0491,-0.0751,-0.027,1.0,0.0,1260,36,0.6,too typical
+2,activity,creamer2024_connectome_constrained,L2.dimension,2,False,0.2798,0.2152,0.0165,2.4764,0.1192,0.583,0.0646,-0.0161,0.1153,0.0,1.0,1260,36,0.533,inside
+2,activity,creamer2024_connectome_constrained,L4.leadlag,4,True,0.9877,0.9731,0.8642,1.0873,0.9192,0.598,0.0145,0.0042,0.0302,0.0,1.0,1260,36,0.999,outside
+2,activity,creamer2024_connectome_constrained,L4.dwell,4,False,0.2964,0.2177,0.0866,0.7159,0.166,0.634,0.0787,-0.0161,0.1308,0.0,1.0,600,36,0.43,inside
+2,causal,creamer2024_connectome_constrained,C1.pattern,,,0.9725,0.9064,0.6764,1.1317,,0.745,,0.0413,0.0937,0.0,,922,,,outside
+2,causal,creamer2024_connectome_constrained,C2.magnitude,,,0.2131,0.1924,0.0199,0.87,,0.544,,-0.031,0.077,0.0234,,922,,,inside
+2,causal,creamer2024_connectome_constrained,C3.kinetics,,,0.0909,0.0948,0.0429,0.2706,,0.463,,-0.0179,0.009,0.7086,,922,,,inside

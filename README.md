@@ -1032,6 +1032,26 @@ VAR(3) and the published fully connected model pass at least half of the activit
 in most pools, while failing causal pattern in every pool. If they fail the activity levels
 too, the headline is not supported in this form and will not be claimed.
 
+**Result** (`docs/figures/same_worms.csv`; activity levels: distribution, timescale,
+correlation, dimension, lead-lag, AVA bouts):
+
+| model | activity levels inside (pools 1, 2, 3) | causal pattern | causal magnitude |
+|---|---|---|---|
+| VAR(3), spontaneous frames | 5, 5, 5 of 6 (only dimension misses) | outside in 3 of 3 | outside in 3 of 3 |
+| VAR(3), all frames | 4, 4, 3 of 6 | outside in 3 of 3 | outside in 3 of 3 |
+| published, fully connected | 2, 2, 3 of 6 (too typical on timescale and correlation) | outside in 3 of 3 | inside in 2 of 3 |
+| published, connectome-constrained | 3, 2, 3 of 6 | outside in 3 of 3 | inside in 2 of 3 |
+
+**The headline holds for the VAR fitted on spontaneous activity:** on the same worms, under
+the same stimulations, it is indistinguishable from real worms on five of six ordinary
+activity statistics in every pool, and wrong about how stimulation spreads in every pool.
+A brain model can look like a real brain at rest and still be wrong about cause and
+effect; the causal levels catch what the activity levels cannot. The published models do
+not meet the "look right at rest" half (their spontaneous activity is too regular: too
+typical), so for them the expectation is not met. On this archive's preprocessing the
+published models' response *sizes* pass in two pools; the magnitude failures on the
+Creamer packaging were at least partly a normalisation effect, as suspected.
+
 ## Signatures of a mind: perturbational complexity
 
 Nobody can measure consciousness directly, and whether a worm experiences anything is an
@@ -1067,6 +1087,30 @@ models respond too strongly (magnitude level), so their echoes spread too far (s
 outside); and their noise is unstructured, so their echoes are more complex than real
 ones (complexity outside, above real worms). A brain whose echo is "too complex" in this
 sense is not more conscious-like; it is noisier. Real brains sit between a blip and noise.
+
+**PCI results** (`scripts/run_pci.py`, `docs/figures/pci.csv`; Creamer packaging). Real
+worms: 3,062 stimulations, median PCI 0.86 (interquartile 0.75 to 0.96), and a sparse echo:
+a median of 3.4% of the class-by-time pattern responds. Calibrations: 18 of 21 designed
+outcomes hit. The 3 misses are all "desynchronised echoes must fail complexity": PCI does
+rise (0.86 to 0.91 to 0.93) but stays inside the wide band of real worm-to-worm variation,
+so the complexity level is weak at detecting scrambled timing and claims rest mainly on
+spread.
+
+| model | spread (real 3.2 to 3.9%) | complexity (real PCI 0.86) |
+|---|---|---|
+| VAR(3), all frames | 6.4 to 7.3%: outside in 3 of 3 | 0.91, higher: outside in 2 of 3 |
+| published, connectome-constrained | 12%: outside in 3 of 3 | 0.82, lower: outside in 3 of 3 |
+| published, fully connected | 14%: outside in 3 of 3 | 0.82, lower: outside in 3 of 3 |
+| published, shuffled connectome | 12%: outside in 3 of 3 | 0.81, lower: outside in 3 of 3 |
+
+Against the expectations: spread outside for every model, met (echoes reach two to four
+times too much of the brain). Complexity outside, met in 11 of 12, but the direction
+predicted for all of them (more complex, noisier) holds only for the VAR. **The published
+atlas models answer a poke with echoes that are too widespread and too stereotyped**: a
+lower PCI over a larger response, the direction consciousness research associates with a
+brain whose response is one undifferentiated wave. Real worm brains answer with sparse,
+differentiated echoes. To repeat the caution: this says the models lack a measurable
+property of the real brain's responses, not anything about experience.
 
 ## Arc 6: from one brain to a swarm
 
