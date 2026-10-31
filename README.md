@@ -11,8 +11,11 @@ further.
 
 > Real worms are weird. Fake ones are average.
 
-The best model scored so far is "too typical": closer to every real worm than real worms
-are to each other, which means it learned the average worm, not a worm.
+The first lesson was that models trained to forecast well come out "too typical": closer
+to every real worm than real worms are to each other, the average worm rather than a worm.
+The current best model is a set of digital individuals (one per training worm) that is
+indistinguishable from held-out real worms on all 10 pairwise levels and, for the first
+time, fools a cross-validated classifier in two of three held-out worm groups.
 
 ## What is built
 
@@ -39,8 +42,35 @@ are to each other, which means it learned the average worm, not a worm.
 Verdicts: **inside** (indistinguishable from another real worm), **outside**, or **too
 typical** (significantly closer to every real worm than real worms are to each other).
 
-## Results so far (copper test worms)
+## Results so far (copper set, Oct 31 2026)
 
+**Headline numbers** (three rotating held-out pools of 9 worms unless stated; every
+choice made on training and validation worms only, except where marked post hoc):
+
+| | Pairwise levels inside | Level 8 classifier AUC (real control 0.46) | Copper arena |
+|---|---|---|---|
+| Baselines (joint VAR, independent AR, Kunert 2014 connectome model; frozen pool) | 0 to 2 of 8 | 0.99 to 1.00 | not modelled |
+| Published: Creamer, Leifer & Pillow 2024 LDS (immobilised-worm models) | 0 to 1 of 6 | not run | not modelled |
+| Per-worm calcium-drive VAR(3), hysteresis reversals | **10 of 10** | 0.82 held-out, 0.77 in-sample | not modelled |
+| Same with 10 frames of memory | **10 of 10** | **0.62 held-out (not distinguishable in 2 of 3 pools), 0.50 in-sample** | not modelled |
+| Closed loop v7 (3-frame brain senses copper, steers, reverses) | 9 of 10 | 0.95 (v6, frozen split) | occupancy and approach inside; 14 to 17% of time near copper (real 3.2%) |
+| Closed loop v8 (10-frame brain) | 9 of 10 | not yet run | occupancy and approach inside; 11% near copper; encounter outside |
+
+What these say:
+1. **Forecasting is not fidelity.** The model that forecasts best is too typical; letting
+   each worm keep more of its own dynamics than forecasting prefers is what makes models
+   pass (arc 1).
+2. **The ruler finds real errors.** Each new level (reversal statistics, arena occupancy,
+   the fair classifier) caught a model that passed everything before it, and each caught
+   error had a specific cause that was then fixed: flickering reversals, a data offset,
+   too little memory, a missing outward drift.
+3. **The remaining gaps are specific.** In the closed loop, copper reaches the reversal
+   decision directly instead of through ASH, so the nociceptor's lead over the command
+   neurons is halved (the one pairwise miss). The classifier's remaining giveaways in the
+   one pool that still separates the model are AVA's smoothness and CEP's correlations
+   with the command neurons.
+
+Supporting facts:
 - The ruler hits every designed calibration outcome at the pairwise levels (including the
   two reversal-statistics metrics, whose expectations were written before they were run)
   and 8 of 8 at Level 6. Real worms from another lab's unstimulated sessions score inside
@@ -48,9 +78,8 @@ typical** (significantly closer to every real worm than real worms are to each o
 - In the copper arena, ASH (the canonical nociceptor) is the strongest responder when the
   head meets the boundary, followed by AWC. Two random halves of the worms agree on the
   pooled encounter response at r = 0.62.
-- None of the baseline systems passes (pairwise levels, frozen test pool; behaviour levels
-  are not scored for systems that produce no behaviour). Arc 1 below builds a model that
-  passes all eight pairwise levels but still fails Level 8:
+- Baselines on the frozen test pool (behaviour levels not scored for systems without
+  behaviour):
 
 | System | Inside | Too typical | Outside | L8 AUC |
 |---|---|---|---|---|
@@ -201,7 +230,10 @@ it imitates, and cannot tell it from held-out real worms in two of the three rot
 the first model to pass Level 8 anywhere. Honest bookkeeping: the in-sample criterion
 pointed to 6 lags; 10 is ahead only on the Level 8 result, which uses the reference pools,
 so "10 beats 6" is a post-hoc observation, while "longer memory than 3 frames" was chosen
-without them. Rotation 1 still separates every model.
+without them. Rotation 1 still separates every model; its worms are not atypical (against
+all other real worms AUC 0.50), and the features that give the model away there are AVA's
+within-window smoothness (the model's AVA is rougher) and CEP's correlations with AIB and
+AVA, which real worm groups do not differ on.
 
 Caveats: 27 worms from one lab; the per-worm and shrinkage analyses were proposed after
 the first ladder results and are tested with controls and nested selection, not
