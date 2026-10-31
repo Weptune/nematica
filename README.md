@@ -869,6 +869,50 @@ the chance-encounter baseline), 3 seeds per rotation.
 Nothing here is scored against real swarms yet: these are model-against-model comparisons.
 The scored test (Level 7) needs real multi-worm tracking.
 
+**Results** (`scripts/run_swarm.py`, `docs/figures/swarm_twins_vs_average.csv`; 3 rotations
+x 3 seeds, twin and average swarms paired on the same starting positions; "seed SD" is the
+seed-to-seed SD within a rotation):
+
+| interactions on | twins | average | twins minus average | paired runs in that direction | in seed SDs |
+|---|---|---|---|---|---|
+| time in contact | 0.056 | 0.066 | -0.010 | 9 of 9 | -2.3 |
+| fraction of worms in a cluster | 0.214 | 0.246 | -0.032 | 9 of 9 | -2.1 |
+| nearest-neighbour distance (mm) | 0.640 | 0.596 | +0.044 | 9 of 9 | +2.3 |
+| time within 0.5 mm of copper | 0.234 | 0.182 | +0.053 | 9 of 9 | +2.6 |
+| reversals per minute | 3.10 | 3.03 | +0.07 | 8 of 9 | +0.7 |
+| between-worm SD of reversal rate | 0.56 | 0.36 | +0.20 | 9 of 9 | +4.8 |
+| between-worm SD of time in contact | 0.017 | 0.018 | -0.001 | 3 of 9 contrary | -0.6 |
+
+Against the expectations:
+
+1. Met: twins spread 1.55 times more in reversal rate with interactions (2.05 times in
+   pass-through swarms).
+2. Met: with interactions, reversals per minute rise with local density (2.9, 3.9 and 5.1
+   at 0, 1 and 2 or more neighbours); in pass-through swarms they are flat (2.95, 2.95,
+   2.94).
+3. Met: interactions halve time in contact (0.056 against 0.109 for twins).
+4. Not as expected, on both halves. The swarm-level means do differ, consistently (every
+   paired run, about two seed SDs): twin swarms touch less, cluster less, keep further
+   apart and spend more time at the copper edge. And twin swarms are not more
+   heterogeneous in contact time. The same differences appear in pass-through swarms
+   (contact -0.011, clusters -0.026, copper +0.026), so they come mostly from where the
+   worms go, not from how they react to each other: the pooled model spends less time at
+   the copper edge than the worms it was fitted on, so a swarm of it crowds the middle of
+   the arena and meets more often.
+
+The average worm is not a typical worm (arc 1's lesson, now at the scale of a crowd), so
+this experiment cannot yet say whether *diversity itself* changes the swarm or only the
+pooled model's bias does. That needs a control with no pooled model at all.
+
+**Second experiment: clones.** For every training worm, a homogeneous swarm of 32 copies of
+that one worm's model (seed 0, interactions on and off, all three rotations). Diversity
+acts only additively if the mixed twin swarm equals the average over the clone swarms;
+any gap is an effect of mixing. Expectation, written before the results were seen: in
+pass-through swarms, the mixed swarm has *less* contact than the average clone swarm. By
+geometry alone, when worms differ in where they like to be, two different worms overlap
+in space less than two copies of the same worm (the overlap of two densities is at most
+the mean of their self-overlaps).
+
 
 ## Leaderboard: published models
 

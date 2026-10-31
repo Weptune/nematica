@@ -48,6 +48,8 @@ def main() -> int:
     ap.add_argument("--out", default="docs/figures")
     ap.add_argument("--seeds", type=int, default=3)
     ap.add_argument("--n", type=int, default=32)
+    ap.add_argument("--clones", action="store_true",
+                    help="also run one homogeneous swarm per training worm (32 copies of it), seed 0 only")
     args = ap.parse_args()
     recs = load_copper_dir(Path(args.data))
     classes = tuple(canonical_classes(recs, 0.25))
@@ -69,8 +71,10 @@ def main() -> int:
         avg = average_worm(m)
         template, t = pool[0], by[pool_uids[0]].t
         swarms = {"twins": [m.names[j % len(m.names)] for j in range(args.n)], "average": [avg] * args.n}
+        if args.clones:
+            swarms = {"twins": swarms["twins"], **{f"clone:{o}": [o] * args.n for o in m.names}}
         print(f"fold {fi}: {len(m.names)} training worms, fitted in {time.time() - t0:.0f} s", flush=True)
-        for seed in range(args.seeds):
+        for seed in range(1 if args.clones else args.seeds):
             for kind, origins in swarms.items():
                 for interact in (True, False):
                     rng = np.random.default_rng(10_000 * fi + 100 * seed + 7)   # same starts across conditions
@@ -88,7 +92,8 @@ def main() -> int:
         print(f"fold {fi} done ({time.time() - t0:.0f} s)", flush=True)
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    for name, data in (("swarm_twins_vs_average.csv", rows), ("swarm_twins_vs_average_worms.csv", worm_rows)):
+    stem = "swarm_clones" if args.clones else "swarm_twins_vs_average"
+    for name, data in ((f"{stem}.csv", rows), (f"{stem}_worms.csv", worm_rows)):
         with (out / name).open("w", newline="", encoding="utf-8") as fh:
             w = csv.DictWriter(fh, fieldnames=list(data[0]))
             w.writeheader()
@@ -96,7 +101,7 @@ def main() -> int:
     # summary: mean and seed-to-seed SD per condition
     keys = [k for k in rows[0] if k not in ("fold", "seed", "swarm", "interact")]
     print("\ncondition            " + "  ".join(f"{k[:14]:>14s}" for k in keys))
-    for kind in ("twins", "average"):
+    for kind in ("twins", "average") if not args.clones else ("twins",):
         for interact in (True, False):
             sel = [r for r in rows if r["swarm"] == kind and r["interact"] == interact]
             print(f"{kind:8s} interact={interact!s:5s} " + "  ".join(
