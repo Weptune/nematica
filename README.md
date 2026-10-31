@@ -1479,6 +1479,49 @@ effect, not trial-to-trial noise**, so the headline stands as stated. The publis
 fitted to the atlas itself, comes closest; learning from pokes helps the VAR (0.05 to 0.12)
 but far from enough.
 
+**What does "inside" mean on the poke pattern? (written before computing it).** The
+pattern level asks whether a brain's echoes (which neuron answers which poke, and how
+strongly) agree with a real worm's about as well as two real worms agree with each other.
+Real worms agree only weakly (correlation about 0.1 between two worms, about 0.31 between
+one worm and the average of the training worms), so a reader can fairly ask how much true
+cause and effect a brain needs before the test notices. Power analysis
+(`scripts/run_causal_power.py`): synthetic brains whose echoes are a known blend of the true
+average echo (the atlas average of the training worms) and the same echoes reassigned to
+random pairs, `f * true + sqrt(1 - f^2) * reassigned`, so that `f` is exactly the brain's
+correlation with the true average and every echo keeps its real size and shape. `f` runs
+from 0 (no cause and effect, right everything else) to 1 (the average itself), three random
+reassignments per value, scored with the same verdict rules on the same three frozen pools
+(original archive, 113 wild-type worms). Expectations: `f = 0` is outside in all three
+pools; around `f = 0.3`, a real worm's own level, is inside in at least 2 of 3; `f` of 0.6
+and above is too typical in all three (the plain average already is); and the inside window
+is narrower than 0.3 in `f`. If so, "inside" means "as much causal structure as a real worm
+shows, give or take about 0.1 in correlation", and the published fully connected model
+(0.16 to 0.20 against the average, above) is predicted outside, as observed.
+
+Result (`docs/figures/causal_power.csv`; `f` in steps of 0.05, three reassignments each,
+all three agreeing at every step except one borderline value):
+
+| pool | outside (too little cause and effect) | inside | too typical |
+|---|---|---|---|
+| 1 | `f` up to 0.25 | 0.30 to 0.45 | 0.50 and above |
+| 2 | up to 0.30 (0.35 borderline) | 0.40 to 0.50 | 0.55 and above |
+| 3 | up to 0.30 | 0.35 to 0.50 | 0.55 and above |
+
+Three of four expectations met: no cause and effect is outside everywhere, the window is
+narrow (0.15 to 0.20 wide in `f`), and the plain average and anything near it is too typical
+from 0.5 or 0.55. The fourth missed: `f = 0.3` is inside in only 1 of 3 pools, because the
+window sits higher than predicted, centred near 0.4 rather than 0.3. The reason is
+instructive. In this run one real worm correlates with the atlas average at only 0.22 to 0.25,
+lower than its true causal structure, because the average itself is noisy and incomplete;
+a brain whose echoes are noise-free needs `f` near 0.4 to match the agreement real worms show
+with each other (about 0.1). So **"inside" on the poke pattern means: the brain's echoes
+correlate with the true average echo at about 0.3 to 0.5.** Less is a brain that does not
+know enough cause and effect; more is a brain more stereotyped than any real worm. The ruler
+resolves a shortfall of about 0.1 in that correlation. On this scale the VAR models (0.04 to
+0.12 against the average, above) are nowhere close, the published fully connected model (0.16
+to 0.20) is short by about 0.15, and the plain atlas average is too far the other way: a
+brain copy has to be right about cause and effect *and* as individual as a real worm.
+
 ## Signatures of a mind: perturbational complexity
 
 Nobody can measure consciousness directly, and whether a worm experiences anything is an
