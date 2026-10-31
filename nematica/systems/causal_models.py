@@ -342,7 +342,7 @@ class HybridKernel:
 
     def __init__(self, lags: int = 3, shrink: float = 2.0, mask: str | None = None, seed: int = 0,
                  background: str = "spontaneous", obs_noise: bool = False, heavy: bool = False,
-                 regimes: bool = False, obs_fit: bool = False, lowrank: int = 0):
+                 regimes: bool = False, obs_fit: bool = False, lowrank: int = 0, obs_smooth: float = 0.0):
         self.lags, self.shrink, self.mask, self.seed = lags, shrink, mask, seed
         self.background = background     # which frames the ongoing-dynamics VAR learns from
         self.obs_noise = obs_noise       # split each class's variability into slow dynamics and
@@ -353,11 +353,13 @@ class HybridKernel:
                                          # calibrated on training worms (calibrate_regimes) [L]
         self.regime = None
         self.lowrank = lowrank           # ongoing dynamics from a few shared modes (LowRankVAR) if > 0
+        self.obs_smooth = obs_smooth     # AR(1) coefficient of the measurement noise (0 = white)
         self.obs_fit = obs_fit           # measurement-noise share chosen on training worms so that
                                          # 'spread' at random moments matches them [L]
         self.name = ("hybrid_kernels" + (f"_{mask}" if mask else "") + ("" if background == "spontaneous" else f"_bg{background}")
                      + ("_obs" if obs_noise else "") + ("_heavy" if heavy else "") + ("_regimes" if regimes else "")
-                     + ("_obsfit" if obs_fit else "") + (f"_lowrank{lowrank}" if lowrank else ""))
+                     + ("_obsfit" if obs_fit else "") + (f"_lowrank{lowrank}" if lowrank else "")
+                     + (f"_smooth{obs_smooth:g}" if obs_smooth else ""))
 
     def _gain(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """A two-state Markov chain (quiet, active) with the calibrated share of quiet time and
@@ -506,7 +508,12 @@ class HybridKernel:
             ci = {c: i for i, c in enumerate(self.var.classes)}
             f = np.array([self.noise_frac[ci[c]] for c in bg.classes])
             sdx = x.std(axis=1, keepdims=True)
-            x = x + rng.standard_normal(x.shape) * sdx * np.sqrt(f / np.clip(1 - f, 0.2, None))[:, None]
+            w = rng.standard_normal(x.shape)
+            if self.obs_smooth:                       # smooth in time, same variance
+                phi = self.obs_smooth
+                for t in range(1, w.shape[1]):
+                    w[:, t] = phi * w[:, t - 1] + np.sqrt(1 - phi ** 2) * w[:, t]
+            x = x + w * sdx * np.sqrt(f / np.clip(1 - f, 0.2, None))[:, None]
         T = x.shape[1]
         row = {c: i for i, c in enumerate(bg.classes)}
         stims = [(k, f) for k, f in rec.stims if rec.classes[k] in row and f - npre >= 0 and f + npost <= T]

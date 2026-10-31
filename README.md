@@ -1311,6 +1311,13 @@ is speckled, most likely by the very ingredient that fixed spread: white measure
 crosses the threshold at isolated moments. Next (to be pre-registered): measurement noise
 that is smooth in time, or a threshold that requires a response to last.
 
+**Smooth measurement noise (written before running).** `hybrid_kernels_regimes_obsfit_smooth0.8`:
+the same model, with its measurement noise correlated over about 2.5 s (AR(1), coefficient
+0.8, same variance; the share is recalibrated on training worms as before). Expectation:
+echo complexity moves toward real (median PCI below the white-noise version's 0.89), and the
+poke test stays passed; complexity inside in at least 2 of 3 pools would make it the first
+model to match a real brain's perturbational complexity.
+
 **Signal or noise? (written before computing it).** A model can fail the poke test in two
 different ways: its *average* echo is wrong (it does not know the causal structure), or its
 average echo is right but each single echo is buried in the wrong kind of variability.
