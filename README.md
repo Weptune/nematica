@@ -1067,6 +1067,67 @@ typical), so for them the expectation is not met. On this archive's preprocessin
 published models' response *sizes* pass in two pools; the magnitude failures on the
 Creamer packaging were at least partly a normalisation effect, as suspected.
 
+## Can you verify a brain copy by watching it?
+
+The headline result raises a sharper question, which matters well beyond worms: **does a
+brain model's realism at rest tell you anything about whether it gets cause and effect
+right?** If not, no amount of watching can certify a copy of a brain; you have to
+intervene. Three experiments, all on the original archive (113 wild-type worms, frozen
+pools), with expectations written before any of them ran.
+
+**A. Two checks on the headline.**
+- *Units.* Response sizes have been in units of each neuron's SD over the whole recording,
+  which slow drift inflates in real worms but not in models. Rerun with units of each
+  neuron's fluctuation size just before stimulation (`norm="fluct"`). Expectation: the
+  VAR's magnitude distance shrinks; pattern verdicts do not change.
+- *Protocol.* Besides clamping the stimulated neuron to its measured response, stimulate by
+  a one-frame input pulse sized to the neuron's measured peak, after which the model's own
+  dynamics run (`@pulse`), for our models and the published ones. Expectation: pattern
+  stays outside for every model under both protocols.
+
+**B. Rest against poke, across many artificial brains.** Sixteen brains: VAR with 1, 3, 6
+and 10 frames of memory, each fitted on spontaneous or on all frames; the three published
+models under both protocols; and a deliberately causal-blind control, a VAR in which each
+class is driven only by its own past (`diagonal`), which can reproduce single-neuron
+statistics but propagates nothing. For each: a rest score (median absolute log ratio of
+model-to-real over real-to-real distance across the six activity levels) and a poke score
+(pattern distance). Expectation: the rank correlation between rest and poke scores across
+brains is weak (|Spearman rho| < 0.4), and the diagonal control is not the worst at rest.
+If rest realism does predict poke realism, watching is a usable proxy and that will be
+reported.
+
+**C. Does a worm's own resting activity reveal its own wiring?** For each worm, a VAR(2)
+fitted only on its own stimulation-free frames, simulated under its own stimulations, and
+compared with the same worm simulated by five other worms' own models. Expectation: a worm's
+own model is no closer to its real echoes than other worms' models are (paired difference
+within 0.01 of pattern distance, Wilcoxon p > 0.05). Alongside, the *causal fingerprint*:
+each worm's stimulations split into odd and even events; is a worm's odd-half echo pattern
+closer to its own even half than to other worms' even halves? Expectation: yes, modestly
+(within-worm distance smaller in most worms), so worms have individual causal signatures
+that a faithful copy would need, and that watching does not reveal.
+
+**C, results** (`scripts/run_own_rest.py`, `docs/figures/own_rest_fingerprint_fluct.csv`).
+44 worms have enough stimulation-free activity (at least 300 frames) for a model of their
+own; 43 have enough stimulations for the split.
+
+- *Own rest does not reveal own wiring.* A worm's own model is no closer to its real
+  echoes than other worms' models (pattern distance 0.931 against 0.946; own closer in 26
+  of 44; median paired difference -0.008, Wilcoxon p = 0.11). Expectation met: watching a
+  worm's brain at rest does not tell you how *that* brain answers a poke, beyond what any
+  worm's brain tells you.
+- *But worms do have causal fingerprints.* A worm's odd-half echoes are closer to its own
+  even half than to other worms' (0.853 against 0.922; 36 of 43 worms; p = 5e-6).
+  Identification from echoes alone is weak (own half ranked first in 2 of 43, median rank 8
+  of 42, where chance would be 21). It is not a recording-day effect: other worms recorded
+  the same day are no closer than worms from other days (0.919 against 0.933; p = 0.18),
+  and both are further than the worm itself (p = 7e-5). One alternative cannot be ruled out
+  here: worm-specific measurement quirks (a consistently mislabelled neuron, say) would also
+  look like a fingerprint.
+
+Together: each worm's brain answers pokes in its own, repeatable way, and that individual
+causal signature is invisible in its resting activity, as far as a linear model fitted to
+that activity can see. A copy built by watching would miss it.
+
 ## Signatures of a mind: perturbational complexity
 
 Nobody can measure consciousness directly, and whether a worm experiences anything is an

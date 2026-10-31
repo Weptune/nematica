@@ -51,14 +51,34 @@ def window(dt: float) -> tuple[int, int]:
     return int(round(PRE_S / dt)), int(round(POST_S / dt)) + 1
 
 
+NORM = "recording"   # response units: "recording" = SD over the recording; "fluct" = SD of
+                     # fluctuations within the 5 s pre-stimulus windows (insensitive to slow drift)
+
+
+def unit_sd(rec: PumpProbe, norm: str | None = None) -> np.ndarray:
+    norm = norm or NORM
+    if norm == "recording":
+        return np.nanstd(rec.x, axis=1)
+    npre, _ = window(rec.dt)
+    devs = [[] for _ in range(rec.x.shape[0])]
+    for _, f in rec.stims:
+        if f - npre < 0:
+            continue
+        pre = rec.x[:, f - npre:f]
+        d = pre - np.nanmean(pre, axis=1, keepdims=True)
+        for j in range(len(devs)):
+            devs[j].append(d[j])
+    return np.array([np.nanstd(np.concatenate(d)) if d else np.nan for d in devs])
+
+
 def event_responses(rec: PumpProbe, stims: Sequence[tuple[int, int]] | None = None, x: np.ndarray | None = None,
-                    min_pre: int = 5, min_post_frac: float = 0.8):
+                    min_pre: int = 5, min_post_frac: float = 0.8, norm: str | None = None):
     """Yields (stim neuron, stim class, response neuron, response class, trace) for every named
     neuron and stimulation, from `x` (default the recording; same shape)."""
     x = rec.x if x is None else x
     stims = rec.stims if stims is None else stims
     npre, npost = window(rec.dt)
-    sd = np.nanstd(rec.x, axis=1)
+    sd = unit_sd(rec, norm)
     named = [j for j, c in enumerate(rec.classes) if c]
     T = x.shape[1]
     for k, f in stims:
@@ -76,9 +96,9 @@ def event_responses(rec: PumpProbe, stims: Sequence[tuple[int, int]] | None = No
 
 
 def response_set(rec: PumpProbe, name: str | None = None, stims=None, x: np.ndarray | None = None,
-                 transform: Callable | None = None) -> ResponseSet:
+                 transform: Callable | None = None, norm: str | None = None) -> ResponseSet:
     acc: dict = {}
-    for _, ci, _, cj, tr in event_responses(rec, stims, x):
+    for _, ci, _, cj, tr in event_responses(rec, stims, x, norm=norm):
         a = acc.setdefault((ci, cj), [])
         a.append(tr)
     rs = ResponseSet(name or rec.uid, rec.uid, dt=rec.dt)

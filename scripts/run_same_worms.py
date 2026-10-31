@@ -20,6 +20,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from nematica.bench import build_reference, score_system  # noqa: E402
+import nematica.bench.causal as causal  # noqa: E402
 from nematica.bench.causal import response_set, score_sets  # noqa: E402
 from nematica.bench.sample import BenchSample  # noqa: E402
 from nematica.data.canonical import zscore_rows  # noqa: E402
@@ -44,17 +45,39 @@ def bench_sample(rec, classes, name, origin, max_gap_frac: float = 0.05) -> Benc
     return BenchSample(name, tuple(classes), zscore_rows(x), rec.dt, origin=origin)
 
 
+def make_model(spec: str):
+    base, _, protocol = spec.partition("@")
+    protocol = protocol or "clamp"
+    if base.startswith("creamer2024_"):
+        return CreamerCausal(base.replace("creamer2024_", ""), protocol=protocol)
+    parts = base[3:].split("_")
+    return ClassVAR(lags=int(parts[0]), frames=parts[1], coupling=parts[2] if len(parts) > 2 else "full",
+                    protocol=protocol)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", required=True)
     ap.add_argument("--folds", required=True)
     ap.add_argument("--out", default="docs/figures")
     ap.add_argument("--models", default="var3_all,var3_spontaneous,creamer2024_fully_connected,creamer2024_connectome_constrained")
+    ap.add_argument("--norm", default="recording", choices=("recording", "fluct"))
+    ap.add_argument("--cache", default="results/same_worms")
+    ap.add_argument("--tag", default="")
+    ap.add_argument("--fold", type=int, default=None)
     args = ap.parse_args()
+    causal.NORM = args.norm
+    cache = Path(args.cache)
+    cache.mkdir(parents=True, exist_ok=True)
     recs = {r.uid: r for r in load_pumpprobe_dir(args.data)}
     folds = load_folds(args.folds)["folds"]
     rows = []
     for fi, pool_uids in enumerate(folds):
+        if args.fold is not None and fi != args.fold:
+            continue
+        todo = [n for n in args.models.split(",") if not (cache / f"{args.norm}_f{fi}_{n}.csv").exists()]
+        if not todo:
+            continue
         t0 = time.time()
         rest = sorted(u for f in folds if f is not pool_uids for u in f)
         val_uids = rest[::5]
@@ -65,12 +88,9 @@ def main() -> int:
         real_b = [bench_sample(r, classes, f"real:{r.uid}", r.uid) for r in pool]
         ref = build_reference(real_b, metrics=ACTIVITY_LEVELS)
         real_c = [response_set(r) for r in pool]
-        for name in args.models.split(","):
-            if name.startswith("creamer2024_"):
-                m = CreamerCausal(name.replace("creamer2024_", ""))
-            else:
-                L, fr = name.replace("var", "").split("_")
-                m = ClassVAR(lags=int(L), frames=fr).fit(train, val)
+        for name in todo:
+            m = make_model(name).fit(train, val)
+            n_before = len(rows)
             sims = [m.simulate(r, np.random.default_rng(1000 * fi + i)) for i, r in enumerate(pool)]
             sim_b = [bench_sample(s, classes, f"{name}:{r.uid}", r.uid) for s, r in zip(sims, pool)]
             for b, r in zip(sim_b, pool):
@@ -86,10 +106,20 @@ def main() -> int:
             for row in score_sets(name, sim_c, real_c):
                 rows.append({"fold": fi, "kind": "causal", **row})
             mine = [r for r in rows if r["fold"] == fi and r["system"] == name]
+            for r in mine:
+                r["system"] = name
+            with (cache / f"{args.norm}_f{fi}_{name}.csv").open("w", newline="", encoding="utf-8") as fh:
+                w = csv.DictWriter(fh, fieldnames=list(dict.fromkeys(k for r in rows[n_before:] for k in r)))
+                w.writeheader()
+                w.writerows(rows[n_before:])
             print(f"fold {fi} {name:36s} " + "  ".join(f"{r['metric']}={r['verdict']}" for r in mine), flush=True)
         print(f"fold {fi} done ({time.time() - t0:.0f} s)", flush=True)
+    rows = []
+    for f in sorted(cache.glob(f"{args.norm}_f*_*.csv")):
+        with f.open(encoding="utf-8") as fh:
+            rows += [dict(r, norm=args.norm) for r in csv.DictReader(fh)]
     keys = list(dict.fromkeys(k for r in rows for k in r))
-    with (Path(args.out) / "same_worms.csv").open("w", newline="", encoding="utf-8") as fh:
+    with (Path(args.out) / f"same_worms_{args.norm}{args.tag}.csv").open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=keys)
         w.writeheader()
         w.writerows(rows)

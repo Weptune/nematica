@@ -49,10 +49,13 @@ def spontaneous_mask(rec: PumpProbe) -> np.ndarray:
 
 class ClassVAR:
     def __init__(self, lags: int = 3, frames: str = "spontaneous", min_fraction: float = 0.3,
-                 ridges=(1.0, 10.0, 100.0, 1000.0, 10000.0), max_radius: float = 0.99):
+                 ridges=(1.0, 10.0, 100.0, 1000.0, 10000.0), max_radius: float = 0.99,
+                 protocol: str = "clamp", fixed_ridge: float | None = None, coupling: str = "full"):
         self.lags, self.frames, self.min_fraction, self.ridges = lags, frames, min_fraction, ridges
-        self.max_radius = max_radius
-        self.name = f"var{lags}_{frames}"
+        self.max_radius, self.protocol, self.fixed_ridge = max_radius, protocol, fixed_ridge
+        self.coupling = coupling       # "full", or "diagonal": each class driven only by its own past
+        self.name = (f"var{lags}_{frames}" + ("" if coupling == "full" else f"_{coupling}")
+                     + ("" if protocol == "clamp" else f"@{protocol}"))
 
     # -------------------------------------------------------------- fitting
     def _design(self, recs):
@@ -74,14 +77,17 @@ class ClassVAR:
 
     def _solve(self, X, Y, lam):
         W = np.zeros((X.shape[1], Y.shape[1]))
-        pen = np.full(X.shape[1], lam)
-        pen[-1] = 0.0
-        for j in range(Y.shape[1]):
+        C = Y.shape[1]
+        for j in range(C):
             m = np.isfinite(Y[:, j])
             if m.sum() < 50:
                 continue
-            Xm = X[m]
-            W[:, j] = np.linalg.solve(Xm.T @ Xm + np.diag(pen), Xm.T @ Y[m, j])
+            cols = (np.arange(X.shape[1]) if self.coupling == "full"
+                    else np.r_[[L * C + j for L in range(self.lags)], X.shape[1] - 1])
+            Xm = X[np.ix_(m, cols)]
+            pen = np.full(len(cols), lam)
+            pen[-1] = 0.0
+            W[cols, j] = np.linalg.solve(Xm.T @ Xm + np.diag(pen), Xm.T @ Y[m, j])
         return W
 
     def fit(self, train, val):
@@ -89,6 +95,14 @@ class ClassVAR:
         cnt = Counter(c for r in train for c in set(r.classes) if c)
         self.classes = sorted(c for c, n in cnt.items() if n >= self.min_fraction * len(train))
         X, Y = self._design(train)
+        if self.fixed_ridge is not None:                 # e.g. one worm's own model: no validation worms
+            self.W = self._solve(X, Y, self.fixed_ridge)
+            R = Y - X @ self.W
+            self.noise_sd = np.sqrt(np.nanmean(R ** 2, axis=0))
+            self.noise_sd[~np.isfinite(self.noise_sd)] = 1.0
+            self.radius = self.spectral_radius()
+            self.info = {"radius": round(self.radius, 4), "ridge": self.fixed_ridge, "rows": int(X.shape[0])}
+            return self
         Xv, Yv = self._design(val)
         best = None
         for lam in self.ridges:
@@ -131,6 +145,7 @@ class ClassVAR:
         npre, npost = window(rec.dt)
         sd = np.nanstd(rec.x, axis=1)
         clamp = {}                                     # frame -> (class index, offset from baseline)
+        pulse = {}                                     # frame -> (class index, input size)
         stims_out = []
         own = [c for c in sorted(set(rec.classes)) if c in idx]
         row_of = {c: i for i, c in enumerate(own)}
@@ -139,9 +154,16 @@ class ClassVAR:
             if c not in idx or f - npre < 0 or f + npost > T or not sd[k] > 0:
                 continue
             self_tr = (rec.x[k, f:f + npost] - np.nanmean(rec.x[k, f - npre:f])) / sd[k]
-            for t, v in enumerate(self_tr):
-                if np.isfinite(v):
-                    clamp[f + t] = (idx[c], f, float(v))
+            if self.protocol == "pulse":
+                # a brief input instead of a clamp: one frame of drive, sized to the stimulated
+                # neuron's measured peak in the first 5 s, then the dynamics run freely [A]
+                pk = np.nanmax(self_tr[:npre + 1]) if np.isfinite(self_tr[:npre + 1]).any() else np.nan
+                if np.isfinite(pk):
+                    pulse[f] = (idx[c], float(pk))
+            else:
+                for t, v in enumerate(self_tr):
+                    if np.isfinite(v):
+                        clamp[f + t] = (idx[c], f, float(v))
             stims_out.append((row_of[c], f))
         # classes this worm does not show stay at zero, as missing classes did in training
         seen = np.zeros(C, bool)
@@ -156,6 +178,14 @@ class ClassVAR:
         for L in range(1, p + 1):
             A[L - 1] *= g ** L
         self.last_gain = g
+        if pulse:
+            # size pulses in each class's own SD units: SD of a free run of the same dynamics
+            zz = np.zeros((C, 1500 + p))
+            for t in range(p, zz.shape[1]):
+                zz[:, t] = b + sum(zz[:, t - L] @ A[L - 1] for L in range(1, p + 1)) + self.noise_sd * rng.standard_normal(C)
+                zz[~seen, t] = 0.0
+            sd_free = np.std(zz[:, 300:], axis=1)
+            pulse = {f: (ci, v * sd_free[ci]) for f, (ci, v) in pulse.items()}
         b = self.W[-1]
         base = {}
         for t in range(p, T + burn):
@@ -163,6 +193,8 @@ class ClassVAR:
             nxt += self.noise_sd * rng.standard_normal(C)
             nxt[~seen] = 0.0
             tt = t - burn
+            if tt in pulse:
+                nxt[pulse[tt][0]] += pulse[tt][1]
             if tt in clamp:
                 ci, f0, v = clamp[tt]
                 if (ci, f0) not in base:
@@ -182,16 +214,20 @@ class CreamerCausal:
     worm's named neurons the model has. The published parameters were fitted to atlas worms,
     possibly including the scored ones [L: in-sample unless shown otherwise]."""
 
-    def __init__(self, variant: str = "connectome_constrained", folder=None):
+    def __init__(self, variant: str = "connectome_constrained", folder=None, protocol: str = "clamp"):
         from .published import DEFAULT_DIR
         from pathlib import Path
         z = np.load(Path(folder or DEFAULT_DIR) / f"{variant}.npz")
-        self.variant = variant
-        self.name = f"creamer2024_{variant}"
+        self.variant, self.protocol = variant, protocol
+        self.name = f"creamer2024_{variant}" + ("" if protocol == "clamp" else f"@{protocol}")
         self.A, self.Q, self.R = z["A"], z["Q"], z["R"]
         self.cells = [str(c) for c in z["cell_ids"]]
         self.Lq = np.linalg.cholesky(self.Q + 1e-12 * np.eye(len(self.Q)))
         self.sr = np.sqrt(np.clip(np.diag(self.R), 0, None))
+        from scipy.linalg import solve_discrete_lyapunov
+        # stationary SD of each neuron, so a pulse can be sized in that neuron's own SD units
+        self.stat_sd = np.sqrt(np.clip(np.diag(solve_discrete_lyapunov(self.A, self.Q)), 1e-12, None)
+                               + np.clip(np.diag(self.R), 0, None))
         self.info = {"neurons": len(self.cells),
                      "radius": round(float(np.max(np.abs(np.linalg.eigvals(self.A)))), 4)}
 
@@ -207,21 +243,28 @@ class CreamerCausal:
         sd = np.nanstd(rec.x, axis=1)
         own = sorted({rec.names[j].upper() for j, c in enumerate(rec.classes) if c and rec.names[j].upper() in cell_of})
         row_of = {nm: i for i, nm in enumerate(own)}
-        clamp, stims_out = {}, []
+        clamp, stims_out, pulse = {}, [], {}
         for k, f in rec.stims:
             nm = rec.names[k].upper()
             if nm not in cell_of or nm not in row_of or f - npre < 0 or f + npost > T or not sd[k] > 0:
                 continue
             tr = (rec.x[k, f:f + npost] - np.nanmean(rec.x[k, f - npre:f])) / sd[k]
-            for t, v in enumerate(tr):
-                if np.isfinite(v):
-                    clamp[f + t] = (cell_of[nm], f, float(v))
+            if self.protocol == "pulse":
+                pk = np.nanmax(tr[:npre + 1]) if np.isfinite(tr[:npre + 1]).any() else np.nan
+                if np.isfinite(pk):
+                    pulse[f] = (cell_of[nm], float(pk) * float(self.stat_sd[cell_of[nm]]))
+            else:
+                for t, v in enumerate(tr):
+                    if np.isfinite(v):
+                        clamp[f + t] = (cell_of[nm], f, float(v))
             stims_out.append((row_of[nm], f))
         x = np.zeros(n)
         out = np.empty((n, T))
         base = {}
         for t in range(-burn, T):
             x = self.A @ x + self.Lq @ rng.standard_normal(n)
+            if t in pulse:
+                x[pulse[t][0]] += pulse[t][1]
             if t in clamp:
                 ci, f0, v = clamp[t]
                 if (ci, f0) not in base:
