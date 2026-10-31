@@ -205,6 +205,59 @@ def echoes(data: str, folds_path: str, fold: int = 0) -> dict:
                        "var3_spontaneous": "Linear brain"}}
 
 
+def sims(lab_data: Path = ROOT / "lab" / "public" / "data") -> int:
+    """Simulation demos for web/sim.html, from the lab's exported bundles: six real held-out worms
+    beside their closed-loop model worms in the same copper arena (which3), and a 32-worm swarm
+    (swarm1). The real worms come from the copper-boundary recordings; written as script files
+    so the page also opens from disk. Local only (gitignored)."""
+    out = OUT / "sim"
+    out.mkdir(parents=True, exist_ok=True)
+    idx = json.loads((lab_data / "which3" / "index.json").read_text(encoding="utf-8"))
+    pairs = []
+    for rd in idx["rounds"]:
+        files = {"real": rd["left"] if rd["answer"] == "left" else rd["right"]}
+        files["model"] = rd["right"] if rd["answer"] == "left" else rd["left"]
+        sides = {k: json.loads((lab_data / "which3" / f).read_text(encoding="utf-8")) for k, f in files.items()}
+        def levels(b):
+            acc = defaultdict(list)
+            for n in b["neurons"]:
+                acc[n["cls"]].append(np.asarray(n["level"], float))
+            return {c: np.nanmean(np.vstack(v), axis=0) for c, v in acc.items()}
+        lv = {k: levels(b) for k, b in sides.items()}
+        classes = sorted(set(lv["real"]) & set(lv["model"]))
+        # order rows by the real worm's correlation with AVA, so reversal neurons sit together
+        ref = lv["real"].get("AVA")
+        if ref is not None:
+            def score(c):
+                x = lv["real"][c]
+                ok = np.isfinite(x) & np.isfinite(ref)
+                return float(np.corrcoef(x[ok], ref[ok])[0, 1]) if ok.sum() > 10 and np.std(x[ok]) > 0 else 0.0
+            classes.sort(key=score, reverse=True)
+        pair = {"uid": rd["real_uid"], "classes": classes, "sides": {}}
+        for k, b in sides.items():
+            n = b["n_frames"]
+            q = np.vstack([lv[k][c] for c in classes])
+            q = np.where(np.isfinite(q), np.round(np.clip(q, 0, 1) * 254) + 1, 0).astype(np.uint8)
+            pair["sides"][k] = {
+                "t": [round(v, 2) for v in b["t"]], "k": b["body"]["k"], "length": b["body"]["length_mm"],
+                "angles": [round(v, 3) for v in b["body"]["angles"]], "path": [round(v, 4) for v in b["path_mm"]],
+                "reversing": b["behaviour"]["reversing"], "centre": b["arena"]["centre_mm"], "radius": b["arena"]["radius_mm"],
+                "levels": base64.b64encode(q.tobytes()).decode(), "n": n}
+        name = f"pair{rd['round']}"
+        (out / f"{name}.js").write_text(f"(window.NEMATICA_SIM = window.NEMATICA_SIM || {{}})[{json.dumps(name)}] = "
+                                        + json.dumps(pair, separators=(",", ":")) + ";\n", encoding="utf-8")
+        pairs.append({"id": name, "uid": rd["real_uid"], "rev": rd["reversal_fraction"]})
+    sw = json.loads((lab_data / "swarm1" / "swarm.json").read_text(encoding="utf-8"))
+    for w in sw["worms"]:
+        w["head"] = [round(v, 3) for v in w["head"]]
+        w["angles"] = [round(v, 2) for v in w["angles"]]
+    (out / "swarm.js").write_text("(window.NEMATICA_SIM = window.NEMATICA_SIM || {}).swarm = " + json.dumps(sw, separators=(",", ":")) + ";\n", encoding="utf-8")
+    (out / "index.js").write_text("(window.NEMATICA_SIM = window.NEMATICA_SIM || {}).index = " + json.dumps(
+        {"pairs": pairs, "model": idx["model"], "note": idx["note"], "scorecard": idx.get("scorecard")}, separators=(",", ":")) + ";\n", encoding="utf-8")
+    print("wrote", out, len(pairs), "pairs and the swarm")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--local", action="store_true")
@@ -212,11 +265,14 @@ def main() -> int:
     ap.add_argument("--folds", default="configs/splits/pumpprobe_cv3.yaml")
     ap.add_argument("--frames", type=int, default=960)
     ap.add_argument("--echo-only", action="store_true")
+    ap.add_argument("--sims", action="store_true", help="also write the simulation demos (web/data/sim)")
     args = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "results.js").write_text("window.NEMATICA_RESULTS = " + json.dumps(results(), separators=(",", ":")) + ";\n",
                                     encoding="utf-8")
     print("wrote", OUT / "results.js")
+    if args.sims:
+        sims()
     if args.local:
         if not args.echo_only:
             (OUT / "local.js").write_text("window.NEMATICA_LOCAL = " + json.dumps(local(args.data, args.folds, args.frames),

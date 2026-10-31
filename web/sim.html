@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulations: NEMATICA</title>
+<meta name="description" content="The brain models tested on this site, given a body: a real worm beside its model in the same copper arena, and a swarm of 32 model worms.">
+<link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<header class="bar on-field" id="bar">
+  <a class="wordmark" href="index.html" aria-label="NEMATICA home">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.2" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".55"/><circle cx="12" cy="12" r="5.2" fill="none" stroke="#3dd69b" stroke-width="2.2"/><circle cx="17.2" cy="12" r="2.1" fill="#f062b4"/></svg>
+    NEMATICA
+  </a>
+  <nav aria-label="Site">
+    <a href="findings.html">Findings</a>
+    <a href="method.html">Method</a>
+    <a href="sim.html" aria-current="page">Simulations</a>
+    <a href="log.html" class="optional">Research log</a>
+    <a href="https://github.com/Weptune/nematica" class="optional">Code</a>
+  </nav>
+</header>
+
+<section class="masthead grain"><div class="in"><h1 class="title">Brains with bodies.</h1>
+  <p class="standfirst">The brain models tested on this site can also drive a simulated worm through a real worm's arena. These are demonstrations of what the models do, not evidence: every claim on this site rests on the tests in the findings.</p></div></section>
+
+<section class="interlude grain sim-interlude" aria-labelledby="twin-h">
+  <div class="in">
+    <div class="intro">
+      <h2 id="twin-h">A real worm and its model, in the same arena.</h2>
+      <p>Left, a worm the model never saw, as recorded: its body, its path, and its brain. Right, a model worm in the same dish. <strong>Its brain senses copper only through the sensory neuron ASH, decides when to reverse, and steers its own body</strong>; only its body shapes are borrowed from real worms. Copper lines the edge of the dish and real worms avoid it.</p>
+    </div>
+    <div class="twin" id="twin">
+      <div class="twin-bar">
+        <div class="twin-tabs" role="group" aria-label="Held-out worm"></div>
+        <button type="button" class="tw-play echo-play">Play</button>
+        <input type="range" class="tw-scrub echo-scrub" min="0" max="420" step="1" value="0" aria-label="Time">
+        <span class="tw-time echo-time">0:00</span>
+        <div class="tw-speed seg-dark" role="group" aria-label="Playback speed">
+          <button type="button" data-speed="1" aria-pressed="false">1&times;</button>
+          <button type="button" data-speed="4" aria-pressed="true">4&times;</button>
+          <button type="button" data-speed="16" aria-pressed="false">16&times;</button>
+        </div>
+      </div>
+      <div class="twin-body">
+        <div class="twin-col real">
+          <div class="twin-head"><span class="who">Real worm, recorded</span><span class="state">Forward</span><span class="dist"></span></div>
+          <canvas class="stage" aria-label="The real worm crawling in its copper arena, seen from above"></canvas>
+          <div class="raster-wrap"><canvas class="raster" aria-label="Activity of the real worm's neuron classes over the last two minutes"></canvas><div class="raster-labels"></div></div>
+        </div>
+        <div class="twin-col model">
+          <div class="twin-head"><span class="who">Model worm, simulated</span><span class="state">Forward</span><span class="dist"></span></div>
+          <canvas class="stage" aria-label="The model worm crawling in the same arena"></canvas>
+          <div class="raster-wrap"><canvas class="raster" aria-label="Activity of the model's neuron classes over the last two minutes"></canvas><div class="raster-labels"></div></div>
+        </div>
+      </div>
+    </div>
+    <p class="echo-caption"><b style="color:var(--field-ink);font-weight:600">Simulation 1.</b> Each view follows its worm, about 2.6 mm across; the inset shows the whole dish and the path so far. The glow at the head is the brain's summed activity. Below each view, the last two minutes of activity of every neuron class recorded in both, the same classes in the same order, with reversals marked along the top. The model worms pass 9 of 10 activity tests and all three behaviour tests near copper, yet still spend more time near the copper edge than real worms do (13% against 3%).</p>
+  </div>
+</section>
+
+<main class="page" style="padding-top:0">
+  <div class="sheet">
+    <h2 class="sec-name">Swarm</h2>
+    <div>
+      <h2>Thirty-two brains in one dish.</h2>
+      <p>Every simulated worm here has its own brain, each fitted to a different real worm, sharing one copper arena. Heads that come within a body width of another worm can trigger a reversal, and no worm can crawl through another. Does a crowd of individuals behave differently from a crowd of identical average worms? With the interactions assumed so far, the difference is not established across random seeds.</p>
+    </div>
+  </div>
+</main>
+
+<section class="interlude grain sim-interlude tight" aria-label="Swarm simulation">
+  <div class="in">
+    <div class="swarm" id="swarm">
+      <div class="swarm-stage"><canvas aria-label="Thirty-two model worms in one copper arena, seen from above"></canvas></div>
+      <aside class="swarm-side">
+        <div class="twin-bar">
+          <button type="button" class="sw-play echo-play">Play</button>
+          <div class="sw-speed seg-dark" role="group" aria-label="Playback speed">
+            <button type="button" data-speed="4" aria-pressed="false">4&times;</button>
+            <button type="button" data-speed="8" aria-pressed="true">8&times;</button>
+            <button type="button" data-speed="32" aria-pressed="false">32&times;</button>
+          </div>
+        </div>
+        <p class="sw-time echo-time">0:00</p>
+        <dl class="stats">
+          <div><dt>Reversing now</dt><dd class="sw-rev">0</dd></div>
+          <div><dt>Heads touching now</dt><dd class="sw-touch">0</dd></div>
+          <div><dt>Share of time in contact</dt><dd data-k="contact"></dd></div>
+          <div><dt>Worms in a cluster</dt><dd data-k="cluster"></dd></div>
+          <div><dt>Reversals per minute, alone</dt><dd data-k="rev0"></dd></div>
+          <div><dt>Reversals per minute, crowded</dt><dd data-k="rev2"></dd></div>
+          <div><dt>Time near the copper edge</dt><dd data-k="copper"></dd></div>
+        </dl>
+        <p class="swarm-key"><span><i style="background:#d3dedb"></i>Crawling forward</span><span><i style="background:#f062b4"></i>Reversing</span><span><i class="ring"></i>Head touching another worm</span></p>
+        <p class="swarm-note">Touch reverses a worm with probability 0.3 and bodies keep 0.1 mm apart. Both are assumptions until they can be calibrated against recordings of real crowds.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<main class="page" style="padding-top:clamp(56px,7vw,96px)">
+  <div class="sheet">
+    <h2 class="sec-name">Read with care</h2>
+    <div>
+      <h2>What these simulations are not.</h2>
+      <ul>
+        <li>They are not the benchmark. Each model was scored on held-out worms by the tests described in the method; these views only show the same models in motion.</li>
+        <li>Body shapes are borrowed from real worms; the models decide speed, reversals and steering.</li>
+        <li>The brains here are the copper-sensing linear models of the behaviour work, not the hybrid brain that passes the poke test.</li>
+        <li>Nothing here suggests that a model worm, or a real one, experiences anything.</li>
+      </ul>
+      <p><a class="btn outline" href="findings.html">Read the findings</a></p>
+    </div>
+  </div>
+</main>
+
+<footer class="foot grain">
+  <div class="in">
+    <p class="big" aria-hidden="true">NEMATICA</p>
+    <p>NEMATICA. Every prediction is written down before the experiment runs, and results that went against us are kept.</p>
+    <nav aria-label="Footer"><a href="index.html">Home</a><a href="findings.html">Findings</a><a href="method.html">Method</a><a href="log.html">Research log</a><a href="https://github.com/Weptune/nematica">Code on GitHub</a></nav>
+  </div>
+</footer>
+
+<script src="data/local.js" onerror="void 0"></script>
+<script src="assets/sim.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>

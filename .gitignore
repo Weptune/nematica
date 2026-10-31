@@ -17,3 +17,4 @@ lab/public/data/
 lab/node_modules
 web/data/local.js
 web/data/echo.js
+web/data/sim/

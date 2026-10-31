@@ -1,5 +1,6 @@
-/* Echo explorer: poke one neuron class and watch the average echo spread through the head,
+/* Echo explorer: switch on one neuron class and watch the average echo spread through the head,
    in real worms and in two artificial brains run on the same worms with the same pokes.
+   Drawn at the page's own pixel size; relaid out when the width changes.
    Data: window.NEMATICA_ECHO (web/data/echo.js, local only; scripts/export_site.py --local). */
 (function () {
   "use strict";
@@ -7,96 +8,42 @@
   if (!host) return;
   const E = window.NEMATICA_ECHO;
   const NS = "http://www.w3.org/2000/svg";
+  const mapsEl = host.querySelector(".echo-maps");
   if (!E) {
-    host.querySelector(".echo-maps").innerHTML = '<div class="scope-empty"><div>The echo explorer draws from the local copy of the atlas.<br>Run <code>python scripts/export_site.py --local</code> and reload.</div></div>';
+    mapsEl.innerHTML = '<div class="scope-empty"><div>The echo explorer draws from the local copy of the atlas.<br>Run <code>python scripts/export_site.py --local</code> and reload.</div></div>';
     return;
   }
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const S = E.stims.length, Rn = E.resp.length, T = E.nt;
   const decode = (b64) => { const s = atob(b64), a = new Int8Array(s.length); for (let i = 0; i < s.length; i++) a[i] = (s.charCodeAt(i) << 24) >> 24; return a; };
+  const UP_REAL = "#3dd69b", UP_COPY = "#f062b4", DOWN = "#7aa7ff";
   const SETS = [
-    { key: "real", label: E.labels.real, glow: "#3dd69b", cls: "live" },
-    { key: "hybrid_kernels_regimes_obsfit", label: E.labels.hybrid_kernels_regimes_obsfit, note: "passes the poke test", glow: "#f062b4", cls: "copy" },
-    { key: "var3_spontaneous", label: E.labels.var3_spontaneous, note: "learned from rest", glow: "#f062b4", cls: "copy" },
+    { key: "real", label: E.labels.real, note: "the truth for this held-out group", up: UP_REAL, cls: "live" },
+    { key: "hybrid_kernels_regimes_obsfit", label: "Hybrid brain", note: "passes the poke test", up: UP_COPY, cls: "copy" },
+    { key: "var3_spontaneous", label: "Linear brain", note: "learned from watching only", up: UP_COPY, cls: "copy" },
   ].map((s) => Object.assign(s, { data: decode(E.sets[s.key]) }));
-  const val = (set, si, ri, t) => { const q = set.data[(si * Rn + ri) * T + t]; return q === -128 ? NaN : (q / 127) * E.scale; };
+  const raw = (set, si, ri, t) => set.data[(si * Rn + ri) * T + t];
+  const val = (set, si, ri, t) => { const q = raw(set, si, ri, t); return q === -128 ? NaN : (q / 127) * E.scale; };
+  const ON = 0.35;                      // a class counts as responding above this many standard deviations
+  const shared = (si, r) => raw(SETS[1], si, r, 0) !== -128 && raw(SETS[0], si, r, 0) !== -128;
 
-  // ---------------------------------------------------------------- layout
-  const W = 1000, H = 196, pad = { l: 44, r: 24, t: 24, b: 20 };
-  const xs = Object.values(E.pos).map((p) => p[0]), ys = Object.values(E.pos).map((p) => p[1]);
-  const x0 = Math.min(...xs) - 6, x1 = Math.max(...xs) + 4, y0 = Math.min(...ys) - 4, y1 = Math.max(...ys) + 4;
-  const sx = (W - pad.l - pad.r) / (x1 - x0), sy = (H - pad.t - pad.b) / (y1 - y0);
-  const nodes = E.resp.map((c, i) => ({ c, i, x: pad.l + (E.pos[c][0] - x0) * sx, y: H - pad.b - (E.pos[c][1] - y0) * sy }));
-  // relax overlaps so every class stays visible and near its true place
-  const anchor = nodes.map((n) => ({ x: n.x, y: n.y }));
-  for (let it = 0; it < 220; it++) {
-    for (let a = 0; a < nodes.length; a++) for (let b = a + 1; b < nodes.length; b++) {
-      const A = nodes[a], B = nodes[b];
-      let dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy) || 0.01;
-      const min = 15;
-      if (d < min) { const k = (min - d) / d / 2; A.x -= dx * k; A.y -= dy * k; B.x += dx * k; B.y += dy * k; }
-    }
-    nodes.forEach((n, i) => { n.x += (anchor[i].x - n.x) * 0.04; n.y += (anchor[i].y - n.y) * 0.04;
-      n.y = Math.max(pad.t - 6, Math.min(H - pad.b + 6, n.y)); });
+  function corr(a, b) {
+    const n = a.length; if (n < 8) return NaN;
+    let ma = 0, mb = 0; for (let i = 0; i < n; i++) { ma += a[i]; mb += b[i]; } ma /= n; mb /= n;
+    let sab = 0, saa = 0, sbb = 0; for (let i = 0; i < n; i++) { sab += (a[i] - ma) * (b[i] - mb); saa += (a[i] - ma) ** 2; sbb += (b[i] - mb) ** 2; }
+    return sab / Math.sqrt(saa * sbb);
   }
-  const byClass = Object.fromEntries(nodes.map((n) => [n.c, n]));
-
-  function svgEl(tag, attrs, parent) {
-    const n = document.createElementNS(NS, tag);
-    for (const k in attrs) n.setAttribute(k, attrs[k]);
-    if (parent) parent.appendChild(n);
-    return n;
+  const mean15 = (set, si, r) => { let m = 0, n = 0; for (let q = 0; q <= 15 && q < T; q++) { const v = val(set, si, r, q); if (isFinite(v)) { m += v; n++; } } return n ? m / n : NaN; };
+  function agreementFor(set, sis) {
+    const a = [], b = [];
+    sis.forEach((si) => { for (let r = 0; r < Rn; r++) if (shared(si, r)) { const x = mean15(set, si, r), y = mean15(SETS[0], si, r); if (isFinite(x) && isFinite(y)) { a.push(x); b.push(y); } } });
+    return corr(a, b);
   }
+  const allStims = E.stims.map((_, i) => i);
+  const pooled = SETS.map((s, k) => (k ? agreementFor(s, allStims) : 1));
 
-  // worm head silhouette, nose to the left
-  function outline(g) {
-    const yc = (H - pad.b + pad.t) / 2, nose = pad.l - 30;
-    const half = (H - pad.t - pad.b) / 2 + 22;
-    const d = `M${nose},${yc} C${nose + 40},${yc - half * 0.55} ${nose + 150},${yc - half} ${nose + 330},${yc - half} L${W + 10},${yc - half} L${W + 10},${yc + half} L${nose + 330},${yc + half} C${nose + 150},${yc + half} ${nose + 40},${yc + half * 0.55} ${nose},${yc} Z`;
-    svgEl("path", { d, class: "body-fill" }, g);
-    svgEl("path", { d: `M${W + 10},${yc - half} L${nose + 330},${yc - half} C${nose + 150},${yc - half} ${nose + 40},${yc - half * 0.55} ${nose},${yc} C${nose + 40},${yc + half * 0.55} ${nose + 150},${yc + half} ${nose + 330},${yc + half} L${W + 10},${yc + half}`, class: "body" }, g);
-    // pharynx, faint: a tube from the mouth to the terminal bulb
-    const bulbX = pad.l + (95 - x0) * sx;
-    svgEl("path", { d: `M${nose + 6},${yc} L${bulbX - 30},${yc - 7} L${bulbX - 30},${yc + 7} Z`, class: "pharynx" }, g);
-    svgEl("ellipse", { cx: bulbX, cy: yc, rx: 26, ry: 17, class: "pharynx" }, g);
-  }
-
-  const maps = host.querySelector(".echo-maps");
-  maps.innerHTML = "";
-  const views = SETS.map((set, k) => {
-    const wrap = document.createElement("div");
-    wrap.className = "echo-map " + set.cls;
-    wrap.innerHTML = `<div class="echo-map-head"><span class="echo-name">${set.label}</span>${set.note ? `<span class="echo-note">${set.note}</span>` : ""}<span class="echo-stat" aria-live="polite"></span></div>`;
-    const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, class: "echo-svg", role: "img", "aria-label": `${set.label}: echo across the head` });
-    const defs = svgEl("defs", {}, s);
-    const f = svgEl("filter", { id: `glow${k}`, x: "-100%", y: "-100%", width: "300%", height: "300%" }, defs);
-    svgEl("feGaussianBlur", { stdDeviation: "4.5", result: "b" }, f);
-    const mg = svgEl("feMerge", {}, f); svgEl("feMergeNode", { in: "b" }, mg); svgEl("feMergeNode", { in: "SourceGraphic" }, mg);
-    const g0 = svgEl("g", {}, s); outline(g0);
-    svgEl("text", { x: pad.l - 34, y: pad.t - 8, class: "orient" }, s).textContent = "nose";
-    svgEl("text", { x: W - pad.r, y: pad.t - 8, class: "orient", "text-anchor": "end" }, s).textContent = "toward the body";
-    const gHalo = svgEl("g", { filter: `url(#glow${k})` }, s);
-    const gNodes = svgEl("g", {}, s);
-    const gLab = svgEl("g", {}, s);
-    const els = nodes.map((n) => {
-      const halo = svgEl("circle", { cx: n.x, cy: n.y, r: 0, fill: set.glow, opacity: 0 }, gHalo);
-      const dot = svgEl("circle", { cx: n.x, cy: n.y, r: 4.2, class: "node" }, gNodes);
-      const hit = svgEl("circle", { cx: n.x, cy: n.y, r: 9, class: "node-hit", tabindex: -1 }, gNodes);
-      hit.addEventListener("pointerenter", () => showLabel(n.c));
-      hit.addEventListener("pointerleave", () => showLabel(null));
-      hit.addEventListener("click", () => { if (E.stims.includes(n.c)) select(n.c); });
-      if (E.stims.includes(n.c)) hit.classList.add("pokeable");
-      return { halo, dot };
-    });
-    const ring = svgEl("circle", { r: 12, class: "poke-ring" }, s);
-    const ring2 = svgEl("circle", { r: 12, class: "poke-ring wave" }, s);
-    wrap.appendChild(s);
-    maps.appendChild(wrap);
-    return { set, s, els, ring, ring2, gLab, stat: wrap.querySelector(".echo-stat") };
-  });
-
-  // ---------------------------------------------------------------- state
-  let si = Math.max(0, E.stims.indexOf("ASH")), t = 0, playing = false, last = 0, hoverC = null;
+  // ---------------------------------------------------------------- state and controls
+  let si = Math.max(0, E.stims.indexOf("ASH")), t = 0, playing = false, last = 0, hoverC = null, agree = [];
   const scrub = host.querySelector(".echo-scrub"), timeOut = host.querySelector(".echo-time"), playBtn = host.querySelector(".echo-play");
   const chips = host.querySelector(".echo-chips");
   E.stims.forEach((c, i) => {
@@ -107,83 +54,153 @@
   });
   scrub.max = String(T - 1);
 
-  function agreement(set) {
-    // correlation, across responding classes, of the 0 to 15 s mean echo with the real average
-    const a = [], b = [];
-    for (let r = 0; r < Rn; r++) {
-      let ma = 0, mb = 0, na = 0, nb = 0;
-      for (let k = 0; k <= 15 && k < T; k++) { const va = val(set, si, r, k), vb = val(SETS[0], si, r, k); if (isFinite(va)) { ma += va; na++; } if (isFinite(vb)) { mb += vb; nb++; } }
-      if (na && nb) { a.push(ma / na); b.push(mb / nb); }
-    }
-    if (a.length < 8) return NaN;
-    const m = (v) => v.reduce((p, q) => p + q, 0) / v.length, A = m(a), B = m(b);
-    let sab = 0, saa = 0, sbb = 0;
-    for (let i = 0; i < a.length; i++) { sab += (a[i] - A) * (b[i] - B); saa += (a[i] - A) ** 2; sbb += (b[i] - B) ** 2; }
-    return sab / Math.sqrt(saa * sbb);
+  function svgEl(tag, attrs, parent) {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
   }
-  let agree = [];
-  const pooled = SETS.map((set, k) => {
-    if (!k) return 1;
-    const a = [], b = [];
-    for (let i = 0; i < S; i++) for (let r = 0; r < Rn; r++) {
-      let ma = 0, mb = 0, na = 0, nb = 0;
-      for (let q = 0; q <= 15 && q < T; q++) { const va = set.data[(i * Rn + r) * T + q], vb = SETS[0].data[(i * Rn + r) * T + q]; if (va !== -128) { ma += va; na++; } if (vb !== -128) { mb += vb; nb++; } }
-      if (na && nb) { a.push(ma / na); b.push(mb / nb); }
-    }
-    const m = (v) => v.reduce((p, q) => p + q, 0) / v.length, A = m(a), B = m(b);
-    let sab = 0, saa = 0, sbb = 0;
-    for (let i = 0; i < a.length; i++) { sab += (a[i] - A) * (b[i] - B); saa += (a[i] - A) ** 2; sbb += (b[i] - B) ** 2; }
-    return sab / Math.sqrt(saa * sbb);
-  });
 
-  function showLabel(c) { hoverC = c; draw(); }
+  // ---------------------------------------------------------------- layout at the current width
+  let views = [], nodes = [], byClass = {}, W = 0, H = 0;
+  function layout() {
+    W = Math.floor(mapsEl.clientWidth);
+    H = Math.round(Math.max(140, Math.min(200, W * 0.16)));
+    const pad = { l: 40, r: 18, t: 22, b: 16 };
+    const xs = E.resp.map((c) => E.pos[c][0]), ys = E.resp.map((c) => E.pos[c][1]);
+    const x0 = Math.min(...xs) - 6, x1 = Math.max(...xs) + 3, y0 = Math.min(...ys) - 3, y1 = Math.max(...ys) + 3;
+    const sx = (W - pad.l - pad.r) / (x1 - x0), sy = (H - pad.t - pad.b) / (y1 - y0);
+    nodes = E.resp.map((c, i) => ({ c, i, x: pad.l + (E.pos[c][0] - x0) * sx, y: H - pad.b - (E.pos[c][1] - y0) * sy }));
+    const anchor = nodes.map((n) => ({ x: n.x, y: n.y })), minD = Math.max(12, Math.min(17, W / 70));
+    for (let it = 0; it < 260; it++) {
+      for (let a = 0; a < nodes.length; a++) for (let b = a + 1; b < nodes.length; b++) {
+        const A = nodes[a], B = nodes[b];
+        const dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy) || 0.01;
+        if (d < minD) { const k = (minD - d) / d / 2; A.x -= dx * k; A.y -= dy * k; B.x += dx * k; B.y += dy * k; }
+      }
+      nodes.forEach((n, i) => { n.x += (anchor[i].x - n.x) * 0.035; n.y += (anchor[i].y - n.y) * 0.035; n.y = Math.max(pad.t - 4, Math.min(H - pad.b + 4, n.y)); n.x = Math.max(pad.l, Math.min(W - 8, n.x)); });
+    }
+    byClass = Object.fromEntries(nodes.map((n) => [n.c, n]));
+    const yc = H / 2, nose = pad.l - 30, half = H / 2 - 4;
+
+    mapsEl.innerHTML = "";
+    views = SETS.map((set, k) => {
+      const wrap = document.createElement("div");
+      wrap.className = "echo-map " + set.cls;
+      wrap.innerHTML = `<div class="echo-map-head"><span class="echo-name">${set.label}</span><span class="echo-note">${set.note}</span>` +
+        `<span class="echo-stat"></span><svg class="echo-spark" width="132" height="26" aria-hidden="true"></svg></div>`;
+      const s = svgEl("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, class: "echo-svg", role: "img", "aria-label": `${set.label}: echo across the head` });
+      const defs = svgEl("defs", {}, s);
+      const gr = svgEl("linearGradient", { id: `body${k}`, x1: "0", x2: "0", y1: "0", y2: "1" }, defs);
+      svgEl("stop", { offset: "0", "stop-color": "#10212a" }, gr); svgEl("stop", { offset: "0.5", "stop-color": "#0c1a20" }, gr); svgEl("stop", { offset: "1", "stop-color": "#0a161b" }, gr);
+      const body = `M${nose},${yc} C${nose + W * 0.04},${yc - half * 0.62} ${nose + W * 0.15},${yc - half} ${nose + W * 0.33},${yc - half} L${W + 2},${yc - half} L${W + 2},${yc + half} L${nose + W * 0.33},${yc + half} C${nose + W * 0.15},${yc + half} ${nose + W * 0.04},${yc + half * 0.62} ${nose},${yc} Z`;
+      svgEl("path", { d: body, fill: `url(#body${k})` }, s);
+      svgEl("path", { d: `M${W + 2},${yc - half + 0.5} L${nose + W * 0.33},${yc - half + 0.5} C${nose + W * 0.15},${yc - half + 0.5} ${nose + W * 0.04},${yc - half * 0.62} ${nose},${yc} C${nose + W * 0.04},${yc + half * 0.62} ${nose + W * 0.15},${yc + half - 0.5} ${nose + W * 0.33},${yc + half - 0.5} L${W + 2},${yc + half - 0.5}`, class: "body" }, s);
+      const bulbX = pad.l + (95 - x0) * sx;
+      svgEl("path", { d: `M${nose + 8},${yc} L${bulbX - 22},${yc - 5} L${bulbX - 22},${yc + 5} Z`, class: "pharynx" }, s);
+      svgEl("ellipse", { cx: bulbX, cy: yc, rx: Math.max(16, W * 0.022), ry: Math.max(11, H * 0.08), class: "pharynx" }, s);
+      svgEl("text", { x: 8, y: 14, class: "orient" }, s).textContent = "nose";
+      svgEl("text", { x: W - 8, y: 14, class: "orient", "text-anchor": "end" }, s).textContent = "toward the body";
+      const gRing = svgEl("g", {}, s), gNodes = svgEl("g", {}, s), gLab = svgEl("g", {}, s), gHit = svgEl("g", {}, s);
+      const els = nodes.map((n) => {
+        const ring = svgEl("circle", { cx: n.x.toFixed(1), cy: n.y.toFixed(1), r: 0, class: "ring" }, gRing);
+        const dot = svgEl("circle", { cx: n.x.toFixed(1), cy: n.y.toFixed(1), r: 3, class: "node" }, gNodes);
+        const hit = svgEl("circle", { cx: n.x.toFixed(1), cy: n.y.toFixed(1), r: 9, class: "node-hit" + (E.stims.includes(n.c) ? " pokeable" : "") }, gHit);
+        hit.addEventListener("pointerenter", () => { hoverC = n.c; draw(); });
+        hit.addEventListener("pointerleave", () => { hoverC = null; draw(); });
+        hit.addEventListener("click", () => { if (E.stims.includes(n.c)) select(n.c); });
+        return { ring, dot };
+      });
+      const pr = svgEl("circle", { r: 9, class: "poke-ring" }, s);
+      const wave = svgEl("circle", { r: 9, class: "poke-ring wave" }, s);
+      wrap.appendChild(s);
+      mapsEl.appendChild(wrap);
+      return { set, k, s, els, pr, wave, gLab, stat: wrap.querySelector(".echo-stat"), spark: wrap.querySelector(".echo-spark") };
+    });
+    sparks();
+    draw();
+  }
+
+  // responders over time, per brain, for the chosen poke
+  const SPARK_MAX = 40;
+  function sparks() {
+    views.forEach((v) => {
+      const counts = [];
+      for (let q = 0; q < T; q++) { let on = 0; for (let r = 0; r < Rn; r++) if (shared(si, r) && Math.abs(val(v.set, si, r, q)) > ON) on++; counts.push(on); }
+      v.counts = counts;
+      const sw = 132, sh = 26;
+      v.spark.innerHTML = "";
+      const d = counts.map((c, q) => `${q ? "L" : "M"}${(2 + (q / (T - 1)) * (sw - 4)).toFixed(1)},${(sh - 3 - (Math.min(c, SPARK_MAX) / SPARK_MAX) * (sh - 6)).toFixed(1)}`).join("");
+      svgEl("line", { x1: 2, x2: sw - 2, y1: sh - 2.5, y2: sh - 2.5, class: "spark-base" }, v.spark);
+      svgEl("path", { d, class: "spark-line " + v.set.cls }, v.spark);
+      v.sparkDot = svgEl("circle", { r: 2.6, class: "spark-dot " + v.set.cls }, v.spark);
+    });
+  }
+
+  // label placement: above, below, right or left of the node; a label that would collide is skipped
+  function placeLabels(v, labels, pc) {
+    v.gLab.innerHTML = "";
+    const boxes = [];
+    const fits = (b) => b.x0 > 2 && b.x1 < W - 2 && b.y0 > 18 && b.y1 < H - 1 && !boxes.some((o) => !(b.x1 < o.x0 || b.x0 > o.x1 || b.y1 < o.y0 || b.y0 > o.y1));
+    labels.forEach(({ c, r }) => {
+      const n = byClass[c]; if (!n) return;
+      const isP = c === pc, fs = isP ? 12 : 11, w = c.length * fs * 0.64 + 4, h = fs + 2, gap = r + 4;
+      const cands = [[n.x - w / 2, n.y - gap - h], [n.x - w / 2, n.y + gap], [n.x + gap, n.y - h / 2], [n.x - gap - w, n.y - h / 2]];
+      for (const [bx, by] of cands) {
+        const box = { x0: bx - 2, y0: by - 2, x1: bx + w + 2, y1: by + h + 2 };
+        if (isP || fits(box)) {
+          boxes.push(box);
+          const tx = svgEl("text", { x: (bx + w / 2).toFixed(1), y: (by + h - 3).toFixed(1), "text-anchor": "middle", class: "node-label" + (isP ? " poked" : "") }, v.gLab);
+          tx.textContent = c;
+          break;
+        }
+      }
+    });
+  }
 
   function draw() {
     const tt = Math.round(t);
     const pc = E.stims[si], pn = byClass[pc];
-    views.forEach((v, k) => {
+    views.forEach((v) => {
       let on = 0, meas = 0;
       const top = [];
       v.els.forEach((e, r) => {
-        const x = val(v.set, si, r, tt);
         const n = nodes[r];
-        if (n.c === pc) { e.dot.setAttribute("class", "node poked"); e.halo.setAttribute("opacity", 0); return; }
-        if (!isFinite(x)) { e.dot.setAttribute("class", "node absent"); e.halo.setAttribute("opacity", 0); e.dot.setAttribute("r", 3.2); return; }
-        const shared = isFinite(val(SETS[1], si, r, tt));
-        if (shared) meas++;
-        const a = Math.min(1, Math.abs(x) / 1.1);
-        if (shared && Math.abs(x) > 0.35) on++;
-        top.push([Math.abs(x), r]);
-        if (x >= 0) {
-          e.dot.setAttribute("class", "node up"); e.dot.style.fill = v.set.glow; e.dot.style.fillOpacity = 0.18 + 0.82 * a;
-          e.halo.setAttribute("fill", v.set.glow);
-        } else {
-          e.dot.setAttribute("class", "node down"); e.dot.style.fill = "#8fb8ff"; e.dot.style.fillOpacity = 0.15 + 0.85 * a;
-          e.halo.setAttribute("fill", "#8fb8ff");
-        }
-        e.dot.setAttribute("r", 3.6 + 4.2 * a);
-        e.halo.setAttribute("r", 4 + 11 * a);
-        e.halo.setAttribute("opacity", a > 0.25 ? 0.55 * a : 0);
+        const x = val(v.set, si, r, tt);
+        if (n.c === pc) { e.dot.setAttribute("class", "node poked"); e.dot.setAttribute("r", 5.5); e.dot.style.fill = ""; e.ring.setAttribute("r", 0); return; }
+        if (!isFinite(x)) { e.dot.setAttribute("class", "node absent"); e.dot.setAttribute("r", 2.6); e.dot.style.fill = ""; e.dot.style.fillOpacity = ""; e.ring.setAttribute("r", 0); return; }
+        const sh = shared(si, r);
+        if (sh) meas++;
+        const a = Math.min(1, Math.abs(x) / 1.2);
+        if (sh && Math.abs(x) > ON) on++;
+        const rad = 3 + 6 * a;
+        top.push({ c: n.c, m: Math.abs(x), r: rad });
+        const col = x >= 0 ? v.set.up : DOWN;
+        e.dot.setAttribute("class", "node live-node");
+        e.dot.style.fill = col;
+        e.dot.style.fillOpacity = (0.22 + 0.78 * a).toFixed(2);
+        e.dot.setAttribute("r", rad.toFixed(1));
+        if (a > 0.45) { e.ring.setAttribute("r", (rad + 3.5).toFixed(1)); e.ring.style.stroke = col; e.ring.style.strokeOpacity = (0.55 * a).toFixed(2); }
+        else e.ring.setAttribute("r", 0);
       });
       if (pn) {
-        [v.ring, v.ring2].forEach((rg) => { rg.setAttribute("cx", pn.x); rg.setAttribute("cy", pn.y); });
-        const w = Math.min(1, tt / 6);
-        v.ring2.setAttribute("r", 12 + w * 60); v.ring2.style.opacity = String(0.6 * (1 - w));
+        v.pr.setAttribute("cx", pn.x); v.pr.setAttribute("cy", pn.y);
+        v.wave.setAttribute("cx", pn.x); v.wave.setAttribute("cy", pn.y);
+        const w = Math.min(1, t / 5);
+        v.wave.setAttribute("r", (9 + w * 70).toFixed(1)); v.wave.style.opacity = (0.55 * (1 - w)).toFixed(2);
       }
-      // labels: the poked class, the strongest three responders, and any hovered class
-      v.gLab.innerHTML = "";
-      const lab = new Set([pc]);
-      top.sort((p, q) => q[0] - p[0]).slice(0, 3).forEach(([m, r]) => { if (m > 0.35) lab.add(nodes[r].c); });
-      if (hoverC) lab.add(hoverC);
-      lab.forEach((c) => {
-        const n = byClass[c]; if (!n) return;
-        const tx = svgEl("text", { x: n.x, y: n.y - 13, class: "node-label" + (c === pc ? " poked" : ""), "text-anchor": "middle" }, v.gLab);
-        tx.textContent = c;
-      });
-      const f2 = (x) => x.toFixed(2).replace("-", "\u2212");
-      v.stat.innerHTML = `<span>${on} of ${meas} classes responding</span>` + (k > 0 ? `<span>agreement with real: this poke <b>${isFinite(agree[k]) ? f2(agree[k]) : "n/a"}</b>, all pokes <b>${f2(pooled[k])}</b></span>` : "");
+      top.sort((p, q) => q.m - p.m);
+      const labels = [{ c: pc, r: 6 }];
+      if (hoverC && hoverC !== pc) labels.push({ c: hoverC, r: (top.find((o) => o.c === hoverC) || { r: 4 }).r });
+      top.filter((o) => o.m > 0.45).slice(0, 5).forEach((o) => labels.push(o));
+      placeLabels(v, labels, pc);
+      const f2 = (z) => (isFinite(z) ? z.toFixed(2).replace("-", "−") : "n/a");
+      v.stat.innerHTML = `<span><b>${on}</b> of ${meas} classes responding</span>` +
+        (v.k > 0 ? `<span>agreement with real <b>${f2(agree[v.k])}</b> this poke, <b>${f2(pooled[v.k])}</b> all pokes</span>` : "");
+      if (v.sparkDot && v.counts) { v.sparkDot.setAttribute("cx", (2 + (tt / (T - 1)) * 128).toFixed(1)); v.sparkDot.setAttribute("cy", (26 - 3 - (Math.min(v.counts[tt], SPARK_MAX) / SPARK_MAX) * 20).toFixed(1)); }
     });
     scrub.value = String(tt);
+    scrub.style.setProperty("--p", `${(tt / (T - 1)) * 100}%`);
     timeOut.textContent = `${tt} s after the poke`;
     host.querySelector(".echo-poked").textContent = pc;
   }
@@ -191,7 +208,8 @@
   function select(c) {
     si = E.stims.indexOf(c);
     chips.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.textContent === c)));
-    agree = SETS.map((s, k) => (k ? agreement(s) : 1));
+    agree = SETS.map((s, k) => (k ? agreementFor(s, [si]) : 1));
+    sparks();
     t = 0; draw();
     if (!reduce) play(true);
   }
@@ -201,7 +219,7 @@
   }
   function tick(now) {
     if (!playing) return;
-    t += ((now - last) / 1000) * 5;   // five seconds of worm time per second
+    t += ((now - last) / 1000) * 4;    // four seconds of worm time per second
     last = now;
     if (t >= T - 1) { t = T - 1; draw(); play(false); return; }
     draw(); requestAnimationFrame(tick);
@@ -209,9 +227,11 @@
   playBtn.addEventListener("click", () => play(!playing));
   scrub.addEventListener("input", () => { play(false); t = +scrub.value; draw(); });
 
-  // start when the section scrolls into view
-  agree = SETS.map((s, k) => (k ? agreement(s) : 1));
-  t = reduce ? 6 : 0; draw();
-  const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); if (!reduce) play(true); } }, { threshold: 0.35 });
+  agree = SETS.map((s, k) => (k ? agreementFor(s, [si]) : 1));
+  t = reduce ? 6 : 0;
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(layout);
+  let lastW = 0;
+  new ResizeObserver(() => { const w = Math.floor(mapsEl.clientWidth); if (lastW && Math.abs(w - lastW) > 4) layout(); lastW = w; }).observe(mapsEl);
+  const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); if (!reduce) play(true); } }, { threshold: 0.3 });
   io.observe(host);
 })();
