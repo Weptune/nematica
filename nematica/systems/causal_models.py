@@ -212,6 +212,7 @@ class ClassVAR:
         for L in range(1, p + 1):
             A[L - 1] *= g ** L
         self.last_gain = g
+        b = self.W[-1]
         if pulse:
             # size pulses in each class's own SD units: SD of a free run of the same dynamics
             zz = np.zeros((C, 1500 + p))
@@ -220,7 +221,6 @@ class ClassVAR:
                 zz[~seen, t] = 0.0
             sd_free = np.std(zz[:, 300:], axis=1)
             pulse = {f: (ci, v * sd_free[ci]) for f, (ci, v) in pulse.items()}
-        b = self.W[-1]
         base = {}
         for t in range(p, T + burn):
             nxt = self._step(z, t, A, b)
