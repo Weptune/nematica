@@ -32,14 +32,21 @@ SENSE_SCALE_MM = 0.5
 LAGS = 3
 
 
-def sense(d: np.ndarray, facing_out: np.ndarray | None = None, scale: float = SENSE_SCALE_MM) -> np.ndarray:
+def sense(d: np.ndarray, facing_out: np.ndarray | None = None, scale: float = SENSE_SCALE_MM,
+          slow_tau: float = 0.0) -> np.ndarray:
     """[proximity, its change] and, with `facing_out` (cosine between facing and the outward
     arena normal), proximity x facing: high when close AND heading into the copper."""
     x = np.exp(-np.maximum(np.asarray(d, float), -0.5) / scale)
     dx = np.diff(x, prepend=x[:1])
-    if facing_out is None:
-        return np.vstack([x, dx])
-    return np.vstack([x, dx, x * np.asarray(facing_out, float)])
+    rows = [x, dx] if facing_out is None else [x, dx, x * np.asarray(facing_out, float)]
+    if slow_tau > 0:                    # tonic input: proximity smoothed over slow_tau frames
+        ema = np.empty_like(x)
+        acc = x[0]
+        for i, xi in enumerate(x):
+            acc += (xi - acc) / slow_tau
+            ema[i] = acc
+        rows.append(ema)
+    return np.vstack(rows)
 
 
 class SensoryVAR:
@@ -49,7 +56,7 @@ class SensoryVAR:
                  sense_scales=(SENSE_SCALE_MM,), per_worm_rates: bool = False,
                  sense_ridge_mults=(1.0,), steer: bool = False, steer_window: int = 17,
                  copper_limit: bool = False, steer_scales=None, heading_noise: float = 0.0,
-                 stage_speed: bool = False, lags: int = LAGS):
+                 stage_speed: bool = False, lags: int = LAGS, slow_taus=(0.0,)):
         """hazard_from: "brain" (core classes and velocity), "speed" (velocity only) or "none"
         (constant rates); copper proximity is added to any of them when `senses` is on.
         directional: add proximity x facing-the-copper to the senses.
@@ -71,6 +78,8 @@ class SensoryVAR:
         self.heading_noise = heading_noise
         self.stage_speed = stage_speed
         self.lags = lags                       # memory of the brain model, frames
+        self.slow_taus = tuple(slow_taus)      # candidate tonic-copper time constants, frames
+        self.slow_tau = self.slow_taus[0]
         self.speed_q_worm: dict = {}
         self.d_limit = -np.inf
         self.offsets: dict = {}
@@ -81,7 +90,9 @@ class SensoryVAR:
     def name(self) -> str:
         n = "closed_loop_" + ("senses" if self.senses else "blind")
         tail = ("_steer" if self.steer and self.senses else "") + ("_limit" if self.copper_limit and self.senses else "") \
-            + (f"_lags{self.lags}" if self.lags != LAGS else "")
+            + (f"_lags{self.lags}" if self.lags != LAGS else "") \
+            + ("_tonic" if any(t > 0 for t in self.slow_taus) and self.senses else "") \
+            + ("_pen" if self.sense_ridge_mults == (1.0,) and self.hazard_from == "command_ash" else "")
         if self.reversals == "hysteresis":
             return n + "_hyst" + ("_dir" if self.directional and self.senses else "")
         return n + ("" if self.hazard_from == "brain" else "_" + self.hazard_from) \
@@ -89,7 +100,7 @@ class SensoryVAR:
 
     def _sense(self, s: BenchSample):
         return sense(s.behaviour["dist_to_boundary"], s.behaviour["facing_out"] if self.directional else None,
-                     self.scale)
+                     self.scale, self.slow_tau)
 
     # ------------------------------------------------------------------ data
     def _xy(self, s: BenchSample):
@@ -208,29 +219,34 @@ class SensoryVAR:
         self.space = CalciumStateSpace.from_train(train, gamma=self.gamma)
         scale_scores = self._choose_scale(train, val) if self.senses and len(self.sense_scales) > 1 else None
         n_core = self.space.core.size
-        tr = [self._xy(s) for s in train]
-        va = [self._xy(s) for s in val]
-        X = np.vstack([a[0] for a in tr])
-        Y = np.vstack([a[1] for a in tr])
-        G0 = X.T @ X
         n_brain = self.space.k * self.lags
         best = None
         # the copper inputs may get their own (smaller) penalty: one ridge for everything
-        # shrinks the few sensory weights as hard as the many neural ones [L: chosen on
-        # validation worms with the rest]
-        for mult in (self.sense_ridge_mults if self.senses else (1.0,)):
-            pen = np.ones(X.shape[1])
-            pen[n_brain:] = mult
-            for r in self.ridges:
-                W = np.linalg.solve(G0 + r * np.diag(pen), X.T @ Y)
-                num = den = 0.0
-                for F, Yv, M in va:
-                    P = F @ W
-                    num += np.sum(((Yv - P)[:, :n_core] ** 2)[M[:, :n_core]])
-                    den += np.sum(((Yv - Yv.mean(0))[:, :n_core] ** 2)[M[:, :n_core]])
-                r2 = 1 - num / den
-                if best is None or r2 > best[1]:
-                    best = (r, r2, W, mult)
+        # shrinks the few sensory weights as hard as the many neural ones; a tonic copper
+        # input (proximity smoothed over slow_tau frames) may be added [L: both chosen on
+        # validation worms with the ridge]
+        for tau in (self.slow_taus if self.senses else (0.0,)):
+            self.slow_tau = tau
+            tr = [self._xy(s) for s in train]
+            va = [self._xy(s) for s in val]
+            X = np.vstack([a[0] for a in tr])
+            Y = np.vstack([a[1] for a in tr])
+            G0 = X.T @ X
+            for mult in (self.sense_ridge_mults if self.senses else (1.0,)):
+                pen = np.ones(X.shape[1])
+                pen[n_brain:] = mult
+                for r in self.ridges:
+                    W = np.linalg.solve(G0 + r * np.diag(pen), X.T @ Y)
+                    num = den = 0.0
+                    for F, Yv, M in va:
+                        P = F @ W
+                        num += np.sum(((Yv - P)[:, :n_core] ** 2)[M[:, :n_core]])
+                        den += np.sum(((Yv - Yv.mean(0))[:, :n_core] ** 2)[M[:, :n_core]])
+                    r2 = 1 - num / den
+                    if best is None or r2 > best[1]:
+                        best = (r, r2, W, mult, tau)
+        self.slow_tau = best[4]
+        tr = [self._xy(s) for s in train]
         self.W_pool = best[2]
         self.W, self.L, self.names = {}, {}, []
         for s, (F, Yt, M) in zip(train, tr):
@@ -241,6 +257,7 @@ class SensoryVAR:
             self.names.append(s.origin)
         self.hazard = self._fit_hazards(train)
         self.info = {"ridge": best[0], "val_r2": round(float(best[1]), 4), "sense_scale_mm": self.scale,
+                     "slow_tau_frames": self.slow_tau,
                      "sense_ridge_mult": best[3]}
         if scale_scores:
             self.info["scale_val_ll"] = {k: round(v, 1) for k, v in scale_scores.items()}
@@ -511,7 +528,7 @@ class SensoryVAR:
         fo = np.array([facing(), facing()]) if self.directional else None
         # burn-in of the brain while the worm rests at its start
         for _ in range(burn):
-            e = sense(np.array([d_now, d_now]), fo, self.scale)[:, -1]
+            e = sense(np.array([d_now, d_now]), fo, self.scale, self.slow_tau)[:, -1]
             v = np.clip(self._features(hist, e) @ W + L @ rng.standard_normal(k), -clip, clip)
             v[-1] = (0 - bm[1]) / bs[1]
             hist = hist[1:] + [v]
@@ -524,11 +541,15 @@ class SensoryVAR:
         state = 0
         z_rev = [(0 - bm[1]) / bs[1], (1 - bm[1]) / bs[1]]          # reversal channel values
         hyst = self.reversals == "hysteresis"
+        slow = float(np.exp(-max(d_now, -0.5) / self.scale))     # tonic copper state at the start
         states = np.zeros(T)
         for i in range(T):
             x_now = np.exp(-max(d_now, -0.5) / self.scale)
             x_prev = np.exp(-max(d_prev, -0.5) / self.scale)
-            e = np.array([x_now, x_now - x_prev] + ([x_now * facing()] if self.directional else []))
+            if self.slow_tau > 0:
+                slow += (x_now - slow) / self.slow_tau
+            e = np.array([x_now, x_now - x_prev] + ([x_now * facing()] if self.directional else [])
+                         + ([slow] if self.slow_tau > 0 else []))
             v = np.clip(self._features(hist, e) @ W + L @ rng.standard_normal(k), -clip, clip)
             if hyst:                       # the brain's own channel decides, read with hysteresis
                 raw = v[-1] * bs[1] + bm[1]

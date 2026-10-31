@@ -56,6 +56,7 @@ choice made on training and validation worms only, except where marked post hoc)
 | Closed loop v7 (3-frame brain senses copper, steers, reverses) | 9 of 10 | 0.95 (v6, frozen split) | occupancy and approach inside; 14 to 17% of time near copper (real 3.2%) |
 | Closed loop v8 (10-frame brain) | 9 of 10 | not yet run | occupancy and approach inside; 11% near copper; encounter outside |
 | Closed loop v9 (copper acts only through ASH and the brain) | 8 of 10 | not yet run | **all three Level 6 metrics inside**; 10.4% near copper |
+| Closed loop v10 (v9 + tonic copper input) | 6 of 10 | not yet run | all three Level 6 inside; 25% near copper |
 
 What these say:
 1. **Forecasting is not fidelity.** The model that forecasts best is too typical; letting
@@ -488,6 +489,24 @@ rotations) (`--variants v9`, `docs/figures/closed_loop_v9.csv`):
   copper input it rises by about 0.48 near copper, a third of the real rise (1.37); in
   closed loop, where model worms near copper are rarely approaching it, the rise vanishes
   (-0.11). Real ASH also stays up while the worm is near copper; the model's does not.
+
+**Version 10: a tonic copper input, and a check on v9's distribution miss**
+(`--variants v10`, `docs/figures/closed_loop_v10.csv`). Adding proximity smoothed over a
+time constant chosen on validation worms (30 s in two rotations, 15 s in one) raises the
+model's ASH response to recorded copper from a rise of 0.61 to 0.90 (real 1.37), but in
+closed loop it costs the brain's statistics: 6 of 10 pairwise (distribution,
+correlation, lead-lag 1.14 and encoding 1.23 outside) and 25% of time near copper. Keeping
+v9 but penalising the copper weights like the rest brings the distribution back inside
+(1.05; so that miss did come from the unpenalised weights): 9 of 10 (lead-lag 1.06),
+occupancy and approach inside, encounter outside, 11.1% near copper.
+
+The pattern across v7 to v10: every way of making the linear brain respond to copper as
+strongly and as persistently as real ASH does disturbs its other statistics, and every way
+of keeping those statistics leaves ASH's response, and with it the encounter response and
+ASH's lead over the command neurons, too weak. No closed-loop variant passes everything:
+v9 passes all of Level 6 at 8 of 10 pairwise; v7, v8 and v9 with penalised weights are 9
+of 10 with two of three Level 6 metrics. This looks like a limit of linear dynamics with
+additive sensory input, a concrete target for a nonlinear sensory stage.
 
 
 ## Leaderboard: published models
