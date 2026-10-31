@@ -1021,6 +1021,42 @@ The model scores above use the Creamer packaging throughout (real and simulated 
 the same recordings), so they are internally consistent; they will be repeated on the
 original archive.
 
+## Signatures of a mind: perturbational complexity
+
+Nobody can measure consciousness directly, and whether a worm experiences anything is an
+open question; nothing here claims it does. But consciousness science has measuring tools
+that work on brains that cannot report, and the most validated one is a perturbation test.
+The **Perturbational Complexity Index** (PCI; Casali, Massimini, Tononi and colleagues,
+2013) separates conscious from unconscious people: perturb the cortex with a magnetic
+pulse, mark where and when the response is significant, and measure how compressible that
+pattern is. Awake brains answer with echoes that are widespread *and* differentiated; deep
+sleep, anaesthesia and coma give local blips or stereotyped waves. The optogenetic atlas
+is the same experiment in a worm, thousands of times over. So the question becomes: **do
+artificial brains have a real brain's perturbational signature?**
+
+**Measure** (`nematica/bench/perturbational.py`). Per stimulation: each named class's
+response over 30 s, in units of its own fluctuation size before stimulation; significant
+where above 3 [A]; PCI = Lempel-Ziv complexity of the significance pattern, normalised by
+its length and by how much of it is significant (the standard PCI normalisation). Two
+levels, distances between two worms' sets of events: `P1.complexity` (KS distance between
+PCI distributions) and `P2.spread` (KS distance between the fractions of the pattern that
+responds).
+
+**Calibrations, outcomes designed before running:**
+
+| calibration | complexity | spread |
+|---|---|---|
+| real held-out worms | inside | inside |
+| responses scaled by 3 | either | outside |
+| desynchronised (each class's response shifted in time by its own random offset) | outside | inside |
+| time reversed | inside | inside |
+
+**Expectations for the models, written before running:** the class VARs and the published
+models respond too strongly (magnitude level), so their echoes spread too far (spread
+outside); and their noise is unstructured, so their echoes are more complex than real
+ones (complexity outside, above real worms). A brain whose echo is "too complex" in this
+sense is not more conscious-like; it is noisier. Real brains sit between a blip and noise.
+
 ## Arc 6: from one brain to a swarm
 
 **Question.** Does the ruler's verdict hold when many model brains share one world? Real
