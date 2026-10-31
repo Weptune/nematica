@@ -1162,6 +1162,43 @@ of 6); the connectome-restricted kernels beat the shuffled ones on pattern in ev
 If the hybrid passes, the lesson is constructive: a faithful brain copy needs two kinds of
 knowledge, and only one of them can be had by watching.
 
+**D and D2 results so far** (`results/same_worms_pci`, to be gathered into
+`docs/figures/ingredients.csv` when all pools finish; original archive, response units of
+pre-stimulus fluctuations; real echoes reach a median of about 16% of the brain in these
+units):
+
+| model | rest (of 6) | pattern (real 0.89 to 0.91) | spread |
+|---|---|---|---|
+| VAR(3) from rest | 5 | 0.99, outside | 26%, outside |
+| VAR(3) from pokes | 2 to 4 | 0.98 to 0.99, outside | 17 to 30%, outside |
+| VAR(3), rectified features | 4 | 0.99, outside | 27 to 28%, outside |
+| VAR(3), sparse coupling | 2 | 0.99, outside | 32%, outside |
+| **hybrid: rest dynamics + causal kernels** | 4 | **0.909, 0.919, 0.924: inside in 2 of 3** | 26%, outside |
+| hybrid, kernels only along the connectome | 3 to 5 | 0.98, outside | 24 to 25%, outside |
+| hybrid, kernels along shuffled wiring | 3 to 5 | 0.99 to 1.00, outside | 24 to 25%, outside |
+
+- **The first artificial brain whose echoes have a real worm's pattern**: the hybrid sits at
+  the real worm-to-worm median in pools 1 and 3 (52nd percentile in pool 1). None of the
+  dynamical ingredients (nonlinearity, sparsity, learning from pokes) came close: a model
+  trained to predict the next half-second does not learn where a poke's echo goes, even
+  when it is trained on pokes. Causal structure had to be learned *as* causal structure.
+- **It does not pass the poke test as defined in advance**: its echoes still spread too far
+  (26% against 16%), in every pool. The excess comes from the ongoing dynamics (it is the
+  same in the VAR alone): over 30 s, the model's activity wanders further from its starting
+  point than real activity does.
+- **Anatomy, with causal data:** kernels restricted to connectome edges beat kernels along
+  shuffled wiring in every pool (expectation met), but both are far worse than unrestricted
+  kernels. Most of the echo travels between classes that are not directly wired together:
+  at class level, the wiring diagram is a poor map of where signals go.
+- Expectations: learning from pokes did not beat every rest-fitted model on pattern (not
+  met); nonlinearity and sparsity did not shrink spread (not met); the hybrid kept the
+  VAR's rest score only partly (4 of 6, not 5: timescale fails).
+
+**Next ingredient (written before running): the hybrid with its ongoing dynamics learned
+from the stimulation windows** (`hybrid_kernels_bgstim`), whose VARs had realistic spread
+levels (17%). Expectation: pattern stays inside in at least 2 of 3 pools and spread comes
+inside in at least 2 of 3, which would be the first pass of the poke test.
+
 **Signal or noise? (written before computing it).** A model can fail the poke test in two
 different ways: its *average* echo is wrong (it does not know the causal structure), or its
 average echo is right but each single echo is buried in the wrong kind of variability.

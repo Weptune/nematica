@@ -50,8 +50,10 @@ def make_model(spec: str):
     base, _, protocol = spec.partition("@")
     protocol = protocol or "clamp"
     if base.startswith("hybrid_kernels"):
-        mask = base.replace("hybrid_kernels", "").strip("_") or None
-        return HybridKernel(mask=mask)
+        parts = [p for p in base.replace("hybrid_kernels", "").split("_") if p]
+        bg = next((p[2:] for p in parts if p.startswith("bg")), "spontaneous")
+        mask = next((p for p in parts if not p.startswith("bg")), None)
+        return HybridKernel(mask=mask, background=bg)
     if base.startswith("creamer2024_"):
         return CreamerCausal(base.replace("creamer2024_", ""), protocol=protocol)
     parts = base[3:].split("_")

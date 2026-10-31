@@ -325,13 +325,15 @@ class HybridKernel:
     own fluctuation size in the simulation). `mask` restricts kernels to pairs allowed by a
     wiring matrix (class_wiring: A[to, from]); None allows every pair."""
 
-    def __init__(self, lags: int = 3, shrink: float = 2.0, mask: str | None = None, seed: int = 0):
+    def __init__(self, lags: int = 3, shrink: float = 2.0, mask: str | None = None, seed: int = 0,
+                 background: str = "spontaneous"):
         self.lags, self.shrink, self.mask, self.seed = lags, shrink, mask, seed
-        self.name = "hybrid_kernels" + (f"_{mask}" if mask else "")
+        self.background = background     # which frames the ongoing-dynamics VAR learns from
+        self.name = "hybrid_kernels" + (f"_{mask}" if mask else "") + ("" if background == "spontaneous" else f"_bg{background}")
 
     def fit(self, train, val):
         from ..bench.perturbational import event_matrices
-        self.var = ClassVAR(lags=self.lags, frames="spontaneous").fit(train, val)
+        self.var = ClassVAR(lags=self.lags, frames=self.background).fit(train, val)
         acc: dict = {}
         for r in list(train) + list(val):
             for e in event_matrices(r, keep=True):
