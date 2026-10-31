@@ -16,6 +16,7 @@
   const decode = (b64) => { const s = atob(b64), a = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) a[i] = s.charCodeAt(i); return a; };
   const nC = D.classes.length, nT = D.frames;
   const real = decode(D.real);
+  for (let r = 0; r < nC; r++) for (let q = 0; q < 14; q++) real[r * nT + q] = 1;   // the first seconds carry a normalisation edge
   const brains = {}; for (const k in D.brains) brains[k] = decode(D.brains[k].data);
   let current = Object.keys(D.brains)[0];
 
@@ -64,7 +65,7 @@
     ctx.fillStyle = "#060d10"; ctx.fillRect(0, 0, W, H);
     // horizontal: smooth (averages frames); vertical: crisp rows
     const mid = document.createElement("canvas"); mid.width = W; mid.height = nC;
-    const m = mid.getContext("2d"); m.imageSmoothingEnabled = true; m.imageSmoothingQuality = "high";
+    const m = mid.getContext("2d"); m.imageSmoothingEnabled = W < nT; m.imageSmoothingQuality = "high";
     m.drawImage(bm, 0, 0, W, nC);
     ctx.imageSmoothingEnabled = false;
     const shown = Math.round(W * progress);
@@ -123,6 +124,8 @@
     const p = document.createElement("span"); p.className = "p"; p.style.left = (st.frame / nT) * 100 + "%"; p.textContent = st.cls; p.title = `${st.cls} switched on at ${Math.round(st.frame * D.dt)} s`;
     lane.appendChild(p); return { p, f: st.frame / nT };
   });
+  const fitPokes = () => lane.classList.toggle("compact", lane.getBoundingClientRect().width / Math.max(1, D.stims.length) < 36);
+  fitPokes(); addEventListener("resize", fitPokes);
   showPokes = () => pokeEls.forEach((o) => o.p.classList.toggle("seen", o.f <= progress + 1e-6));
 
   // readout on hover

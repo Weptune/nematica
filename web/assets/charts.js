@@ -451,14 +451,14 @@
     const rows = (R.scorecard || []).filter((r) => r.metric === metric && r.fold === fold && r.median != null && SCORE_ROWS.includes(r.system));
     if (!rows.length) return;
     const b = rows[0];
-    const W = widthOf(host, 600), m = { l: 30, r: 30, t: 60, b: 56 }, H = 250;
+    const W = widthOf(host, 600), m = { l: 30, r: 30, t: 50, b: 56 }, H = 270;
     const s = svg(host, W, H, "Where every brain lands on one test, against the spread of distances between real worms");
     const vals = rows.map((r) => r.median).concat([b.p05, b.p95]);
     const lo = Math.floor((Math.min(...vals) - 0.02) * 20) / 20, hi = Math.ceil((Math.max(...vals) + 0.02) * 20) / 20;
     const x = lin(lo, hi, m.l, W - m.r), y0 = Math.round(m.t + 52);
     el("rect", { x: x(b.p05), y: y0 - 38, width: x(b.p95) - x(b.p05), height: 76, rx: 6, fill: C.liveTint }, s);
     vline(s, x(b.bio), y0 - 46, y0 + 46, { stroke: C.live, "stroke-width": 2 });
-    text(s, x(b.bio), y0 - 54, "median distance between two real worms", { "text-anchor": "middle", fill: C.live, "font-weight": 600, "font-size": 12.5 });
+    text(s, x(b.bio) + 8, y0 - 26, "median of two real worms", { fill: C.live, "font-weight": 600, "font-size": 12 });
     text(s, x(b.p05) + 8, y0 + 32, "5th percentile", { "font-size": 12, fill: C.live });
     text(s, x(b.p95) - 8, y0 + 32, "95th percentile", { "font-size": 12, fill: C.live, "text-anchor": "end" });
     hline(s, m.l, W - m.r, y0, { stroke: C.rule });
@@ -472,6 +472,12 @@
       glyph(g, cx, cy, r.verdict, 5.25);
       el("circle", { cx, cy, r: 9, class: "hit" }, g);
       hover(g, `<b>${longName(r.system)}</b>${row("Median distance", fmt(r.median, 3))}${row("Verdict", r.verdict)}`);
+      const call = { var3_spontaneous: "Linear brain learned from rest", [PASSER]: "Hybrid that passes the poke test" }[r.system];
+      if (call) {
+        const up = r.system === PASSER, ly = up ? y0 - 64 : y0 + 58, lx = cx + (up ? -18 : 18);
+        el("path", { d: `M${cx},${cy + (up ? -6 : 6)} L${cx},${up ? ly + 6 : ly - 13}`, stroke: C.ink3, "stroke-width": 1, fill: "none" }, s);
+        text(s, cx, up ? ly : ly, call, { "text-anchor": "middle", "font-size": 12, fill: C.ink, "font-weight": 600 });
+      }
     });
     for (let v = lo; v <= hi + 1e-9; v += 0.05) { vline(s, x(v), H - m.b - 6, H - m.b, { stroke: C.rule }); text(s, x(v), H - m.b + 14, fmt(v, 2), { "text-anchor": "middle" }); }
     text(s, (m.l + W - m.r) / 2, H - 12, `${LEVELS[metric]}: distance from real worms, held-out group ${fold + 1}`, { "text-anchor": "middle", fill: C.ink2, "font-size": 12.5 });

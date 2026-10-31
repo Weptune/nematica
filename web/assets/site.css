@@ -63,7 +63,8 @@
 }
 
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: 72px; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 76px; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body {
   margin: 0;
   background: var(--page);
@@ -551,3 +552,7 @@ footer.foot .big.filled { width: max-content; max-width: 100%; background-size: 
 .swarm-key i { width: 16px; height: 3px; border-radius: 2px; display: inline-block; }
 .swarm-key i.ring { width: 10px; height: 10px; border-radius: 50%; border: 1.2px solid #fff; background: none; }
 .swarm-note { line-height: 1.55; margin: 0; color: #7f9198; }
+[data-chart] { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+.finding .thumb[data-chart] { overflow: hidden; }
+.pokes .lane.compact .p { font-size: 0; }
+.pokes .lane.compact .p::after { margin-top: 0; }
