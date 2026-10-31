@@ -1,15 +1,30 @@
 # NEMATICA
 
-**A Turing test for artificial brains, starting with the worm.**
+**Real and artificial brains, neuron by neuron. We built artificial brains that pass for
+real. Then we poked them.**
 
-People are building digital nervous systems for *C. elegans* and the fruit fly, but there is
-no agreed way to say whether one is right. NEMATICA is that test. It scores an artificial
-worm brain against whole-brain recordings from real worms, level by level, using **how
-different real worms are from each other** as the unit of measurement. A model passes a
-level when it is as close to real worms as real worms are to each other: no closer, no
-further.
+People are building digital nervous systems, and one day someone will claim an artificial
+brain is a faithful copy of a real one. Nobody agrees how to check that claim. NEMATICA is
+the check, run on the only brain small enough to compare completely: *C. elegans*, 302
+neurons, every connection mapped, every neuron in its head imaged while it lives. An
+artificial brain is tested the way doctors test a brain that cannot speak: watched at
+rest, then perturbed, with the echo read using the same measures consciousness science
+uses on people (perturbational complexity). Every test is measured in units of **how
+different real worms are from each other**: a model passes when it is as close to real
+worms as real worms are to each other, no closer and no further.
 
-> Real worms are weird. Fake ones are average.
+> Real worms are weird. Fake ones are average. And a brain can look real at rest while
+> being wrong about cause and effect.
+
+The headline so far (arc 4): on the same 113 stimulated worms, a model fitted to their
+ongoing activity passes 5 of 6 activity tests in every held-out pool, yet its echoes to a
+single-neuron poke agree with real worms at about 0.01 (real worms agree with each other at
+about 0.10) and reach two to four times too much of the brain. No artificial brain tested,
+including published models built for this atlas, answers a poke like a real worm.
+
+Nothing here claims that a worm or a model is conscious; the question is whether artificial
+brains have the measurable properties that, in people, separate a responsive brain from
+an unresponsive one.
 
 ## What the project is
 
@@ -26,7 +41,7 @@ questions, one arc per question:
 | 1. Forecasting is not fidelity | Does the best forecaster make the most realistic worm? | No: forecasting-optimal models are too typical; realism needs each worm to keep its own dynamics. |
 | 2. Digital twins | Can a model be a particular worm? | Per-worm models pass all 10 pairwise levels on the copper set, and a classifier cannot tell them from the worms they imitate; on a second dataset (Atanas 2023) the classifier result replicates but the pairwise levels only partly do (5 to 6 of 10). |
 | 3. What the wiring buys | Does the real connectome make models more realistic? | Real wiring beats random wiring of the same density on every measure, by small margins; no wiring constraint beats data-chosen coupling at class resolution. |
-| 4. Causal Turing test | Do models respond to perturbations like real brains? | Started: the optogenetic atlas (Randi 2023, as packaged by Creamer et al. 2025) is in hand; design and expectations written before scoring. |
+| 4. Causal Turing test | Do models respond to perturbations like real brains? | No: models that pass the activity tests on the same worms answer single-neuron pokes wrongly (wrong neurons, two to four times too widespread), including the published atlas models. Perturbational complexity (the consciousness-science measure): real echoes are sparse and differentiated; published models' are wide and stereotyped. |
 | 5. Closed loop | Can a model brain drive a body in a real environment and behave like a worm? | Nearly: in the copper arena, all environment levels and 9 of 10 pairwise; copper's effect runs through ASH in real worms, and the model's ASH responds too slowly. |
 | 6. Swarm (in progress) | Does it hold when many model brains interact? | Swarm engine built (32 closed-loop worms, touch and exclusion as stated assumptions). Individual worms make very different crowds; a swarm of the pooled "average worm" is more crowded than a mix of the worms it was fitted on. Scoring against real multi-worm tracking (Level 7) awaits the data. |
 
