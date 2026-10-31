@@ -1445,6 +1445,14 @@ least 4 of 6 in at least 2 of 3 pools with the poke test still passed; for the s
 complexity inside in at least 2 of 3 pools. A brain that does all three (rest at least 5 of
 6, poke test, complexity) would be confirmed on a second frozen split before being claimed.
 
+Result for `hybrid_kernels_gru64ss` (pools 1 and 2; pool 3 and the quiet-stretch variant were
+stopped once the direction was clear): **worse, not better.** Free-running training makes the
+GRU's activity even slower (timescale 1.8 to 2.5 times real) and calmer than real (echo spread
+9 to 11%, now *below* real 16%, outside), rest 1 of 6, and complexity unchanged. Expectation
+not met. Trained to survive its own errors, the network learns to play it safe: smooth, slow
+activity. Getting a learned brain's ongoing dynamics right will need an objective that looks
+at the statistics the ruler checks (timescales, correlations), not only next-frame likelihood.
+
 **Signal or noise? (written before computing it).** A model can fail the poke test in two
 different ways: its *average* echo is wrong (it does not know the causal structure), or its
 average echo is right but each single echo is buried in the wrong kind of variability.
