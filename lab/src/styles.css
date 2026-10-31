@@ -83,3 +83,10 @@ input[type=range] { flex: 1; accent-color: var(--gcamp); }
 .which2 .vb.inside { color: var(--gcamp); border-color: rgba(93, 255, 138, 0.35); }
 .which2 .vb.too-typical { color: #f2c36b; border-color: rgba(242, 195, 107, 0.45); }
 .which2 .vb.outside { color: var(--warn); border-color: rgba(255, 154, 92, 0.5); }
+
+/* swarm view (arc 6) */
+.swarm { position: fixed; inset: 0; }
+.swarm-canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; }
+.swarm .controls input[type=range] { width: 260px; accent-color: var(--gcamp); }
+.linkish { background: none; border: none; color: var(--gcamp); font: inherit; cursor: pointer; padding: 0; text-decoration: underline; }
+.swarm .controls { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; }

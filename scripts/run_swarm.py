@@ -48,6 +48,11 @@ def main() -> int:
     ap.add_argument("--out", default="docs/figures")
     ap.add_argument("--seeds", type=int, default=3)
     ap.add_argument("--n", type=int, default=32)
+    ap.add_argument("--seed-start", type=int, default=0, help="first seed (clone mode runs one seed from here)")
+    ap.add_argument("--p-touch", type=float, default=None)
+    ap.add_argument("--contact-mm", type=float, default=None)
+    ap.add_argument("--fold", type=int, default=None, help="run only this rotation")
+    ap.add_argument("--tag", default="", help="suffix for output files")
     ap.add_argument("--clones", action="store_true",
                     help="also run one homogeneous swarm per training worm (32 copies of it), seed 0 only")
     args = ap.parse_args()
@@ -57,7 +62,14 @@ def main() -> int:
     folds = load_folds(args.folds)["folds"]
     radius = float(np.median([r.meta["arena"]["radius_mm"] for r in recs]))
     rows, worm_rows = [], []
+    kw = {}
+    if args.p_touch is not None:
+        kw["p_touch"] = args.p_touch
+    if args.contact_mm is not None:
+        kw["contact_mm"] = args.contact_mm
     for fi, pool_uids in enumerate(folds):
+        if args.fold is not None and fi != args.fold:
+            continue
         t0 = time.time()
         rest = sorted(u for f in folds if f is not pool_uids for u in f)
         val_uids = [rest[len(rest) // 3], rest[2 * len(rest) // 3]]
@@ -74,11 +86,11 @@ def main() -> int:
         if args.clones:
             swarms = {"twins": swarms["twins"], **{f"clone:{o}": [o] * args.n for o in m.names}}
         print(f"fold {fi}: {len(m.names)} training worms, fitted in {time.time() - t0:.0f} s", flush=True)
-        for seed in range(1 if args.clones else args.seeds):
+        for seed in range(args.seed_start, args.seed_start + (1 if args.clones else args.seeds)):
             for kind, origins in swarms.items():
                 for interact in (True, False):
                     rng = np.random.default_rng(10_000 * fi + 100 * seed + 7)   # same starts across conditions
-                    run = run_swarm(m, origins, template, lib, radius, t, rng, interact=interact)
+                    run = run_swarm(m, origins, template, lib, radius, t, rng, interact=interact, **kw)
                     row = {"fold": fi, "seed": seed, "swarm": kind, "interact": interact, **swarm_summary(run)}
                     rows.append(row)
                     pw = per_worm(run)
@@ -92,7 +104,7 @@ def main() -> int:
         print(f"fold {fi} done ({time.time() - t0:.0f} s)", flush=True)
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    stem = "swarm_clones" if args.clones else "swarm_twins_vs_average"
+    stem = ("swarm_clones" if args.clones else "swarm_twins_vs_average") + args.tag
     for name, data in ((f"{stem}.csv", rows), (f"{stem}_worms.csv", worm_rows)):
         with (out / name).open("w", newline="", encoding="utf-8") as fh:
             w = csv.DictWriter(fh, fieldnames=list(data[0]))

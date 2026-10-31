@@ -4,9 +4,12 @@ import { loadIndex, loadReplay } from './replay'
 import Scene from './Scene'
 import Overlay from './Overlay'
 import WhichReal from './WhichReal'
+import Swarm from './Swarm'
 
 export default function App() {
-  if (new URLSearchParams(location.search).get('mode') === 'which') return <WhichReal />
+  const mode = new URLSearchParams(location.search).get('mode')
+  if (mode === 'which') return <WhichReal />
+  if (mode === 'swarm') return <Swarm />
   return <Replay />
 }
 

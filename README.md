@@ -900,6 +900,13 @@ Against the expectations:
    the copper edge than the worms it was fitted on, so a swarm of it crowds the middle of
    the arena and meets more often.
 
+A caveat that applies to every copper number here: like the single closed-loop worm of arc
+5, these model worms spend far more time at and over the copper line than real worms (24%
+within 0.5 mm or beyond for twin swarms, against a median of 3% for real worms, who mostly
+turn back at the line). Swarm worms start uniformly over the arena, nearer the copper on
+average than real worms' starting points, which adds to it. So where a worm likes to be is
+partly the model's known copper miss, and the swarm results inherit it.
+
 The average worm is not a typical worm (arc 1's lesson, now at the scale of a crowd), so
 this experiment cannot yet say whether *diversity itself* changes the swarm or only the
 pooled model's bias does. That needs a control with no pooled model at all.
@@ -939,6 +946,18 @@ the twin swarm here is seed 0 of the first experiment, reproduced exactly):
 - Most of the twin-versus-average gap is the pooled model's bias: the average-worm swarm
   is more crowded than the mean clone swarm even without interactions (0.123 against 0.109).
 
+**More clone seeds (criterion written before the runs).** Seeds 1 and 2 of the clone
+experiment, merged with seed 0: the mixing effect under interactions counts as established
+if the twin swarm's contact and cluster fraction are both below the clone mean in at least
+8 of the 9 rotation-seeds; otherwise it is reported as not established.
+
+**Sensitivity to the assumed interaction rules (expectation written before the runs).**
+Twin and average swarms in one rotation (rotation 0, 2 seeds) with the touch probability
+at 0.1, 0.3 and 0.6 and the contact distance at 0.05, 0.1 and 0.2 mm, one changed at a
+time. Since the twins versus average gap is present even without interactions, it should
+survive every setting: twins below average in contact and cluster fraction in all 10 paired
+runs.
+
 So far, then: individuality matters at the swarm scale mostly additively, through each
 worm's own taste for where to be, and the "average worm" is a poor stand-in for a
 population, alone or in a crowd. Whether mixing adds a genuine collective effect under
@@ -974,6 +993,13 @@ behaviour levels are not scored. Rotating pools (`docs/figures/published_combine
   shuffled one on correlations (1.43 vs 1.56) and much more on dimensionality (2.92 vs
   4.04). The unconstrained model has the most realistic dimensionality.
 - c302 (OpenWorm) is not scored yet.
+
+## Swarm view (arc 6)
+
+`python scripts/export_swarm.py --data <copper folder> --folds configs/splits/copper2026_cv3.yaml`
+writes one twin swarm (rotation 0, interactions on) to `lab/public/data/swarm1/`; open the
+lab with `?mode=swarm` to watch 32 model worms from above, with reversals in orange, touches
+ringed, the copper shaded, and live counts. Click a worm to follow it.
 
 ## "Which one is real?" (prototype)
 

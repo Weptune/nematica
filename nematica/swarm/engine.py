@@ -42,6 +42,8 @@ class SwarmRun:
     origins: list            # which model each worm runs
     dt: float
     radius_mm: float
+    angles: np.ndarray | None = None   # (N, T, K) absolute segment angles (body posture)
+    length_mm: float = 1.0
 
 
 def average_worm(m: SensoryVAR, name: str = "__average__") -> str:
@@ -144,4 +146,5 @@ def run_swarm(m: SensoryVAR, origins: list, template, library, radius_mm: float,
         states=np.stack([a.states[:T] for a in agents]),
         touched=touched, blocked=blocked, density=density, links=links,
         dist=np.stack([a.dist[:T] for a in agents]),
-        origins=list(origins), dt=float(np.median(np.diff(t))), radius_mm=radius_mm)
+        origins=list(origins), dt=float(np.median(np.diff(t))), radius_mm=radius_mm,
+        angles=np.stack([a.angles[:T] for a in agents]), length_mm=float(library.length_mm))
