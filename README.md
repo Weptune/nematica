@@ -320,6 +320,23 @@ noise calibrated on training worms did not change occupancy (`calibrate_heading`
 is where arc 5 stands: the brain-behaviour model is complete at the pairwise levels in
 closed loop, and the open problem is the arena-scale distribution of where worms go.
 
+Further checks on one rotation (Oct 31): forward runs between reversals (median 12.6 vs
+11.4 s), straightness of forward crawling over 3, 10 and 20 s (0.92/0.86/0.84 vs
+0.89/0.83/0.82) and per-worm speed (now taken from the tracked plate position, per
+training worm, `stage_speed=True`) all match; real worms vary their speed from minute to
+minute about twice as much (coefficient of variation 0.12 vs 0.06), and neither shows
+dwelling epochs. None of this moves occupancy (29%).
+
+**A data caveat that limits this comparison.** In the copper set, the recorded distance
+to the copper centre and the distance computed from the tracked plate position disagree
+by -0.72 to +0.75 mm depending on the worm, and some tracked positions lie up to 1.6
+times the arena radius from its centre. Measured with the tracked position, real worms
+spend 9.1% of their time within 0.5 mm of copper, not 3.2%. The model (27 to 29%) is
+outside both, but arena-scale statistics, including the facing directions used for
+steering, are only as good as this geometry (about 0.7 mm). Resolving which position the
+recorded distance refers to (head, stage centre, camera offset) is the next step before
+tuning the arena behaviour further.
+
 ## Leaderboard: published models
 
 `nematica/systems/published.py`, `scripts/fetch_creamer_lds.py`, `scripts/run_published.py`.

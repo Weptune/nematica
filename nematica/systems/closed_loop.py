@@ -48,7 +48,8 @@ class SensoryVAR:
                  directional: bool = False, reversals: str = "hazard", speed_map: bool = False,
                  sense_scales=(SENSE_SCALE_MM,), per_worm_rates: bool = False,
                  sense_ridge_mults=(1.0,), steer: bool = False, steer_window: int = 17,
-                 copper_limit: bool = False, steer_scales=None, heading_noise: float = 0.0):
+                 copper_limit: bool = False, steer_scales=None, heading_noise: float = 0.0,
+                 stage_speed: bool = False):
         """hazard_from: "brain" (core classes and velocity), "speed" (velocity only) or "none"
         (constant rates); copper proximity is added to any of them when `senses` is on.
         directional: add proximity x facing-the-copper to the senses.
@@ -68,6 +69,8 @@ class SensoryVAR:
         self.steer_scales = tuple(steer_scales) if steer_scales else None
         self.steer_scale = None
         self.heading_noise = heading_noise
+        self.stage_speed = stage_speed
+        self.speed_q_worm: dict = {}
         self.d_limit = -np.inf
         self.offsets: dict = {}
         self.names: list = []
@@ -247,6 +250,21 @@ class SensoryVAR:
         vel = np.concatenate([s.behaviour["velocity"] for s in train])
         rv = np.concatenate([np.asarray(s.behaviour["reversing"]) > 0.5 for s in train])
         self.speed_q = (np.quantile(np.abs(vel[~rv]), grid), np.quantile(np.abs(vel[rv]), grid))
+        if self.stage_speed and all("stage_speed" in s.behaviour for s in train):
+            # speed of the tracked worm across the plate, per state, for each training worm
+            # shrunk toward the pool (weight n / (n + 500 frames)) [L]: worms differ in speed
+            sp = [np.asarray(s.behaviour["stage_speed"]) for s in train]
+            rvs = [np.asarray(s.behaviour["reversing"]) > 0.5 for s in train]
+            allv, allr = np.concatenate(sp), np.concatenate(rvs)
+            pooled = [np.quantile(allv[allr == st], grid) for st in (False, True)]
+            self.speed_q = tuple(pooled)
+            for s, v, r in zip(train, sp, rvs):
+                qs = []
+                for st, pq in zip((False, True), pooled):
+                    sel = v[r == st]
+                    w = len(sel) / (len(sel) + 500.0) if len(sel) >= 20 else 0.0
+                    qs.append(w * np.quantile(sel, grid) + (1 - w) * pq if w else pq)
+                self.speed_q_worm[s.origin] = tuple(qs)
         if self.senses:
             k = self.space.k
             n_rows = len(self._hz_rows()) + int(self._uses_drive)
@@ -445,6 +463,7 @@ class SensoryVAR:
         origin = self.names[which % len(self.names)]
         W, L = self.W[origin], self.L[origin]
         off = self.offsets.get(origin, (0.0, 0.0))
+        sq = self.speed_q_worm.get(origin, self.speed_q)
         sp = self.space
         k = sp.k
         bm, bs = sp.beh_mean, sp.beh_sd
@@ -490,7 +509,7 @@ class SensoryVAR:
             if self.speed_map:
                 from scipy.special import ndtr
                 u = float(ndtr(v[-2] if state == 0 else -v[-2]))
-                speed = float(np.interp(u, np.linspace(0.005, 0.995, 199), self.speed_q[state]))
+                speed = float(np.interp(u, np.linspace(0.005, 0.995, 199), sq[state]))
             else:
                 speed = abs(float(np.clip(v[-2] * bs[0] + bm[0], -0.4, 0.4)))
             vel = -speed if state == 1 else speed

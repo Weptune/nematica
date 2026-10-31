@@ -41,7 +41,9 @@ class BenchSample:
 def _arena_heading(rec) -> dict:
     """Whole-body orientation O (circular mean of segment angles), its change per frame
     ("turn", rad) and how directly the worm faces the copper ("facing_out", cosine between
-    facing and the outward arena normal; "facing_side", the sine of that angle). In the copper set the image frame is rotated 180
+    facing and the outward arena normal; "facing_side", the sine of that angle), and the
+    speed of the tracked worm across the plate ("stage_speed", mm/s; the recorded
+    "velocity" runs about 15% higher than this). In the copper set the image frame is rotated 180
     degrees from the stage frame, so the facing direction in stage coordinates is O itself:
     it matches the direction of travel during forward crawling (mean cosine 0.54 over
     worms, every worm > 0.26; O + pi gives -0.54) [M]."""
@@ -61,7 +63,10 @@ def _arena_heading(rec) -> dict:
     xy = np.asarray(post["stage_xy_mm"], float) - np.asarray(arena["center_mm"], float)
     normal = np.arctan2(xy[:, 1], xy[:, 0])
     turn = np.diff(O, append=O[-1])
-    return {"facing_out": np.cos(O - normal), "facing_side": np.sin(O - normal),
+    t = np.asarray(rec.t, float)
+    step = np.hypot(*np.diff(np.asarray(post["stage_xy_mm"], float), axis=0).T) / np.maximum(np.diff(t), 1e-6)
+    return {"stage_speed": np.append(step, step[-1]),
+            "facing_out": np.cos(O - normal), "facing_side": np.sin(O - normal),
             "turn": (turn + np.pi) % (2 * np.pi) - np.pi}
 
 
