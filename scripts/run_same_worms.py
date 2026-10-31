@@ -27,7 +27,7 @@ from nematica.bench.sample import BenchSample  # noqa: E402
 from nematica.data.canonical import zscore_rows  # noqa: E402
 from nematica.data.pumpprobe import load_pumpprobe_dir  # noqa: E402
 from nematica.data.splits import load_folds  # noqa: E402
-from nematica.systems.causal_models import ClassVAR, CreamerCausal, class_matrix  # noqa: E402
+from nematica.systems.causal_models import ClassVAR, CreamerCausal, HybridKernel, class_matrix  # noqa: E402
 
 ACTIVITY_LEVELS = ("L1.distribution", "L1.timescale", "L2.correlation", "L2.dimension", "L4.leadlag", "L4.dwell")
 
@@ -49,6 +49,9 @@ def bench_sample(rec, classes, name, origin, max_gap_frac: float = 0.05) -> Benc
 def make_model(spec: str):
     base, _, protocol = spec.partition("@")
     protocol = protocol or "clamp"
+    if base.startswith("hybrid_kernels"):
+        mask = base.replace("hybrid_kernels", "").strip("_") or None
+        return HybridKernel(mask=mask)
     if base.startswith("creamer2024_"):
         return CreamerCausal(base.replace("creamer2024_", ""), protocol=protocol)
     parts = base[3:].split("_")

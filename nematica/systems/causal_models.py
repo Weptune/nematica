@@ -309,3 +309,78 @@ class CreamerCausal:
         rows = [cell_of[nm] for nm in own]
         return PumpProbe(uid=rec.uid, x=out[rows], names=own, classes=[neuron_class(nm) for nm in own],
                          stims=stims_out, dt=rec.dt, all_stim_frames=list(rec.all_stim_frames))
+
+
+class HybridKernel:
+    """Two separately learned parts (arc 4, ingredient hunt):
+
+        ongoing dynamics   a VAR fitted on stimulation-free frames (what watching teaches)
+        causal kernels     for each pair of classes (i stimulated, j responding), the mean echo
+                           of j over the training worms' stimulations of i, in units of j's
+                           pre-stimulus fluctuations, shrunk toward zero with weight n / (n + 2)
+                           (what poking teaches) [L]
+
+    In simulation the VAR runs unstimulated; at each stimulation the stimulated class follows its
+    neuron's measured response and every other class receives its kernel (scaled to that class's
+    own fluctuation size in the simulation). `mask` restricts kernels to pairs allowed by a
+    wiring matrix (class_wiring: A[to, from]); None allows every pair."""
+
+    def __init__(self, lags: int = 3, shrink: float = 2.0, mask: str | None = None, seed: int = 0):
+        self.lags, self.shrink, self.mask, self.seed = lags, shrink, mask, seed
+        self.name = "hybrid_kernels" + (f"_{mask}" if mask else "")
+
+    def fit(self, train, val):
+        from ..bench.perturbational import event_matrices
+        self.var = ClassVAR(lags=self.lags, frames="spontaneous").fit(train, val)
+        acc: dict = {}
+        for r in list(train) + list(val):
+            for e in event_matrices(r, keep=True):
+                for c, row in zip(e["classes"], e["R"]):
+                    a = acc.setdefault((e["stim_class"], c), [np.zeros_like(row), 0])
+                    a[0] += np.nan_to_num(row)
+                    a[1] += 1
+        self.kernels = {k: s / (n + self.shrink) for k, (s, n) in acc.items()}
+        if self.mask:
+            from .wiring import class_wiring, shuffled_wiring
+            cls = sorted({c for k in self.kernels for c in k})
+            A = class_wiring(cls)
+            if self.mask == "shuffled":
+                A = shuffled_wiring(A, self.seed)
+            idx = {c: i for i, c in enumerate(cls)}
+            self.kernels = {k: v for k, v in self.kernels.items() if A[idx[k[1]], idx[k[0]]]}
+        self.info = {**self.var.info, "kernels": len(self.kernels)}
+        return self
+
+    def simulate(self, rec: PumpProbe, rng: np.random.Generator) -> PumpProbe:
+        from dataclasses import replace
+        npre, npost = window(rec.dt)
+        quiet = replace(rec, stims=[])
+        bg = self.var.simulate(quiet, rng)              # ongoing activity, no stimulation
+        x = bg.x.copy()
+        T = x.shape[1]
+        row = {c: i for i, c in enumerate(bg.classes)}
+        stims = [(k, f) for k, f in rec.stims if rec.classes[k] in row and f - npre >= 0 and f + npost <= T]
+        # each class's pre-stimulus fluctuation size in the simulation
+        devs = [[] for _ in range(len(x))]
+        for _, f in stims:
+            pre = x[:, f - npre:f]
+            d = pre - pre.mean(axis=1, keepdims=True)
+            for j in range(len(x)):
+                devs[j].append(d[j])
+        fl = np.array([np.std(np.concatenate(d)) if d else 1.0 for d in devs])
+        sd = np.nanstd(rec.x, axis=1)
+        out_stims = []
+        for k, f in stims:
+            ci = rec.classes[k]
+            i = row[ci]
+            if not sd[k] > 0:
+                continue
+            own = (rec.x[k, f:f + npost] - np.nanmean(rec.x[k, f - npre:f])) / sd[k]
+            x[i, f:f + npost] = x[i, f - 1] + np.nan_to_num(own) * np.std(x[i])
+            for cj, j in row.items():
+                h = self.kernels.get((ci, cj))
+                if h is not None and j != i:
+                    x[j, f:f + npost] += h[:npost] * fl[j]
+            out_stims.append((i, f))
+        return PumpProbe(uid=rec.uid, x=x, names=bg.names, classes=bg.classes, stims=out_stims, dt=rec.dt,
+                         all_stim_frames=list(rec.all_stim_frames))

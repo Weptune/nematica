@@ -1149,6 +1149,19 @@ inside in at least 2 of 3 pools *and* spread inside in at least 2 of 3. If somet
 it is then checked at rest too: a model that passes the poke test but fails at rest would
 be the mirror image of the headline.
 
+**D2. Watching plus poking (written before running).** If watching teaches the ongoing
+dynamics and only poking teaches cause and effect, a brain model may need both, learned
+separately. `hybrid_kernels`: the VAR fitted on stimulation-free frames supplies ongoing
+activity, and causal kernels learned from the training worms' stimulations (each pair's
+mean echo, shrunk toward zero when rarely measured) supply the echoes. Two anatomical
+versions test the wiring question with causal data: kernels allowed only between classes
+the connectome connects (`_connectome`), or only along a shuffled wiring of the same
+density (`_shuffled`). Expectations: the hybrid passes the poke test as defined above
+(pattern and spread inside in at least 2 of 3 pools) while keeping the VAR's rest score (5
+of 6); the connectome-restricted kernels beat the shuffled ones on pattern in every pool.
+If the hybrid passes, the lesson is constructive: a faithful brain copy needs two kinds of
+knowledge, and only one of them can be had by watching.
+
 **Signal or noise? (written before computing it).** A model can fail the poke test in two
 different ways: its *average* echo is wrong (it does not know the causal structure), or its
 average echo is right but each single echo is buried in the wrong kind of variability.
