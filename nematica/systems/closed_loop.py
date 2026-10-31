@@ -95,10 +95,23 @@ class SensoryVAR:
         n_core = self.space.core.size
         if self.hazard_from == "brain":
             return np.arange(n_core + 1)
-        if self.hazard_from in ("command", "command_fixed"):
+        if self.hazard_from in ("command", "command_fixed", "drive", "drive_fixed"):
             names = [self.space.classes[c] for c in self.space.core]
             return np.array([i for i, c in enumerate(names) if c in self.COMMAND] + [n_core])
         return np.array([n_core]) if self.hazard_from == "speed" else np.array([], dtype=int)
+
+    @property
+    def _uses_drive(self) -> bool:
+        return self.hazard_from in ("drive", "drive_fixed") and not getattr(self, "_no_drive", False)
+
+    def _hz_vec(self, v, rows, pred_next, e):
+        """Hazard inputs: [command neurons..., (brain's predicted reversal drive), senses..., 1]."""
+        parts = [v[rows]]
+        if self._uses_drive:
+            parts.append([pred_next])
+        if self.senses:
+            parts.append(e)
+        return np.concatenate(parts + [[1.0]])
 
     def _features(self, hist, e_prev):
         f = np.concatenate(hist[::-1])
@@ -113,6 +126,14 @@ class SensoryVAR:
             cur, nxt = st[:-1], st[1:]
             sel = cur == state
             cols = [v[self._hz_rows(), :-1]]
+            if self._uses_drive:
+                # the brain's own one-step prediction of its reversal channel for the next
+                # frame (that worm's fitted model; validation worms use the pooled one)
+                F = self._xy(s)[0]
+                w = self.W.get(s.origin, self.W_pool)[:, -1]
+                pred = np.zeros(v.shape[1])
+                pred[LAGS:] = F @ w
+                cols.append(pred[None, 1:])
             if self.senses:
                 cols.append(self._sense(s)[:, :-1])
             Xh.append(np.vstack(cols + [np.ones((1, len(cur)))])[:, sel].T)
@@ -122,14 +143,14 @@ class SensoryVAR:
     def _fit_hazards(self, train):
         """Reversal hazards: from forward, P(start next frame); from reversing, P(end next
         frame); logistic, pooled over training worms [L]."""
-        if self.hazard_from != "command_fixed" or not self.senses:
+        if self.hazard_from not in ("command_fixed", "drive_fixed") or not self.senses:
             return [_logistic_fit(*self._hazard_data(train, state), l2=10.0) for state in (0, 1)]
         # two stages: the copper effect as observed overall (senses only), then the command
         # neurons set the timing around it with the copper terms held fixed [A: the model
         # brain does not reproduce the copper -> command-neuron pathway, so a hazard that
         # routes copper through those neurons loses it]
         out = []
-        n_rows = len(self._hz_rows())
+        n_rows = len(self._hz_rows()) + int(self._uses_drive)
         for state in (0, 1):
             X, y = self._hazard_data(train, state)
             Xr, Xs, one = X[:, :n_rows], X[:, n_rows:-1], X[:, -1:]
@@ -142,6 +163,7 @@ class SensoryVAR:
         """Sense length scale: the candidate whose hazards best predict the validation worms'
         reversal starts and ends (log likelihood) [L]."""
         scores = {}
+        self._no_drive = True               # the brain is not fitted yet at this point
         for sc in self.sense_scales:
             self.scale = sc
             hz = self._fit_hazards(train)
@@ -152,6 +174,7 @@ class SensoryVAR:
                 ll += float(np.sum(y * np.log(p) + (1 - y) * np.log(1 - p)))
             scores[sc] = ll
         self.scale = max(scores, key=scores.get)
+        self._no_drive = False
         return scores
 
     def fit(self, train, val):
@@ -208,7 +231,10 @@ class SensoryVAR:
         self.speed_q = (np.quantile(np.abs(vel[~rv]), grid), np.quantile(np.abs(vel[rv]), grid))
         if self.senses:
             k = self.space.k
-            self.info["onset_logodds_senses"] = [round(float(c), 3) for c in self.hazard[0][len(self._hz_rows()):-1]]
+            n_rows = len(self._hz_rows()) + int(self._uses_drive)
+            self.info["onset_logodds_senses"] = [round(float(c), 3) for c in self.hazard[0][n_rows:-1]]
+            if self._uses_drive:
+                self.info["onset_logodds_drive"] = round(float(self.hazard[0][n_rows - 1]), 3)
         return self
 
     def _open_loop_drive(self, s: BenchSample, which: int, rng):
@@ -245,7 +271,8 @@ class SensoryVAR:
             v[-1] = z_rev[state]
             hist = hist[1:] + [v]
             states[i] = state
-            hz = np.concatenate([v[rows], e if self.senses else [], [1.0]]) @ self.hazard[state] + off[state]
+            pred = float(self._features(hist, e) @ W[:, -1]) if self._uses_drive else 0.0
+            hz = self._hz_vec(v, rows, pred, e) @ self.hazard[state] + off[state]
             if rng.random() < 1 / (1 + np.exp(-np.clip(hz, -30, 30))):
                 state = 1 - state
         return states
@@ -367,8 +394,8 @@ class SensoryVAR:
             rev = float(state)
             states[i] = state
             if not hyst:
-                hz = np.concatenate([v[self._hz_rows()], e if self.senses else [], [1.0]]) @ self.hazard[state] \
-                    + off[state]
+                pred = float(self._features(hist, e) @ W[:, -1]) if self._uses_drive else 0.0
+                hz = self._hz_vec(v, self._hz_rows(), pred, e) @ self.hazard[state] + off[state]
                 if rng.random() < 1 / (1 + np.exp(-np.clip(hz, -30, 30))):
                     state = 1 - state
             shape, turn = stepper.step(vel, vel_prev, rev, rev_prev)

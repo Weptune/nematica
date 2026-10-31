@@ -38,7 +38,7 @@ def main() -> int:
     ap.add_argument("--folds", required=True)
     ap.add_argument("--out", default="results/closed_loop")
     ap.add_argument("--seeds", type=int, default=2)
-    ap.add_argument("--variants", default="v2", choices=("v2", "v3", "v4"))
+    ap.add_argument("--variants", default="v2", choices=("v2", "v3", "v4", "v5"))
     args = ap.parse_args()
     recs = load_copper_dir(Path(args.data))
     classes = tuple(canonical_classes(recs, 0.25))
@@ -56,6 +56,10 @@ def main() -> int:
         variants = {"senses_rates": dict(senses=True, **v2, per_worm_rates=True),
                     "senses_command": dict(senses=True, **{**v2, "hazard_from": "command"}, per_worm_rates=True),
                     "blind_rates": dict(senses=False, **v2, per_worm_rates=True)}
+    if args.variants == "v5":
+        # v5: as v4, plus the brain's own predicted reversal drive in the hazard
+        variants = {"senses_drive_fixed": dict(senses=True, **{**v2, "hazard_from": "drive_fixed"},
+                                               per_worm_rates=True)}
     if args.variants == "v4":
         # v4: command neurons set reversal timing around a copper effect fitted first, alone
         variants = {"senses_command_fixed": dict(senses=True, **{**v2, "hazard_from": "command_fixed"},

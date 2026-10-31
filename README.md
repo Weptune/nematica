@@ -279,9 +279,26 @@ Why the model brain's command neurons miss copper: in the fitted brain, copper's
 effect on AVA, AIB and RIM is almost zero, but its steady-state effect through the brain's
 own dynamics is large and positive (AVA +0.68, AIB +0.74 SD at the copper line), and part
 of it flows through the brain's reversal channel (+0.34). In hazard mode that channel is
-overwritten by the discrete reversal state, which cuts the path. Next: let the reversal
-state be decided from the brain's own reversal channel plus the copper term, so the
-pathway stays intact.
+overwritten by the discrete reversal state, which cuts the path.
+
+**Version 5** adds the brain's own one-step prediction of its reversal channel to the
+hazard, so that path stays intact (`--variants v5`, `docs/figures/closed_loop_v5.csv`).
+Reversal statistics become very close to real (spread of per-worm onset rates, log SD
+0.15 vs 0.16; median bout 6.6 s vs 6.6 s on one rotation), but it is no better overall:
+9 of 10 pairwise (lead-lag just outside, 1.05), 30.8% near copper, occupancy outside.
+
+**What is still missing is avoidance at a distance.** Checked on the real worms:
+- Not speed or exploration: simulated worms move as far per minute as real ones (median
+  net displacement over 60 s 1.54 vs 1.44 mm).
+- Not an aversive memory: after touching copper, real worms reverse less, not more
+  (onset rate per forward frame 0.007 in the next 30 s, 0.038 after 5 minutes).
+- Real worms mostly never get there: 33 of 43 thousand frames come from periods with no
+  copper contact in the previous 5 minutes, with median distance to copper 2.1 mm, although
+  they move far enough to reach it. Simulated worms touch copper about five times as often.
+So the real avoidance acts before contact, and the reversal hazard measured near copper
+(at most 2.5 times the far rate) does not explain it. Open question; the next candidate is
+how heading changes with distance over tens of seconds (slow steering in a gradient),
+which frame-by-frame turning cannot show.
 
 ## Leaderboard: published models
 
