@@ -1361,6 +1361,25 @@ reproduce correlations), but *outside on complexity, above real worms*: linear G
 models driven by noise produce more irregular activity than real brains, whose activity is
 structured by discrete states (forward, reverse, turn). Repertoire: no strong prior.
 
+**Results on the copper dataset** (`scripts/run_mind.py`, `docs/figures/mind_copper.csv`):
+
+- Calibrations: 24 of 27 designed outcomes. The misses are all integration: shifting each
+  class in time independently lowers total correlation (0.71 to 0.58) but stays inside in 2
+  of 3 pools, and shuffling frames falls outside once. Real worms differ from each other a
+  lot on integration (median KS 0.5 to 0.6), so that level is coarse.
+- Real worms: complexity 0.97 to 0.99 (binarised activity is close to maximally complex at
+  60 s), total correlation 0.71 to 0.74 per class, about 3.6 bits of whole-brain state
+  repertoire (of 4 possible).
+- **The per-worm VARs that pass the ordinary activity levels also pass all three
+  consciousness-science signatures of ongoing activity**: VAR(3) inside on all three in every
+  pool, VAR(10) on 8 of 9 (integration slightly low in one pool). Expectation (complexity
+  outside, above real) not met: the models' ongoing activity is as complex, as integrated
+  and as varied in its global states as real worms' activity.
+
+This sharpens the headline rather than softening it: by every measure of *ongoing* activity
+used here, including the ones consciousness science uses, these artificial brains are
+indistinguishable from real worm brains, and the poke still shows they are wrong.
+
 ## Arc 6: from one brain to a swarm
 
 **Question.** Does the ruler's verdict hold when many model brains share one world? Real
