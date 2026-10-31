@@ -1,0 +1,21 @@
+system,metric,level,primary,distance_ratio,shift,shift_lo,shift_hi,self_spread_ratio,folds,verdict
+real_other_worms,L1.distribution,1,True,1.022,0.0025,-0.004,0.0067,1.017,inside/inside/inside,inside
+real_other_worms,L1.timescale,1,False,0.969,-0.0205,-0.1299,0.0345,0.983,inside/inside/inside,inside
+real_other_worms,L2.correlation,2,True,0.983,-0.0125,-0.0416,0.0282,0.985,inside/inside/inside,inside
+real_other_worms,L2.dimension,2,False,0.907,-0.0159,-0.0961,0.0262,0.965,inside/inside/inside,inside
+real_other_worms,L4.leadlag,4,True,0.978,-0.0158,-0.0495,0.0254,0.986,inside/inside/inside,inside
+real_other_worms,L4.dwell,4,False,0.985,-0.0066,-0.0615,0.0252,1.01,inside/inside/inside,inside
+real_other_worms,L5.encoding,5,True,0.983,-0.0083,-0.0508,0.0192,0.999,inside/inside/inside,inside
+real_other_worms,L5.reversal,5,False,0.974,-0.0093,-0.0444,0.0212,0.989,inside/inside/inside,inside
+real_other_worms,B.rev_rate,5,False,0.985,-0.009,-0.139,0.0404,1.041,inside/inside/inside,inside
+real_other_worms,B.rev_duration,5,False,0.977,-0.01,-0.0514,0.0405,0.995,inside/inside/inside,inside
+auto_calcium_hyst,L1.distribution,1,True,1.026,0.003,-0.0036,0.0071,0.891,inside/inside/inside,inside
+auto_calcium_hyst,L1.timescale,1,False,1.086,0.0561,-0.0688,0.1216,0.882,inside/outside/inside,inside
+auto_calcium_hyst,L2.correlation,2,True,1.02,0.0113,-0.0164,0.0502,1.055,inside/inside/inside,inside
+auto_calcium_hyst,L2.dimension,2,False,1.169,0.0248,-0.0537,0.0865,0.945,inside/inside/inside,inside
+auto_calcium_hyst,L4.leadlag,4,True,1.048,0.0325,-0.0068,0.0739,1.094,inside/inside/inside,inside
+auto_calcium_hyst,L4.dwell,4,False,1.049,0.0162,-0.0447,0.0565,0.956,inside/inside/inside,inside
+auto_calcium_hyst,L5.encoding,5,True,1.042,0.0113,-0.038,0.0331,1.129,inside/inside/inside,inside
+auto_calcium_hyst,L5.reversal,5,False,0.954,-0.0152,-0.0496,0.0123,0.936,inside/inside/inside,inside
+auto_calcium_hyst,B.rev_rate,5,False,0.987,-0.0053,-0.1322,0.0381,1.053,inside/inside/inside,inside
+auto_calcium_hyst,B.rev_duration,5,False,0.86,-0.045,-0.0853,-0.0053,0.756,inside/inside/inside,too typical

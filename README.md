@@ -11,11 +11,28 @@ further.
 
 > Real worms are weird. Fake ones are average.
 
-The first lesson was that models trained to forecast well come out "too typical": closer
-to every real worm than real worms are to each other, the average worm rather than a worm.
-The current best model is a set of digital individuals (one per training worm) that is
-indistinguishable from held-out real worms on all 10 pairwise levels and, for the first
-time, fools a cross-validated classifier in two of three held-out worm groups.
+## What the project is
+
+**One question: how do you know whether an artificial brain is right?** Digital nervous
+systems are usually judged by forecasting skill or by looking plausible. NEMATICA builds a
+better yardstick, the **ruler**: a set of levels (activity, correlations, timing,
+behaviour coupling, behaviour, environment, a classifier), each measured in units of
+worm-to-worm variation and each checked with deliberately broken calibration systems whose
+outcomes are written down before running. Everything else is that ruler applied to harder
+questions, one arc per question:
+
+| Arc | Question | Answer so far |
+|---|---|---|
+| 1. Forecasting is not fidelity | Does the best forecaster make the most realistic worm? | No: forecasting-optimal models are too typical; realism needs each worm to keep its own dynamics. |
+| 2. Digital twins | Can a model be a particular worm? | Per-worm models pass all 10 pairwise levels on the copper set, and a classifier cannot tell them from the worms they imitate; on a second dataset (Atanas 2023) the classifier result replicates but the pairwise levels only partly do (5 to 6 of 10). |
+| 3. What the wiring buys | Does the real connectome make models more realistic? | Real wiring beats random wiring of the same density on every measure, by small margins; no wiring constraint beats data-chosen coupling at class resolution. |
+| 4. Causal Turing test | Do models respond to perturbations like real brains? | Not started: needs the optogenetic atlas (Randi 2023, on OSF, not reachable from here). |
+| 5. Closed loop | Can a model brain drive a body in a real environment and behave like a worm? | Nearly: in the copper arena, all environment levels and 9 of 10 pairwise; copper's effect runs through ASH in real worms, and the model's ASH responds too slowly. |
+| 6. Swarm (next) | Does it hold when many model brains interact? | Proposed: a collective level of the same ruler, scored against real multi-worm tracking. |
+
+Outputs: the benchmark (calibrated levels, fair classifier test, a leaderboard of
+published models), the findings above with their pre-written expectations and negative
+results, and "Which one is real?", the public face of the same test.
 
 ## What is built
 
@@ -364,6 +381,27 @@ So longer memory makes the model much harder to detect in both datasets, but the
 10 of 10 on copper is partly specific to copper or to settings tuned on it. Next: choose
 the settings per rotation by in-sample realism on the training worms only, the same
 procedure on both datasets, and see whether that recovers the pairwise levels on Atanas.
+
+**Automatic settings. Design, written before running (Oct 31).** Per rotation, the memory
+length (3, 6 or 10 frames) and the per-worm shrinkage (100, 300 or 1000) are chosen by
+in-sample realism on that rotation's training worms only: each training worm's own model
+generates a sample on its own template, the ruler scores those samples against the
+training worms, and the criterion is the sum over all 10 pairwise metrics of
+|log(system median / real median)| plus 1 for every metric judged too typical
+(`scripts/run_auto.py`; no reference worm is used). The same procedure runs on both
+datasets' rotating pools. Expectations: on copper it should match the hand-chosen setting
+(VAR(10), shrinkage 300: 10 of 10); on Atanas it should recover some of the missing
+levels; if it picks settings that score worse on the reference pools than the hand-chosen
+ones, in-sample realism is a poor guide and that is reported.
+
+**Result** (`docs/figures/auto_copper_*.csv`, `auto_atanas_*.csv`): in-sample realism
+picks 10 frames of memory with shrinkage 100 in most rotations (3 frames in one rotation
+of each dataset; shrinkage 300 once). Copper: 9 of 10 (reversal bout lengths slightly too
+typical, 0.86), about as good as the hand-chosen setting. Atanas: 5 of 10, the same levels
+missing as with the copper settings (timescale 1.16, lead-lag 1.09, AVA bouts 1.19,
+dimensionality 1.50; reversal bouts too typical). So the Atanas misses are not a matter of
+settings; something about that dataset (behaviour labelling, session protocol, or the
+dynamics themselves) is not captured. That is now an open question for arc 2.
 
 ## Arc 3: what the wiring buys
 
