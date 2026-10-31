@@ -28,7 +28,7 @@ questions, one arc per question:
 | 3. What the wiring buys | Does the real connectome make models more realistic? | Real wiring beats random wiring of the same density on every measure, by small margins; no wiring constraint beats data-chosen coupling at class resolution. |
 | 4. Causal Turing test | Do models respond to perturbations like real brains? | Not started: needs the optogenetic atlas (Randi 2023, on OSF, not reachable from here). |
 | 5. Closed loop | Can a model brain drive a body in a real environment and behave like a worm? | Nearly: in the copper arena, all environment levels and 9 of 10 pairwise; copper's effect runs through ASH in real worms, and the model's ASH responds too slowly. |
-| 6. Swarm (next) | Does it hold when many model brains interact? | Proposed: a collective level of the same ruler, scored against real multi-worm tracking. |
+| 6. Swarm (in progress) | Does it hold when many model brains interact? | Swarm engine built (32 closed-loop worms, touch and exclusion as stated assumptions). Individual worms make very different crowds; a swarm of the pooled "average worm" is more crowded than any typical mix. Scoring against real multi-worm tracking (Level 7) awaits the data. |
 
 Outputs: the benchmark (calibrated levels, fair classifier test, a leaderboard of
 published models), the findings above with their pre-written expectations and negative
@@ -912,6 +912,38 @@ pass-through swarms, the mixed swarm has *less* contact than the average clone s
 geometry alone, when worms differ in where they like to be, two different worms overlap
 in space less than two copies of the same worm (the overlap of two densities is at most
 the mean of their self-overlaps).
+
+**Clone results** (`docs/figures/swarm_clones.csv`; 16 clone swarms per rotation, one seed;
+the twin swarm here is seed 0 of the first experiment, reproduced exactly):
+
+| | interactions | twins (mixed) | mean of clone swarms | range over clone swarms | average-worm swarm |
+|---|---|---|---|---|---|
+| time in contact | off | 0.106 | 0.109 | 0.062 to 0.187 | 0.123 |
+| time in contact | on | 0.053 | 0.060 | 0.039 to 0.097 | 0.067 |
+| fraction in a cluster | off | 0.303 | 0.308 | 0.203 to 0.465 | 0.345 |
+| fraction in a cluster | on | 0.205 | 0.226 | 0.150 to 0.327 | 0.247 |
+| nearest neighbour (mm) | on | 0.657 | 0.631 | 0.501 to 0.758 | 0.598 |
+| time near copper | on | 0.245 | 0.217 | 0.065 to 0.432 | 0.198 |
+
+- Individual worms make very different crowds: a swarm of one worm's copies can have three
+  times the contact of another's (0.062 to 0.187 without interactions). The model worms'
+  individuality is large at the scale of a swarm.
+- Without interactions the mixed swarm is the average of its members (contact 0.106
+  against 0.109; the difference changes sign across rotations). The geometric expectation
+  (mixed below clones) is not confirmed: if it holds, the effect is too small to see here.
+- With interactions the mixed swarm is less crowded than its members would be alone in
+  every rotation: less contact (-0.004, -0.006, -0.012), fewer worms in clusters (-0.013,
+  -0.013, -0.038), larger gaps and more time at the copper edge. A mixing effect that
+  appears only when worms react to each other. With one seed per clone this is suggestive,
+  not established (the contact gaps are one to three seed SDs); more seeds come next.
+- Most of the twin-versus-average gap is the pooled model's bias: the average-worm swarm
+  is more crowded than the mean clone swarm even without interactions (0.123 against 0.109).
+
+So far, then: individuality matters at the swarm scale mostly additively, through each
+worm's own taste for where to be, and the "average worm" is a poor stand-in for a
+population, alone or in a crowd. Whether mixing adds a genuine collective effect under
+interactions needs more seeds here, and then real multi-worm data to say whether real
+crowds behave like either.
 
 
 ## Leaderboard: published models
