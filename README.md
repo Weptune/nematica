@@ -189,6 +189,27 @@ python scripts/export_replay.py data/raw/doi_10_5061_dryad_w9ghx3g4v__v20260415 
 cd lab; npm install; npm run dev
 ```
 
+## Arc 5, first attempt: a worm that senses copper
+
+`nematica/systems/closed_loop.py`, `scripts/run_closed_loop.py`. The 8/8 brain model gets a
+copper-proximity input (fitted on training worms), reversals become discrete events whose
+rate rises near copper, and a motion-matched body moves the head, whose distance to copper
+feeds back into the brain. Simulated in each held-out worm's arena, over the three rotating
+pools, against the identical model blind to copper:
+
+- **It fails, and it is informative why.** Real worms spend 3.2% of their time within 0.5 mm
+  of the copper; the model worms spend 40% (blind: 46%) and often cross it. The training worms
+  reverse only about 1.5 times as often near copper as far from it, so more reversals is not
+  what keeps real worms inside: they steer away, and this model's steering is borrowed from
+  motion clips, not controlled by its brain. Brain-controlled steering is the next step.
+- **It exposed a gap in the ruler.** The encounter and approach metrics could not reject
+  even the copper-blind model in held-out pools of 9 worms (too few encounters per pool).
+  A new metric, `L6.occupancy` (pooled distribution of distance to copper), flags both
+  models as outside (96 and 98% of partitions) while all 8 designed Level 6 calibration
+  outcomes still match.
+- With reversals decided independently of the brain, two pairwise levels fail (lead-lag
+  and reversal encoding): 6 of 8 instead of 8.
+
 ## "Which one is real?" (prototype)
 
 Two worms crawl side by side on agar. One is a held-out real worm (body, path and brain

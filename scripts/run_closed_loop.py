@@ -1,0 +1,107 @@
+"""Closed loop in the copper arena (arc 5): does a model worm that senses copper respond to it
+like real worms? Scored at Level 6 (population test, held-out pools) and on the pairwise
+levels, against the identical model that is blind to copper.
+
+For each frozen rotation (configs/splits/copper2026_cv3.yaml): models and the motion library
+are fitted on the other worms; each held-out worm's arena (radius, starting distance) hosts
+`--seeds` simulated worms; Level 6 partitions are drawn within the held-out pool.
+
+Usage:
+  python scripts/run_closed_loop.py --data data/raw/doi_10_5061_dryad_w9ghx3g4v__v20260415 \
+      --folds configs/splits/copper2026_cv3.yaml [--out results/closed_loop]
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import sys
+import time
+from pathlib import Path
+
+import numpy as np
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from nematica.bench import build_reference, combine_folds, from_recording, score_system  # noqa: E402
+from nematica.bench.cv import print_table  # noqa: E402
+from nematica.bench.environment import environment_test_folds  # noqa: E402
+from nematica.data import load_copper_dir  # noqa: E402
+from nematica.data.canonical import canonical_classes  # noqa: E402
+from nematica.data.splits import load_folds  # noqa: E402
+from nematica.export.virtual_worm import MotionLibrary  # noqa: E402
+from nematica.systems.closed_loop import SensoryVAR  # noqa: E402
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--data", required=True)
+    ap.add_argument("--folds", required=True)
+    ap.add_argument("--out", default="results/closed_loop")
+    ap.add_argument("--seeds", type=int, default=2)
+    args = ap.parse_args()
+    recs = load_copper_dir(Path(args.data))
+    classes = tuple(canonical_classes(recs, 0.25))
+    by = {r.uid: r for r in recs}
+    folds = load_folds(args.folds)["folds"]
+    variants = {"senses": dict(senses=True, hazard_from="none"), "blind": dict(senses=False, hazard_from="none")}
+    pools = {v: [] for v in variants}
+    pair_rows = {v: [] for v in variants}
+    stats = {v: [] for v in variants}
+    for fi, pool_uids in enumerate(folds):
+        t0 = time.time()
+        rest = sorted(u for f in folds if f is not pool_uids for u in f)
+        val_uids = [rest[len(rest) // 3], rest[2 * len(rest) // 3]]
+        train_uids = [u for u in rest if u not in val_uids]
+        S = lambda uids: [from_recording(by[u], classes) for u in uids]  # noqa: E731
+        pool, train, val = S(pool_uids), S(train_uids), S(val_uids)
+        lib = MotionLibrary.from_recordings([by[u] for u in train_uids])
+        ref = build_reference(pool)
+        for vname, kw in variants.items():
+            m = SensoryVAR(**kw).fit(train, val)
+            built = {}
+            for i, (s, uid) in enumerate(zip(pool, pool_uids)):
+                r = by[uid]
+                sims = []
+                for seed in range(args.seeds):
+                    smp, _, _, _ = m.simulate(s, r.meta["arena"]["radius_mm"], float(r.behaviour["dist_from_center_mm"][0]),
+                                              lib, np.random.default_rng(1000 * seed + 31 * fi + i), seed * len(pool) + i, r.t)
+                    sims.append(smp)
+                    d = smp.behaviour["dist_to_boundary"]
+                    stats[vname].append({"near_or_beyond_0.5mm": float(np.mean(d < 0.5)), "beyond": float(np.mean(d < 0))})
+                built[uid] = sims
+            pools[vname].append((pool, lambda A, _rng, built=built: [x for s in A for x in built[s.origin]]))
+            all_sims = [x for v in built.values() for x in v]
+            rows = score_system(m.name, all_sims, pool, ref, return_boot=True)
+            pair_rows[vname].append(rows)
+        print(f"fold {fi} done ({time.time() - t0:.0f} s)", flush=True)
+
+    real_near = [float(np.mean(by[u].behaviour["dist_to_boundary_mm"] < 0.5)) for u in by]
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    rows_all = []
+    print(f"\nTime within 0.5 mm of copper or beyond it: real worms {100 * np.median(real_near):.1f}% (median)")
+    for vname in variants:
+        st = stats[vname]
+        print(f"  {vname}: {100 * np.median([x['near_or_beyond_0.5mm'] for x in st]):.1f}% "
+              f"(beyond the boundary {100 * np.median([x['beyond'] for x in st]):.1f}%)")
+    print("\nLevel 6 (environment, held-out pools combined):")
+    for vname in variants:
+        rows = environment_test_folds(pools[vname], f"closed_loop_{vname}", n_partitions=150)
+        rows_all += rows
+        print("  " + vname.ljust(8) + "  ".join(f"{r['metric']}: {r['verdict']} (share further {r.get('percentile_of_bio', '-')})" for r in rows))
+    print("\nPairwise levels (held-out pools combined):")
+    comb = []
+    for vname in variants:
+        comb += combine_folds(pair_rows[vname])
+    print_table(comb)
+    rows_all += comb
+    keys = list(dict.fromkeys(k for r in rows_all for k in r))
+    with (out / "closed_loop.csv").open("w", newline="", encoding="utf-8") as fh:
+        w = csv.DictWriter(fh, fieldnames=keys)
+        w.writeheader()
+        w.writerows(rows_all)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

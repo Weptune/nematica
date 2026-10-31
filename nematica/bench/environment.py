@@ -23,6 +23,9 @@ Metrics on pools of worms:
                 frame_shuffle calibration caught it).
     approach    reversal-onset rate in distance bands from the copper (0-0.5, 0.5-1, 1-2,
                 > 2 mm), as log ratio to the pool's overall rate. Distance = mean |difference|.
+    occupancy   pooled distribution of head distance to the copper; Wasserstein-1 in mm.
+                Added after encounter and approach failed to reject a copper-blind simulated
+                worm in held-out pools of 9 (too few encounters per pool to have power).
 
 Test (paired partitions): repeat many times: split the real worms at random into halves A
 and B; d_real = d(pool(real A), pool(real B)); d_sys = d(pool(system built on A), pool(real
@@ -138,28 +141,37 @@ def d_approach(pa: Sequence[BenchSample], pb: Sequence[BenchSample]) -> float:
     return float(np.mean(np.abs(a[ok] - b[ok]))) if ok.sum() >= 2 else np.nan
 
 
+def d_occupancy(pa: Sequence[BenchSample], pb: Sequence[BenchSample]) -> float:
+    """Where the worms spend their time: Wasserstein-1 distance (mm) between the pooled
+    distributions of head distance to the copper (clipped to -2..6 mm)."""
+    from scipy.stats import wasserstein_distance
+    da = [np.clip(s.behaviour["dist_to_boundary"], -2, 6) for s in pa if "dist_to_boundary" in s.behaviour]
+    db = [np.clip(s.behaviour["dist_to_boundary"], -2, 6) for s in pb if "dist_to_boundary" in s.behaviour]
+    if not da or not db:
+        return np.nan
+    return float(wasserstein_distance(np.concatenate(da), np.concatenate(db)))
+
+
 ENV_METRICS = {
     "L6.encounter": {"fn": d_encounter, "primary": True,
                      "what": "pooled neural response when the head meets the copper boundary"},
     "L6.approach": {"fn": d_approach, "primary": False,
                     "what": "how the reversal rate rises near the copper (pooled)"},
+    "L6.occupancy": {"fn": d_occupancy, "primary": True,
+                     "what": "where in the arena the worms spend their time (pooled distance to copper)"},
 }
 
 
-def environment_test(real: Sequence[BenchSample],
-                     system_for: Callable[[Sequence[BenchSample], np.random.Generator], Sequence[BenchSample]],
-                     name: str, n_partitions: int = 300, seed: int = 0) -> list[dict]:
-    """Paired-partition test of a system against real worms at every Level 6 metric.
-
-    system_for(real_half_A, rng) must return the system's samples built on those worms'
-    arenas (for a calibration: transformed copies; for a simulator: runs in those arenas).
-    """
+def environment_shifts(real: Sequence[BenchSample],
+                       system_for: Callable[[Sequence[BenchSample], np.random.Generator], Sequence[BenchSample]],
+                       n_partitions: int = 300, seed: int = 0):
+    """Per-partition (d_sys - d_real, d_real) for every Level 6 metric."""
     rng = np.random.default_rng(seed)
     real = [s for s in real if "dist_to_boundary" in s.behaviour]
-    if len(real) < 6:
-        return [{"system": name, "metric": m, "verdict": "not scored"} for m in ENV_METRICS]
     shifts = {m: [] for m in ENV_METRICS}
     d_real_all = {m: [] for m in ENV_METRICS}
+    if len(real) < 6:
+        return shifts, d_real_all
     for _ in range(n_partitions):
         perm = rng.permutation(len(real))
         A = [real[i] for i in perm[:len(real) // 2]]
@@ -170,6 +182,10 @@ def environment_test(real: Sequence[BenchSample],
             if np.isfinite(dr) and np.isfinite(ds):
                 shifts[m].append(ds - dr)
                 d_real_all[m].append(dr)
+    return shifts, d_real_all
+
+
+def environment_rows(name: str, shifts: dict, d_real_all: dict) -> list[dict]:
     rows = []
     for m, spec in ENV_METRICS.items():
         sh = np.array(shifts[m])
@@ -191,3 +207,28 @@ def environment_test(real: Sequence[BenchSample],
             "verdict": verdict,
         })
     return rows
+
+
+def environment_test(real: Sequence[BenchSample],
+                     system_for: Callable[[Sequence[BenchSample], np.random.Generator], Sequence[BenchSample]],
+                     name: str, n_partitions: int = 300, seed: int = 0) -> list[dict]:
+    """Paired-partition test of a system against real worms at every Level 6 metric.
+
+    system_for(real_half_A, rng) must return the system's samples built on those worms'
+    arenas (for a calibration: transformed copies; for a simulator: runs in those arenas).
+    """
+    return environment_rows(name, *environment_shifts(real, system_for, n_partitions, seed))
+
+
+def environment_test_folds(pools, name: str, n_partitions: int = 200, seed: int = 0) -> list[dict]:
+    """Level 6 for TRAINED systems: `pools` is a list of (held-out real worms, system_for),
+    one per rotation, where the system was fitted without those worms. Partitions are drawn
+    within each held-out pool and the shifts pooled across rotations."""
+    shifts = {m: [] for m in ENV_METRICS}
+    d_real_all = {m: [] for m in ENV_METRICS}
+    for k, (real, system_for) in enumerate(pools):
+        sh, dr = environment_shifts(real, system_for, n_partitions, seed + k)
+        for m in ENV_METRICS:
+            shifts[m] += sh[m]
+            d_real_all[m] += dr[m]
+    return environment_rows(name, shifts, d_real_all)

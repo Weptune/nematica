@@ -86,3 +86,23 @@ def test_motion_matched_body_follows_generated_behaviour():
     orient = np.angle(np.mean(np.exp(1j * ang), axis=1))
     turn = np.abs(np.angle(np.exp(1j * np.diff(orient))))
     assert np.percentile(turn, 95) < 0.6                      # no spinning with head sweeps
+
+
+@pytest.mark.skipif(not any(COPPER.glob("*-cudata.h5")), reason="copper files not present")
+def test_closed_loop_worm_runs_in_its_arena():
+    from nematica.bench import from_recording
+    from nematica.data.canonical import canonical_classes
+    from nematica.export.virtual_worm import MotionLibrary
+    from nematica.systems.closed_loop import SensoryVAR
+    recs = load_copper_dir(COPPER)[:7]
+    classes = tuple(canonical_classes(recs, 0.25))
+    S = [from_recording(r, classes) for r in recs]
+    lib = MotionLibrary.from_recordings(recs[:5])
+    m = SensoryVAR(senses=True, hazard_from="none").fit(S[:5], S[5:6])
+    r = recs[6]
+    smp, ang, path, cont = m.simulate(S[6], r.meta["arena"]["radius_mm"], 2.0, lib,
+                                      np.random.default_rng(0), 0, r.t, burn=50)
+    d = smp.behaviour["dist_to_boundary"]
+    assert len(d) == S[6].x.shape[1] and np.isfinite(d).all()
+    assert np.allclose(d, r.meta["arena"]["radius_mm"] - np.hypot(*path.T))
+    assert set(np.unique(smp.behaviour["reversing"])) <= {0.0, 1.0}

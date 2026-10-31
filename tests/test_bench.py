@@ -167,3 +167,12 @@ def test_combined_folds_separate_good_from_broken():
     assert g["L2.correlation"]["verdict"] == "inside"
     assert b["L1.timescale"]["verdict"] == "outside"
     assert b["L1.timescale"]["folds"] == "outside/outside/outside"
+
+
+def test_occupancy_separates_worms_that_stay_away_from_copper():
+    from nematica.bench.environment import d_occupancy
+    rng = np.random.default_rng(0)
+    mk = lambda mu: BenchSample("s", ("A",), np.zeros((1, 500)), DT, behaviour={  # noqa: E731
+        "dist_to_boundary": mu + 0.3 * rng.standard_normal(500)})
+    near, far = [mk(0.2) for _ in range(4)], [mk(2.0) for _ in range(4)]
+    assert d_occupancy(far, [mk(2.0) for _ in range(4)]) < 0.1 < d_occupancy(near, far)

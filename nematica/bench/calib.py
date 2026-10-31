@@ -98,8 +98,8 @@ EXPECTED = {
 
 # Level 6 (population-level environment test, environment.py), designed before running.
 EXPECTED_ENV = {
-    "independent_shift": {"L6.encounter": "outside", "L6.approach": "inside"},
-    "frame_shuffle": {"L6.encounter": "outside", "L6.approach": "either"},
-    "phase_randomised": {"L6.encounter": "either", "L6.approach": "either"},
-    "gaussian_noise": {"L6.encounter": "outside", "L6.approach": "inside"},
+    "independent_shift": {"L6.encounter": "outside", "L6.approach": "inside", "L6.occupancy": "inside"},
+    "frame_shuffle": {"L6.encounter": "outside", "L6.approach": "either", "L6.occupancy": "inside"},
+    "phase_randomised": {"L6.encounter": "either", "L6.approach": "either", "L6.occupancy": "either"},
+    "gaussian_noise": {"L6.encounter": "outside", "L6.approach": "inside", "L6.occupancy": "inside"},
 }

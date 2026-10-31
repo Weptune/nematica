@@ -46,6 +46,10 @@ def _features(vel, rev, v_scale, i):
                      1.5 * rev[i], 1.0 * rev[j3]])
 
 
+def _causal_features(v, v_prev, rev, rev_prev, v_scale):
+    return np.array([v / v_scale, v_prev / v_scale, 1.5 * rev, 1.0 * rev_prev])
+
+
 @dataclass
 class MotionLibrary:
     shapes: np.ndarray        # (N, K) segment angles relative to the whole-body orientation
@@ -55,12 +59,13 @@ class MotionLibrary:
     frame: np.ndarray         # (N,) frame index within the worm
     v_scale: float
     length_mm: float
+    cfeats: np.ndarray | None = None   # causal features (now and previous frame), for closed loops
 
     @classmethod
     def from_recordings(cls, recs) -> "MotionLibrary":
         vel_all = np.concatenate([r.behaviour["velocity"] for r in recs])
         v_scale = float(np.std(vel_all))
-        shapes, turn, feats, worm, frame, lengths = [], [], [], [], [], []
+        shapes, turn, feats, worm, frame, lengths, cfeats = [], [], [], [], [], [], []
         for wi, r in enumerate(recs):
             ang, length, good = _resample_posture(r.posture["segment_angle"])
             vel = r.behaviour["velocity"]
@@ -73,10 +78,11 @@ class MotionLibrary:
                 shapes.append(_wrap(ang[i] - orient[i]))
                 turn.append(_wrap(orient[i + 1] - orient[i]))
                 feats.append(_features(vel, rev, v_scale, i))
+                cfeats.append(_causal_features(vel[i], vel[max(i - 1, 0)], rev[i], rev[max(i - 1, 0)], v_scale))
                 worm.append(wi)
                 frame.append(i)
         return cls(np.array(shapes), np.array(turn), np.array(feats), np.array(worm), np.array(frame),
-                   v_scale, float(np.median(lengths)))
+                   v_scale, float(np.median(lengths)), np.array(cfeats))
 
     def synthesize(self, velocity: np.ndarray, reversing: np.ndarray, t: np.ndarray,
                    jump_cost: float = 1.5, pose_weight: float = 2.0, heading0: float = 0.0,
@@ -126,6 +132,44 @@ class MotionLibrary:
                 path[i + 1] = path[i] + velocity[i] * dt * np.array([np.cos(fwd), np.sin(fwd)])
                 H = H + self.turn[cur]
         return angles, path, continued / max(T - 1, 1)
+
+
+class MotionStepper:
+    """Motion matching one frame at a time, for closed loops where the future is unknown:
+    matches on current and previous velocity and reversal state, with the same pose
+    continuity and clip-continuation rules as MotionLibrary.synthesize."""
+
+    def __init__(self, lib: MotionLibrary, jump_cost: float = 1.5, pose_weight: float = 2.0, seed: int = 0):
+        self.lib, self.jump_cost, self.pose_weight = lib, jump_cost, pose_weight
+        self.tree = cKDTree(lib.cfeats)
+        self.pos_of = {(w, f): i for i, (w, f) in enumerate(zip(lib.worm, lib.frame))}
+        self.rng = np.random.default_rng(seed)
+        self.cur = None
+        self.continued = 0
+        self.steps = 0
+
+    def step(self, v, v_prev, rev, rev_prev):
+        lib = self.lib
+        f = _causal_features(v, v_prev, float(rev), float(rev_prev), lib.v_scale)
+        d, cand = self.tree.query(f, k=32)
+        cur = self.cur
+        nxt = None if cur is None else self.pos_of.get((int(lib.worm[cur]), int(lib.frame[cur]) + 1))
+        pose = np.zeros(len(cand)) if cur is None else np.mean(_wrap(lib.shapes[cand] - lib.shapes[cur]) ** 2, axis=1)
+        cost = d ** 2 + self.pose_weight * pose + 0.02 * self.rng.random(len(cand))
+        j = int(np.argmin(cost))
+        best = int(cand[j])
+        if nxt is not None:
+            c_next = float(np.sum((lib.cfeats[nxt] - f) ** 2)) \
+                + self.pose_weight * float(np.mean(_wrap(lib.shapes[nxt] - lib.shapes[cur]) ** 2))
+            if c_next <= cost[j] + self.jump_cost:
+                best = nxt
+                self.continued += 1
+        shape = lib.shapes[best]
+        if cur is not None and best != nxt:
+            shape = lib.shapes[cur] + 0.5 * _wrap(shape - lib.shapes[cur])
+        self.cur = best
+        self.steps += 1
+        return shape, float(lib.turn[best])
 
 
 def class_levels(sample_x: np.ndarray, classes, neurons, a: int, n: int) -> list:
