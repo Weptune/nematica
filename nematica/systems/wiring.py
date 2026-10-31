@@ -49,6 +49,12 @@ def class_wiring(classes, folder: Path = KUNERT) -> np.ndarray:
     return A
 
 
+def class_members_known(classes, folder: Path = KUNERT) -> np.ndarray:
+    """(n,) bool: whether each class has at least one member in the connectome."""
+    names = [str(n) for n in ast.literal_eval((folder / "neuron_names.txt").read_text())]
+    return np.array([bool(_members(names, c)) for c in classes])
+
+
 def shuffled_wiring(A: np.ndarray, seed: int) -> np.ndarray:
     """Same number of inputs per class (row), drawn uniformly from the other classes."""
     rng = np.random.default_rng(seed)

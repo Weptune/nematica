@@ -519,14 +519,32 @@ class HybridKernel:
                     a[1] += 1
         self.kernels = {k: s / (n + self.shrink) for k, (s, n) in acc.items()}
         if self.mask:
-            from .wiring import class_wiring, shuffled_wiring
+            from .wiring import class_wiring, class_members_known, shuffled_wiring
             cls = sorted({c for k in self.kernels for c in k})
             A = class_wiring(cls)
-            if self.mask == "shuffled":
-                A = shuffled_wiring(A, self.seed)
             idx = {c: i for i, c in enumerate(cls)}
-            self.kernels = {k: v for k, v in self.kernels.items() if A[idx[k[1]], idx[k[0]]]}
-        self.info = {**self.var.info, "kernels": len(self.kernels)}
+            if self.mask in ("connectome", "shuffled"):
+                if self.mask == "shuffled":
+                    A = shuffled_wiring(A, self.seed)
+                self.kernels = {k: v for k, v in self.kernels.items() if A[idx[k[1]], idx[k[0]]]}
+            else:
+                # links between classes that are both in the connectome but have no synapse or gap junction
+                known = class_members_known(cls)
+                wired = [k for k in self.kernels if k[0] != k[1] and known[idx[k[0]]] and known[idx[k[1]]] and A[idx[k[1]], idx[k[0]]]]
+                unwired = [k for k in self.kernels if k[0] != k[1] and known[idx[k[0]]] and known[idx[k[1]]] and not A[idx[k[1]], idx[k[0]]]]
+                if self.mask == "unwired":
+                    keep = unwired
+                elif self.mask == "unwiredn":            # as many unwired links as there are wired ones
+                    rng = np.random.default_rng(self.seed)
+                    keep = [unwired[i] for i in rng.choice(len(unwired), size=min(len(wired), len(unwired)), replace=False)]
+                elif self.mask == "known":              # wired and unwired, both classes in the connectome
+                    keep = wired + unwired
+                else:
+                    raise ValueError(f"unknown mask {self.mask}")
+                keep = set(keep)
+                self.kernels = {k: v for k, v in self.kernels.items() if k in keep}
+                self.info_mask = {"wired": len(wired), "unwired": len(unwired)}
+        self.info = {**self.var.info, "kernels": len(self.kernels), **getattr(self, "info_mask", {})}
         if self.individual and isinstance(self.var, ClassVAR):
             self.indiv = [self.var.individual(r) for r in train]
             self.info["individual_backgrounds"] = sum(m is not self.var for m in self.indiv)

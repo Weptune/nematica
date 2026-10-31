@@ -1569,6 +1569,48 @@ resolves a shortfall of about 0.1 in that correlation. On this scale the VAR mod
 to 0.20) is short by about 0.15, and the plain atlas average is too far the other way: a
 brain copy has to be right about cause and effect *and* as individual as a real worm.
 
+## Is the wiring diagram enough to copy a brain?
+
+Most attempts to build a whole-brain model start from the wiring diagram: the neurons and the
+synapses between them (OpenWorm for *C. elegans*; connectome-constrained models of the fly
+brain). The atlas lets us ask directly whether the wiring diagram is enough to build a brain
+copy that answers pokes correctly.
+
+**What the atlas says, before any model** (descriptive; class-level wiring from Kunert et al.
+2014, a link j to i counted as wired if any member of j makes a chemical synapse onto any
+member of i or they share a gap junction; 4,124 poked pairs measured in at least 3 of the 113
+worms, both classes in the connectome). 14.5% of pairs are wired. Among the pairs whose echo
+is reliable across worms (|t| > 3 over worms, 279 pairs), 16.1% are wired; among the most
+reliable (|t| > 4, 101 pairs), 19.8%. **The wiring diagram is barely enriched for the links
+that carry a real worm's echoes: 85% of the reliable echo, by size, travels between neuron
+classes that have no synapse or gap junction between them.** Nor are those unwired echoes
+explained by one intermediate neuron: 57.3% of reliable unwired pairs are two wired steps
+apart, the same as for unwired pairs in general (57.0%). This is consistent with the atlas
+authors' finding that signals often propagate where no wire exists (Randi et al. 2023); here
+it becomes a test of brain copies.
+
+**The model test (written before running).** The brain that passes the poke test
+(`hybrid_kernels_regimes_obsfit`: causal links learned from pokes, dynamics learned from
+watching, measurement noise, calm and active states) is rebuilt with its causal links
+restricted, everything else identical:
+
+| brain | causal links kept |
+|---|---|
+| `..._connectome_...` | only wired pairs |
+| `..._shuffled_...` | random wiring with each class's number of inputs kept |
+| `..._unwiredn_...` | as many links as the wired version, drawn at random from unwired pairs |
+| `..._unwired_...` | every unwired pair (both classes in the connectome), no wired ones |
+
+Scored on all eleven levels on both frozen splits (`pumpprobe_cv3`, `pumpprobe_cv3_blocks1`),
+responses in units of pre-stimulus fluctuations as for the ingredient hunt. Expectations:
+the full brain passes echo pattern in at least 2 of 3 pools on each split; the wired-only
+brain fails it (outside) in at least 2 of 3 on each split; so do the shuffled and the
+count-matched unwired brains, with the wired-only brain's echo agreement no more than 0.02
+above the count-matched unwired brain's (the wiring is barely better than random links);
+and the brain built only from unwired links passes echo pattern in at least 2 of 3 pools on
+each split. If the wired-only brain passes, the headline below will say the wiring diagram is
+enough at this resolution.
+
 ## Signatures of a mind: perturbational complexity
 
 Nobody can measure consciousness directly, and whether a worm experiences anything is an
