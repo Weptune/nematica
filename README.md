@@ -57,6 +57,7 @@ choice made on training and validation worms only, except where marked post hoc)
 | Closed loop v8 (10-frame brain) | 9 of 10 | not yet run | occupancy and approach inside; 11% near copper; encounter outside |
 | Closed loop v9 (copper acts only through ASH and the brain) | 8 of 10 | not yet run | **all three Level 6 metrics inside**; 10.4% near copper |
 | Closed loop v10 (v9 + tonic copper input) | 6 of 10 | not yet run | all three Level 6 inside; 25% near copper |
+| **Closed loop v11 (copper enters only through ASH)** | **9 of 10** | not yet run | **all three Level 6 inside**; 13% near copper |
 
 What these say:
 1. **Forecasting is not fidelity.** The model that forecasts best is too typical; letting
@@ -508,6 +509,20 @@ v9 passes all of Level 6 at 8 of 10 pairwise; v7, v8 and v9 with penalised weigh
 of 10 with two of three Level 6 metrics. This looks like a limit of linear dynamics with
 additive sensory input, a concrete target for a nonlinear sensory stage.
 
+**Version 11: copper enters the brain only through ASH** (`--variants v11`,
+`docs/figures/closed_loop_v11.csv`). The brain's copper weights (fast, change and tonic
+inputs) are constrained to ASH's row; every other neuron feels copper only through the
+brain's own dynamics [A: sensory neurons receive the stimulus], and reversals come from
+the command neurons and ASH with no direct copper term. Driven by real recorded copper,
+the model's ASH now rises by 1.11 near copper (real 1.37; v9 0.61, v10 0.90). Over the
+three pools: **9 of 10 pairwise and all three Level 6 metrics inside** (encounter 0.943,
+approach, occupancy), 13.0% of time near copper: the best combined result so far. The
+one miss is still lead-lag (1.08), now for the opposite reason: in closed loop the
+command neurons lead ASH (antisymmetric correlation at 6 s, AVE to ASH +0.138 against real
+-0.165), plausibly because reversals near copper back the worm off and the next approach
+raises ASH again, so ASH follows the commands instead of preceding them. Pattern
+correlation with real lead-lag falls to 0.77 (v7: 0.96).
+
 
 ## Leaderboard: published models
 
@@ -560,11 +575,11 @@ human viewers.
 
 
 **Copper version** (`python scripts/export_virtual_worms.py --closed-loop ...`, then open
-the lab at `?mode=which&set=which3`): the model worm is the v7 closed-loop worm, simulated
+the lab at `?mode=which&set=which3`): the model worm is the v11 closed-loop worm, simulated
 in the real worm's own copper arena (same radius, same starting distance), and both worms
 are shown inside their copper rings. Its brain senses the copper and decides when to
-reverse and where to steer; only body shapes are borrowed. The reveal shows the v7
-scorecard (9 of 10 pairwise; occupancy and approach inside).
+reverse and where to steer; only body shapes are borrowed. The reveal shows the v11
+scorecard (9 of 10 pairwise; all three Level 6 metrics inside).
 
 ## Rules that keep the benchmark honest
 

@@ -38,10 +38,12 @@ from nematica.systems.closed_loop import SensoryVAR  # noqa: E402
 from nematica.systems.forecasters import (CalciumStateSpace, Debounced, Forecaster,  # noqa: E402
                                           IndividualVAR, LagFeatures)
 
-V7 = dict(senses=True, hazard_from="command_fixed", directional=True, speed_map=True,
-          sense_scales=(0.25, 0.5, 1, 2, 4), per_worm_rates=True, steer=True, copper_limit=True,
-          steer_scales=(0.5, 1, 2, 4, 8), stage_speed=True)
-CL_LABEL = "closed loop v7: the brain model senses copper, decides reversals and steers its own body"
+V11 = dict(senses=True, hazard_from="command_ash", directional=True, speed_map=True,
+           sense_scales=(0.25, 0.5, 1, 2, 4), per_worm_rates=True, steer=True, copper_limit=True,
+           steer_scales=(0.5, 1, 2, 4, 8), stage_speed=True, sense_ridge_mults=(1.0, 0.1, 0.01, 0.0),
+           slow_taus=(0.0, 8.0, 25.0, 50.0), sense_targets=("ASH",))
+CL_LABEL = ("closed loop v11: copper reaches the brain only through ASH; the brain decides reversals "
+            "and steers its own body")
 
 MODEL_LABEL = "per-worm linear dynamics on the calcium drive (10 frames of memory), reversals read with hysteresis"
 METRIC_NAMES = {
@@ -74,7 +76,7 @@ def main() -> int:
     if args.closed_loop and args.out == "lab/public/data/which2":
         args.out = "lab/public/data/which3"
     if args.closed_loop and args.scorecard == "docs/figures/lags_combined.csv":
-        args.scorecard = "docs/figures/closed_loop_v7.csv"
+        args.scorecard = "docs/figures/closed_loop_v11.csv"
 
     recs = load_copper_dir(Path(args.data))
     split = load_split(args.split)
@@ -88,7 +90,7 @@ def main() -> int:
     library = MotionLibrary.from_recordings([by[u] for u in split["train"]])
     cl_runs = {}
     if args.closed_loop:
-        model = SensoryVAR(**V7).fit(train, val)
+        model = SensoryVAR(**V11).fit(train, val)
         model.calibrate_steering(train, [(by[u].meta["arena"]["radius_mm"], float(by[u].behaviour["dist_from_center_mm"][0]),
                                           by[u].t) for u in split["train"]], library,
                                  mults=(1, 2, 3, 4, 5, 6, 8, 12), target="drift")

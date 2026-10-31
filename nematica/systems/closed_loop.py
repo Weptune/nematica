@@ -56,7 +56,7 @@ class SensoryVAR:
                  sense_scales=(SENSE_SCALE_MM,), per_worm_rates: bool = False,
                  sense_ridge_mults=(1.0,), steer: bool = False, steer_window: int = 17,
                  copper_limit: bool = False, steer_scales=None, heading_noise: float = 0.0,
-                 stage_speed: bool = False, lags: int = LAGS, slow_taus=(0.0,)):
+                 stage_speed: bool = False, lags: int = LAGS, slow_taus=(0.0,), sense_targets=None):
         """hazard_from: "brain" (core classes and velocity), "speed" (velocity only) or "none"
         (constant rates); copper proximity is added to any of them when `senses` is on.
         directional: add proximity x facing-the-copper to the senses.
@@ -80,6 +80,9 @@ class SensoryVAR:
         self.lags = lags                       # memory of the brain model, frames
         self.slow_taus = tuple(slow_taus)      # candidate tonic-copper time constants, frames
         self.slow_tau = self.slow_taus[0]
+        # copper input only into these classes' rows (e.g. ("ASH",)): every other neuron gets
+        # copper only through the brain's own dynamics [A: sensory neurons receive the stimulus]
+        self.sense_targets = tuple(sense_targets) if sense_targets else None
         self.speed_q_worm: dict = {}
         self.d_limit = -np.inf
         self.offsets: dict = {}
@@ -92,7 +95,8 @@ class SensoryVAR:
         tail = ("_steer" if self.steer and self.senses else "") + ("_limit" if self.copper_limit and self.senses else "") \
             + (f"_lags{self.lags}" if self.lags != LAGS else "") \
             + ("_tonic" if any(t > 0 for t in self.slow_taus) and self.senses else "") \
-            + ("_pen" if self.sense_ridge_mults == (1.0,) and self.hazard_from == "command_ash" else "")
+            + ("_pen" if self.sense_ridge_mults == (1.0,) and self.hazard_from == "command_ash" else "") \
+            + ("_into_" + "_".join(self.sense_targets) if self.sense_targets and self.senses else "")
         if self.reversals == "hysteresis":
             return n + "_hyst" + ("_dir" if self.directional and self.senses else "")
         return n + ("" if self.hazard_from == "brain" else "_" + self.hazard_from) \
@@ -152,6 +156,29 @@ class SensoryVAR:
         return np.concatenate([f, e_prev]) if self.senses else f
 
     # ------------------------------------------------------------------ fit
+    def _sense_cols(self):
+        """Output columns allowed to receive copper input (None = all)."""
+        if not (self.senses and self.sense_targets):
+            return None
+        names = [self.space.classes[c] for c in self.space.core]
+        return np.array([i for i, c in enumerate(names) if c in self.sense_targets], dtype=int)
+
+    def _ridge(self, G, B, pen, n_brain, prior=None):
+        """Ridge solve (G + diag(pen)) W = B (+ diag(pen) prior), with copper rows of W zero
+        outside the target columns when sense_targets is set (column-separable)."""
+        P = np.diag(pen)
+        rhs = B if prior is None else B + P @ prior
+        W = np.linalg.solve(G + P, rhs)
+        cols = self._sense_cols()
+        if cols is None or n_brain >= G.shape[0]:
+            return W
+        other = np.setdiff1d(np.arange(B.shape[1]), cols)
+        Gb, Pb = G[:n_brain, :n_brain], P[:n_brain, :n_brain]
+        rb = B[:n_brain][:, other] if prior is None else B[:n_brain][:, other] + Pb @ prior[:n_brain][:, other]
+        W[:, other] = 0.0
+        W[:n_brain][:, other] = np.linalg.solve(Gb + Pb, rb)
+        return W
+
     def _hazard_data(self, samples, state):
         Xh, yh = [], []
         for s in samples:
@@ -236,7 +263,7 @@ class SensoryVAR:
                 pen = np.ones(X.shape[1])
                 pen[n_brain:] = mult
                 for r in self.ridges:
-                    W = np.linalg.solve(G0 + r * np.diag(pen), X.T @ Y)
+                    W = self._ridge(G0, X.T @ Y, r * pen, n_brain)
                     num = den = 0.0
                     for F, Yv, M in va:
                         P = F @ W
@@ -250,7 +277,7 @@ class SensoryVAR:
         self.W_pool = best[2]
         self.W, self.L, self.names = {}, {}, []
         for s, (F, Yt, M) in zip(train, tr):
-            W = np.linalg.solve(F.T @ F + self.lam * np.eye(F.shape[1]), F.T @ Yt + self.lam * self.W_pool)
+            W = self._ridge(F.T @ F, F.T @ Yt, self.lam * np.ones(F.shape[1]), n_brain, prior=self.W_pool)
             R = (Yt - F @ W) * M
             cov = R.T @ R / len(R) + 1e-6 * np.eye(R.shape[1])
             self.W[s.origin], self.L[s.origin] = W, np.linalg.cholesky(cov)

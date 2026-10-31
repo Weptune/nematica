@@ -1,0 +1,14 @@
+system,metric,level,primary,system_median,bio_median,shift,shift_lo,shift_hi,percentile_of_bio,n_partitions,verdict,distance_ratio,self_spread_ratio,folds
+closed_loop_senses_into_ash,L6.encounter,6,True,0.9966,0.5355,0.4329,-0.0106,0.8435,0.943,421,inside,,,
+closed_loop_senses_into_ash,L6.approach,6,False,0.2731,0.1975,0.0704,-0.1529,0.283,0.658,450,inside,,,
+closed_loop_senses_into_ash,L6.occupancy,6,True,0.3633,0.2401,0.1414,-0.1618,0.4237,0.816,450,inside,,,
+closed_loop_senses_command_ash_dir_steer_limit_tonic_into_ASH,L1.distribution,1,True,,,0.0034,-0.0036,0.0068,,,inside,1.029,0.884,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_tonic_into_ASH,L1.timescale,1,False,,,0.0898,-0.0374,0.1661,,,inside,1.137,0.719,inside/outside/inside
+closed_loop_senses_command_ash_dir_steer_limit_tonic_into_ASH,L2.correlation,2,True,,,-0.0067,-0.0362,0.0319,,,inside,0.991,0.994,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_tonic_into_ASH,L2.dimension,2,False,,,0.0641,-0.0327,0.1329,,,inside,1.4,0.822,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_tonic_into_ASH,L4.leadlag,4,True,,,0.0534,0.015,0.0931,,,outside,1.079,1.132,outside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_tonic_into_ASH,L4.dwell,4,False,,,0.0161,-0.0508,0.0539,,,inside,1.05,0.991,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_tonic_into_ASH,L5.encoding,5,True,,,0.0035,-0.0429,0.0299,,,inside,1.013,1.133,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_tonic_into_ASH,L5.reversal,5,False,,,-0.0194,-0.0502,0.0147,,,inside,0.938,0.936,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_tonic_into_ASH,B.rev_rate,5,False,,,0.1025,-0.061,0.193,,,inside,1.47,1.386,inside/inside/inside
+closed_loop_senses_command_ash_dir_steer_limit_tonic_into_ASH,B.rev_duration,5,False,,,0.004,-0.0458,0.0518,,,inside,1.022,0.858,inside/inside/inside
