@@ -421,6 +421,22 @@ Over three independent replicates (`--seed-offset 10`, `20`): time near copper 1
 inside (0.962, 0.974, 0.936: borderline); lead-lag outside every time (1.05 to 1.06: a
 small but consistent miss).
 
+**Version 8** gives the closed-loop worm the 10-frame brain that passes Level 8 open loop
+(`--variants v8`, `docs/figures/closed_loop_v8.csv`): time near copper 11.2% (best so
+far), occupancy and approach inside, but encounter now clearly outside (1.0) and lead-lag
+still 1.06 (9 of 10).
+
+**What the lead-lag miss is.** Averaged over worms, the closed loop reproduces who leads
+whom almost exactly (pattern correlation with real 0.96 at 1.8 and 6 s lags). The pairs
+that go wrong all involve ASH, the copper-sensing nociceptor: in real worms ASH leads the
+reversal command neurons by seconds (antisymmetric lagged correlation at 6 s: RIM -0.144,
+AVE -0.165, AVA -0.167), and in the closed loop that lead is roughly halved (-0.054,
+-0.074, -0.104). The reason is the design of v4 to v8: copper raises the reversal rate
+through a direct copper term in the hazard, not through ASH. The encounter miss (the
+brain's response when the head meets copper) points the same way. Next: route copper
+through ASH, so the sensory neuron, not a shortcut, carries the signal to the commands.
+
+
 ## Leaderboard: published models
 
 `nematica/systems/published.py`, `scripts/fetch_creamer_lds.py`, `scripts/run_published.py`.

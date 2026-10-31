@@ -39,7 +39,7 @@ def main() -> int:
     ap.add_argument("--out", default="results/closed_loop")
     ap.add_argument("--seeds", type=int, default=2)
     ap.add_argument("--seed-offset", type=int, default=0, help="shifts every simulation seed (replicates)")
-    ap.add_argument("--variants", default="v2", choices=("v2", "v3", "v4", "v5", "v6", "v7"))
+    ap.add_argument("--variants", default="v2", choices=("v2", "v3", "v4", "v5", "v6", "v7", "v8"))
     args = ap.parse_args()
     recs = load_copper_dir(Path(args.data))
     classes = tuple(canonical_classes(recs, 0.25))
@@ -76,6 +76,12 @@ def main() -> int:
                                                per_worm_rates=True, steer=True, copper_limit=True,
                                                steer_scales=(0.5, 1, 2, 4, 8), stage_speed=True,
                                                steer_target="drift")}
+    if args.variants == "v8":
+        # v8: v7 with 10 frames of brain memory (the open-loop model that passes Level 8)
+        variants = {"senses_steer_drift_lags10": dict(senses=True, **{**v2, "hazard_from": "command_fixed"},
+                                                      per_worm_rates=True, steer=True, copper_limit=True,
+                                                      steer_scales=(0.5, 1, 2, 4, 8), stage_speed=True,
+                                                      steer_target="drift", lags=10)}
     if args.variants == "v4":
         # v4: command neurons set reversal timing around a copper effect fitted first, alone
         variants = {"senses_command_fixed": dict(senses=True, **{**v2, "hazard_from": "command_fixed"},

@@ -49,7 +49,7 @@ class SensoryVAR:
                  sense_scales=(SENSE_SCALE_MM,), per_worm_rates: bool = False,
                  sense_ridge_mults=(1.0,), steer: bool = False, steer_window: int = 17,
                  copper_limit: bool = False, steer_scales=None, heading_noise: float = 0.0,
-                 stage_speed: bool = False):
+                 stage_speed: bool = False, lags: int = LAGS):
         """hazard_from: "brain" (core classes and velocity), "speed" (velocity only) or "none"
         (constant rates); copper proximity is added to any of them when `senses` is on.
         directional: add proximity x facing-the-copper to the senses.
@@ -70,6 +70,7 @@ class SensoryVAR:
         self.steer_scale = None
         self.heading_noise = heading_noise
         self.stage_speed = stage_speed
+        self.lags = lags                       # memory of the brain model, frames
         self.speed_q_worm: dict = {}
         self.d_limit = -np.inf
         self.offsets: dict = {}
@@ -79,7 +80,8 @@ class SensoryVAR:
     @property
     def name(self) -> str:
         n = "closed_loop_" + ("senses" if self.senses else "blind")
-        tail = ("_steer" if self.steer and self.senses else "") + ("_limit" if self.copper_limit and self.senses else "")
+        tail = ("_steer" if self.steer and self.senses else "") + ("_limit" if self.copper_limit and self.senses else "") \
+            + (f"_lags{self.lags}" if self.lags != LAGS else "")
         if self.reversals == "hysteresis":
             return n + "_hyst" + ("_dir" if self.directional and self.senses else "")
         return n + ("" if self.hazard_from == "brain" else "_" + self.hazard_from) \
@@ -93,12 +95,12 @@ class SensoryVAR:
     def _xy(self, s: BenchSample):
         v, mask = self.space.encode(s)
         T = v.shape[1]
-        cols = [v[:, LAGS - 1 - l: T - 1 - l].T for l in range(LAGS)]
+        cols = [v[:, self.lags - 1 - l: T - 1 - l].T for l in range(self.lags)]
         if self.senses:
             e = self._sense(s)
-            cols.append(e[:, LAGS - 1: T - 1].T)
+            cols.append(e[:, self.lags - 1: T - 1].T)
         F = np.hstack(cols)
-        Y = v[:, LAGS:].T
+        Y = v[:, self.lags:].T
         return F, Y, np.broadcast_to(mask, Y.shape)
 
     COMMAND = ("AVA", "AVE", "AIB", "RIM", "AVB", "RIB")
@@ -144,7 +146,7 @@ class SensoryVAR:
                 F = self._xy(s)[0]
                 w = self.W.get(s.origin, self.W_pool)[:, -1]
                 pred = np.zeros(v.shape[1])
-                pred[LAGS:] = F @ w
+                pred[self.lags:] = F @ w
                 cols.append(pred[None, 1:])
             if self.senses:
                 cols.append(self._sense(s)[:, :-1])
@@ -198,7 +200,7 @@ class SensoryVAR:
         X = np.vstack([a[0] for a in tr])
         Y = np.vstack([a[1] for a in tr])
         G0 = X.T @ X
-        n_brain = self.space.k * LAGS
+        n_brain = self.space.k * self.lags
         best = None
         # the copper inputs may get their own (smaller) penalty: one ridge for everything
         # shrinks the few sensory weights as hard as the many neural ones [L: chosen on
@@ -279,7 +281,7 @@ class SensoryVAR:
         W, L = self.W[self.names[which]], self.L[self.names[which]]
         k = self.space.k
         e_all = self._sense(s) if self.senses else None
-        hist = [np.zeros(k) for _ in range(LAGS)]
+        hist = [np.zeros(k) for _ in range(self.lags)]
         out = np.empty(s.x.shape[1])
         for i in range(s.x.shape[1]):
             f = self._features(hist, e_all[:, max(i - 1, 0)]) if self.senses else self._features(hist, None)
@@ -398,7 +400,7 @@ class SensoryVAR:
         bm, bs = self.space.beh_mean, self.space.beh_sd
         z_rev = [(0 - bm[1]) / bs[1], (1 - bm[1]) / bs[1]]
         e_all = self._sense(s) if self.senses else None
-        hist = [np.zeros(k) for _ in range(LAGS)]
+        hist = [np.zeros(k) for _ in range(self.lags)]
         T = s.x.shape[1]
         states = np.zeros(T)
         state = 0
@@ -490,7 +492,7 @@ class SensoryVAR:
         phi = rng.uniform(0, 2 * np.pi)
         head = start_dist_mm * np.array([np.cos(phi), np.sin(phi)])
         H = rng.uniform(0, 2 * np.pi)
-        hist = [np.zeros(k) for _ in range(LAGS)]
+        hist = [np.zeros(k) for _ in range(self.lags)]
         d_prev = d_now = arena_radius_mm - np.hypot(*head)
         facing = lambda: float(np.cos(H + np.pi - np.arctan2(head[1], head[0])))  # noqa: E731
         fo = np.array([facing(), facing()]) if self.directional else None
