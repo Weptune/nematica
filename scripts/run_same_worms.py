@@ -52,13 +52,13 @@ def make_model(spec: str):
     if base.startswith("hybrid_kernels"):
         parts = [p for p in base.replace("hybrid_kernels", "").split("_") if p]
         bg = next((p[2:] for p in parts if p.startswith("bg")), "spontaneous")
-        mask = next((p for p in parts if not p.startswith("bg") and p not in ("obs", "heavy", "regimes", "obsfit", "classquiet", "quietfit", "quietobsfit") and not p.startswith("lowrank") and not p.startswith("smooth")), None)
+        mask = next((p for p in parts if not p.startswith("bg") and p not in ("obs", "heavy", "regimes", "obsfit", "classquiet", "quietfit", "quietobsfit", "indiv") and not p.startswith("lowrank") and not p.startswith("smooth")), None)
         return HybridKernel(mask=mask, background=bg, obs_noise="obs" in parts, heavy="heavy" in parts,
                             regimes="regimes" in parts, obs_fit="obsfit" in parts,
                             lowrank=next((int(p[7:]) for p in parts if p.startswith("lowrank")), 0),
                             obs_smooth=next((float(p[6:]) for p in parts if p.startswith("smooth")), 0.0),
                             class_quiet="classquiet" in parts, quiet_fit="quietfit" in parts,
-                            quiet_obs_fit="quietobsfit" in parts)
+                            quiet_obs_fit="quietobsfit" in parts, individual="indiv" in parts)
     if base.startswith("creamer2024_"):
         return CreamerCausal(base.replace("creamer2024_", ""), protocol=protocol)
     parts = base[3:].split("_")

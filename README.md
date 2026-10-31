@@ -1399,6 +1399,14 @@ is the next target, together with individual backgrounds (each simulated worm it
 dynamics), which the copper data showed is what makes a brain model look like a particular
 worm rather than an average one.
 
+**Individual backgrounds (written before running).** `hybrid_kernels_regimes_obsfit_indiv`:
+the passing hybrid, but each simulated worm's ongoing dynamics come from one training worm's
+own VAR (its stimulation-free frames, shrunk toward the pooled VAR with weight 300, as the
+per-worm models that pass all 10 levels on the copper data), chosen by worm. Calibrations
+(regimes, measurement noise) as before, on the pooled background. Expectation: correlations
+are no longer too typical, rest reaches at least 5 of 6 in at least 2 of 3 pools, and the
+poke test is still passed (pattern and spread inside in at least 2 of 3).
+
 **Signal or noise? (written before computing it).** A model can fail the poke test in two
 different ways: its *average* echo is wrong (it does not know the causal structure), or its
 average echo is right but each single echo is buried in the wrong kind of variability.

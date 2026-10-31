@@ -94,7 +94,8 @@ class ClassVAR:
             Ys.append(z[:, ts].T)
         return np.vstack(Xs), np.vstack(Ys)
 
-    def _solve(self, X, Y, lam):
+    def _solve(self, X, Y, lam, prior: np.ndarray | None = None):
+        """Ridge per target; with `prior`, shrink toward it instead of toward zero."""
         W = np.zeros((X.shape[1], Y.shape[1]))
         C = Y.shape[1]
         for j in range(C):
@@ -113,8 +114,22 @@ class ClassVAR:
                 continue
             pen = np.full(len(cols), lam)
             pen[-1] = 0.0
-            W[cols, j] = np.linalg.solve(Xm.T @ Xm + np.diag(pen), Xm.T @ Y[m, j])
+            rhs = Xm.T @ Y[m, j] + (pen * prior[cols, j] if prior is not None else 0.0)
+            W[cols, j] = np.linalg.solve(Xm.T @ Xm + np.diag(pen), rhs)
         return W
+
+    def individual(self, rec: PumpProbe, lam: float = 300.0) -> "ClassVAR":
+        """A copy fitted on one worm's frames, shrunk toward this (pooled) model [L]."""
+        import copy
+        m = copy.copy(self)
+        X, Y = self._design([rec])
+        if X.shape[0] < 100:
+            return self
+        m.W = self._solve(X, Y, lam, prior=self.W)
+        R = Y - X @ m.W
+        sd = np.sqrt(np.nanmean(R ** 2, axis=0))
+        m.noise_sd = np.where(np.isfinite(sd) & (sd > 0), sd, self.noise_sd)
+        return m
 
     def fit(self, train, val):
         from collections import Counter
@@ -350,7 +365,8 @@ class HybridKernel:
     def __init__(self, lags: int = 3, shrink: float = 2.0, mask: str | None = None, seed: int = 0,
                  background: str = "spontaneous", obs_noise: bool = False, heavy: bool = False,
                  regimes: bool = False, obs_fit: bool = False, lowrank: int = 0, obs_smooth: float = 0.0,
-                 class_quiet: bool = False, quiet_fit: bool = False, quiet_obs_fit: bool = False):
+                 class_quiet: bool = False, quiet_fit: bool = False, quiet_obs_fit: bool = False,
+                 individual: bool = False):
         self.lags, self.shrink, self.mask, self.seed = lags, shrink, mask, seed
         self.background = background     # which frames the ongoing-dynamics VAR learns from
         self.obs_noise = obs_noise       # split each class's variability into slow dynamics and
@@ -366,6 +382,9 @@ class HybridKernel:
                                          # training worms (_quiet_shares) [L]; dwell 60 frames [A]
         self.quiet_share = None
         self.quiet_obs_fit = quiet_obs_fit   # the same, jointly with a measurement-noise share
+        self.individual = individual     # each simulated worm's background is one training worm's
+                                         # own VAR, shrunk toward the pooled one (lambda 300) [L]
+        self.indiv = []
         self.quiet_fit = quiet_fit       # per-class quiet strength calibrated on training worms to
                                          # match their echo structure at random moments [L]
         self.obs_fit = obs_fit           # measurement-noise share chosen on training worms so that
@@ -373,7 +392,7 @@ class HybridKernel:
         self.name = ("hybrid_kernels" + (f"_{mask}" if mask else "") + ("" if background == "spontaneous" else f"_bg{background}")
                      + ("_obs" if obs_noise else "") + ("_heavy" if heavy else "") + ("_regimes" if regimes else "")
                      + ("_obsfit" if obs_fit else "") + (f"_lowrank{lowrank}" if lowrank else "")
-                     + (f"_smooth{obs_smooth:g}" if obs_smooth else "") + ("_classquiet" if class_quiet else "") + ("_quietfit" if quiet_fit else "") + ("_quietobsfit" if quiet_obs_fit else ""))
+                     + (f"_smooth{obs_smooth:g}" if obs_smooth else "") + ("_classquiet" if class_quiet else "") + ("_quietfit" if quiet_fit else "") + ("_quietobsfit" if quiet_obs_fit else "") + ("_indiv" if individual else ""))
 
     def _gain(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """A two-state Markov chain (quiet, active) with the calibrated share of quiet time and
@@ -504,6 +523,9 @@ class HybridKernel:
             idx = {c: i for i, c in enumerate(cls)}
             self.kernels = {k: v for k, v in self.kernels.items() if A[idx[k[1]], idx[k[0]]]}
         self.info = {**self.var.info, "kernels": len(self.kernels)}
+        if self.individual and isinstance(self.var, ClassVAR):
+            self.indiv = [self.var.individual(r) for r in train]
+            self.info["individual_backgrounds"] = sum(m is not self.var for m in self.indiv)
         if self.class_quiet or self.quiet_fit or self.quiet_obs_fit:
             self.quiet_share = self._quiet_shares(list(train) + list(val), self.var.classes)
             self.info["median_quiet_share"] = round(float(np.median(self.quiet_share)), 3)
@@ -596,18 +618,22 @@ class HybridKernel:
         from dataclasses import replace
         npre, npost = window(rec.dt)
         quiet = replace(rec, stims=[])
+        var = self.var
+        if self.indiv:
+            # a fixed training worm for each simulated worm (by uid), so repeats are the same individual
+            var = self.indiv[int.from_bytes(rec.uid.encode(), "little") % len(self.indiv)]
         gain = self._gain(quiet.n_frames + 200, rng) if self.regime else None
         qmask = self._quiet_mask(quiet.n_frames + 200, rng) if self.quiet_share is not None else None
         kw = {"quiet": qmask} if qmask is not None else {}
         if self.obs_noise:
             # dynamics driven only by the non-measurement part of the residuals; the measurement
             # part is added afterwards as white noise of the same total size [A]
-            keep = self.var.noise_sd.copy()
-            self.var.noise_sd = keep * np.sqrt(1 - self.noise_frac)
-            bg = self.var.simulate(quiet, rng, noise_gain=gain, **kw)
-            self.var.noise_sd = keep
+            keep = var.noise_sd.copy()
+            var.noise_sd = keep * np.sqrt(1 - self.noise_frac)
+            bg = var.simulate(quiet, rng, noise_gain=gain, **kw)
+            var.noise_sd = keep
         else:
-            bg = self.var.simulate(quiet, rng, noise_gain=gain, **kw)   # ongoing activity, no stimulation
+            bg = var.simulate(quiet, rng, noise_gain=gain, **kw)   # ongoing activity, no stimulation
         x = bg.x.copy()
         if self.obs_noise:
             ci = {c: i for i, c in enumerate(self.var.classes)}
