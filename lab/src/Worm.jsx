@@ -38,8 +38,9 @@ const fragment = /* glsl */ `
 `
 
 // Solves the body for the current time (runs first each frame) and draws it.
-export default function Worm({ body }) {
-  const replay = useLab((s) => s.replay)
+export default function Worm({ body, replay: given }) {
+  const stored = useLab((s) => s.replay)
+  const replay = given ?? stored
   const n = body.n
 
   const geometry = useMemo(() => {

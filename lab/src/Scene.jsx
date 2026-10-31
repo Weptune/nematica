@@ -11,7 +11,7 @@ import Neurons from './Neurons'
 import Arena from './Arena'
 
 // Advances time while playing (one place, so everything stays in sync).
-function Clock() {
+export function Clock() {
   useFrame((_, dt) => {
     const s = useLab.getState()
     if (!s.playing || !s.replay) return
@@ -23,7 +23,7 @@ function Clock() {
 }
 
 // Tracking-microscope camera: follows the head smoothly; the user can still orbit and zoom.
-function FollowHead({ body }) {
+export function FollowHead({ body, zoom = 1 }) {
   const controls = useRef()
   const { camera } = useThree()
   const target = useMemo(() => new THREE.Vector3(), [])
@@ -38,7 +38,7 @@ function FollowHead({ body }) {
       controls.current.target.copy(target)
       const overview = new URLSearchParams(location.search).get('view') === 'arena'
       if (overview) camera.position.set(target.x + 2, 12, target.z + 9)
-      else camera.position.set(target.x + 0.2, 1.05, target.z + 0.85)
+      else camera.position.set(target.x + 0.2 * zoom, 1.05 * zoom, target.z + 0.85 * zoom)
       started.current = true
     }
     delta.copy(target).sub(controls.current.target).multiplyScalar(0.06)

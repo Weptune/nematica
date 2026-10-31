@@ -67,3 +67,22 @@ def test_real_copper_files_load():
         assert 35 <= typical <= 60, (r.uid, typical)     # about 0.6 to 1.1 mm at 17.7 um
         assert len(r.labelled()) > 40, r.uid
         assert all(0 <= a <= b < r.n_frames for a, b in r.reversals)
+
+
+@pytest.mark.skipif(not any(COPPER.glob("*-cudata.h5")), reason="copper files not present")
+def test_motion_matched_body_follows_generated_behaviour():
+    """A body assembled from real postures must move at the generated velocity, mostly
+    continue real clips, and not spin: whole-body turning per frame like a real worm's."""
+    from nematica.export.virtual_worm import MotionLibrary
+    recs = load_copper_dir(COPPER)[:6]
+    lib = MotionLibrary.from_recordings(recs[:5])
+    r = recs[5]
+    v, rev, t = r.behaviour["velocity"][:400], r.behaviour["reversing"][:400], r.t[:400]
+    ang, path, cont = lib.synthesize(v, rev, t, seed=0)
+    assert ang.shape == (400, lib.shapes.shape[1]) and np.isfinite(ang).all()
+    step = np.hypot(*np.diff(path, axis=0).T)
+    assert np.allclose(step, np.abs(v[:-1]) * np.diff(t), atol=1e-9)
+    assert cont > 0.5
+    orient = np.angle(np.mean(np.exp(1j * ang), axis=1))
+    turn = np.abs(np.angle(np.exp(1j * np.diff(orient))))
+    assert np.percentile(turn, 95) < 0.6                      # no spinning with head sweeps

@@ -17,8 +17,9 @@ function identityColour(cls) {
   return new THREE.Color().setHSL((h % 360) / 360, 0.85, 0.6)
 }
 
-export default function Neurons({ body }) {
-  const replay = useLab((s) => s.replay)
+export default function Neurons({ body, replay: given }) {
+  const stored = useLab((s) => s.replay)
+  const replay = given ?? stored
   const mode = useLab((s) => s.mode)
   const setHovered = useLab((s) => s.setHovered)
   const setSelected = useLab((s) => s.setSelected)

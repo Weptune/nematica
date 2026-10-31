@@ -35,10 +35,12 @@ const agarVert = /* glsl */ `
   }
 `
 
-export default function Arena() {
-  const replay = useLab((s) => s.replay)
+export default function Arena({ replay: given }) {
+  const stored = useLab((s) => s.replay)
+  const replay = given ?? stored
+  const ring = !!replay.arena                     // no arena in the bundle: plain agar, no copper ring
   const centre = replay.arena?.centre_mm ?? [0, 0]
-  const radius = replay.arena?.radius_mm ?? 4
+  const radius = replay.arena?.radius_mm ?? 40
 
   const agar = useMemo(() => new THREE.ShaderMaterial({
     vertexShader: agarVert,
@@ -75,10 +77,12 @@ export default function Arena() {
         <planeGeometry args={[radius * 3, radius * 3, 1, 1]} />
       </mesh>
       {/* copper boundary, drawn as a faint metallic ring at the recorded arena radius [M] */}
-      <mesh rotation-x={-Math.PI / 2} position={[centre[0], 0.001, centre[1]]}>
-        <ringGeometry args={[radius - 0.012, radius + 0.012, 256]} />
-        <meshBasicMaterial color="#c9874a" transparent opacity={0.55} toneMapped={false} />
-      </mesh>
+      {ring && (
+        <mesh rotation-x={-Math.PI / 2} position={[centre[0], 0.001, centre[1]]}>
+          <ringGeometry args={[radius - 0.012, radius + 0.012, 256]} />
+          <meshBasicMaterial color="#c9874a" transparent opacity={0.55} toneMapped={false} />
+        </mesh>
+      )}
       <line ref={trailRef} geometry={trail}>
         <lineBasicMaterial color="#2f6f86" transparent opacity={0.22} />
       </line>
