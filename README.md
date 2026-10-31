@@ -1318,6 +1318,24 @@ echo complexity moves toward real (median PCI below the white-noise version's 0.
 poke test stays passed; complexity inside in at least 2 of 3 pools would make it the first
 model to match a real brain's perturbational complexity.
 
+Result: no change (pool 1 PCI distance 0.907, as with white noise). The cause is elsewhere.
+A diagnostic (`scripts/diag_echo_structure.py`, pool 1, not pre-registered) finds it:
+
+| | median length of a response (frames) | steps where the responding set changes | classes that respond at all in 30 s |
+|---|---|---|---|
+| real worms | 3 (mean 6.5) | 85% | 66% |
+| VAR(3) | 2 (mean 5.2) | 97% | 93% |
+| passing hybrid | 1 (mean 3.4) | 98% | 95% |
+
+**In a real brain, a third of the neuron classes never cross the threshold in the 30 s after
+a poke, and the ones that do stay responding; in every model, almost every class flickers
+across it at some point, briefly.** Real echoes are complex but structured because most of
+the brain stays out of them. This is the same theme as the calm finding, at the level of
+single neurons: real brains have neurons that are quiet for long stretches while others are
+active, and every model gives every neuron the same restlessness. The next ingredient is
+per-class quiet and active states (each class with its own share of quiet time), to be
+pre-registered.
+
 **Signal or noise? (written before computing it).** A model can fail the poke test in two
 different ways: its *average* echo is wrong (it does not know the causal structure), or its
 average echo is right but each single echo is buried in the wrong kind of variability.
