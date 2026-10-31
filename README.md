@@ -1106,6 +1106,28 @@ closer to its own even half than to other worms' even halves? Expectation: yes, 
 (within-worm distance smaller in most worms), so worms have individual causal signatures
 that a faithful copy would need, and that watching does not reveal.
 
+**A, results.** *Units:* measuring responses in units of each neuron's pre-stimulus
+fluctuations instead of its whole-recording SD shrinks the VARs' magnitude distance by a
+third to a half (VAR(3) from rest: 0.55 to 0.66 down to 0.34 to 0.38), as expected, but
+magnitude stays outside; pattern verdicts do not change for any model (met). *Protocol:*
+stimulating by a one-frame pulse instead of clamping makes every model worse on pattern
+(published fully connected 0.92 to 0.94 with the clamp, 0.99 with a pulse); pattern is
+outside for every model under both protocols (met). The clamp, which feeds models the
+stimulated neuron's real response, is the kinder of the two.
+
+**B, results** (`scripts/analyse_rest_vs_poke.py`, `docs/figures/rest_vs_poke.csv`). Across
+the 16 pre-registered brains, the rank correlation between rest score and poke score is
++0.07, -0.47 and -0.30 in the three pools, -0.21 pooled (48 brain-pools, p = 0.15); with the
+ingredient-hunt brains added, -0.03, -0.18 and -0.02, -0.06 pooled (88 brain-pools, p =
+0.56). **How real a brain model looks at rest says nothing about whether it answers a poke
+correctly.** If anything the sign leans the wrong way (better at rest, slightly worse when
+poked), most visibly in pool 2. Expectation: met pooled and in 2 of 3 pools (pool 2 at -0.47
+crosses the 0.4 line). The causal-blind control (each class driven only by its own past)
+*is* the worst or nearly the worst at rest in two pools (16th and 15th of 16) but mid-table
+in the third: the "not the worst at rest" half of the expectation is not met, so the rest
+levels do notice a brain with no coupling at all. They just cannot tell a brain with the
+wrong coupling from one with the right coupling.
+
 **C, results** (`scripts/run_own_rest.py`, `docs/figures/own_rest_fingerprint_fluct.csv`).
 44 worms have enough stimulation-free activity (at least 300 frames) for a model of their
 own; 43 have enough stimulations for the split.
