@@ -40,6 +40,56 @@ WIRINGS = {
 
 
 PRIOR = ("connectome", "shuffled0", "shuffled1", "shuffled2")   # wirings tried as priors
+REALISM_RHOS = (1.0, 1.5, 2.0, 3.0, 5.0, 10.0)
+REALISM_METRICS = ("L2.dimension", "L2.correlation", "L1.timescale")
+_CACHE: dict = {}
+
+
+class RealismRho:
+    """Wiring prior whose rho is chosen by in-sample realism on the training worms (see
+    README, arc 3): no reference worm is used."""
+
+    def __init__(self, key):
+        self.key = key
+        self.m = None
+        self.info: dict = {}
+
+    @property
+    def name(self) -> str:
+        return f"realism_{self.key}"
+
+    @property
+    def names(self):
+        return self.m.names if self.m else []
+
+    def fit(self, train, val):
+        from nematica.bench import build_reference, score_system
+        ck = (self.key, tuple(s.origin for s in train))
+        if ck in _CACHE:
+            self.m, self.info = _CACHE[ck]
+            return self
+        ref = build_reference(train)
+        best = None
+        crit = {}
+        for rho in REALISM_RHOS:
+            cs = CalciumStateSpace.from_train(train, gamma=0.5)
+            m = Debounced(WiredVAR(PriorForecaster(f"var{LAGS}", cs, LagFeatures(cs.k, LAGS, False), rhos=(rho,)),
+                                   fixed_lam=300, wiring=WIRINGS[self.key], label=f"prior_{self.key}"))
+            m.fit(train, val)
+            own = [m.generate(s, np.random.default_rng(7 + i), which=i) for i, s in enumerate(train)]
+            rows = {r["metric"]: r for r in score_system("insample", own, train, ref)}
+            c = sum(abs(np.log(max(float(rows[k]["system_median"]) / float(rows[k]["bio_median"]), 1e-6)))
+                    for k in REALISM_METRICS if k in rows and rows[k].get("bio_median"))
+            crit[rho] = round(float(c), 4)
+            if best is None or c < best[0]:
+                best = (c, rho, m)
+        self.m = best[2]
+        self.info = {"rho": best[1], "realism_criterion": crit}
+        _CACHE[ck] = (self.m, self.info)
+        return self
+
+    def generate(self, template, rng, which, **kw):
+        return self.m.generate(template, rng, which=which, **kw)
 
 
 def wired(label, train):
@@ -55,6 +105,8 @@ LABELS = list(WIRINGS)
 
 
 def build(train):
+    if LABELS and LABELS[0].startswith("realism_"):
+        return {"real_other_worms": None, **{k: RealismRho(k[8:]) for k in LABELS}}
     return {"real_other_worms": None, **{f"wired_{k}": Debounced(wired(k, train)) for k in LABELS}}
 
 
@@ -65,12 +117,17 @@ def main() -> int:
     ap.add_argument("--out", default="results/wiring")
     ap.add_argument("--seeds", type=int, default=2)
     ap.add_argument("--prior", action="store_true", help="wirings as ridge priors instead of hard masks")
+    ap.add_argument("--prior-realism", action="store_true", help="priors with rho chosen by in-sample realism")
     args = ap.parse_args()
     global LABELS
     if args.prior:
         LABELS = [f"prior_{k}" for k in PRIOR]
         if args.out == "results/wiring":
             args.out = "results/wiring_prior"
+    if args.prior_realism:
+        LABELS = [f"realism_{k}" for k in PRIOR]
+        if args.out == "results/wiring":
+            args.out = "results/wiring_realism"
     recs = load_copper_dir(Path(args.data))
     by = {r.uid: r for r in recs}
     classes = tuple(canonical_classes(recs, 0.25))
@@ -86,8 +143,14 @@ def main() -> int:
         S = lambda uids: [from_recording(by[u], classes) for u in uids]  # noqa: E731
         pool, train, val = S(pool_uids), S([u for u in rest if u not in val_uids]), S(val_uids)
         for label in LABELS:
-            m = wired(label, train).fit(train, val)
-            rows.append({"wiring": label, "rotation": fi, **m.fit_info(),
+            if label.startswith("realism_"):
+                rr = RealismRho(label[8:]).fit(train, val)
+                m = rr.m.model
+                extra = {**m.fit_info(), "realism_criterion": rr.info["realism_criterion"]}
+            else:
+                m = wired(label, train).fit(train, val)
+                extra = m.fit_info()
+            rows.append({"wiring": label, "rotation": fi, **extra,
                          "one_step_r2": round(m.pooled.one_step_r2(pool), 4),
                          "r2_30s": round(m.pooled.multi_step_r2(pool, horizon=50, stride=25, context=50), 4)})
             print(rows[-1], flush=True)

@@ -54,6 +54,7 @@ choice made on training and validation worms only, except where marked post hoc)
 | Per-worm calcium-drive VAR(3), hysteresis reversals | **10 of 10** | 0.82 held-out, 0.77 in-sample | not modelled |
 | Same with 10 frames of memory | **10 of 10** | **0.62 held-out (not distinguishable in 2 of 3 pools), 0.50 in-sample** | not modelled |
 | Same, coupling restricted to the connectome (arc 3) | 8 of 10 | 0.68 held-out, 0.57 in-sample (shuffled wiring: 0.69 to 0.72, 0.59 to 0.64) | not modelled |
+| Same, connectome as a forecasting-chosen prior (arc 3) | 9 of 10 | 0.70 held-out (shuffled priors 0.72, 0.73) | not modelled |
 | Closed loop v7 (3-frame brain senses copper, steers, reverses) | 9 of 10 | 0.95 (v6, frozen split) | occupancy and approach inside; 14 to 17% of time near copper (real 3.2%) |
 | Closed loop v8 (10-frame brain) | 9 of 10 | not yet run | occupancy and approach inside; 11% near copper; encounter outside |
 | Closed loop v9 (copper acts only through ASH and the brain) | 8 of 10 | not yet run | **all three Level 6 metrics inside**; 10.4% near copper |
@@ -393,6 +394,37 @@ data-driven fit does not already find, and that is the answer.
 - **Arc 3 so far:** the real wiring beats random wiring of the same density on every
   measure, in every rotation, but the advantage is small, and on realism no wiring
   constraint yet beats letting the data choose the coupling.
+
+**rho chosen by realism. Design, written before running (Oct 31).** Same priors, but rho
+is picked from {1, 1.5, 2, 3, 5, 10} by how realistic each model is on its own training
+worms: samples from each training worm's model, on that worm's template, are scored
+against the training worms with the ruler, and the rho with the smallest sum of absolute
+log distance ratios on L2.dimension, L2.correlation and L1.timescale wins (rho = 1, the
+full model, is a candidate). No reference worm is involved. Expectations: (1) the chosen rho
+will be small (1 to 3), since the forecasting-chosen 30 was too high-dimensional; (2) if
+the anatomy helps realism, the connectome's chosen model should beat the shuffled ones and
+at least match full coupling; (3) if every wiring picks rho = 1, wiring constraints buy
+nothing for realism at this resolution.
+
+**Result: rho = 1 in all 12 cases** (4 wirings x 3 rotations;
+`docs/figures/wiring_realism_criterion.csv`). The in-sample realism criterion rises
+steadily with rho for every wiring in every rotation (connectome, rotation 1: 0.48 at
+rho = 1, 0.53, 0.55, 0.62, 0.64, 0.71 at rho = 10), so a realism-chosen prior is the full
+model and scoring it on the reference pools would only repeat the full model's numbers.
+At the strongest prior (rho = 10) the connectome loses less realism than all three
+shuffled wirings in rotations 1 and 3 (0.71 vs 0.77 to 0.81; 0.48 vs 0.55 to 0.62) but not
+in rotation 2 (0.69 vs 0.63 to 0.73). Expectation 3 held.
+
+**Arc 3, conclusion at this resolution.** Anatomical wiring carries real but small
+information about how these recorded neuron classes drive each other: given the same
+number of connections, the connectome beats random wiring on forecasting, correlations,
+lead-lag and the classifier, consistently. But any wiring constraint makes the model less
+realistic than letting the data choose the coupling, whether imposed as a mask, as a
+forecasting-chosen prior or as a realism-chosen one. At class-level calcium imaging with
+most neurons unrecorded, the effective coupling the recordings reveal is denser than the
+direct anatomical wiring. Finer tests would need per-neuron (left/right resolved) data,
+synapse-weighted priors, or the immobilised optogenetic atlas (Randi 2023), where single
+neurons are driven.
 
 ## Arc 5: a worm that senses copper
 
