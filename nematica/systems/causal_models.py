@@ -487,15 +487,15 @@ class HybridKernel:
         from dataclasses import replace
         npre, npost = window(rec.dt)
         quiet = replace(rec, stims=[])
+        gain = self._gain(quiet.n_frames + 200, rng) if self.regime else None
         if self.obs_noise:
             # dynamics driven only by the non-measurement part of the residuals; the measurement
             # part is added afterwards as white noise of the same total size [A]
             keep = self.var.noise_sd.copy()
             self.var.noise_sd = keep * np.sqrt(1 - self.noise_frac)
-            bg = self.var.simulate(quiet, rng)
+            bg = self.var.simulate(quiet, rng, noise_gain=gain)
             self.var.noise_sd = keep
         else:
-            gain = self._gain(quiet.n_frames + 200, rng) if self.regime else None
             bg = self.var.simulate(quiet, rng, noise_gain=gain)   # ongoing activity, no stimulation
         x = bg.x.copy()
         if self.obs_noise:
