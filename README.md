@@ -333,9 +333,22 @@ by -0.72 to +0.75 mm depending on the worm, and some tracked positions lie up to
 times the arena radius from its centre. Measured with the tracked position, real worms
 spend 9.1% of their time within 0.5 mm of copper, not 3.2%. The model (27 to 29%) is
 outside both, but arena-scale statistics, including the facing directions used for
-steering, are only as good as this geometry (about 0.7 mm). Resolving which position the
-recorded distance refers to (head, stage centre, camera offset) is the next step before
-tuning the arena behaviour further.
+steering, are only as good as this geometry (about 0.7 mm).
+
+**Resolved: a constant calibration offset.** Fitting candidate corrections per worm, a
+single fixed shift of the tracked position, (0.613, 0.462) mm, makes it reproduce the
+recorded distance to 0.023 mm rms in every worm (0.54 mm without), and the shift is the
+same in all 27 worms to within 0.005 mm; a shift along the body or a different arena
+centre does not fit. The loader now applies it (`COPPER_STAGE_OFFSET_MM`), so tracked
+paths, the arena circle and the recorded distance agree (this also corrects the copper
+ring position in the replay lab by about 0.77 mm). With corrected geometry v6 is still 10
+of 10 pairwise, encounter and approach inside, occupancy narrowly outside (0.969), and
+time near copper 33.7% (27.3% before the fix; run-to-run variation at this level is large).
+
+**Level 8 for the closed loop** (`scripts/run_l8_closed_loop.py`, frozen split,
+`docs/figures/l8_closed_loop.csv`): AUC 0.952, against 0.94 for the open-loop model and
+0.68 for other real worms. Closing the loop does not change how detectable the brain
+activity is; the giveaway is still the short-timescale spectrum (arc 1).
 
 ## Leaderboard: published models
 

@@ -106,3 +106,17 @@ def test_closed_loop_worm_runs_in_its_arena():
     assert len(d) == S[6].x.shape[1] and np.isfinite(d).all()
     assert np.allclose(d, r.meta["arena"]["radius_mm"] - np.hypot(*path.T))
     assert set(np.unique(smp.behaviour["reversing"])) <= {0.0, 1.0}
+
+
+def test_copper_stage_offset_matches_recorded_distance():
+    from pathlib import Path
+
+    import pytest
+    folder = Path("data/raw/doi_10_5061_dryad_w9ghx3g4v__v20260415")
+    if not folder.exists():
+        pytest.skip("copper data not present")
+    from nematica.data import load_copper_dir
+    for r in load_copper_dir(folder)[:3]:
+        c = np.array(r.meta["arena"]["center_mm"])
+        err = np.hypot(*(r.posture["stage_xy_mm"] - c).T) - r.behaviour["dist_from_center_mm"]
+        assert np.sqrt(np.mean(err ** 2)) < 0.06

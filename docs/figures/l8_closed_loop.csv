@@ -1,0 +1,4 @@
+system,auc,null_median,null_p95,p,n_windows_real,n_windows_system,n_groups_system,verdict
+real_other_worms,0.676,0.488,0.649,0.0396,192,672,21,distinguishable
+open_loop_calcium_hyst,0.94,0.505,0.659,0.0099,192,384,12,distinguishable
+closed_loop_v6,0.952,0.498,0.648,0.0099,192,384,12,distinguishable

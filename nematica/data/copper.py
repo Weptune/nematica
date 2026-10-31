@@ -29,6 +29,13 @@ from .jld2_labels import load_neuropal_labels
 from .recording import Recording, RoiLabel
 
 STAGE_UNIT_MM = 1e-4        # stage and distance values are in units of 0.1 um
+# Copper set: stage_x/y (+ start offsets) sit at a constant offset from the point whose
+# distance to the copper centre the dataset records (dist_from_cuCenter). Fitted per worm
+# by least squares, the offset is the same for all 27 worms to within 0.005 mm (x 0.605 to
+# 0.623, y 0.451 to 0.472), and with it the tracked position reproduces the recorded
+# distance to 0.023 mm rms (0.54 mm without). Applied so tracked positions, the arena
+# circle and the recorded distance agree [M].
+COPPER_STAGE_OFFSET_MM = (0.6128, 0.4620)
 SEGMENT_LENGTH_MM = 0.0177  # body segment length used by the Flavell posture pipeline [I]
 DEFAULT_ARENA_RADIUS_MM = 4.0  # copper boundary radius stated in the Dryad README [M]
 
@@ -73,7 +80,8 @@ def _load_flavell_h5(path: Path, labels, dataset: str, conditions: tuple, uid: s
         if "stage_x" in b:                                           # copper set
             x0 = float(_arr(b, "stage_xStart_nir"))
             y0 = float(_arr(b, "stage_yStart_nir"))
-            stage = np.stack([_arr(b, "stage_x") + x0, _arr(b, "stage_y") + y0], axis=1) * STAGE_UNIT_MM
+            stage = np.stack([_arr(b, "stage_x") + x0, _arr(b, "stage_y") + y0], axis=1) * STAGE_UNIT_MM \
+                + np.asarray(COPPER_STAGE_OFFSET_MM)
         else:                                                        # Atanas 2023
             stage = np.stack([_arr(b, "zeroed_x_confocal"), _arr(b, "zeroed_y_confocal")], axis=1) * STAGE_UNIT_MM
         posture = {

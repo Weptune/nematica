@@ -65,7 +65,8 @@ def main() -> int:
         # by indirect inference; length scale chosen on validation worms) and impassable
         # copper beyond the deepest crossing seen in training worms
         variants = {"senses_steer": dict(senses=True, **{**v2, "hazard_from": "command_fixed"}, per_worm_rates=True,
-                                         steer=True, copper_limit=True, steer_scales=(0.5, 1, 2, 4, 8)),
+                                         steer=True, copper_limit=True, steer_scales=(0.5, 1, 2, 4, 8),
+                                         stage_speed=True),
                     "blind_limit": dict(senses=False, **v2, per_worm_rates=True)}
     if args.variants == "v4":
         # v4: command neurons set reversal timing around a copper effect fitted first, alone
