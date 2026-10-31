@@ -14,6 +14,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
 connectome = ["cect>=0.3"]
+gru = ["torch>=2.0"]
 # PyTorch is installed separately from the CUDA selector at
 # https://docs.pytorch.org/get-started/locally/ so the right CUDA build is used.
 

@@ -123,8 +123,16 @@ Other findings (`scripts/run_arc1.py`, `scripts/run_cv.py`; tables in `docs/figu
   (`MultiScaleFeatures`) and a per-worm slow state (`SlowFastVAR`) lowers the Level 8 AUC
   from 0.94 to 0.84 on the frozen pool, but breaks pairwise levels: 6 of 8 inside instead
   of 8 (`scripts/run_slowfast.py`, `docs/figures/slowfast_combined.csv`). No linear model
-  found so far passes both; real worms do. The next rung is nonlinear (a GRU), which needs
-  PyTorch on the Windows machine.
+  found so far passes both; real worms do.
+- **A nonlinear model (GRU) has the same problem.** On the same drive-space state, a GRU
+  trained for likelihood (`nematica/systems/gru.py`, `scripts/run_gru.py`), with size and
+  stopping point chosen on validation worms only, is too typical on correlations and
+  behaviour encoding and too low-dimensional: 3 of 8 inside for one shared GRU, 2 of 8 with
+  an 8-number identity per worm, Level 8 AUC 0.95. Without early stopping it overfits
+  badly (validation error 0.97 against 0.086). Selected for held-out likelihood (a
+  forecasting criterion), a far more flexible model still produces an average worm; the
+  per-worm linear model remains the most realistic one so far. Tables:
+  `docs/figures/gru_combined.csv`, `gru_l8.csv`. PyTorch is optional (`pip install -e ".[gru]"`).
 - A correction: on the single frozen 6-worm test pool the per-worm model looked fully
   inside on these levels; the rotating pools show that at the forecasting-chosen shrinkage
   it is still slightly too typical. The shrinkage sweep explains why.
