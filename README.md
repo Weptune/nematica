@@ -1209,6 +1209,32 @@ brain whose response is one undifferentiated wave. Real worm brains answer with 
 differentiated echoes. To repeat the caution: this says the models lack a measurable
 property of the real brain's responses, not anything about experience.
 
+## Signatures of a mind at rest
+
+Perturbational complexity needs a poke. Consciousness research also reads the *ongoing*
+activity of brains, and three of its measures can be applied to any whole-brain recording,
+so they can be run on every dataset here (`nematica/bench/mind.py`), real and artificial
+alike, in 60 s windows:
+
+| level | measure | in people |
+|---|---|---|
+| `M1.complexity` | Lempel-Ziv complexity of the activity pattern (each class above or below its median) | falls under anaesthesia and in deep sleep |
+| `M2.integration` | total correlation: how much the brain's parts share rather than act independently | central to integration theories of consciousness |
+| `M3.repertoire` | entropy of coarse whole-brain states (sign pattern of the top 4 principal components) | richer state repertoires in wakefulness |
+
+Distances between worms are KS distances between window distributions, scored with the
+ruler as usual. **Calibrations, outcomes designed before running:** classes shifted in time
+independently (correlations destroyed): integration outside, complexity either; frames
+shuffled (time order destroyed): complexity outside (higher), integration inside;
+phase-randomised (spectra and correlations kept): integration inside; Gaussian noise:
+complexity and integration outside.
+
+**Expectations for the models, written before running:** on the copper and Atanas datasets,
+the per-worm VARs that pass the ordinary activity levels are inside on integration (they
+reproduce correlations), but *outside on complexity, above real worms*: linear Gaussian
+models driven by noise produce more irregular activity than real brains, whose activity is
+structured by discrete states (forward, reverse, turn). Repertoire: no strong prior.
+
 ## Arc 6: from one brain to a swarm
 
 **Question.** Does the ruler's verdict hold when many model brains share one world? Real

@@ -51,10 +51,12 @@ class Reference:
     ceiling: dict[str, np.ndarray] = field(default_factory=dict)
 
 
-def build_reference(real: Sequence[BenchSample], metrics: Sequence[str] = tuple(LEVELS)) -> Reference:
+def build_reference(real: Sequence[BenchSample], metrics: Sequence[str] = tuple(LEVELS),
+                    levels: dict | None = None) -> Reference:
+    levels = levels or LEVELS
     ref = Reference(worms=[s.origin or s.name for s in real])
     for m in metrics:
-        fn = LEVELS[m]["fn"]
+        fn = levels[m]["fn"]
         ref.biological[m] = np.array([fn(a, b) for a, b in combinations(real, 2)])
         ref.ceiling[m] = np.array([fn(s.half(0), s.half(1)) for s in real])
     return ref
@@ -97,11 +99,11 @@ def worm_bootstrap(d_sys: np.ndarray, sys_groups: np.ndarray, d_bio: np.ndarray,
 
 def score_system(name: str, samples: Sequence[BenchSample], real: Sequence[BenchSample],
                  ref: Reference, alpha: float = 0.05, n_boot: int = 2000,
-                 return_boot: bool = False) -> list[dict]:
+                 return_boot: bool = False, levels: dict | None = None) -> list[dict]:
     rows = []
     groups = np.array([_group(s) for s in samples])
     _, gidx = np.unique(groups, return_inverse=True)
-    for m, spec in LEVELS.items():
+    for m, spec in (levels or LEVELS).items():
         if m not in ref.biological:
             continue
         fn = spec["fn"]
