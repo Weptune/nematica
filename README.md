@@ -1149,6 +1149,15 @@ inside in at least 2 of 3 pools *and* spread inside in at least 2 of 3. If somet
 it is then checked at rest too: a model that passes the poke test but fails at rest would
 be the mirror image of the headline.
 
+**Signal or noise? (written before computing it).** A model can fail the poke test in two
+different ways: its *average* echo is wrong (it does not know the causal structure), or its
+average echo is right but each single echo is buried in the wrong kind of variability.
+Diagnostic: for each held-out worm, the model's echo averaged over 10 simulated repeats of
+the whole experiment, correlated (across pairs) with the atlas average of the training
+worms; compared with how well one real worm's echoes correlate with that average (about
+0.31). If a model's averaged echo reaches 0.31, its failure is about trial-to-trial
+variability, not cause and effect, and the headline will be restated accordingly.
+
 ## Signatures of a mind: perturbational complexity
 
 Nobody can measure consciousness directly, and whether a worm experiences anything is an
