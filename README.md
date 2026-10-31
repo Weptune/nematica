@@ -1259,6 +1259,17 @@ activity levels, against 5). So it is the mirror image of the headline only in p
 first model that answers a poke like a real worm is not yet the one that looks most like a
 real worm at rest. One brain model that does both is the next target.
 
+**Merging rest and poke (written before running).** The passing hybrid's rest failures are
+mostly dimensionality (outside in every pool, model activity spread over 1.6 to 2.1 times
+too many dimensions), inherited from the class-level VAR, which fails it too. Real worm
+brains are low-dimensional: on the stimulated worms, participation ratio 16 for real worms
+against 25 for the class VAR. New background, `LowRankVAR`: a few shared brain-wide modes
+(top 6 principal directions of training activity, their own VAR) plus private per-class
+activity; on a check with 8 pool worms it gives 18. Model `hybrid_kernels_regimes_obsfit_lowrank6`.
+Expectation: dimension comes inside, rest reaches at least 5 of 6 in at least 2 of 3 pools,
+and the poke test is still passed (pattern and spread inside in at least 2 of 3): one brain
+that is real-like both watched and poked.
+
 Result, pool 1: pattern inside again (0.916, 54th percentile), but spread *worse* (30%):
 expectation not met, and the remaining pools are not needed to see it. Looking at why: the
 spread level counts responses above 3 times each neuron's fluctuation size just before the

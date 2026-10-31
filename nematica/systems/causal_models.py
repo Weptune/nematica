@@ -342,7 +342,7 @@ class HybridKernel:
 
     def __init__(self, lags: int = 3, shrink: float = 2.0, mask: str | None = None, seed: int = 0,
                  background: str = "spontaneous", obs_noise: bool = False, heavy: bool = False,
-                 regimes: bool = False, obs_fit: bool = False):
+                 regimes: bool = False, obs_fit: bool = False, lowrank: int = 0):
         self.lags, self.shrink, self.mask, self.seed = lags, shrink, mask, seed
         self.background = background     # which frames the ongoing-dynamics VAR learns from
         self.obs_noise = obs_noise       # split each class's variability into slow dynamics and
@@ -352,11 +352,12 @@ class HybridKernel:
                                          # between a low and a high gain, hidden Markov [A],
                                          # calibrated on training worms (calibrate_regimes) [L]
         self.regime = None
+        self.lowrank = lowrank           # ongoing dynamics from a few shared modes (LowRankVAR) if > 0
         self.obs_fit = obs_fit           # measurement-noise share chosen on training worms so that
                                          # 'spread' at random moments matches them [L]
         self.name = ("hybrid_kernels" + (f"_{mask}" if mask else "") + ("" if background == "spontaneous" else f"_bg{background}")
                      + ("_obs" if obs_noise else "") + ("_heavy" if heavy else "") + ("_regimes" if regimes else "")
-                     + ("_obsfit" if obs_fit else ""))
+                     + ("_obsfit" if obs_fit else "") + (f"_lowrank{lowrank}" if lowrank else ""))
 
     def _gain(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """A two-state Markov chain (quiet, active) with the calibrated share of quiet time and
@@ -426,8 +427,11 @@ class HybridKernel:
 
     def fit(self, train, val):
         from ..bench.perturbational import event_matrices
-        self.var = ClassVAR(lags=self.lags, frames=self.background,
-                            innovations="student" if self.heavy else "gaussian").fit(train, val)
+        if self.lowrank:
+            self.var = LowRankVAR(k=self.lowrank, lags=self.lags, frames=self.background).fit(train, val)
+        else:
+            self.var = ClassVAR(lags=self.lags, frames=self.background,
+                                innovations="student" if self.heavy else "gaussian").fit(train, val)
         if self.obs_noise:
             self.noise_frac = self._noise_fractions(list(train) + list(val), self.var.classes)
         acc: dict = {}
@@ -529,4 +533,103 @@ class HybridKernel:
                     x[j, f:f + npost] += h[:npost] * fl[j]
             out_stims.append((i, f))
         return PumpProbe(uid=rec.uid, x=x, names=bg.names, classes=bg.classes, stims=out_stims, dt=rec.dt,
+                         all_stim_frames=list(rec.all_stim_frames))
+
+
+class LowRankVAR:
+    """Ongoing dynamics as a few shared brain-wide modes plus private activity (arc 4,
+    'merge rest and poke'). Real worm brains are low-dimensional (a handful of modes carries
+    most of the variance); a full class-level VAR spreads activity over too many dimensions.
+
+        z_t = U s_t + e_t        U: top-k principal directions of training activity [L]
+        s_t = VAR(lags) on the k modes (ridge)                                       [L]
+        e_t = per-class AR(1), private to each class                                [L]
+
+    Same simulate() interface as ClassVAR (unseen classes stay at zero; noise_gain scales the
+    driving noise frame by frame; noise_sd scales the private noise)."""
+
+    def __init__(self, k: int = 6, lags: int = 3, frames: str = "spontaneous", min_fraction: float = 0.3,
+                 ridges=(1.0, 10.0, 100.0, 1000.0)):
+        self.k, self.lags, self.frames, self.min_fraction, self.ridges = k, lags, frames, min_fraction, ridges
+        self.name = f"lowrank{k}_var{lags}_{frames}"
+
+    def _series(self, recs):
+        out = []
+        for r in recs:
+            z = class_matrix(r, self.classes)
+            use = spontaneous_mask(r) if self.frames == "spontaneous" else np.ones(r.n_frames, bool)
+            out.append((np.nan_to_num(z), np.isfinite(z), use))
+        return out
+
+    def fit(self, train, val):
+        from collections import Counter
+        cnt = Counter(c for r in train for c in set(r.classes) if c)
+        self.classes = sorted(c for c, n in cnt.items() if n >= self.min_fraction * len(train))
+        tr = self._series(list(train) + list(val))
+        X = np.hstack([z[:, u] for z, _, u in tr])
+        U, S, _ = np.linalg.svd(X - X.mean(axis=1, keepdims=True), full_matrices=False)
+        self.U = U[:, :self.k]
+        self.var_explained = float((S[:self.k] ** 2).sum() / (S ** 2).sum())
+        p = self.lags
+        Xs, Ys, E0, E1 = [], [], [], []
+        for z, obs, use in tr:
+            s = self.U.T @ z
+            e = z - self.U @ s
+            T = z.shape[1]
+            ts = np.array([t for t in range(p, T) if use[t - p:t + 1].all()])
+            if ts.size == 0:
+                continue
+            Xs.append(np.hstack([s[:, ts - L].T for L in range(1, p + 1)] + [np.ones((ts.size, 1))]))
+            Ys.append(s[:, ts].T)
+            E0.append(np.where(obs[:, ts - 1], e[:, ts - 1], np.nan))
+            E1.append(np.where(obs[:, ts], e[:, ts], np.nan))
+        Xa, Ya = np.vstack(Xs), np.vstack(Ys)
+        pen = np.full(Xa.shape[1], 100.0)
+        pen[-1] = 0
+        self.Ws = np.linalg.solve(Xa.T @ Xa + np.diag(pen), Xa.T @ Ya)
+        R = Ya - Xa @ self.Ws
+        self.latent_cov = np.cov(R.T) + 1e-6 * np.eye(self.k)
+        self.Lq = np.linalg.cholesky(self.latent_cov)
+        e0, e1 = np.hstack(E0), np.hstack(E1)
+        with np.errstate(invalid="ignore"):
+            num = np.nansum(e0 * e1, axis=1)
+            den = np.nansum(e0 * e0, axis=1)
+            self.a = np.clip(np.where(den > 0, num / den, 0.0), 0.0, 0.98)
+            res = e1 - self.a[:, None] * e0
+            self.noise_sd = np.sqrt(np.nanmean(res ** 2, axis=1))
+        self.noise_sd[~np.isfinite(self.noise_sd)] = 0.1
+        self.noise_sd0 = self.noise_sd.copy()
+        A = self.Ws[:-1].reshape(p, self.k, self.k)
+        comp = np.zeros((p * self.k, p * self.k))
+        comp[:self.k, :] = np.hstack([A[L].T for L in range(p)])
+        if p > 1:
+            comp[self.k:, :-self.k] = np.eye((p - 1) * self.k)
+        rad = float(np.abs(np.linalg.eigvals(comp)).max())
+        self.gain = min(1.0, 0.99 / rad) if rad > 0 else 1.0
+        self.info = {"k": self.k, "var_explained": round(self.var_explained, 3), "latent_radius": round(rad, 4)}
+        return self
+
+    def simulate(self, rec: PumpProbe, rng: np.random.Generator, burn: int = 200,
+                 noise_gain: np.ndarray | None = None) -> PumpProbe:
+        C, p, k = len(self.classes), self.lags, self.k
+        idx = {c: i for i, c in enumerate(self.classes)}
+        own = [c for c in sorted(set(rec.classes)) if c in idx]
+        seen = np.zeros(C, bool)
+        seen[[idx[c] for c in own]] = True
+        T = rec.n_frames
+        A = self.Ws[:-1].reshape(p, k, k).copy()
+        for L in range(1, p + 1):
+            A[L - 1] *= self.gain ** L
+        b = self.Ws[-1]
+        lat_scale = float(np.mean(self.noise_sd) / max(np.mean(self.noise_sd0), 1e-9))
+        s = np.zeros((k, T + burn))
+        e = np.zeros(C)
+        z = np.zeros((C, T + burn))
+        for t in range(p, T + burn):
+            g = 1.0 if noise_gain is None else noise_gain[t]
+            s[:, t] = b + sum(s[:, t - L] @ A[L - 1] for L in range(1, p + 1)) + g * lat_scale * (self.Lq @ rng.standard_normal(k))
+            e = self.a * e + g * self.noise_sd * rng.standard_normal(C)
+            z[:, t] = np.where(seen, self.U @ s[:, t] + e, 0.0)
+        x = z[[idx[c] for c in own], burn:]
+        return PumpProbe(uid=rec.uid, x=x, names=own, classes=own, stims=[], dt=rec.dt,
                          all_stim_frames=list(rec.all_stim_frames))
