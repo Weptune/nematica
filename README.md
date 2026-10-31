@@ -322,6 +322,23 @@ python scripts/fetch_creamer_lds.py
 python scripts/run_published.py --data $copper --folds configs/splits/copper2026_cv3.yaml
 ```
 
+## Research site
+
+`web/` is the project's research site: the findings, the method and the research log, with
+every figure drawn from the result tables in `docs/figures` (plain HTML, CSS and SVG, no
+build step). Regenerate its data and serve it locally:
+
+```
+python scripts/export_site.py --local      # results.js, plus the opening figure from the local atlas copy
+web\serve.cmd                              # Windows: serves http://localhost:8000 and opens it
+sh web/serve.sh                            # elsewhere
+```
+
+The opening figure (one held-out real worm next to two artificial brains under the same
+pokes) is drawn from the local copy of the atlas and is not committed (`web/data/local.js`);
+without it the site still works and says how to generate it. Fonts: Newsreader and Schibsted
+Grotesk (SIL Open Font License, `web/fonts`).
+
 ## Replay lab
 
 ```powershell

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEMATICA: testing artificial brains against living ones</title>
+<meta name="description" content="A benchmark that scores artificial nervous systems against whole-brain recordings of living C. elegans, measured in units of how much real worms differ from each other.">
+<link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<header class="bar on-field" id="bar">
+  <a class="wordmark" href="index.html" aria-label="NEMATICA home">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.2" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".55"/><circle cx="12" cy="12" r="5.2" fill="none" stroke="#3dd69b" stroke-width="2.2"/><circle cx="17.2" cy="12" r="2.1" fill="#f062b4"/></svg>
+    NEMATICA
+  </a>
+  <nav aria-label="Site">
+    <a href="findings.html">Findings</a>
+    <a href="method.html">Method</a>
+    <a href="log.html" class="optional">Research log</a>
+    <a href="https://github.com/Weptune/nematica" class="optional">Code</a>
+  </nav>
+</header>
+
+<section class="hero" aria-labelledby="h">
+  <div class="hero-grid">
+    <div>
+      <h1 id="h">A copied brain can look alive and still be wrong.</h1>
+      <p class="lede">NEMATICA tests artificial nervous systems against whole-brain recordings of living <em>C.&nbsp;elegans</em>. Each brain is watched at rest, then poked one neuron at a time, and every verdict is measured against <strong>how much real worms differ from one another</strong>.</p>
+      <div class="actions">
+        <a class="btn primary" href="findings.html">Read the findings</a>
+        <a class="btn ghost" href="method.html">How the test works</a>
+      </div>
+    </div>
+    <div class="scope" id="scope">
+      <div class="scope-head">
+        <span class="worm">Recorded worm</span>
+        <div class="seg" role="group" aria-label="Artificial brain shown">
+          <button type="button" data-brain="hybrid_kernels_regimes_obsfit" aria-pressed="true">Hybrid brain</button>
+          <button type="button" data-brain="var3_spontaneous" aria-pressed="false">Linear brain</button>
+        </div>
+      </div>
+      <div class="scope-body">
+        <div class="channel live"><span class="tag">Real worm</span><canvas class="live" aria-label="Recorded activity of 52 neuron classes over eight minutes"></canvas></div>
+        <div class="channel copy"><span class="tag">Artificial brain</span><canvas class="copy" aria-label="Simulated activity of the same classes under the same pokes"></canvas></div>
+        <div class="scope-axis"><span></span><div class="ticks"></div></div>
+      </div>
+      <div class="scope-read" aria-hidden="true"></div>
+    </div>
+  </div>
+  <div class="hero-grid" style="align-items:start">
+    <div></div>
+    <p class="scope-caption"><b style="color:var(--field-ink);font-weight:600">Figure 1.</b> Fifty-two neuron classes of one worm the models never saw, eight minutes of recording, while single neurons were switched on with light (white lines). Below, an artificial brain run through the same eight minutes with the same pokes. Each row is a neuron class, brighter is more active. The hybrid brain answers pokes the way real worms do, yet its neurons flicker where real ones hold long quiet and active stretches. The linear brain looks closer to the real worm at rest and answers the pokes wrongly. Hover to read the activity; switch brains above.</p>
+  </div>
+</section>
+
+<main class="page">
+  <div class="sheet">
+
+    <h2 class="sec-name">Summary</h2>
+    <div>
+      <p style="font-size:1.32rem;line-height:1.5">People are building digital nervous systems, and sooner or later someone will claim that an artificial brain is a faithful copy of a real one. There is no agreed way to check that claim. We built one, on the only animal whose brain can be compared completely: the nematode <em>C.&nbsp;elegans</em>, with 302 neurons, every connection mapped, and every neuron in its head imaged while it lives.</p>
+      <p>The test treats an artificial brain the way a neurologist examines a patient who cannot speak. Watch it at rest. Perturb it. Read the echo, including with the measure that consciousness science uses to tell a responsive brain from an unresponsive one. Every score is expressed in units of how different real worms are from each other, so a brain passes a test when it is as close to real worms as they are to each other: no closer, and no further.</p>
+    </div>
+    <aside class="note">
+      <div class="measure"><span class="v">113 worms</span><span class="l">recorded while single neurons were switched on with light (Randi et al. 2023 atlas)</span></div>
+      <div class="measure"><span class="v">3 held-out groups</span><span class="l">every brain is scored on worms it never saw</span></div>
+      <div class="measure copy"><span class="v">0 brains</span><span class="l">pass every test so far</span></div>
+    </aside>
+
+    <div class="gap-xl"></div>
+
+    <h2 class="sec-name">Key results</h2>
+    <h2 style="grid-column:text-start/note-end">Watching a brain does not tell you how it works.</h2>
+    <div class="findings-list">
+      <a class="finding" href="findings.html#watching">
+        <div class="thumb" data-chart="restPoke" data-compact></div>
+        <h3>Looking alive is not enough</h3>
+        <p>A brain that passes five of six tests of ongoing activity still gets cause and effect wrong. Across 88 brain scores, how alive a brain looks at rest says nothing about how it answers a poke (rank correlation &minus;0.06).</p>
+      </a>
+      <a class="finding" href="findings.html#fingerprints">
+        <div class="thumb" data-chart="fingerprint" data-compact></div>
+        <h3>Every worm has a causal fingerprint</h3>
+        <p>A worm's echoes are repeatable and its own (36 of 43 worms), yet a model of that worm's resting activity predicts them no better than another worm's model does.</p>
+      </a>
+      <a class="finding" href="findings.html#complexity">
+        <div class="thumb" data-chart="echoShape" data-compact></div>
+        <h3>Real brains hold most neurons back</h3>
+        <p>After a poke, a third of a real worm's neuron classes stay silent. Every artificial brain lets nearly all of them flicker in, which is why none matches a real echo's complexity.</p>
+      </a>
+    </div>
+
+    <div class="gap-xl"></div>
+
+    <h2 class="sec-name">Scorecard</h2>
+    <div>
+      <h2>Seventeen artificial brains, eleven tests, three groups of worms they never saw.</h2>
+      <p>Simple models trained on ongoing activity pass most of the watching tests and fail every poking test. Building a brain that answers a poke like a real worm took four things together: causal links learned from pokes, ongoing dynamics learned from watching, fast measurement noise, and calm and active states. That brain is highlighted. Every fix so far has cost something elsewhere, and no brain passes everything.</p>
+    </div>
+    <figure class="plate wide" style="grid-column:side-start/note-end">
+      <div class="plate-head">
+        <p class="plate-title"><span class="fn">Figure 2</span>Each mark is one held-out group of worms</p>
+        <div class="legend" data-legend></div>
+      </div>
+      <div class="table-wrap" style="margin:0"><div data-chart="scorecard"></div></div>
+      <figcaption>Watching tests compare a brain's ongoing activity with real worms (value distributions, timescales, correlations, dimensionality, which neurons lead which, and how long behavioural bouts last). Poking tests compare its echo when one neuron is switched on: which neurons answer, how strongly, with what time course, and how far the echo spreads. Echo complexity is the perturbational complexity index from consciousness research. Hover a cell for the numbers.</figcaption>
+    </figure>
+
+    <h2 class="sec-name">The ruler</h2>
+    <div>
+      <h2>Inside means as different as two real worms are.</h2>
+      <p>Two healthy worms never behave the same, and a good copy of a worm should not be more average than any real one. So each test asks where a brain falls among the distances between real worms. A brain that is closer to real worms than they are to each other is flagged as too typical, which catches models that have learned an average worm instead of a worm.</p>
+      <p>The poke test is narrow. A brain must carry a correlation of roughly 0.3 to 0.5 with the true average echo: less and it does not know enough cause and effect; more and it is more stereotyped than any worm.</p>
+      <p><a class="btn outline" href="method.html#power">See how sharp the test is</a></p>
+    </div>
+
+    <div class="gap-xl"></div>
+
+    <h2 class="sec-name">Cite</h2>
+    <div>
+      <pre class="cite">NEMATICA: testing artificial nervous systems against living ones.
+Weptune, 2026. https://github.com/Weptune/nematica
+
+Recordings: Randi F., Sharma A. K., Dvali S., Leifer A. M.
+Neural signal propagation atlas of Caenorhabditis elegans. Nature 623, 406 to 414 (2023).</pre>
+      <p class="muted" style="font-size:1rem">Code is MIT licensed. Recordings belong to their authors and are not redistributed; the scripts download and convert them.</p>
+    </div>
+
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="in">
+    <p>NEMATICA. Every prediction is written down before the experiment runs, and results that went against us are kept.</p>
+    <nav aria-label="Footer"><a href="findings.html">Findings</a><a href="method.html">Method</a><a href="log.html">Research log</a><a href="https://github.com/Weptune/nematica">Code on GitHub</a></nav>
+  </div>
+</footer>
+
+<script src="data/results.js"></script>
+<script src="data/local.js" onerror="void 0"></script>
+<script src="assets/charts.js"></script>
+<script src="assets/scope.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>

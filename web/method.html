@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Method: NEMATICA</title>
+<meta name="description" content="How NEMATICA scores an artificial brain: a ruler built from the differences between real worms, calibrated before any model is scored.">
+<link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<header class="bar" id="bar">
+  <a class="wordmark" href="index.html" aria-label="NEMATICA home">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.2" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".55"/><circle cx="12" cy="12" r="5.2" fill="none" stroke="#0a7a5a" stroke-width="2.2"/><circle cx="17.2" cy="12" r="2.1" fill="#c8489c"/></svg>
+    NEMATICA
+  </a>
+  <nav aria-label="Site">
+    <a href="findings.html">Findings</a>
+    <a href="method.html" aria-current="page">Method</a>
+    <a href="log.html" class="optional">Research log</a>
+    <a href="https://github.com/Weptune/nematica" class="optional">Code</a>
+  </nav>
+</header>
+
+<main class="page">
+  <div class="sheet">
+    <h1 class="title">A ruler for brains, measured in real worms.</h1>
+    <p class="standfirst">There is no single right answer for what a worm's brain should do; healthy worms differ. So NEMATICA never asks whether a brain matches a worm. It asks whether the brain differs from real worms by about as much as real worms differ from each other.</p>
+  </div>
+
+  <div class="sheet with-toc" style="margin-top:clamp(32px,5vw,64px)">
+    <nav class="toc" aria-label="Contents">
+      <ol>
+        <li><a href="#ruler">The ruler</a></li>
+        <li><a href="#tests">The tests</a></li>
+        <li><a href="#calibration">Breaking real brains on purpose</a></li>
+        <li><a href="#power">How sharp the poke test is</a></li>
+        <li><a href="#rules">Rules</a></li>
+        <li><a href="#data">Data and code</a></li>
+      </ol>
+    </nav>
+
+    <h2 id="ruler">Inside, outside, or too typical.</h2>
+    <p>For every test, we measure the distance between every pair of real worms in a held-out group. That spread of distances is the ruler. An artificial brain is run through the same experiment as each real worm (same length, same stimulation schedule) and the same distance is measured from its simulated worm to every real worm except the one it imitates.</p>
+    <p>The verdict comes from resampling whole worms, so that one strange worm cannot decide it. A brain is <strong>outside</strong> when its distances are reliably larger than real worms' distances from each other, or its median lies beyond the 95th percentile. It is <strong>too typical</strong> when its distances are reliably smaller, or below the 5th percentile: it is closer to every worm than worms are to each other, which is what an average worm looks like. Otherwise it is <strong>inside</strong>.</p>
+    <aside class="note"><p><span class="fig">Why too typical is a failure.</span> A model trained to predict well converges on the average worm. No real worm is average, and a copy of a particular brain should not be either. In the first arc of this project, the model tuned to forecast best was too typical on several tests, while a slightly worse forecaster sat on the real-worm line.</p></aside>
+    <figure class="plate wide">
+      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 9</span>One test, one held-out group, every brain</p><div class="legend" data-legend="noband"></div></div>
+      <div data-chart="rulerStrip" data-metric="C1.pattern" data-fold="0"></div>
+      <figcaption>The echo pattern test on held-out group 1. The green band is the middle 90% of distances between two real worms. Each mark is one artificial brain's median distance from the real worms. Hover a mark for its name. The verdict uses the full distribution, not only the median, so marks near the band edge can land either way.</figcaption>
+    </figure>
+
+    <h2 id="tests">Five families of tests.</h2>
+    <p>The tests move from what anyone could check by watching a recording to what only a perturbation reveals.</p>
+    <div class="table-wrap wide">
+      <table class="data">
+        <thead><tr><th>Family</th><th>Test</th><th>What it asks</th></tr></thead>
+        <tbody>
+          <tr><td>Watching</td><td>Activity values</td><td>Is each neuron's distribution of activity right?</td></tr>
+          <tr><td></td><td>Timescale</td><td>How long does activity take to forget itself?</td></tr>
+          <tr><td></td><td>Correlations</td><td>Which neurons rise and fall together?</td></tr>
+          <tr><td></td><td>Dimension</td><td>How many independent patterns does the whole brain use?</td></tr>
+          <tr><td></td><td>Lead and lag</td><td>Which neurons move first, and which follow?</td></tr>
+          <tr><td></td><td>Bout lengths</td><td>How long do the command neurons for reversing stay on?</td></tr>
+          <tr><td>Poking</td><td>Echo pattern</td><td>When one neuron is switched on, which others answer, and with what sign and strength?</td></tr>
+          <tr><td></td><td>Echo size</td><td>How big are the answers overall?</td></tr>
+          <tr><td></td><td>Echo time course</td><td>How do the strongest answers rise and fall?</td></tr>
+          <tr><td>Echo complexity</td><td>Spread</td><td>What share of the brain answers a poke?</td></tr>
+          <tr><td></td><td>Complexity</td><td>How compressible is the pattern of answers across neurons and time? (perturbational complexity index, Casali et al. 2013)</td></tr>
+          <tr><td>Mind at rest</td><td>Complexity, integration, repertoire</td><td>Lempel-Ziv complexity of ongoing activity, how much the parts share, and how many whole-brain states are visited</td></tr>
+          <tr><td>Behaviour</td><td>Occupancy, encounter, approach</td><td>Driving a simulated body near copper: does the worm avoid it the way real worms do?</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="calibration">Before scoring any model, we break real brains on purpose.</h2>
+    <p>A test is only trusted once it gives the answers we wrote down in advance for systems whose truth we know. We take real worms and damage them in specific ways: read their responses at random times instead of after the poke, credit the wrong neuron with each poke, triple every response, or play responses backwards. Each damage should fail some tests and pass others. The poke tests hit 31 of 33 designed outcomes; the consciousness-science tests hit 24 of 27.</p>
+    <figure class="plate wide">
+      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 10</span>Designed outcomes for the poke tests</p><div class="legend" data-legend="noband"></div></div>
+      <div class="table-wrap" style="margin:0"><div data-chart="calibration"></div></div>
+      <figcaption>Each mark is one held-out group. Rings mark the outcome written down before running: green where it was met in every group, magenta where it was missed in at least one. No ring: either outcome was acceptable. Responses played backwards keep their size and pattern, so only the time course should fail; responses at random times should fail the pattern.</figcaption>
+    </figure>
+
+    <h2 id="power">How sharp the poke test is.</h2>
+    <p>Real worms agree only weakly on which neuron answers which poke, so it is fair to ask how much true cause and effect a brain needs before the test notices. We built synthetic brains whose echoes are a known blend of the true average echo and the same echoes reassigned to random pairs. The blend fixes exactly how strongly the brain's echoes correlate with the truth, and every echo keeps its real size and shape.</p>
+    <p>The test turns out to be narrow and precise. Below a correlation of about 0.3 with the true average echo, a brain is outside: it does not know enough cause and effect. Above about 0.5, it is too typical: more stereotyped than any worm. The window is 0.15 to 0.2 wide, and it sits in the same place in all three held-out groups. A brain copy has to be right about cause and effect and as individual as a real worm.</p>
+    <aside class="note">
+      <div class="measure"><span class="v">0.3 to 0.5</span><span class="l">correlation with the true average echo needed to pass</span></div>
+      <div class="measure copy"><span class="v">0.05 to 0.20</span><span class="l">where the models learned from activity sit</span></div>
+    </aside>
+    <figure class="plate wide">
+      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 11</span>Power of the echo pattern test</p></div>
+      <div data-chart="power"></div>
+      <figcaption>Lines: agreement of synthetic brains with real worms as they carry more of the true average echo, one line per held-out group. Strips: the verdict at each step (three random reassignments each). Markers along the top: where models sit, from their averaged echoes against the atlas average (Figure 4). One expectation was missed: we predicted the window would be centred at 0.3, a single real worm's level; it sits nearer 0.4, because the atlas average is itself noisy.</figcaption>
+    </figure>
+
+    <h2 id="rules">Rules that keep the benchmark honest.</h2>
+    <ol>
+      <li>Predictions, including what would count as failure, are written into the project's record before each experiment runs. Misses are reported next to hits.</li>
+      <li>Worms are split into groups once, by worm, frozen with a hash and never regenerated after results are seen.</li>
+      <li>A brain is never compared with the worm it was derived from.</li>
+      <li>Every change to the ruler is checked against calibration systems with known answers.</li>
+      <li>Every quantity carries a tag: measured, inferred, learned, or assumed.</li>
+      <li>Recordings normalised over the whole session leak the future into the past; only the original traces are used.</li>
+    </ol>
+
+    <h2 id="data">Data and code.</h2>
+    <div class="table-wrap wide">
+      <table class="data">
+        <thead><tr><th>Source</th><th>What it provides</th></tr></thead>
+        <tbody>
+          <tr><td>Randi, Sharma, Dvali and Leifer, <em>Nature</em> 623, 406 to 414 (2023)</td><td>Whole-brain calcium imaging while single neurons are switched on with light: 113 wild-type worms, plus mutants. The poke tests and Figure 1.</td></tr>
+          <tr><td>Atanas et al., <em>Cell</em> (2023)</td><td>Whole-brain recordings of freely moving worms. A second dataset for the tests of ongoing activity.</td></tr>
+          <tr><td>Copper-boundary recordings, Dryad 10.5061/dryad.w9ghx3g4v (CC0)</td><td>Freely moving worms near an aversive copper boundary: the watching tests and the behaviour tests.</td></tr>
+          <tr><td>Creamer, Leifer and Pillow (2024)</td><td>Published models fitted to the atlas, scored as they were released.</td></tr>
+          <tr><td>Kunert, Shlizerman and Kutz (2014); Neural Interactome</td><td>The wiring diagram used for wiring-constrained models.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The code is MIT licensed at <a href="https://github.com/Weptune/nematica">github.com/Weptune/nematica</a>. Recordings belong to their authors and are not redistributed; scripts download and convert them. Every figure on this site is drawn from a results table in the repository.</p>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="in">
+    <p>NEMATICA. Every prediction is written down before the experiment runs, and results that went against us are kept.</p>
+    <nav aria-label="Footer"><a href="index.html">Home</a><a href="findings.html">Findings</a><a href="log.html">Research log</a><a href="https://github.com/Weptune/nematica">Code on GitHub</a></nav>
+  </div>
+</footer>
+
+<script src="data/results.js"></script>
+<script src="assets/charts.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>
