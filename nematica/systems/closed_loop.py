@@ -109,10 +109,19 @@ class SensoryVAR:
         n_core = self.space.core.size
         if self.hazard_from == "brain":
             return np.arange(n_core + 1)
-        if self.hazard_from in ("command", "command_fixed", "drive", "drive_fixed"):
+        if self.hazard_from in ("command", "command_fixed", "drive", "drive_fixed", "command_ash"):
             names = [self.space.classes[c] for c in self.space.core]
-            return np.array([i for i, c in enumerate(names) if c in self.COMMAND] + [n_core])
+            keep = self.COMMAND + (("ASH",) if self.hazard_from == "command_ash" else ())
+            return np.array([i for i, c in enumerate(names) if c in keep] + [n_core])
         return np.array([n_core]) if self.hazard_from == "speed" else np.array([], dtype=int)
+
+    @property
+    def _hz_senses(self) -> bool:
+        """Whether copper enters the reversal hazard directly. With "command_ash" it does not:
+        in real worms, once ASH is in the hazard, direct copper terms add nothing to held-out
+        prediction of reversal onsets (log likelihood -3025.1 with ASH, -3026.2 adding
+        copper; -3094.5 command neurons alone) [M], so copper acts only through the brain."""
+        return self.senses and self.hazard_from != "command_ash"
 
     @property
     def _uses_drive(self) -> bool:
@@ -123,7 +132,7 @@ class SensoryVAR:
         parts = [v[rows]]
         if self._uses_drive:
             parts.append([pred_next])
-        if self.senses:
+        if self._hz_senses:
             parts.append(e)
         return np.concatenate(parts + [[1.0]])
 
@@ -148,7 +157,7 @@ class SensoryVAR:
                 pred = np.zeros(v.shape[1])
                 pred[self.lags:] = F @ w
                 cols.append(pred[None, 1:])
-            if self.senses:
+            if self._hz_senses:
                 cols.append(self._sense(s)[:, :-1])
             Xh.append(np.vstack(cols + [np.ones((1, len(cur)))])[:, sel].T)
             yh.append((nxt[sel] != state).astype(float))
@@ -178,6 +187,9 @@ class SensoryVAR:
         reversal starts and ends (log likelihood) [L]."""
         scores = {}
         self._no_drive = True               # the brain is not fitted yet at this point
+        hz_from = self.hazard_from
+        if hz_from == "command_ash":        # no copper in this hazard: choose the scale with a copper-only one
+            self.hazard_from = "none"
         for sc in self.sense_scales:
             self.scale = sc
             hz = self._fit_hazards(train)
@@ -189,6 +201,7 @@ class SensoryVAR:
             scores[sc] = ll
         self.scale = max(scores, key=scores.get)
         self._no_drive = False
+        self.hazard_from = hz_from
         return scores
 
     def fit(self, train, val):

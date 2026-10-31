@@ -55,6 +55,7 @@ choice made on training and validation worms only, except where marked post hoc)
 | Same with 10 frames of memory | **10 of 10** | **0.62 held-out (not distinguishable in 2 of 3 pools), 0.50 in-sample** | not modelled |
 | Closed loop v7 (3-frame brain senses copper, steers, reverses) | 9 of 10 | 0.95 (v6, frozen split) | occupancy and approach inside; 14 to 17% of time near copper (real 3.2%) |
 | Closed loop v8 (10-frame brain) | 9 of 10 | not yet run | occupancy and approach inside; 11% near copper; encounter outside |
+| Closed loop v9 (copper acts only through ASH and the brain) | 8 of 10 | not yet run | **all three Level 6 metrics inside**; 10.4% near copper |
 
 What these say:
 1. **Forecasting is not fidelity.** The model that forecasts best is too typical; letting
@@ -465,8 +466,28 @@ reversal command neurons by seconds (antisymmetric lagged correlation at 6 s: RI
 AVE -0.165, AVA -0.167), and in the closed loop that lead is roughly halved (-0.054,
 -0.074, -0.104). The reason is the design of v4 to v8: copper raises the reversal rate
 through a direct copper term in the hazard, not through ASH. The encounter miss (the
-brain's response when the head meets copper) points the same way. Next: route copper
-through ASH, so the sensory neuron, not a shortcut, carries the signal to the commands.
+brain's response when the head meets copper) points the same way.
+
+**In real worms, ASH carries copper's effect on reversing.** On forward frames, ASH activity
+(drive units) is +1.12 within 0.5 mm of copper against -0.25 beyond 2 mm. Predicting
+reversal onsets in held-out worms (two-fold by worm), adding ASH to the command neurons
+improves the log likelihood from -3094.5 to -3025.1, and adding direct copper terms on top
+of ASH adds nothing (-3026.2) [M].
+
+**Version 9** follows that: the reversal hazard uses the command neurons and ASH with no
+direct copper term, so copper can act only through the brain, and the brain's copper
+weights may be left unpenalised if validation worms prefer it (they did, in all three
+rotations) (`--variants v9`, `docs/figures/closed_loop_v9.csv`):
+- **All three Level 6 metrics inside for the first time** (encounter 0.865, approach,
+  occupancy), and the lowest time near copper so far, 10.4% (real 3.2%).
+- But 8 of 10 pairwise: lead-lag got worse (1.09; the expectation that it would recover
+  was wrong) and the activity distribution now misses narrowly (1.06), plausibly from the
+  unpenalised copper weights. The steering gain needed rose (6 to 12 times the fitted one).
+- Why lead-lag does not recover: the model's ASH learned a phasic copper response (weight
+  2.4 on the change in proximity, 0.04 on proximity itself). Driven by real recorded
+  copper input it rises by about 0.48 near copper, a third of the real rise (1.37); in
+  closed loop, where model worms near copper are rarely approaching it, the rise vanishes
+  (-0.11). Real ASH also stays up while the worm is near copper; the model's does not.
 
 
 ## Leaderboard: published models
