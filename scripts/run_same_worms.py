@@ -22,6 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from nematica.bench import build_reference, score_system  # noqa: E402
 import nematica.bench.causal as causal  # noqa: E402
 from nematica.bench.causal import response_set, score_sets  # noqa: E402
+from nematica.bench.perturbational import PCI_LEVELS, pci_set  # noqa: E402
 from nematica.bench.sample import BenchSample  # noqa: E402
 from nematica.data.canonical import zscore_rows  # noqa: E402
 from nematica.data.pumpprobe import load_pumpprobe_dir  # noqa: E402
@@ -51,8 +52,11 @@ def make_model(spec: str):
     if base.startswith("creamer2024_"):
         return CreamerCausal(base.replace("creamer2024_", ""), protocol=protocol)
     parts = base[3:].split("_")
-    return ClassVAR(lags=int(parts[0]), frames=parts[1], coupling=parts[2] if len(parts) > 2 else "full",
-                    protocol=protocol)
+    extra = parts[2:]
+    return ClassVAR(lags=int(parts[0]), frames=parts[1], protocol=protocol,
+                    coupling="diagonal" if "diagonal" in extra else "full",
+                    features="relu" if "relu" in extra else "linear",
+                    penalty="lasso" if "lasso" in extra else "ridge")
 
 
 def main() -> int:
@@ -65,6 +69,7 @@ def main() -> int:
     ap.add_argument("--cache", default="results/same_worms")
     ap.add_argument("--tag", default="")
     ap.add_argument("--fold", type=int, default=None)
+    ap.add_argument("--pci", action="store_true", help="also score perturbational complexity (P1, P2)")
     args = ap.parse_args()
     causal.NORM = args.norm
     cache = Path(args.cache)
@@ -88,6 +93,7 @@ def main() -> int:
         real_b = [bench_sample(r, classes, f"real:{r.uid}", r.uid) for r in pool]
         ref = build_reference(real_b, metrics=ACTIVITY_LEVELS)
         real_c = [response_set(r) for r in pool]
+        real_p = [pci_set(r) for r in pool] if args.pci else None
         for name in todo:
             m = make_model(name).fit(train, val)
             n_before = len(rows)
@@ -105,6 +111,16 @@ def main() -> int:
                 sim_c.append(rs)
             for row in score_sets(name, sim_c, real_c):
                 rows.append({"fold": fi, "kind": "causal", **row})
+            if args.pci:
+                sim_p = []
+                for s, r in zip(sims, pool):
+                    ps = pci_set(s, f"{name}:{r.uid}")
+                    ps.group = r.uid
+                    sim_p.append(ps)
+                for row in score_sets(name, sim_p, real_p, levels=PCI_LEVELS):
+                    med = np.concatenate([q.spread for q in sim_p if len(q.spread)])
+                    rows.append({"fold": fi, "kind": "complexity", **row,
+                                 "median_spread": round(float(np.median(med)), 4) if med.size else None})
             mine = [r for r in rows if r["fold"] == fi and r["system"] == name]
             for r in mine:
                 r["system"] = name

@@ -1128,6 +1128,27 @@ Together: each worm's brain answers pokes in its own, repeatable way, and that i
 causal signature is invisible in its resting activity, as far as a linear model fitted to
 that activity can see. A copy built by watching would miss it.
 
+**D. The ingredient hunt: what would it take to pass the poke test?** Every brain so far
+fails it. Rather than stop at a negative result, add one candidate ingredient at a time to
+the VAR and see which, if any, brings the echo to real. Candidates (all fitted on training
+worms only, scored on the same held-out worms, with perturbational complexity added):
+
+| model | ingredient |
+|---|---|
+| `var3_stim` | learns only from the 30 s after stimulations: cause and effect, not rest |
+| `var3_all_relu` | nonlinear propagation: a class's influence changes once it is strongly active (rectified copies of the last frame beyond 1 SD) |
+| `var3_all_lasso` | sparse coupling: most neuron pairs do not influence each other at all |
+| `var3_stim_relu` | the first two together |
+| `var10_stim` | learning from stimulation with 5 s of memory |
+
+Expectations, written before running: learning from stimulation improves pattern the most
+(closer to real worms than every rest-fitted model, in every pool) but stays outside;
+nonlinearity and sparsity each shrink spread toward real (3 to 4% of the brain); no single
+ingredient passes pattern. **Passing the poke test** is defined now, in advance: pattern
+inside in at least 2 of 3 pools *and* spread inside in at least 2 of 3. If something passes,
+it is then checked at rest too: a model that passes the poke test but fails at rest would
+be the mirror image of the headline.
+
 ## Signatures of a mind: perturbational complexity
 
 Nobody can measure consciousness directly, and whether a worm experiences anything is an

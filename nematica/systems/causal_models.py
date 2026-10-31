@@ -50,11 +50,18 @@ def spontaneous_mask(rec: PumpProbe) -> np.ndarray:
 class ClassVAR:
     def __init__(self, lags: int = 3, frames: str = "spontaneous", min_fraction: float = 0.3,
                  ridges=(1.0, 10.0, 100.0, 1000.0, 10000.0), max_radius: float = 0.99,
-                 protocol: str = "clamp", fixed_ridge: float | None = None, coupling: str = "full"):
+                 protocol: str = "clamp", fixed_ridge: float | None = None, coupling: str = "full",
+                 features: str = "linear", penalty: str = "ridge", theta: float = 1.0):
         self.lags, self.frames, self.min_fraction, self.ridges = lags, frames, min_fraction, ridges
         self.max_radius, self.protocol, self.fixed_ridge = max_radius, protocol, fixed_ridge
         self.coupling = coupling       # "full", or "diagonal": each class driven only by its own past
+        self.features = features       # "linear", or "relu": plus rectified copies of the last frame,
+                                       # so influence can depend on whether a source is strongly active
+        self.penalty, self.theta = penalty, theta     # "ridge" or "lasso" (sparse coupling)
+        if penalty == "lasso":
+            self.ridges = (1e-3, 3e-3, 1e-2, 3e-2)
         self.name = (f"var{lags}_{frames}" + ("" if coupling == "full" else f"_{coupling}")
+                     + ("" if features == "linear" else f"_{features}") + ("" if penalty == "ridge" else f"_{penalty}")
                      + ("" if protocol == "clamp" else f"@{protocol}"))
 
     # -------------------------------------------------------------- fitting
@@ -63,14 +70,23 @@ class ClassVAR:
         Xs, Ys = [], []
         for r in recs:
             z = class_matrix(r, self.classes)
-            use = spontaneous_mask(r) if self.frames == "spontaneous" else np.ones(r.n_frames, bool)
+            spont = spontaneous_mask(r)
             zf = np.nan_to_num(z)
             T = z.shape[1]
-            ok = np.array([use[t - p:t + 1].all() for t in range(p, T)])
+            if self.frames == "spontaneous":
+                ok = np.array([spont[t - p:t + 1].all() for t in range(p, T)])
+            elif self.frames == "stim":          # only frames within 30 s after a stimulation
+                ok = ~spont[p:T]
+            else:
+                ok = np.ones(T - p, bool)
             ts = np.arange(p, T)[ok]
             if ts.size == 0:
                 continue
-            X = np.hstack([zf[:, ts - L].T for L in range(1, p + 1)] + [np.ones((ts.size, 1))])
+            blocks = [zf[:, ts - L].T for L in range(1, p + 1)]
+            if self.features == "relu":
+                last = zf[:, ts - 1].T
+                blocks += [np.maximum(last - self.theta, 0), np.maximum(-last - self.theta, 0)]
+            X = np.hstack(blocks + [np.ones((ts.size, 1))])
             Xs.append(X)
             Ys.append(z[:, ts].T)
         return np.vstack(Xs), np.vstack(Ys)
@@ -85,6 +101,13 @@ class ClassVAR:
             cols = (np.arange(X.shape[1]) if self.coupling == "full"
                     else np.r_[[L * C + j for L in range(self.lags)], X.shape[1] - 1])
             Xm = X[np.ix_(m, cols)]
+            if self.penalty == "lasso":
+                from sklearn.linear_model import Lasso
+                las = Lasso(alpha=lam, fit_intercept=True, max_iter=2000, tol=1e-3, selection="random",
+                            random_state=0).fit(Xm[:, :-1], Y[m, j])
+                W[cols[:-1], j] = las.coef_
+                W[cols[-1], j] = las.intercept_
+                continue
             pen = np.full(len(cols), lam)
             pen[-1] = 0.0
             W[cols, j] = np.linalg.solve(Xm.T @ Xm + np.diag(pen), Xm.T @ Y[m, j])
@@ -125,7 +148,7 @@ class ClassVAR:
 
     def spectral_radius(self, seen=None) -> float:
         C, p = len(self.classes), self.lags
-        A = self.W[:-1].reshape(p, C, C)
+        A = self.W[:p * C].reshape(p, C, C)
         if seen is not None:
             A = A[:, seen][:, :, seen]
             C = int(np.sum(seen))
@@ -134,6 +157,17 @@ class ClassVAR:
         if p > 1:
             comp[C:, :-C] = np.eye((p - 1) * C)
         return float(np.abs(np.linalg.eigvals(comp)).max())
+
+    def _step(self, z, t, A, b):
+        p = self.lags
+        nxt = b + sum(z[:, t - L] @ A[L - 1] for L in range(1, p + 1))
+        if self.features == "relu":
+            C = len(self.classes)
+            last = z[:, t - 1]
+            Np, Nm = self.W[p * C:p * C + C], self.W[p * C + C:p * C + 2 * C]
+            nxt = nxt + np.maximum(last - self.theta, 0) @ Np + np.maximum(-last - self.theta, 0) @ Nm
+            nxt = np.clip(nxt, -10, 10)          # rectified terms can grow without bound [A]
+        return nxt
 
     # -------------------------------------------------------------- stimulation
     def simulate(self, rec: PumpProbe, rng: np.random.Generator, burn: int = 200) -> PumpProbe:
@@ -169,7 +203,7 @@ class ClassVAR:
         seen = np.zeros(C, bool)
         seen[[idx[c] for c in own]] = True
         z = np.zeros((C, T + burn))
-        A = self.W[:-1].reshape(p, C, C).copy()        # A[L-1][from, to]
+        A = self.W[:p * C].reshape(p, C, C).copy()     # A[L-1][from, to]
         # the fitted dynamics are slightly explosive for some worms' class sets (slow drifts in
         # the recordings); scaling lag L by g**L scales every eigenvalue by g, so the system
         # is made just stable (radius 0.99) where needed [A]
@@ -182,14 +216,14 @@ class ClassVAR:
             # size pulses in each class's own SD units: SD of a free run of the same dynamics
             zz = np.zeros((C, 1500 + p))
             for t in range(p, zz.shape[1]):
-                zz[:, t] = b + sum(zz[:, t - L] @ A[L - 1] for L in range(1, p + 1)) + self.noise_sd * rng.standard_normal(C)
+                zz[:, t] = self._step(zz, t, A, b) + self.noise_sd * rng.standard_normal(C)
                 zz[~seen, t] = 0.0
             sd_free = np.std(zz[:, 300:], axis=1)
             pulse = {f: (ci, v * sd_free[ci]) for f, (ci, v) in pulse.items()}
         b = self.W[-1]
         base = {}
         for t in range(p, T + burn):
-            nxt = b + sum(z[:, t - L] @ A[L - 1] for L in range(1, p + 1))
+            nxt = self._step(z, t, A, b)
             nxt += self.noise_sd * rng.standard_normal(C)
             nxt[~seen] = 0.0
             tt = t - burn
