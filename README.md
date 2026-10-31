@@ -1301,6 +1301,16 @@ Prediction: (1) the hybrid's echoes are *less* complex than real ones (lower med
 hybrid's do (lower correlation between repeats in real worms). If both hold, the missing
 ingredient for complexity is trial-to-trial variability in the causal response itself.
 
+Result (`scripts/run_pci_why.py`, pool 1): **the hypothesis is wrong, in the opposite
+direction.** The hybrid's echoes are *more* complex than real ones (median PCI 0.89 against
+0.67), and repeated pokes of the same class are about as dissimilar in the model as in real
+worms (correlation between repeats 0.11 against 0.09; p = 0.15). Real echoes are more
+compressible: when a real neuron responds, it stays responding for a stretch, and neurons
+respond together, so the significance pattern comes in coherent blocks. The model's pattern
+is speckled, most likely by the very ingredient that fixed spread: white measurement noise
+crosses the threshold at isolated moments. Next (to be pre-registered): measurement noise
+that is smooth in time, or a threshold that requires a response to last.
+
 **Signal or noise? (written before computing it).** A model can fail the poke test in two
 different ways: its *average* echo is wrong (it does not know the causal structure), or its
 average echo is right but each single echo is buried in the wrong kind of variability.
