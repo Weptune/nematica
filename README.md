@@ -113,14 +113,12 @@ Other findings (`scripts/run_arc1.py`, `scripts/run_cv.py`; tables in `docs/figu
   γ was one of three values fixed in advance (0.5, 0.7, 0.85); choosing it on two pools and
   scoring the third gives 8/8, 7/8 and 8/8.
 - **But a classifier still tells it apart (Level 8 AUC 0.94; other real worms 0.68).**
-  (Update, Oct 31: much of this is individuality. Smoothness of 30 s windows ranges from
-  0.49 to 0.83 between real worms, and the frozen test worms happen to be less smooth than
-  the training worms (median lag-1 autocorrelation 0.64 vs 0.72). Against the very
-  training worms it imitates, the model scores AUC 0.73, close to the real-worm control;
-  it is about 0.03 smoother than its own sources, the same direction in which training and
-  test worms already differ, so the gaps compound against held-out worms. The drive
-  increments of real worms are also heavy-tailed (excess kurtosis 1.7, model 0), which a
-  Gaussian model cannot show.) The
+  (Update, Oct 31, measured with the fair design below: the frozen split overstates the
+  gap. Its test worms are atypically unsmooth (median window lag-1 autocorrelation 0.64
+  vs 0.72 for the training worms), which raises the control to 0.68. Over the three
+  rotating pools the real control is at chance (0.46) and the model scores 0.82 against
+  held-out worms and 0.77 against the very training worms it imitates. So the model does
+  have a genuine, consistent giveaway, about 0.8 rather than 0.94.) The
   giveaway is short-timescale structure: within 30 s windows the model's lag-1
   autocorrelation is 0.755 against 0.656 in real worms (that feature alone gives AUC 0.88).
   Real worms have more power at both ends of the spectrum (33% of power in periods over
@@ -159,6 +157,27 @@ Other findings (`scripts/run_arc1.py`, `scripts/run_cv.py`; tables in `docs/figu
 - A correction: on the single frozen 6-worm test pool the per-worm model looked fully
   inside on these levels; the rotating pools show that at the forecasting-chosen shrinkage
   it is still slightly too typical. The shrinkage sweep explains why.
+
+**How Level 8 is reported from now on** (`scripts/run_l8_fair.py`,
+`docs/figures/l8_fair.csv`; design written before the first run). For each of the three
+rotating pools, the same classifier is run three ways: the model against held-out worms
+(the usual test), the model against the very training worms it imitates (model error
+alone), and real training worms against the held-out worms (individuality alone).
+
+| | rotation 1 | rotation 2 | rotation 3 | mean |
+|---|---|---|---|---|
+| real control | 0.500 | 0.442 | 0.434 | 0.459 |
+| calcium model, held-out | 0.904 | 0.793 | 0.758 | 0.818 |
+| calcium model, in-sample | 0.712 | 0.796 | 0.800 | 0.769 |
+| with heavy-tailed noise, held-out | 0.904 | 0.797 | 0.727 | 0.809 |
+| with heavy-tailed noise, in-sample | 0.749 | 0.753 | 0.808 | 0.770 |
+
+Real drive increments are heavy-tailed (excess kurtosis 1.8 in drive space); Student-t
+innovations with per-worm degrees of freedom fitted to each training worm's residuals
+(median 8.5; `IndividualVAR(innovations="student")`) bring the calcium-trace increment
+kurtosis close to real (2.37 vs 2.73) but do not change the classifier result. The
+remaining giveaway is second-order: model windows are about 0.03 smoother than their own
+source worms, with too much power at 10 to 60 s periods and too little at 1 to 5 s.
 
 Caveats: 27 worms from one lab; the per-worm and shrinkage analyses were proposed after
 the first ladder results and are tested with controls and nested selection, not
@@ -373,6 +392,10 @@ can be measured) (`--variants v7`, `docs/figures/closed_loop_v7.csv`). Time near
 15.3% (v6: 27 to 34%; real 3.2%, or 9.1% by the uncorrected tracked position), **occupancy
 inside**, approach inside, encounter just outside (0.962), pairwise 9 of 10 (lead-lag
 1.06, just over the line). Closest so far; not yet a full pass.
+Over three independent replicates (`--seed-offset 10`, `20`): time near copper 15.3%,
+13.6%, 17.2%; occupancy and approach inside every time; encounter outside, outside,
+inside (0.962, 0.974, 0.936: borderline); lead-lag outside every time (1.05 to 1.06: a
+small but consistent miss).
 
 ## Leaderboard: published models
 

@@ -427,6 +427,7 @@ class IndividualVAR:
     pooled: Forecaster
     mode: str = "full"       # "full" | "noise_only" (pooled W, own noise) | "shuffled" (scrambled deviation)
     fixed_lam: float | None = None   # skip the forecasting-based choice and use this shrinkage
+    innovations: str = "gaussian"    # "gaussian" | "student": heavy-tailed, per-worm degrees of freedom
     lam: float = 0.0
     W: list = field(default_factory=list)
     L: list = field(default_factory=list)
@@ -435,7 +436,8 @@ class IndividualVAR:
 
     @property
     def name(self) -> str:
-        return {"full": "indiv_", "noise_only": "indivnoise_", "shuffled": "indivshuf_"}[self.mode] + self.pooled.name
+        return {"full": "indiv_", "noise_only": "indivnoise_", "shuffled": "indivshuf_"}[self.mode] + self.pooled.name \
+            + ("_t" if self.innovations == "student" else "")
 
     def _xy_one(self, s, sl=slice(None)):
         v, mask = self.pooled.space.encode(s)
@@ -478,16 +480,35 @@ class IndividualVAR:
         self.lam = best[0]
         self.info = {"lam": best[0], "within_worm_r2_individual": round(best[1], 4),
                      "within_worm_r2_pooled": round(1 - num / den, 4), "ridge": self.pooled.ridge}
-        self.W, self.L, self.names = [], [], []
+        self.W, self.L, self.names, self.nu = [], [], [], []
         for s in train:
             F, Y, M = self._xy_one(s)
             W = self._fit_one(F, Y, self.lam)
             R = (Y - F @ W) * M
             cov = R.T @ R / len(R) + 1e-6 * np.eye(R.shape[1])
+            L = np.linalg.cholesky(cov)
             self.W.append(W)
-            self.L.append(np.linalg.cholesky(cov))
+            self.L.append(L)
             self.names.append(s.origin)
+            if self.innovations == "student":
+                # degrees of freedom from the tail weight of this worm's whitened residuals
+                # on the observed neuron rows: excess kurtosis k of a unit-variance t is
+                # 6 / (nu - 4), so nu = 4 + 6 / k [L]
+                Z = np.linalg.solve(L, R.T)
+                n = self.pooled.space.core.size
+                obs = np.flatnonzero(M[0, :n])
+                z = Z[obs]
+                k = float(np.median(np.mean(z ** 4, axis=1) / np.mean(z ** 2, axis=1) ** 2 - 3))
+                self.nu.append(float(np.clip(4 + 6 / max(k, 1e-3), 4.2, 200.0)))
+        if self.nu:
+            self.info["student_nu_median"] = round(float(np.median(self.nu)), 2)
         return self
+
+    def _noise(self, rng, k, i):
+        if self.innovations != "student":
+            return rng.standard_normal(k)
+        nu = self.nu[i]
+        return rng.standard_t(nu, size=k) * np.sqrt((nu - 2) / nu)
 
     def one_step_r2(self, samples) -> float:          # a new worm only has the pooled model
         return self.pooled.one_step_r2(samples)
@@ -514,7 +535,7 @@ class IndividualVAR:
         out = np.empty((k, T + burn))
         for t in range(T + burn):
             state, f = p.feats.step(state, cur)
-            cur = np.clip(f @ W + L @ rng.standard_normal(k), -clip, clip)
+            cur = np.clip(f @ W + L @ self._noise(rng, k, i), -clip, clip)
             out[:, t] = cur
         s = p.space.decode(out[:, burn:], template, self.name, source=self.names[i])
         s.name = f"{self.name}:{self.names[i]}"       # the individual it came from

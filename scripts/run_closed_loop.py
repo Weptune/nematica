@@ -38,6 +38,7 @@ def main() -> int:
     ap.add_argument("--folds", required=True)
     ap.add_argument("--out", default="results/closed_loop")
     ap.add_argument("--seeds", type=int, default=2)
+    ap.add_argument("--seed-offset", type=int, default=0, help="shifts every simulation seed (replicates)")
     ap.add_argument("--variants", default="v2", choices=("v2", "v3", "v4", "v5", "v6", "v7"))
     args = ap.parse_args()
     recs = load_copper_dir(Path(args.data))
@@ -107,7 +108,7 @@ def main() -> int:
                 sims = []
                 for seed in range(args.seeds):
                     smp, _, _, _ = m.simulate(s, r.meta["arena"]["radius_mm"], float(r.behaviour["dist_from_center_mm"][0]),
-                                              lib, np.random.default_rng(1000 * seed + 31 * fi + i), seed * len(pool) + i, r.t)
+                                              lib, np.random.default_rng(1000 * (seed + args.seed_offset) + 31 * fi + i), seed * len(pool) + i, r.t)
                     sims.append(smp)
                     d = smp.behaviour["dist_to_boundary"]
                     stats[vname].append({"near_or_beyond_0.5mm": float(np.mean(d < 0.5)), "beyond": float(np.mean(d < 0))})
@@ -139,7 +140,8 @@ def main() -> int:
     print_table(comb)
     rows_all += comb
     keys = list(dict.fromkeys(k for r in rows_all for k in r))
-    with (out / f"closed_loop_{args.variants}.csv").open("w", newline="", encoding="utf-8") as fh:
+    suffix = f"_rep{args.seed_offset}" if args.seed_offset else ""
+    with (out / f"closed_loop_{args.variants}{suffix}.csv").open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=keys)
         w.writeheader()
         w.writerows(rows_all)

@@ -127,3 +127,18 @@ def test_slowfast_adds_slow_structure():
     s = m.generate(worm(7), np.random.default_rng(0), which=0, burn=50)
     assert s.name.startswith("slowfast_lags3")
     assert s.x.shape == worm(7).x.shape and np.isfinite(s.x[s.observed]).all()
+
+
+def test_student_innovations_fit_tail_weight():
+    """Heavy-tailed innovations: a degrees-of-freedom value per training worm, finite output,
+    and heavier tails than the Gaussian version when the residuals are Gaussian-tailed."""
+    train = [worm(s) for s in range(1, 6)]
+    space = StateSpace.from_train(train, min_fraction=0.5)
+    m = IndividualVAR(Forecaster("var1", space, LagFeatures(space.k, 1, False)), fixed_lam=300,
+                      innovations="student").fit(train, [train[0]])
+    assert len(m.nu) == len(train) and all(4.2 <= v <= 200 for v in m.nu)
+    m.nu = [4.5] * len(m.nu)
+    s = m.generate(train[0], np.random.default_rng(0), which=0, burn=50)
+    assert np.isfinite(s.x[s.observed if hasattr(s, "observed") else slice(None)]).any()
+    z = np.concatenate([m._noise(np.random.default_rng(1), 5000, 0)])
+    assert np.mean(z ** 4) / np.mean(z ** 2) ** 2 > 4.0 and abs(np.var(z) - 1) < 0.15

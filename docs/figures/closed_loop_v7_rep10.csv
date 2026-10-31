@@ -1,0 +1,14 @@
+system,metric,level,primary,system_median,bio_median,shift,shift_lo,shift_hi,percentile_of_bio,n_partitions,verdict,distance_ratio,self_spread_ratio,folds
+closed_loop_senses_steer_drift,L6.encounter,6,True,0.9633,0.5355,0.4112,0.0777,0.7918,0.974,421,outside,,,
+closed_loop_senses_steer_drift,L6.approach,6,False,0.2641,0.1975,0.0708,-0.1537,0.2427,0.713,450,inside,,,
+closed_loop_senses_steer_drift,L6.occupancy,6,True,0.3884,0.2401,0.1628,-0.2913,0.4757,0.769,450,inside,,,
+closed_loop_senses_command_fixed_dir_steer_limit,L1.distribution,1,True,,,0.0047,-0.0019,0.009,,,inside,1.04,0.92,inside/inside/inside
+closed_loop_senses_command_fixed_dir_steer_limit,L1.timescale,1,False,,,0.0798,-0.0431,0.1546,,,inside,1.122,0.745,inside/outside/inside
+closed_loop_senses_command_fixed_dir_steer_limit,L2.correlation,2,True,,,0.0046,-0.0246,0.0453,,,inside,1.009,1.018,inside/inside/inside
+closed_loop_senses_command_fixed_dir_steer_limit,L2.dimension,2,False,,,0.0135,-0.0602,0.0826,,,inside,1.085,0.946,inside/inside/inside
+closed_loop_senses_command_fixed_dir_steer_limit,L4.leadlag,4,True,,,0.0366,0.0051,0.0871,,,outside,1.054,1.116,inside/inside/inside
+closed_loop_senses_command_fixed_dir_steer_limit,L4.dwell,4,False,,,-0.0014,-0.0562,0.0437,,,inside,1.0,0.975,inside/inside/inside
+closed_loop_senses_command_fixed_dir_steer_limit,L5.encoding,5,True,,,0.0116,-0.0359,0.0389,,,inside,1.042,1.183,inside/inside/inside
+closed_loop_senses_command_fixed_dir_steer_limit,L5.reversal,5,False,,,-0.0126,-0.0492,0.0171,,,inside,0.961,0.918,inside/inside/inside
+closed_loop_senses_command_fixed_dir_steer_limit,B.rev_rate,5,False,,,0.082,-0.069,0.1778,,,inside,1.337,1.122,inside/inside/inside
+closed_loop_senses_command_fixed_dir_steer_limit,B.rev_duration,5,False,,,-0.0041,-0.0516,0.0459,,,inside,0.994,0.806,inside/inside/inside
