@@ -34,14 +34,16 @@ from nematica.data.canonical import canonical_classes  # noqa: E402
 from nematica.export.atlas import load_atlas, position_for  # noqa: E402
 from nematica.export.replay import _resample_posture  # noqa: E402
 from nematica.export.virtual_worm import MotionLibrary, class_levels, write_bundle  # noqa: E402
-from nematica.systems.forecasters import CalciumStateSpace, Forecaster, IndividualVAR, LagFeatures  # noqa: E402
+from nematica.systems.forecasters import (CalciumStateSpace, Debounced, Forecaster,  # noqa: E402
+                                          IndividualVAR, LagFeatures)
 
-MODEL_LABEL = "per-worm linear dynamics on the calcium drive"
+MODEL_LABEL = "per-worm linear dynamics on the calcium drive, reversals read with hysteresis"
 METRIC_NAMES = {
     "L1.distribution": "activity values", "L1.timescale": "timescales",
     "L2.correlation": "which neurons move together", "L2.dimension": "dimensionality",
     "L4.leadlag": "who leads, who follows", "L4.dwell": "reversal-state durations",
     "L5.encoding": "tracking velocity", "L5.reversal": "activity during reversals",
+    "B.rev_rate": "how often it reverses", "B.rev_duration": "how long reversals last",
 }
 KEY_NEURONS = ["AVA", "AVE", "AIB", "RIM", "AVB", "RIB", "SMDV", "ASH"]
 
@@ -57,7 +59,7 @@ def main() -> int:
     ap.add_argument("--out", default="lab/public/data/which2")
     ap.add_argument("--start-s", type=float, default=120.0)
     ap.add_argument("--duration-s", type=float, default=420.0)
-    ap.add_argument("--scorecard", default="docs/figures/calcium_combined.csv")
+    ap.add_argument("--scorecard", default="docs/figures/reversals_combined.csv")
     ap.add_argument("--seed", type=int, default=2026)
     args = ap.parse_args()
 
@@ -68,7 +70,7 @@ def main() -> int:
     S = lambda uids: [from_recording(by[u], classes) for u in uids]  # noqa: E731
     train, val, test = S(split["train"]), S(split["val"]), S(split["test"])
     cs = CalciumStateSpace.from_train(train, gamma=0.5)
-    model = IndividualVAR(Forecaster("var3", cs, LagFeatures(cs.k, 3, False)), fixed_lam=300).fit(train, val)
+    model = Debounced(IndividualVAR(Forecaster("var3", cs, LagFeatures(cs.k, 3, False)), fixed_lam=300)).fit(train, val)
     sims = [model.generate(s, np.random.default_rng(100 + i), which=i) for i, s in enumerate(test)]
     library = MotionLibrary.from_recordings([by[u] for u in split["train"]])
 
@@ -76,7 +78,7 @@ def main() -> int:
     p = Path(args.scorecard)
     if p.exists():
         for r in csv.DictReader(p.open(encoding="utf-8")):
-            if r["system"] == "calcium_g0.5_indiv_lam300":
+            if r["system"] == "calcium_g0.5_indiv_lam300_hyst":
                 card.append({"metric": r["metric"], "what": METRIC_NAMES.get(r["metric"], r["metric"]),
                              "verdict": r["verdict"], "ratio": float(r["distance_ratio"])})
     core = core_classes(test + train + val, 12)

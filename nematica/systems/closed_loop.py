@@ -46,7 +46,7 @@ class SensoryVAR:
     def __init__(self, gamma: float = 0.5, lam: float = 300.0, senses: bool = True,
                  hazard_from: str = "brain", ridges=(0.01, 0.1, 1, 10, 100, 1000),
                  directional: bool = False, reversals: str = "hazard", speed_map: bool = False,
-                 sense_scales=(SENSE_SCALE_MM,)):
+                 sense_scales=(SENSE_SCALE_MM,), per_worm_rates: bool = False):
         """hazard_from: "brain" (core classes and velocity), "speed" (velocity only) or "none"
         (constant rates); copper proximity is added to any of them when `senses` is on.
         directional: add proximity x facing-the-copper to the senses.
@@ -58,6 +58,8 @@ class SensoryVAR:
         self.speed_map = speed_map
         self.sense_scales = tuple(sense_scales)
         self.scale = self.sense_scales[0]
+        self.per_worm_rates = per_worm_rates
+        self.offsets: dict = {}
         self.names: list = []
         self.info: dict = {}
 
@@ -85,10 +87,15 @@ class SensoryVAR:
         Y = v[:, LAGS:].T
         return F, Y, np.broadcast_to(mask, Y.shape)
 
+    COMMAND = ("AVA", "AVE", "AIB", "RIM", "AVB", "RIB")
+
     def _hz_rows(self):
         n_core = self.space.core.size
         if self.hazard_from == "brain":
             return np.arange(n_core + 1)
+        if self.hazard_from == "command":
+            names = [self.space.classes[c] for c in self.space.core]
+            return np.array([i for i, c in enumerate(names) if c in self.COMMAND] + [n_core])
         return np.array([n_core]) if self.hazard_from == "speed" else np.array([], dtype=int)
 
     def _features(self, hist, e_prev):
@@ -165,6 +172,8 @@ class SensoryVAR:
             self.info["scale_val_ll"] = {k: round(v, 1) for k, v in scale_scores.items()}
         if self.reversals == "hysteresis":
             self._fit_thresholds(train)
+        if self.per_worm_rates and self.reversals == "hazard":
+            self._fit_offsets(train)
         # speed per state: real crawling is bimodal (forward ~ +0.09, reversing ~ -0.08 mm/s)
         # while the brain's velocity channel is unimodal. With `speed_map`, the channel's
         # normal score is mapped through the training worms' speed quantiles for the current
@@ -192,6 +201,64 @@ class SensoryVAR:
             hist = hist[1:] + [v]
             out[i] = v[-1] * self.space.beh_sd[1] + self.space.beh_mean[1]
         return out
+
+    def _open_loop_states(self, s: BenchSample, which: int, rng, off):
+        """Brain + reversal hazards driven by a real worm's recorded copper input (no body);
+        `off` = (onset, end) log-odds offsets. Returns the 0/1 reversal state per frame."""
+        W, L = self.W[self.names[which]], self.L[self.names[which]]
+        k = self.space.k
+        bm, bs = self.space.beh_mean, self.space.beh_sd
+        z_rev = [(0 - bm[1]) / bs[1], (1 - bm[1]) / bs[1]]
+        e_all = self._sense(s) if self.senses else None
+        hist = [np.zeros(k) for _ in range(LAGS)]
+        T = s.x.shape[1]
+        states = np.zeros(T)
+        state = 0
+        rows = self._hz_rows()
+        for i in range(T):
+            e = e_all[:, max(i - 1, 0)] if self.senses else None
+            v = np.clip(self._features(hist, e) @ W + L @ rng.standard_normal(k), -8, 8)
+            v[-1] = z_rev[state]
+            hist = hist[1:] + [v]
+            states[i] = state
+            hz = np.concatenate([v[rows], e if self.senses else [], [1.0]]) @ self.hazard[state] + off[state]
+            if rng.random() < 1 / (1 + np.exp(-np.clip(hz, -30, 30))):
+                state = 1 - state
+        return states
+
+    def _fit_offsets(self, train, pseudo: float = 5.0, n_rep: int = 2):
+        """Per-worm reversal rates [L]. For each training worm, onset and end log-odds offsets
+        are set (bisection, open loop with that worm's recorded copper input) so its model
+        reproduces the worm's own onset rate and mean bout length, each shrunk toward the
+        pooled value in log units with weight n / (n + pseudo), n = the worm's onsets.
+        Without this every model worm shares one rate, which the ruler calls too typical."""
+        from .forecasters import Debounced
+        stats = [Debounced._stats(s.behaviour["reversing"], s.dt) for s in train]
+        pooled_rate = np.log(sum(x[0] for x in stats) / sum(x[1] for x in stats))
+        pooled_dur = np.log(np.mean(np.concatenate([x[2] for x in stats])))
+        for i, (s, (n, minutes, durs)) in enumerate(zip(train, stats)):
+            w = n / (n + pseudo)
+            tr = w * (np.log(max(n, 0.5) / minutes)) + (1 - w) * pooled_rate
+            td = w * (np.log(np.mean(durs)) if n else pooled_dur) + (1 - w) * pooled_dur
+            off = [0.0, 0.0]
+            for state, target, sign in ((0, tr, 1.0), (1, td, -1.0)):
+                lo, hi = -4.0, 4.0
+                for _ in range(9):
+                    mid = 0.5 * (lo + hi)
+                    off[state] = mid
+                    got = []
+                    for rep in range(n_rep):
+                        st = self._open_loop_states(s, i, np.random.default_rng(100 * i + rep), off)
+                        n2, m2, d2 = Debounced._stats(st, s.dt)
+                        got.append(np.log(max(n2, 0.5) / m2) if state == 0 else np.log(np.mean(d2) if n2 else s.dt))
+                    # onsets rise with the onset offset; bout length falls with the end offset
+                    if sign * (np.mean(got) - target) > 0:
+                        hi = mid
+                    else:
+                        lo = mid
+                off[state] = 0.5 * (lo + hi)
+            self.offsets[self.names[i]] = tuple(off)
+        self.info["rate_offsets_sd"] = [round(float(np.std([o[j] for o in self.offsets.values()])), 3) for j in (0, 1)]
 
     def _fit_thresholds(self, train):
         from .forecasters import Debounced, hysteresis
@@ -223,6 +290,7 @@ class SensoryVAR:
         head path (T, 2) in arena coordinates (centre at the origin)."""
         origin = self.names[which % len(self.names)]
         W, L = self.W[origin], self.L[origin]
+        off = self.offsets.get(origin, (0.0, 0.0))
         sp = self.space
         k = sp.k
         bm, bs = sp.beh_mean, sp.beh_sd
@@ -275,7 +343,8 @@ class SensoryVAR:
             rev = float(state)
             states[i] = state
             if not hyst:
-                hz = np.concatenate([v[self._hz_rows()], e if self.senses else [], [1.0]]) @ self.hazard[state]
+                hz = np.concatenate([v[self._hz_rows()], e if self.senses else [], [1.0]]) @ self.hazard[state] \
+                    + off[state]
                 if rng.random() < 1 / (1 + np.exp(-np.clip(hz, -30, 30))):
                     state = 1 - state
             shape, turn = stepper.step(vel, vel_prev, rev, rev_prev)

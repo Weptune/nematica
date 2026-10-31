@@ -234,7 +234,7 @@ the real worms directly:
   quantiles while the brain sets fast and slow moments; and motion matching that knows
   when a reversal just ended and how the worm has been turning.
 
-Results, held-out pools combined (`docs/figures/closed_loop.csv`):
+Results, held-out pools combined (`docs/figures/closed_loop_v2.csv`):
 
 | | real | v2 senses copper | v2 blind |
 |---|---|---|---|
@@ -249,8 +249,26 @@ Results, held-out pools combined (`docs/figures/closed_loop.csv`):
   about the model. Not solved yet.
 - The pairwise misses have known causes: the reversal hazard is shared by all worms, so
   reversal rates are too uniform across worms (too typical, 0.75), and reversals are not
-  driven by the brain, so the brain's lead-lag and reversal encoding fail. Next: per-worm
-  hazards and a brain term that keeps the calibrated rate.
+  driven by the brain, so the brain's lead-lag and reversal encoding fail.
+
+**Version 3** gives each model worm its own reversal rates (onset and end offsets set in
+open loop so it reproduces its training worm's onset rate and mean bout length, shrunk
+toward the pooled values), and tries reversals driven by the command interneurons (AVA,
+AVE, AIB, RIM, AVB, RIB) against reversals independent of the brain
+(`--variants v3`, `docs/figures/closed_loop_v3.csv`):
+
+| | time near copper | Level 6 | pairwise inside |
+|---|---|---|---|
+| own rates, reversals independent of the brain | 15.7% | inside on all 3 | 8 of 10 |
+| own rates, reversals driven by command neurons | 35.9% | occupancy outside | **10 of 10** |
+| own rates, blind | 66.2% | encounter, occupancy outside | 8 of 10 |
+
+A real trade-off: when the command neurons decide when to reverse, the brain-behaviour
+coupling is right (lead-lag 1.05, reversal encoding 0.95), but copper avoidance collapses.
+Fitted on real worms, the hazard learns that copper raises reversals mainly by raising
+command-neuron activity (its direct copper term turns slightly negative); the model brain's
+own response to copper is too weak to carry that. No closed-loop model passes everything
+yet.
 
 ## Leaderboard: published models
 

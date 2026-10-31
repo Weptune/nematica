@@ -38,6 +38,7 @@ def main() -> int:
     ap.add_argument("--folds", required=True)
     ap.add_argument("--out", default="results/closed_loop")
     ap.add_argument("--seeds", type=int, default=2)
+    ap.add_argument("--variants", default="v2", choices=("v2", "v3"))
     args = ap.parse_args()
     recs = load_copper_dir(Path(args.data))
     classes = tuple(canonical_classes(recs, 0.25))
@@ -48,6 +49,13 @@ def main() -> int:
     # reversal ends and recent turning. The blind control is identical apart from the senses.
     v2 = dict(hazard_from="none", directional=True, speed_map=True, sense_scales=(0.25, 0.5, 1, 2, 4))
     variants = {"senses": dict(senses=True, **v2), "blind": dict(senses=False, **v2)}
+    if args.variants == "v3":
+        # v3: each model worm gets its own reversal rates (calibrated in open loop on its
+        # training worm), with reversals either independent of the brain or driven by the
+        # command interneurons
+        variants = {"senses_rates": dict(senses=True, **v2, per_worm_rates=True),
+                    "senses_command": dict(senses=True, **{**v2, "hazard_from": "command"}, per_worm_rates=True),
+                    "blind_rates": dict(senses=False, **v2, per_worm_rates=True)}
     pools = {v: [] for v in variants}
     pair_rows = {v: [] for v in variants}
     stats = {v: [] for v in variants}
@@ -101,7 +109,7 @@ def main() -> int:
     print_table(comb)
     rows_all += comb
     keys = list(dict.fromkeys(k for r in rows_all for k in r))
-    with (out / "closed_loop.csv").open("w", newline="", encoding="utf-8") as fh:
+    with (out / f"closed_loop_{args.variants}.csv").open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=keys)
         w.writeheader()
         w.writerows(rows_all)
