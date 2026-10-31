@@ -1021,6 +1021,17 @@ The model scores above use the Creamer packaging throughout (real and simulated 
 the same recordings), so they are internally consistent; they will be repeated on the
 original archive.
 
+**The headline test: same models, same worms** (`scripts/run_same_worms.py`). The claim
+"a model can look right at rest and still be wrong about cause and effect" needs both
+verdicts on the same recordings. Here everything uses the original archive (wild type, 113
+worms, frozen pools): models fitted on training worms; each pool worm and its simulated
+twin stimulated on the same schedule; the simulated worm then scored on the ordinary
+activity levels (distributions, timescales, correlations, dimensionality, lead-lag, AVA
+bouts) *and* on the causal levels. Expectation, written before running: the atlas-fitted
+VAR(3) and the published fully connected model pass at least half of the activity levels
+in most pools, while failing causal pattern in every pool. If they fail the activity levels
+too, the headline is not supported in this form and will not be claimed.
+
 ## Signatures of a mind: perturbational complexity
 
 Nobody can measure consciousness directly, and whether a worm experiences anything is an

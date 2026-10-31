@@ -82,3 +82,28 @@ def test_real_atlas_loads():
         assert r.x.shape[0] == len(r.names) and r.stims
         rs = response_set(r)
         assert len(rs.traces) > 100
+
+
+def test_lz76_and_pci():
+    from nematica.bench.perturbational import lz76, pci
+    assert lz76(np.array([int(c) for c in "0001101001000101"])) == 6     # Kaspar and Schuster 1987
+    rng = np.random.default_rng(0)
+    noisy = pci(rng.random((40, 61)) < 0.1)
+    stereotyped = pci(np.tile(rng.random((40, 1)) < 0.3, (1, 61)))
+    assert noisy > 0.8 and stereotyped < 0.2 and pci(np.zeros((5, 10), bool)) == 0.0
+
+
+def test_event_matrices_on_toy(tmp_path):
+    from nematica.bench.perturbational import pci_set
+    names = ["AVAL", "AVBL", "AIBL", "RIML", "SMDDL", "AVEL", "RIAL", "RIBL", "RMDDL", "AIZL", "AIYL", "ASHL"]
+    rng = np.random.default_rng(0)
+    T, N = 2000, len(names)
+    x = 50 + rng.standard_normal((T, N)).astype(np.float32)
+    stims = np.arange(40, T - 70, 62)
+    for f in stims:
+        x[f:f + 30, 1:6] += 8
+    p = tmp_path / "pumpprobe_toy.npz"
+    np.savez(p, x=x, ids=np.array(names), stim_cell=np.zeros(len(stims), int), stim_frame=stims)
+    s = pci_set(load_pumpprobe(p))
+    assert len(s.pci) == len(stims) - 1 or len(s.pci) == len(stims)
+    assert np.median(s.spread) > 0.1 and np.median(s.pci) > 0
