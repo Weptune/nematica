@@ -205,26 +205,50 @@ python scripts/export_replay.py data/raw/doi_10_5061_dryad_w9ghx3g4v__v20260415 
 cd lab; npm install; npm run dev
 ```
 
-## Arc 5, first attempt: a worm that senses copper
+## Arc 5: a worm that senses copper
 
-`nematica/systems/closed_loop.py`, `scripts/run_closed_loop.py`. The 8/8 brain model gets a
-copper-proximity input (fitted on training worms), reversals become discrete events whose
-rate rises near copper, and a motion-matched body moves the head, whose distance to copper
-feeds back into the brain. Simulated in each held-out worm's arena, over the three rotating
-pools, against the identical model blind to copper:
+`nematica/systems/closed_loop.py`, `scripts/run_closed_loop.py`. The calcium brain model
+gets a copper input (fitted on training worms), reversals are discrete events whose rate
+depends on copper, and a motion-matched body moves the head, whose distance to copper feeds
+back into the brain. Simulated in each held-out worm's own arena over the three rotating
+pools, against the identical model blind to copper.
 
-- **It fails, and it is informative why.** Real worms spend 3.2% of their time within 0.5 mm
-  of the copper; the model worms spend 40% (blind: 46%) and often cross it. The training worms
-  reverse only about 1.5 times as often near copper as far from it, so more reversals is not
-  what keeps real worms inside: they steer away, and this model's steering is borrowed from
-  motion clips, not controlled by its brain. Brain-controlled steering is the next step.
-- **It exposed a gap in the ruler.** The encounter and approach metrics could not reject
-  even the copper-blind model in held-out pools of 9 worms (too few encounters per pool).
-  A new metric, `L6.occupancy` (pooled distribution of distance to copper), flags both
-  models as outside (96 and 98% of partitions) while all 8 designed Level 6 calibration
-  outcomes still match.
-- With reversals decided independently of the brain, two pairwise levels fail (lead-lag
-  and reversal encoding): 6 of 8 instead of 8.
+**Version 1 failed:** model worms spent 40% of their time within 0.5 mm of copper (blind:
+46%), against 3.2% for real worms. That failure exposed a gap in the ruler (encounter and
+approach could not reject even the blind model in pools of 9), so `L6.occupancy` was added,
+and it flagged both models. A diagnosis on one rotation then compared the simulation with
+the real worms directly:
+
+- **Real worms do not steer away frame by frame.** Turning rate at 0.6 s frames is not
+  predictable from brain activity, reversal state or geometry (held-out R² about 0), and
+  turning away from copper is negligible. What they do: reverse more when close to copper
+  AND facing it (onset rate per frame 0.095 at under 0.3 mm facing out, 0.033 far away),
+  starting 1 to 2 mm out; turn more right after a reversal (0.174 vs 0.124 rad per frame);
+  and crawl at a bimodal speed (about +0.09 forward, -0.08 mm/s reversing).
+- **Version 2** adds exactly those: a directional sense (proximity x facing the copper);
+  a sensing distance chosen from {0.25, 0.5, 1, 2, 4} mm by held-out likelihood on
+  validation worms (1, 1 and 2 mm in the three rotations: copper is felt from a distance,
+  as expected for ions diffusing into agar); speed drawn per state from real speed
+  quantiles while the brain sets fast and slow moments; and motion matching that knows
+  when a reversal just ended and how the worm has been turning.
+
+Results, held-out pools combined (`docs/figures/closed_loop.csv`):
+
+| | real | v2 senses copper | v2 blind |
+|---|---|---|---|
+| time within 0.5 mm of copper or beyond (median) | 3.2% | 19% | 69% |
+| beyond the copper line | | 6% | 62% |
+| L6.encounter / approach / occupancy | | inside / inside / inside | outside / inside / outside |
+| pairwise levels inside | | 7 of 10 | 7 of 10 |
+
+- The sensing model now passes Level 6 and the blind one fails it: copper input is what
+  keeps the model worms in the arena. But 19% is still six times the real share; the
+  population test (pools of 9) does not reject it, which says more about its power than
+  about the model. Not solved yet.
+- The pairwise misses have known causes: the reversal hazard is shared by all worms, so
+  reversal rates are too uniform across worms (too typical, 0.75), and reversals are not
+  driven by the brain, so the brain's lead-lag and reversal encoding fail. Next: per-worm
+  hazards and a brain term that keeps the calibrated rate.
 
 ## "Which one is real?" (prototype)
 

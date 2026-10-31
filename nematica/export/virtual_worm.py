@@ -49,11 +49,16 @@ def _features(vel, rev, v_scale, i):
 POST_REV_FRAMES = 3.0     # decay of the "just finished a reversal" feature, frames [A]
 
 
-def _causal_features(v, v_prev, rev, rev_prev, v_scale, post=0.0):
+TURN_EMA = 0.2            # smoothing of the recent turning rate, per frame [A]
+TURN_WEIGHT = 1.0         # weight of recent turning in the match, per turn_scale [A]
+
+
+def _causal_features(v, v_prev, rev, rev_prev, v_scale, post=0.0, turn_ema=0.0, turn_scale=1.0):
     """post: exp(-frames since the last reversal ended / POST_REV_FRAMES) while crawling
     forward, else 0. Real worms turn more right after a reversal (mean |turn| 0.174 vs
     0.124 rad per frame over the next 5 frames) [M]; this lets the matcher pick those clips."""
-    return np.array([v / v_scale, v_prev / v_scale, 1.5 * rev, 1.0 * rev_prev, 1.5 * post])
+    return np.array([v / v_scale, v_prev / v_scale, 1.5 * rev, 1.0 * rev_prev, 1.5 * post,
+                     TURN_WEIGHT * turn_ema / turn_scale])
 
 
 def _post_reversal(rev):
@@ -78,12 +83,13 @@ class MotionLibrary:
     v_scale: float
     length_mm: float
     cfeats: np.ndarray | None = None   # causal features (now and previous frame), for closed loops
+    turn_scale: float = 1.0            # SD of the smoothed turning rate
 
     @classmethod
     def from_recordings(cls, recs) -> "MotionLibrary":
         vel_all = np.concatenate([r.behaviour["velocity"] for r in recs])
         v_scale = float(np.std(vel_all))
-        shapes, turn, feats, worm, frame, lengths, cfeats = [], [], [], [], [], [], []
+        shapes, turn, feats, worm, frame, lengths, cfeats, emas = [], [], [], [], [], [], [], []
         for wi, r in enumerate(recs):
             ang, length, good = _resample_posture(r.posture["segment_angle"])
             vel = r.behaviour["velocity"]
@@ -91,6 +97,11 @@ class MotionLibrary:
             lengths.append(length)
             orient = np.angle(np.mean(np.exp(1j * ang), axis=1))      # whole-body orientation
             post = _post_reversal(rev)
+            tw = _wrap(np.diff(orient, append=orient[-1]))
+            ema = np.zeros(len(tw))                  # causal: turning up to the previous frame
+            for i in range(1, len(tw)):
+                ema[i] = (1 - TURN_EMA) * ema[i - 1] + TURN_EMA * tw[i - 1]
+            emas.append(ema)
             for i in range(len(vel) - LOOKAHEAD):
                 if not (good[i] and good[i + 1]):
                     continue
@@ -98,11 +109,14 @@ class MotionLibrary:
                 turn.append(_wrap(orient[i + 1] - orient[i]))
                 feats.append(_features(vel, rev, v_scale, i))
                 cfeats.append(_causal_features(vel[i], vel[max(i - 1, 0)], rev[i], rev[max(i - 1, 0)], v_scale,
-                                              post[i]))
+                                              post[i], ema[i]))
                 worm.append(wi)
                 frame.append(i)
+        cf = np.array(cfeats)
+        turn_scale = float(np.std(np.concatenate(emas))) or 1.0
+        cf[:, -1] /= turn_scale
         return cls(np.array(shapes), np.array(turn), np.array(feats), np.array(worm), np.array(frame),
-                   v_scale, float(np.median(lengths)), np.array(cfeats))
+                   v_scale, float(np.median(lengths)), cf, turn_scale)
 
     def synthesize(self, velocity: np.ndarray, reversing: np.ndarray, t: np.ndarray,
                    jump_cost: float = 1.5, pose_weight: float = 2.0, heading0: float = 0.0,
@@ -168,6 +182,7 @@ class MotionStepper:
         self.continued = 0
         self.steps = 0
         self.since_rev = np.inf
+        self.turn_ema = 0.0
 
     def step(self, v, v_prev, rev, rev_prev):
         lib = self.lib
@@ -176,7 +191,8 @@ class MotionStepper:
         else:
             self.since_rev = 0 if rev_prev > 0.5 else self.since_rev + 1
         post = np.exp(-self.since_rev / POST_REV_FRAMES) if np.isfinite(self.since_rev) else 0.0
-        f = _causal_features(v, v_prev, float(rev), float(rev_prev), lib.v_scale, post)
+        f = _causal_features(v, v_prev, float(rev), float(rev_prev), lib.v_scale, post, self.turn_ema,
+                             lib.turn_scale)
         d, cand = self.tree.query(f, k=32)
         cur = self.cur
         nxt = None if cur is None else self.pos_of.get((int(lib.worm[cur]), int(lib.frame[cur]) + 1))
@@ -195,7 +211,9 @@ class MotionStepper:
             shape = lib.shapes[cur] + 0.5 * _wrap(shape - lib.shapes[cur])
         self.cur = best
         self.steps += 1
-        return shape, float(lib.turn[best])
+        tr = float(lib.turn[best])
+        self.turn_ema = (1 - TURN_EMA) * self.turn_ema + TURN_EMA * tr
+        return shape, tr
 
 
 def class_levels(sample_x: np.ndarray, classes, neurons, a: int, n: int) -> list:

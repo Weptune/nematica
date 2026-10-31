@@ -32,25 +32,46 @@ SENSE_SCALE_MM = 0.5
 LAGS = 3
 
 
-def sense(d: np.ndarray) -> np.ndarray:
-    x = np.exp(-np.maximum(np.asarray(d, float), -0.5) / SENSE_SCALE_MM)
+def sense(d: np.ndarray, facing_out: np.ndarray | None = None, scale: float = SENSE_SCALE_MM) -> np.ndarray:
+    """[proximity, its change] and, with `facing_out` (cosine between facing and the outward
+    arena normal), proximity x facing: high when close AND heading into the copper."""
+    x = np.exp(-np.maximum(np.asarray(d, float), -0.5) / scale)
     dx = np.diff(x, prepend=x[:1])
-    return np.vstack([x, dx])
+    if facing_out is None:
+        return np.vstack([x, dx])
+    return np.vstack([x, dx, x * np.asarray(facing_out, float)])
 
 
 class SensoryVAR:
     def __init__(self, gamma: float = 0.5, lam: float = 300.0, senses: bool = True,
-                 hazard_from: str = "brain", ridges=(0.01, 0.1, 1, 10, 100, 1000)):
+                 hazard_from: str = "brain", ridges=(0.01, 0.1, 1, 10, 100, 1000),
+                 directional: bool = False, reversals: str = "hazard", speed_map: bool = False,
+                 sense_scales=(SENSE_SCALE_MM,)):
         """hazard_from: "brain" (core classes and velocity), "speed" (velocity only) or "none"
-        (constant rates); copper proximity is added to any of them when `senses` is on."""
+        (constant rates); copper proximity is added to any of them when `senses` is on.
+        directional: add proximity x facing-the-copper to the senses.
+        reversals: "hazard" (discrete events from fitted logistic rates) or "hysteresis"
+        (the brain's own reversal channel read with hysteresis, thresholds fitted on training
+        worms driven by their recorded copper input, as `Debounced`)."""
         self.gamma, self.lam, self.senses, self.ridges = gamma, lam, senses, ridges
-        self.hazard_from = hazard_from
+        self.hazard_from, self.directional, self.reversals = hazard_from, directional, reversals
+        self.speed_map = speed_map
+        self.sense_scales = tuple(sense_scales)
+        self.scale = self.sense_scales[0]
         self.names: list = []
         self.info: dict = {}
 
     @property
     def name(self) -> str:
-        return "closed_loop_" + ("senses" if self.senses else "blind") + ("" if self.hazard_from == "brain" else "_" + self.hazard_from)
+        n = "closed_loop_" + ("senses" if self.senses else "blind")
+        if self.reversals == "hysteresis":
+            return n + "_hyst" + ("_dir" if self.directional and self.senses else "")
+        return n + ("" if self.hazard_from == "brain" else "_" + self.hazard_from) \
+            + ("_dir" if self.directional and self.senses else "")
+
+    def _sense(self, s: BenchSample):
+        return sense(s.behaviour["dist_to_boundary"], s.behaviour["facing_out"] if self.directional else None,
+                     self.scale)
 
     # ------------------------------------------------------------------ data
     def _xy(self, s: BenchSample):
@@ -58,7 +79,7 @@ class SensoryVAR:
         T = v.shape[1]
         cols = [v[:, LAGS - 1 - l: T - 1 - l].T for l in range(LAGS)]
         if self.senses:
-            e = sense(s.behaviour["dist_to_boundary"])
+            e = self._sense(s)
             cols.append(e[:, LAGS - 1: T - 1].T)
         F = np.hstack(cols)
         Y = v[:, LAGS:].T
@@ -75,8 +96,44 @@ class SensoryVAR:
         return np.concatenate([f, e_prev]) if self.senses else f
 
     # ------------------------------------------------------------------ fit
+    def _hazard_data(self, samples, state):
+        Xh, yh = [], []
+        for s in samples:
+            v, _ = self.space.encode(s)
+            st = (np.asarray(s.behaviour["reversing"]) > 0.5).astype(int)
+            cur, nxt = st[:-1], st[1:]
+            sel = cur == state
+            cols = [v[self._hz_rows(), :-1]]
+            if self.senses:
+                cols.append(self._sense(s)[:, :-1])
+            Xh.append(np.vstack(cols + [np.ones((1, len(cur)))])[:, sel].T)
+            yh.append((nxt[sel] != state).astype(float))
+        return np.vstack(Xh), np.concatenate(yh)
+
+    def _fit_hazards(self, train):
+        """Reversal hazards: from forward, P(start next frame); from reversing, P(end next
+        frame); logistic, pooled over training worms [L]."""
+        return [_logistic_fit(*self._hazard_data(train, state), l2=10.0) for state in (0, 1)]
+
+    def _choose_scale(self, train, val):
+        """Sense length scale: the candidate whose hazards best predict the validation worms'
+        reversal starts and ends (log likelihood) [L]."""
+        scores = {}
+        for sc in self.sense_scales:
+            self.scale = sc
+            hz = self._fit_hazards(train)
+            ll = 0.0
+            for state in (0, 1):
+                X, y = self._hazard_data(val, state)
+                p = np.clip(1 / (1 + np.exp(-np.clip(X @ hz[state], -30, 30))), 1e-9, 1 - 1e-9)
+                ll += float(np.sum(y * np.log(p) + (1 - y) * np.log(1 - p)))
+            scores[sc] = ll
+        self.scale = max(scores, key=scores.get)
+        return scores
+
     def fit(self, train, val):
         self.space = CalciumStateSpace.from_train(train, gamma=self.gamma)
+        scale_scores = self._choose_scale(train, val) if self.senses and len(self.sense_scales) > 1 else None
         n_core = self.space.core.size
         tr = [self._xy(s) for s in train]
         va = [self._xy(s) for s in val]
@@ -102,27 +159,61 @@ class SensoryVAR:
             cov = R.T @ R / len(R) + 1e-6 * np.eye(R.shape[1])
             self.W[s.origin], self.L[s.origin] = W, np.linalg.cholesky(cov)
             self.names.append(s.origin)
-        # reversal hazards: from forward, P(start next frame); from reversing, P(end next frame)
-        n_core = self.space.core.size
-        self.hazard = []
-        for state in (0, 1):
-            Xh, yh = [], []
-            for s in train:
-                v, _ = self.space.encode(s)
-                st = (np.asarray(s.behaviour["reversing"]) > 0.5).astype(int)
-                cur, nxt = st[:-1], st[1:]
-                sel = cur == state
-                cols = [v[self._hz_rows(), :-1]]
-                if self.senses:
-                    cols.append(sense(s.behaviour["dist_to_boundary"])[:, :-1])
-                Xh.append(np.vstack(cols + [np.ones((1, len(cur)))])[:, sel].T)
-                yh.append((nxt[sel] != state).astype(float))
-            self.hazard.append(_logistic_fit(np.vstack(Xh), np.concatenate(yh), l2=10.0))
-        self.info = {"ridge": best[0], "val_r2": round(float(best[1]), 4)}
+        self.hazard = self._fit_hazards(train)
+        self.info = {"ridge": best[0], "val_r2": round(float(best[1]), 4), "sense_scale_mm": self.scale}
+        if scale_scores:
+            self.info["scale_val_ll"] = {k: round(v, 1) for k, v in scale_scores.items()}
+        if self.reversals == "hysteresis":
+            self._fit_thresholds(train)
+        # speed per state: real crawling is bimodal (forward ~ +0.09, reversing ~ -0.08 mm/s)
+        # while the brain's velocity channel is unimodal. With `speed_map`, the channel's
+        # normal score is mapped through the training worms' speed quantiles for the current
+        # state, so the brain still sets when the worm is fast or slow [A]
+        grid = np.linspace(0.005, 0.995, 199)
+        vel = np.concatenate([s.behaviour["velocity"] for s in train])
+        rv = np.concatenate([np.asarray(s.behaviour["reversing"]) > 0.5 for s in train])
+        self.speed_q = (np.quantile(np.abs(vel[~rv]), grid), np.quantile(np.abs(vel[rv]), grid))
         if self.senses:
             k = self.space.k
-            self.info["onset_logodds_per_unit_proximity"] = round(float(self.hazard[0][len(self._hz_rows())]), 3)
+            self.info["onset_logodds_senses"] = [round(float(c), 3) for c in self.hazard[0][len(self._hz_rows()):-1]]
         return self
+
+    def _open_loop_drive(self, s: BenchSample, which: int, rng):
+        """The brain driven by a real worm's recorded copper input (no body): returns the
+        raw reversal channel, for fitting the hysteresis thresholds."""
+        W, L = self.W[self.names[which]], self.L[self.names[which]]
+        k = self.space.k
+        e_all = self._sense(s) if self.senses else None
+        hist = [np.zeros(k) for _ in range(LAGS)]
+        out = np.empty(s.x.shape[1])
+        for i in range(s.x.shape[1]):
+            f = self._features(hist, e_all[:, max(i - 1, 0)]) if self.senses else self._features(hist, None)
+            v = np.clip(f @ W + L @ rng.standard_normal(k), -8, 8)
+            hist = hist[1:] + [v]
+            out[i] = v[-1] * self.space.beh_sd[1] + self.space.beh_mean[1]
+        return out
+
+    def _fit_thresholds(self, train):
+        from .forecasters import Debounced, hysteresis
+        st = Debounced._stats
+        n, minutes, durs = zip(*(st(s.behaviour["reversing"], s.dt) for s in train))
+        target = np.array([np.log(sum(n) / sum(minutes)), np.log(np.median(np.concatenate(durs)))])
+        rng = np.random.default_rng(12345)
+        drives = [(self._open_loop_drive(s, i, rng), s.dt) for i, s in enumerate(train)]
+        best = None
+        for lo in np.linspace(-0.3, 0.6, 19):
+            for hi in np.linspace(0.3, 1.5, 25):
+                if hi < lo:
+                    continue
+                n, minutes, durs = zip(*(st(hysteresis(d, lo, hi), dt) for d, dt in drives))
+                if sum(n) < 5:
+                    continue
+                got = np.array([np.log(sum(n) / sum(minutes)), np.log(np.median(np.concatenate(durs)))])
+                loss = float(np.sum((got - target) ** 2))
+                if best is None or loss < best[0]:
+                    best = (loss, lo, hi)
+        self.thresholds = (float(best[1]), float(best[2]))
+        self.info.update({"rev_lo": round(best[1], 3), "rev_hi": round(best[2], 3)})
 
     # ------------------------------------------------------------------ closed loop
     def simulate(self, template: BenchSample, arena_radius_mm: float, start_dist_mm: float,
@@ -143,9 +234,11 @@ class SensoryVAR:
         H = rng.uniform(0, 2 * np.pi)
         hist = [np.zeros(k) for _ in range(LAGS)]
         d_prev = d_now = arena_radius_mm - np.hypot(*head)
+        facing = lambda: float(np.cos(H + np.pi - np.arctan2(head[1], head[0])))  # noqa: E731
+        fo = np.array([facing(), facing()]) if self.directional else None
         # burn-in of the brain while the worm rests at its start
         for _ in range(burn):
-            e = sense(np.array([d_now, d_now]))[:, -1]
+            e = sense(np.array([d_now, d_now]), fo, self.scale)[:, -1]
             v = np.clip(self._features(hist, e) @ W + L @ rng.standard_normal(k), -clip, clip)
             v[-1] = (0 - bm[1]) / bs[1]
             hist = hist[1:] + [v]
@@ -157,20 +250,34 @@ class SensoryVAR:
         n_core = sp.core.size
         state = 0
         z_rev = [(0 - bm[1]) / bs[1], (1 - bm[1]) / bs[1]]          # reversal channel values
+        hyst = self.reversals == "hysteresis"
+        states = np.zeros(T)
         for i in range(T):
-            x_now = np.exp(-max(d_now, -0.5) / SENSE_SCALE_MM)
-            x_prev = np.exp(-max(d_prev, -0.5) / SENSE_SCALE_MM)
-            e = np.array([x_now, x_now - x_prev])
+            x_now = np.exp(-max(d_now, -0.5) / self.scale)
+            x_prev = np.exp(-max(d_prev, -0.5) / self.scale)
+            e = np.array([x_now, x_now - x_prev] + ([x_now * facing()] if self.directional else []))
             v = np.clip(self._features(hist, e) @ W + L @ rng.standard_normal(k), -clip, clip)
-            v[-1] = z_rev[state]
+            if hyst:                       # the brain's own channel decides, read with hysteresis
+                raw = v[-1] * bs[1] + bm[1]
+                lo, hi = self.thresholds
+                state = int(raw >= lo) if state else int(raw > hi)
+            else:
+                v[-1] = z_rev[state]
             hist = hist[1:] + [v]
             out[:, i] = v
-            speed = abs(float(np.clip(v[-2] * bs[0] + bm[0], -0.4, 0.4)))
+            if self.speed_map:
+                from scipy.special import ndtr
+                u = float(ndtr(v[-2] if state == 0 else -v[-2]))
+                speed = float(np.interp(u, np.linspace(0.005, 0.995, 199), self.speed_q[state]))
+            else:
+                speed = abs(float(np.clip(v[-2] * bs[0] + bm[0], -0.4, 0.4)))
             vel = -speed if state == 1 else speed
             rev = float(state)
-            hz = np.concatenate([v[self._hz_rows()], e if self.senses else [], [1.0]]) @ self.hazard[state]
-            if rng.random() < 1 / (1 + np.exp(-np.clip(hz, -30, 30))):
-                state = 1 - state
+            states[i] = state
+            if not hyst:
+                hz = np.concatenate([v[self._hz_rows()], e if self.senses else [], [1.0]]) @ self.hazard[state]
+                if rng.random() < 1 / (1 + np.exp(-np.clip(hz, -30, 30))):
+                    state = 1 - state
             shape, turn = stepper.step(vel, vel_prev, rev, rev_prev)
             angles[i] = shape + H
             path[i] = head
@@ -185,4 +292,5 @@ class SensoryVAR:
         s = sp.decode(out, template, self.name, source=origin)
         s.name = f"{self.name}:{origin}"
         s.behaviour["dist_to_boundary"] = dist
+        s.behaviour["reversing"] = states
         return s, angles, path, stepper.continued / max(stepper.steps - 1, 1)

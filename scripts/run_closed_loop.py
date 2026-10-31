@@ -43,7 +43,11 @@ def main() -> int:
     classes = tuple(canonical_classes(recs, 0.25))
     by = {r.uid: r for r in recs}
     folds = load_folds(args.folds)["folds"]
-    variants = {"senses": dict(senses=True, hazard_from="none"), "blind": dict(senses=False, hazard_from="none")}
+    # v2: directional sense (proximity x facing the copper), sensing distance chosen on
+    # validation worms, speed per state from real speed quantiles, motion matching aware of
+    # reversal ends and recent turning. The blind control is identical apart from the senses.
+    v2 = dict(hazard_from="none", directional=True, speed_map=True, sense_scales=(0.25, 0.5, 1, 2, 4))
+    variants = {"senses": dict(senses=True, **v2), "blind": dict(senses=False, **v2)}
     pools = {v: [] for v in variants}
     pair_rows = {v: [] for v in variants}
     stats = {v: [] for v in variants}
@@ -58,6 +62,7 @@ def main() -> int:
         ref = build_reference(pool)
         for vname, kw in variants.items():
             m = SensoryVAR(**kw).fit(train, val)
+            print(f"  fold {fi} {vname}: {m.info}", flush=True)
             built = {}
             for i, (s, uid) in enumerate(zip(pool, pool_uids)):
                 r = by[uid]

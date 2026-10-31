@@ -1,18 +1,20 @@
 system,metric,level,primary,system_median,bio_median,shift,shift_lo,shift_hi,percentile_of_bio,n_partitions,verdict,distance_ratio,self_spread_ratio,folds
-closed_loop_senses,L6.encounter,6,True,0.8269,0.5355,0.3019,-0.1349,0.5721,0.876,421,inside,,,
-closed_loop_senses,L6.approach,6,False,0.2433,0.1975,0.047,-0.1156,0.1839,0.72,450,inside,,,
-closed_loop_senses,L6.occupancy,6,True,1.1482,0.2401,0.8709,0.0546,1.7229,0.96,450,outside,,,
-closed_loop_blind,L6.encounter,6,True,0.8661,0.5355,0.3322,-0.0646,0.7062,0.886,421,inside,,,
-closed_loop_blind,L6.approach,6,False,0.2423,0.1975,0.0483,-0.1445,0.2017,0.7,450,inside,,,
-closed_loop_blind,L6.occupancy,6,True,1.5286,0.2401,1.2692,0.2039,2.1088,0.978,450,outside,,,
-closed_loop_senses_none,L1.distribution,1,True,,,0.0042,-0.0019,0.0094,,,inside,1.036,0.943,inside/inside/inside
-closed_loop_senses_none,L1.timescale,1,False,,,0.0938,-0.0306,0.165,,,inside,1.143,0.864,outside/inside/inside
-closed_loop_senses_none,L2.correlation,2,True,,,0.0292,-0.0003,0.0691,,,inside,1.049,1.076,inside/inside/inside
-closed_loop_senses_none,L2.dimension,2,False,,,0.0415,-0.0446,0.1,,,inside,1.267,1.372,inside/inside/inside
-closed_loop_senses_none,L4.leadlag,4,True,,,0.0944,0.0553,0.136,,,outside,1.139,1.222,outside/outside/inside
-closed_loop_senses_none,L4.dwell,4,False,,,0.0349,-0.0352,0.0774,,,inside,1.11,1.01,inside/inside/inside
-closed_loop_senses_none,L5.encoding,5,True,,,0.0411,-0.0082,0.0713,,,inside,1.132,1.278,outside/inside/inside
-closed_loop_senses_none,L5.reversal,5,False,,,0.0906,0.0463,0.1344,,,outside,1.302,1.247,outside/outside/inside
+closed_loop_senses,L6.encounter,6,True,0.7242,0.5355,0.2018,-0.0676,0.4009,0.867,421,inside,,,
+closed_loop_senses,L6.approach,6,False,0.2066,0.1975,0.0243,-0.181,0.1963,0.571,450,inside,,,
+closed_loop_senses,L6.occupancy,6,True,0.5593,0.2401,0.322,-0.1752,0.573,0.887,450,inside,,,
+closed_loop_blind,L6.encounter,6,True,1.0084,0.5355,0.4772,0.084,0.8312,0.993,421,outside,,,
+closed_loop_blind,L6.approach,6,False,0.2711,0.1975,0.0795,-0.1325,0.2285,0.789,450,inside,,,
+closed_loop_blind,L6.occupancy,6,True,2.3055,0.2401,2.0099,1.2985,2.6276,1.0,450,outside,,,
+closed_loop_senses_none_dir,L1.distribution,1,True,,,0.0016,-0.0044,0.0065,,,inside,1.013,0.894,inside/inside/inside
+closed_loop_senses_none_dir,L1.timescale,1,False,,,0.079,-0.0589,0.1535,,,inside,1.12,0.749,inside/inside/inside
+closed_loop_senses_none_dir,L2.correlation,2,True,,,0.0054,-0.0225,0.0448,,,inside,1.011,1.018,inside/inside/inside
+closed_loop_senses_none_dir,L2.dimension,2,False,,,0.058,-0.0301,0.1236,,,inside,1.372,1.018,inside/inside/inside
+closed_loop_senses_none_dir,L4.leadlag,4,True,,,0.079,0.0428,0.1246,,,outside,1.116,1.194,outside/outside/inside
+closed_loop_senses_none_dir,L4.dwell,4,False,,,0.021,-0.0397,0.0722,,,inside,1.068,1.051,inside/inside/inside
+closed_loop_senses_none_dir,L5.encoding,5,True,,,0.0171,-0.0324,0.0447,,,inside,1.06,1.171,inside/inside/inside
+closed_loop_senses_none_dir,L5.reversal,5,False,,,0.0614,0.0109,0.0955,,,outside,1.204,1.028,outside/inside/inside
+closed_loop_senses_none_dir,B.rev_rate,5,False,,,-0.0567,-0.1864,-0.0099,,,too typical,0.752,0.45,inside/inside/inside
+closed_loop_senses_none_dir,B.rev_duration,5,False,,,-0.0177,-0.0626,0.0338,,,inside,0.948,0.623,inside/inside/inside
 closed_loop_blind_none,L1.distribution,1,True,,,0.0017,-0.0047,0.0061,,,inside,1.014,0.877,inside/inside/inside
 closed_loop_blind_none,L1.timescale,1,False,,,0.0979,-0.0404,0.1721,,,inside,1.148,0.764,inside/outside/inside
 closed_loop_blind_none,L2.correlation,2,True,,,0.0075,-0.022,0.0447,,,inside,1.014,1.018,inside/inside/inside
@@ -21,3 +23,5 @@ closed_loop_blind_none,L4.leadlag,4,True,,,0.0974,0.0572,0.1377,,,outside,1.143,
 closed_loop_blind_none,L4.dwell,4,False,,,0.0329,-0.0356,0.0762,,,inside,1.104,1.008,inside/inside/inside
 closed_loop_blind_none,L5.encoding,5,True,,,0.0169,-0.0335,0.0414,,,inside,1.06,1.174,inside/inside/inside
 closed_loop_blind_none,L5.reversal,5,False,,,0.0825,0.0377,0.1228,,,outside,1.267,1.081,outside/outside/inside
+closed_loop_blind_none,B.rev_rate,5,False,,,-0.0491,-0.1752,-0.0019,,,too typical,0.77,0.52,inside/inside/inside
+closed_loop_blind_none,B.rev_duration,5,False,,,-0.0134,-0.0598,0.0404,,,inside,0.958,0.581,inside/inside/inside
