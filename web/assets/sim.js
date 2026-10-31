@@ -129,7 +129,7 @@
       // trail: the last 90 s of the head
       const col = c.k === "real" ? LIVE : COPY;
       const t0 = Math.max(0, f.i - 150);
-      g.lineWidth = 1.5; g.lineCap = "round";
+      g.lineWidth = 1.5; g.lineCap = "butt"; g.lineJoin = "round";
       for (let i = t0 + 1; i <= f.i; i++) {
         g.strokeStyle = col; g.globalAlpha = 0.05 + 0.5 * ((i - t0) / (f.i - t0 + 1));
         g.beginPath(); g.moveTo(X(s.Pth[2 * i - 2]), Y(s.Pth[2 * i - 1])); g.lineTo(X(s.Pth[2 * i]), Y(s.Pth[2 * i + 1])); g.stroke();

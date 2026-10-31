@@ -556,3 +556,9 @@ footer.foot .big.filled { width: max-content; max-width: 100%; background-size: 
 .finding .thumb[data-chart] { overflow: hidden; }
 .pokes .lane.compact .p { font-size: 0; }
 .pokes .lane.compact .p::after { margin-top: 0; }
+
+.log > li { display: grid; grid-template-columns: minmax(0, 40rem) minmax(0, 15rem); gap: 12px clamp(24px, 4vw, 56px); align-items: start; }
+.log-aside { padding-top: 26px; font-family: var(--sans); font-size: var(--step--1); }
+.log-aside .measure { margin-bottom: 12px; }
+.log-aside a { color: var(--ink); font-weight: 600; text-decoration-color: var(--live); }
+@media (max-width: 900px) { .log > li { grid-template-columns: 1fr; } .log-aside { padding-top: 0; } }

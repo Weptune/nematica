@@ -1470,6 +1470,19 @@ not met. Trained to survive its own errors, the network learns to play it safe: 
 activity. Getting a learned brain's ongoing dynamics right will need an objective that looks
 at the statistics the ruler checks (timescales, correlations), not only next-frame likelihood.
 
+**Confirmation on a second frozen split (written before running).** Every arc 4 result so
+far uses one frozen set of three pools. A second set, `configs/splits/pumpprobe_cv3_blocks1.yaml`
+(hash b1103bc34a2c6fe8): the same 110 worms in recording order, in blocks of three, with the
+pool assignment permuted within each block, so each new pool shares only 8 to 16 worms with
+any old pool and stays spread over recording days. Brains: the one that passes the poke test
+(`hybrid_kernels_regimes_obsfit`), the plain hybrid (`hybrid_kernels`) and the linear brain
+learned from rest (`var3_spontaneous`), scored on all eleven levels (`run_same_worms.py --pci`).
+Expectations: the passing hybrid keeps echo pattern and echo spread inside in at least 2 of 3
+new pools; the linear brain stays outside on echo pattern in 3 of 3 and inside on at least 4 of
+6 activity levels in at least 2 of 3; echo complexity stays outside for all three brains. If
+the passing hybrid fails the pattern or spread in 2 or more new pools, the site will stop
+calling it a brain that passes the poke test.
+
 **Signal or noise? (written before computing it).** A model can fail the poke test in two
 different ways: its *average* echo is wrong (it does not know the causal structure), or its
 average echo is right but each single echo is buried in the wrong kind of variability.

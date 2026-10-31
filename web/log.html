@@ -34,44 +34,44 @@
 <main class="page">
   <div class="sheet">
 
-    <ol class="log wide" style="grid-column:text-start/note-end;max-width:52rem">
-      <li class="done">
+    <ol class="log wide" style="grid-column:text-start/note-end">
+      <li class="done"><div class="log-main">
         <p class="when">Arc 1</p>
         <h3>Forecasting is not fidelity</h3>
         <p>Each worm gets its own model, pulled toward a shared one by a tunable penalty. The setting that forecasts best makes simulated worms too typical: they are closer to every real worm than real worms are to each other. A setting that forecasts almost as well (0.009 lower) sits right on the real-worm line. Good prediction and a faithful copy are different targets.</p>
-      </li>
-      <li class="done">
+      </div><aside class="log-aside"><div class="measure"><span class="v">0.009</span><span class="l">lower forecasting skill buys a model that sits on the real-worm line</span></div><a href="https://github.com/Weptune/nematica#arc-1-forecasting-is-not-fidelity">Full record</a></aside></li>
+      <li class="done"><div class="log-main">
         <p class="when">Generalisation</p>
         <h3>Does a model learn worms, or one dataset?</h3>
         <p>Models trained on one set of recordings were scored against another lab's worms. The two sets of real worms differ from each other in ways the ruler can see, and the calibrations replicated in full (44 of 44). The models replicated in part: inside on 5 or 6 of 10 tests with every setting carried over unchanged.</p>
-      </li>
-      <li class="done">
+      </div><aside class="log-aside"><div class="measure"><span class="v">44 of 44</span><span class="l">calibration outcomes replicated on the second dataset</span></div><a href="https://github.com/Weptune/nematica#generalisation-copper-trained-models-against-another-dataset">Full record</a></aside></li>
+      <li class="done"><div class="log-main">
         <p class="when">Arc 3</p>
         <h3>What the wiring buys</h3>
         <p>Restricting a model's connections to the anatomical wiring diagram, with everything else identical. Given the same number of connections, the real wiring beats random wiring, consistently. But any wiring constraint makes the model less realistic than letting the data choose the coupling. Anatomy carries real but small information about how these neurons drive each other.</p>
-      </li>
-      <li class="done">
+      </div><aside class="log-aside"><div class="measure"><span class="v">Small</span><span class="l">but real: the anatomical wiring beats random wiring of the same density</span></div><a href="https://github.com/Weptune/nematica#arc-3-what-the-wiring-buys">Full record</a></aside></li>
+      <li class="done"><div class="log-main">
         <p class="when">Arc 5</p>
         <h3>A worm that senses copper</h3>
         <p>A brain model connected to a simulated body in each real worm's own arena, with copper fed back as the body moves. The first version spent 40% of its time near copper, against 3% for real worms. By the eleventh version, with copper entering the brain only through the sensory neuron ASH, simulated worms are inside on 9 of 10 activity tests and all three behaviour tests.</p>
-      </li>
-      <li class="open">
+      </div><aside class="log-aside"><div class="measure"><span class="v">9 of 10</span><span class="l">activity tests, and all three behaviour tests, for the eleventh version</span></div><a href="sim.html">Watch it in the simulations</a></aside></li>
+      <li class="open"><div class="log-main">
         <p class="when">Arc 4, the headline</p>
         <h3>The causal Turing test</h3>
         <p>Watch a brain, then poke it. Brains that pass the watching tests fail the poke tests, and how alive a brain looks at rest says nothing about how it answers a poke. Each worm has its own causal fingerprint. One hybrid brain now passes the poke test in all three held-out groups; none yet matches the echo's complexity while staying realistic at rest.</p>
         <p class="status">Open: a learned brain trained to match the ruler's own statistics; confirmation on a second frozen split of the worms.</p>
-      </li>
-      <li class="done">
+      </div><aside class="log-aside"><div class="measure copy"><span class="v">−0.06</span><span class="l">rank correlation between looking alive and answering a poke, over 88 brain scores</span></div><a href="findings.html">Read the findings</a></aside></li>
+      <li class="done"><div class="log-main">
         <p class="when">Signatures of a mind</p>
         <h3>Measures from consciousness science</h3>
         <p>At rest, simple models match real worms on complexity, integration and repertoire of brain states, on two datasets. Under perturbation, the echo's complexity separates every model from real worms: real brains keep a third of their neuron classes out of each echo, and models let almost all of them flicker in.</p>
-      </li>
-      <li class="open">
+      </div><aside class="log-aside"><div class="measure"><span class="v">66%</span><span class="l">of a real worm’s neuron classes join an echo; models let in over 90%</span></div><a href="findings.html#complexity">Read the findings</a></aside></li>
+      <li class="open"><div class="log-main">
         <p class="when">Arc 6</p>
         <h3>From one brain to a swarm</h3>
         <p>Many simulated worms in one arena, touching and avoiding each other. Does a crowd of identical average worms behave differently from a crowd of distinct individuals? With the interactions assumed so far, the difference is not established across seeds.</p>
         <p class="status">Open: real multi-worm recordings to calibrate touch and crowding.</p>
-      </li>
+      </div><aside class="log-aside"><div class="measure"><span class="v">32</span><span class="l">brains, each fitted to a different worm, in one dish</span></div><a href="sim.html#swarm">Watch the swarm</a></aside></li>
     </ol>
   </div>
 </main>
