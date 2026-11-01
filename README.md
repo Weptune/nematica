@@ -367,6 +367,19 @@ activity levels mostly inside. If instead unc-31 worms fail to agree on the patt
 neuropeptides moves a real brain toward the artificial fingerprint, and peptide signalling
 is a candidate for what the artificial networks lack.
 
+Result (`results/reverse_unc31`, six pools, repaired data): as expected. unc-31 worms are
+inside on 35 of 36 activity verdicts and on all 12 complexity verdicts; their echo pattern
+agrees within tolerance in 4 of 6 pools and kinetics and magnitude in 6 of 6. In the two
+pools where the pattern does not, it fails on the other side: unc-31 worms agree with the
+wild-type pool more closely than wild-type worms agree with each other (0.116 against
+0.087, and 0.112 against 0.093), so the interval runs below the tolerance. Across pools
+they agree with wild-type worms at 0.097 to 0.122, against 0.087 to 0.121 among wild-type
+worms. So removing neuropeptide release does not move a real brain toward the artificial
+fingerprint on these levels: on this evidence peptides are not what the artificial networks
+lack here, or the ruler cannot see their effect one worm at a time (arc 4 found the same).
+That unc-31 worms come out, if anything, slightly more alike than wild type is a lead for
+the individuality question, not a finding: 15 worms, and two of six pools.
+
 
 ## Running the benchmark
 
