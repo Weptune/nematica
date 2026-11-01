@@ -346,11 +346,11 @@ built from the same held-out worms (targets permuted for the pattern, responses 
 the magnitude, time reversed for the kinetics). `scripts/annotate_equivalence.py` applies it
 to cached results. On the repaired data, over six pools:
 
-| Copy | Pattern agrees | Kinetics agrees | Magnitude agrees |
-|---|---|---|---|
-| hybrid that learned from pokes (`hybrid_kernels_regimes_obsfit`) | 6 of 6 | 6 of 6 | 6 of 6 |
-| plain hybrid (`hybrid_kernels`) | 4 of 6 | 6 of 6 | 6 of 6 |
-| linear model fitted to ongoing activity (`var3_spontaneous`) | 0 of 6 | 6 of 6 | 6 of 6 |
+| Copy | Pattern agrees | Kinetics agrees | Magnitude agrees (x3 rule) | Magnitude agrees (x1.5 rule) |
+|---|---|---|---|---|
+| hybrid that learned from pokes (`hybrid_kernels_regimes_obsfit`) | 6 of 6 | 6 of 6 | 6 of 6 | 2 of 6 |
+| plain hybrid (`hybrid_kernels`) | 4 of 6 | 6 of 6 | 6 of 6 | 0 of 6 |
+| linear model fitted to ongoing activity (`var3_spontaneous`) | 0 of 6 | 6 of 6 | 6 of 6 | 0 of 6 |
 
 The magnitude column shows a flaw in the rule as fixed: the tripled-response control is so
 far off (a shift of about 0.9 in distance) that half of it, a tolerance of about 0.45,
@@ -362,6 +362,9 @@ known-wrong control becomes every response scaled by 1.5 (a 50% error, clearly w
 near the size of real differences between worms), tolerance again half its shift. The
 pattern and kinetics rules are unchanged. Both the old and the new magnitude verdicts will
 be reported for every copy.
+Under the x1.5 rule (tolerance 0.10 to 0.11 on the distance shift), magnitude separates the
+copies: only the copy that learned from pokes is shown to agree, in 2 of 6 pools, and every
+copy's responses tend to be too large.
 
 **The reverse test, written before running (1 Nov 2026).** unc-31 worms cannot release
 neuropeptides from dense-core vesicles: real brains with one biological ingredient removed.
