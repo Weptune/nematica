@@ -22,6 +22,18 @@ from nematica.data.splits import load_folds  # noqa: E402
 from nematica.score import CopyAdapter  # noqa: E402
 
 
+# what each family was allowed to learn from (GPT review: compare within a track, label across)
+TRACK = {
+    "linear-rest": "watched ongoing activity",
+    "random-wiring": "watched ongoing activity, wiring randomised",
+    "kunert2014": "no data: wiring diagram and textbook physiology",
+    "creamer-native": "watched activity and pokes (published fit, may include scored worms)",
+    "creamer-shuffled-native": "watched activity and pokes (published fit, shuffled wiring)",
+    "task-dense": "no neural data: trained on a worm task",
+    "task-wired": "no neural data: trained on a worm task, wiring-shaped",
+}
+
+
 def family(name: str):
     from nematica import gallery
     from nematica.systems.causal_models import CreamerCausal
@@ -61,6 +73,8 @@ def main() -> int:
             m = family(fam)
             model = m if hasattr(m, "simulate") else CopyAdapter(m)
             rows = ruler.score(fam, model, seed_base=1000 * fi)
+            for r in rows:
+                r["track"] = TRACK.get(fam, "")
             with (cache / f"{args.split}_f{fi}_{fam}.csv").open("w", newline="", encoding="utf-8") as fh:
                 w = csv.DictWriter(fh, fieldnames=list(dict.fromkeys(k for r in rows for k in r)))
                 w.writeheader()
