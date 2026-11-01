@@ -571,7 +571,7 @@ pools 0 and 1) and its echo agreement with held-out real worms measured:
 | real worms with each other | 0.095 / 0.107 | | | |
 
 As predicted: watching stays near zero from 6 to 58 worms, while pokes from just 6 worms
-already beat 58 worms of watching by a factor of five to twenty, and keep improving with
+already beat 58 worms of watching by a factor of four to seven, and keep improving with
 more worms.
 
 
