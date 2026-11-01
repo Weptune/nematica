@@ -493,6 +493,49 @@ What the fingerprint says, within the ruler's resolution (about 25%, above):
 - **Training on a task does not produce a worm-like brain**, with or without the real wiring
   as a constraint: the two task-trained networks are indistinguishable from each other here.
 
+**Why does watching fail? A synthetic worm with known cause and effect (1 Nov 2026,
+`scripts/run_synthetic_watch.py`, `docs/figures/synthetic_watch_*.csv`).** Real worms cannot
+tell us their true cause and effect, so a model brain stands in: one of Creamer et al.'s
+published linear dynamical systems (154 neurons, ongoing activity and poke responses from
+the same dynamics), with their densely connected model as a second ground truth. It is
+recorded like the atlas (37-minute recordings at 2 Hz) and its cause and effect (each
+neuron's summed 30 s response to a kick of each other neuron) is learned two ways: by
+watching (a linear model fitted to ongoing activity, as NEMATICA's watching copies are) or by
+poking (a kick to an observed neuron every 30 s, responses averaged; no model). Score:
+correlation of the learned with the true cause and effect.
+
+| How the synthetic worm is recorded | Watching, 2.5 h | Watching, 70 h | Poking, 2.5 h | Poking, 70 h |
+|---|---|---|---|---|
+| every neuron, measurement noise | 0.81 / 0.90 | 0.92 / 0.97 | 0.10 / 0.12 | 0.43 / 0.60 |
+| half the neurons per recording, 30% never seen | 0.47 / 0.42 | 0.56 / 0.66 | 0.10 / 0.15 | 0.34 / 0.51 |
+| the same, plus slow shared unrecorded drives (5% of input) | 0.20 / 0.28 | 0.20 / 0.27 | 0.05 / 0.06 | 0.24 / 0.37 |
+| the same, shared drives at 10% of input | 0.13 / 0.21 | 0.11 / 0.18 | 0.04 / 0.05 | 0.19 / 0.29 |
+
+(First number: connectome-constrained ground truth; second: densely connected. 70 hours is
+about the size of the atlas, which has about 8,000 pulses.)
+
+- **Watching can learn cause and effect in principle.** When each neuron's fluctuations
+  are its own, watching recovers it well even when much of the brain is never recorded,
+  and better than poking at the atlas's size.
+- **Shared, unrecorded drives break it, and more data does not help.** A few slow
+  brain-wide signals that no recording captures put a ceiling on watching that is reached
+  within a few hours and never lifted (0.20 at 2.5 h and at 70 h). Poking is not fooled:
+  it keeps improving and passes watching at about 40 hours.
+- **Real worms look like the drive-dominated case.** In the two unstimulated immobilised
+  worms of the atlas archive, the top three principal components carry 40% of the
+  variance; in the synthetic worm that level is reached with drives of about 5% of the input
+  (none: 21%; 5%: 42%; 10%: 55%). This would explain why every copy that learned only by
+  watching fails on real worms.
+- **Removing the strongest shared patterns before fitting does not reliably fix it**
+  (`scripts/diag_synthetic_deconfound.py`): it helps one ground truth (0.21 to 0.29 at a 5%
+  drive) and hurts the other (0.31 to 0.22).
+
+The implication for copying brains: if real brains are driven by strong shared signals that
+recordings miss, a brain cannot be copied by watching it, however long; interventions are
+not a refinement but a necessity. Caveats: linear ground truths, themselves fitted to this
+atlas; the drive level is matched to only two resting worms; the poking estimator is a plain
+average (a model that uses pokes, like the hybrid, needs fewer).
+
 
 ## Running the benchmark
 
