@@ -301,6 +301,14 @@ class CreamerCausal:
                                + np.clip(np.diag(self.R), 0, None))
         self.info = {"neurons": len(self.cells),
                      "radius": round(float(np.max(np.abs(np.linalg.eigvals(self.A)))), 4)}
+        if protocol == "native":
+            # the authors' own stimulation model: a learned input filter per neuron, one
+            # n x n block per frame since the pulse (45 frames), driven by a unit input at
+            # the stimulation frame, as in their stimulus-triggered average maps
+            if "B" not in z.files:
+                raise ValueError("re-run scripts/fetch_creamer_lds.py to store the input filter")
+            n, L = len(self.cells), int(z["input_lags"])
+            self.Bk = [z["B"][:, k * n:(k + 1) * n] for k in range(L)]
 
     def fit(self, train=None, val=None):
         return self
@@ -320,7 +328,11 @@ class CreamerCausal:
             if nm not in cell_of or nm not in row_of or f - npre < 0 or f + npost > T or not sd[k] > 0:
                 continue
             tr = (rec.x[k, f:f + npost] - np.nanmean(rec.x[k, f - npre:f])) / sd[k]
-            if self.protocol == "pulse":
+            if self.protocol == "native":
+                for k, Bk in enumerate(self.Bk):
+                    drive = pulse.setdefault(f + k, np.zeros(n))
+                    drive += Bk[:, cell_of[nm]]
+            elif self.protocol == "pulse":
                 pk = np.nanmax(tr[:npre + 1]) if np.isfinite(tr[:npre + 1]).any() else np.nan
                 if np.isfinite(pk):
                     pulse[f] = (cell_of[nm], float(pk) * float(self.stat_sd[cell_of[nm]]))
@@ -335,7 +347,10 @@ class CreamerCausal:
         for t in range(-burn, T):
             x = self.A @ x + self.Lq @ rng.standard_normal(n)
             if t in pulse:
-                x[pulse[t][0]] += pulse[t][1]
+                if self.protocol == "native":
+                    x += pulse[t]
+                else:
+                    x[pulse[t][0]] += pulse[t][1]
             if t in clamp:
                 ci, f0, v = clamp[t]
                 if (ci, f0) not in base:

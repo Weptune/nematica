@@ -185,7 +185,12 @@ def summary(rows: Sequence[dict]) -> dict:
                     for key in {(r["split"], r["fold"]) for r in rows})
     poke_all = sum(all(r["verdict"] == "inside" for r in rows if (r["split"], r["fold"]) == key and r["metric"] in POKE_LEVELS)
                    for key in {(r["split"], r["fold"]) for r in rows})
+    agree = {}
+    for r in rows:
+        if r.get("metric") in POKE_LEVELS and "equivalence" in r:
+            agree.setdefault(r["metric"], []).append(r["equivalence"] == "agrees")
     return {"pools": n_pools, "watching": tally(ACTIVITY_LEVELS), "poking": tally(POKE_LEVELS),
+            "poking_agrees": {lv: f"{sum(v)}/{len(v)} agree within tolerance" for lv, v in agree.items()},
             "complexity": tally(PCI), "pools_passing_all_watching": watch_all,
             "pools_passing_all_poking": poke_all, "echo_agreement": round(echo_agreement(rows), 3),
             "echo_agreement_real": round(echo_agreement(rows, "bio_median"), 3)}
@@ -196,7 +201,8 @@ def format_summary(name: str, s: dict) -> str:
     for title, key in (("Watching", "watching"), ("Poking", "poking"), ("Complexity", "complexity")):
         if s[key]:
             lines.append(title)
-            lines += [f"  {lv:16s} {v}" for lv, v in s[key].items()]
+            lines += [f"  {lv:16s} {v}" + (f"; {s['poking_agrees'][lv]}" if key == "poking" and lv in s.get("poking_agrees", {}) else "")
+                      for lv, v in s[key].items()]
     lines += ["", f"Pools passing every watching test: {s['pools_passing_all_watching']}/{s['pools']}",
               f"Pools passing every poking test:   {s['pools_passing_all_poking']}/{s['pools']}",
               f"Echo agreement with real worms:    {s['echo_agreement']}  (real worms with each other: {s['echo_agreement_real']})"]

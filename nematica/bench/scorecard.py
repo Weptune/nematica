@@ -86,7 +86,11 @@ class FoldRuler:
             rs = response_set(s, f"{name}:{r.uid}")
             rs.group = r.uid
             sim_c.append(rs)
-        rows += [{"kind": "causal", **row} for row in score_sets(name, sim_c, self.real_c)]
+        if not hasattr(self, "tolerances"):
+            self.tolerances = poke_tolerances(self.pool, self.real_c)
+        for row in score_sets(name, sim_c, self.real_c):
+            tol = self.tolerances.get(row["metric"], {}).get("tolerance")
+            rows.append({"kind": "causal", **row, "tolerance": tol, "equivalence": equivalence(row, tol)})
         if self.pci:
             sim_p = []
             for s, r in zip(sims, self.pool):
@@ -100,6 +104,43 @@ class FoldRuler:
         for r in rows:
             r["system"] = name
         return rows
+
+
+# Equivalence on the poke levels (fixed 1 Nov 2026, before any copy was checked against it).
+# "Inside" only says no difference was detected. A copy AGREES on a level when the whole 90%
+# bootstrap interval of its shift (copy-to-real minus real-to-real median distance) lies
+# within +/- tolerance, where tolerance = TOL_FRACTION x the shift of a copy known to be
+# wrong on that level, built from the same held-out worms: targets permuted (pattern), all
+# responses x3 (magnitude), time reversed (kinetics). Those controls are the calibrations
+# already used to check the levels (nematica.bench.causal.CALIBRATIONS).
+TOL_FRACTION = 0.5
+TOL_CONTROL = {"C1.pattern": "permuted_targets", "C2.magnitude": "scaled_x3", "C3.kinetics": "time_reversed"}
+
+
+def poke_tolerances(pool, real_c=None, frac: float = TOL_FRACTION, seed: int = 0) -> dict:
+    """Per poke level: the known-wrong control's median shift, and the tolerance from it."""
+    from .causal import CALIBRATIONS, CAUSAL_LEVELS
+    real_c = real_c or [response_set(r) for r in pool]
+    out = {}
+    for level, ctrl in TOL_CONTROL.items():
+        rng = np.random.default_rng(seed)
+        sets = []
+        for r in pool:
+            cs = CALIBRATIONS[ctrl](r, rng)
+            cs.group = r.uid
+            sets.append(cs)
+        row = score_sets(ctrl, sets, real_c, levels={level: CAUSAL_LEVELS[level]})[0]
+        gap = row.get("system_median", np.nan) - row.get("bio_median", np.nan)
+        out[level] = {"control": ctrl, "control_shift": round(float(gap), 4),
+                      "tolerance": round(float(frac * gap), 4) if gap > 0 else None}
+    return out
+
+
+def equivalence(row: dict, tol: float | None) -> str:
+    if tol is None or "shift_lo" not in row:
+        return "no tolerance"
+    lo, hi = float(row["shift_lo"]), float(row["shift_hi"])
+    return "agrees" if (-tol < lo and hi < tol) else "not shown"
 
 
 def set_norm(norm: str) -> None:

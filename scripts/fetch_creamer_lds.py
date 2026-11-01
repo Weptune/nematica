@@ -3,7 +3,8 @@
 convert their parameters to plain .npz files under data/external/creamer_lds/.
 
 The pickles are read as data only (nematica.data.safe_pickle): none of the authors' code is
-imported or run. Kept: dynamics weights A (154 x 154, one lag), dynamics noise covariance Q,
+imported or run. Kept: dynamics weights A (154 x 154, one lag), the stimulation input filter B (one
+154 x 154 block per input lag, 45 lags), dynamics noise covariance Q,
 emissions covariance R (emissions are the identity), neuron names, sample rate (2 Hz).
 
 Usage:
@@ -48,7 +49,8 @@ def main() -> int:
             raise ValueError(f"{name}: unexpected dynamics shape {A.shape}, lags {m.dynamics_lags}")
         if not np.allclose(m.emissions_weights, np.eye(m.emissions_dim)):
             raise ValueError(f"{name}: emissions are not the identity")
-        np.savez(OUT / f"{name}.npz", A=A, Q=np.asarray(m.dynamics_cov, float),
+        B = np.asarray(m.dynamics_input_weights, float)        # (n, n * input_lags): input k frames ago in block k
+        np.savez(OUT / f"{name}.npz", A=A, B=B, input_lags=int(m.dynamics_input_lags), Q=np.asarray(m.dynamics_cov, float),
                  R=np.asarray(m.emissions_cov, float), cell_ids=np.array([str(c) for c in m.cell_ids]),
                  sample_rate=float(m.sample_rate), source=f"Creamer_LDS_2024@{COMMIT}/models/{name}.pkl",
                  pkl_md5=hashlib.md5(pkl.read_bytes()).hexdigest())
