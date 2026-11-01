@@ -536,6 +536,28 @@ not a refinement but a necessity. Caveats: linear ground truths, themselves fitt
 atlas; the drive level is matched to only two resting worms; the poking estimator is a plain
 average (a model that uses pokes, like the hybrid, needs fewer).
 
+**Which pokes should a lab run? (`scripts/run_synthetic_design.py`,
+`docs/figures/synthetic_design_*.csv`.)** Same synthetic worm, shared drives at 5% of input,
+10 hours of watching plus a fixed budget of pokes, spent three ways: at random (as in the
+atlas), spread evenly (least-poked neuron first), or guided by watching (pokes go to the
+neurons a watching model says drive others most). Each pair's estimate blends its poke
+average with the watching model's value; the blend weight is tuned on the ground truth and
+applied equally to all strategies, so these are upper bounds.
+
+| Pokes | Watching alone | Random | Spread evenly | Guided by watching |
+|---|---|---|---|---|
+| 500 | 0.21 / 0.31 | 0.22 / 0.32 | 0.22 / 0.32 | 0.22 / 0.32 |
+| 2,000 | 0.21 / 0.31 | 0.24 / 0.36 | 0.24 / 0.36 | 0.23 / 0.35 |
+| 8,000 | 0.21 / 0.31 | 0.30 / 0.46 | 0.30 / 0.46 | 0.28 / 0.44 |
+
+(connectome-constrained / densely connected ground truth.) Pokes added to watching lift the
+ceiling that watching alone cannot pass; how they are chosen hardly matters, with spreading
+them evenly marginally best and aiming them by a watching model slightly worse (the hidden
+drives mislead it about which neurons matter). Single pokes are weak evidence: the best
+blend weighs one poke at about 1/200 of the watching estimate for a pair. For a lab, the
+request this supports is simple: spread pulses evenly over neurons, record ongoing activity
+too, and above all, more pulses.
+
 
 ## Running the benchmark
 
