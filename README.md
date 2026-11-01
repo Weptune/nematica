@@ -411,7 +411,7 @@ the average of all other worms, and scored by correlation with the worm's second
 
 The average of 95 other worms predicts a worm better than the worm's own first half does,
 and the best blend adds only 0.007 over the average. Individual echoes exist (the table
-above), but about 35 pulses per worm are too few and too noisy to pin one down: with this
+above), but about 45 pulses per worm (about 22 per half) are too few to pin one down: with this
 much data, a copy of the average worm is nearly as good as a copy of the individual. How
 many pulses per worm a faithful individual copy would need is a question this data can start
 to answer, and a design target for any lab that wants to copy one particular animal.
