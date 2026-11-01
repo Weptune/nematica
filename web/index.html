@@ -33,26 +33,29 @@
   <div class="x-pin">
     <canvas aria-hidden="true"></canvas>
     <ol class="x-rail" aria-hidden="true"><li>Brain</li><li>Alive</li><li>Copy</li><li>Poke</li><li>Verdict</li></ol>
-    <div class="x-stage x-first" data-i="0">
+    <div class="x-nodata"><p>The opening experiment draws from the local copy of the recordings. Run <code>python scripts/export_site.py --local</code> and reload.</p></div>
+  </div>
+  <div class="x-steps">
+    <div class="x-step"><div class="x-stage x-first" data-i="0">
       <p class="x-kicker">NEMATICA / AN OPEN EXPERIMENT IN COPYING BRAINS</p>
       <h1>A brain copy can look alive. <em>Will it answer?</em></h1>
       <p>NEMATICA is a test for artificial brains. We build copies of a real nervous system, the 302 neurons of the worm <i>C.&nbsp;elegans</i>, then check them against living worms: first by watching, then by switching single neurons on with light. Every verdict is measured against how much real worms differ from each other.</p>
       <p class="x-status"><span class="x-dot" aria-hidden="true"></span>Research in progress. No copy passes every test yet.</p>
       <p class="x-hint">Scroll to run the experiment</p>
-    </div>
-    <div class="x-stage" data-i="1">
+    </div></div>
+    <div class="x-step"><div class="x-stage" data-i="1">
       <h2>This brain is alive.</h2>
       <p>Each light is a neuron, flickering with activity recorded from a real worm, cell by cell. Neurons the microscope could not identify stay dim.</p>
-    </div>
-    <div class="x-stage" data-i="2">
+    </div></div>
+    <div class="x-step"><div class="x-stage" data-i="2">
       <h2>This one is a copy.</h2>
       <p>A model that learned from hours of recordings. Its neurons flicker just as convincingly. Watching the two, you cannot tell which is which, and most of the standard statistics cannot either.</p>
-    </div>
-    <div class="x-stage" data-i="3">
+    </div></div>
+    <div class="x-step"><div class="x-stage" data-i="3">
       <h2>So we poke them.</h2>
       <p>One neuron, ASH, the worm's danger sensor, is switched on with light in both brains. Then we watch where the signal goes. <span class="x-echo-clock"></span></p>
-    </div>
-    <div class="x-stage" data-i="4">
+    </div></div>
+    <div class="x-step"><div class="x-stage" data-i="4">
       <h2>So far, watching has not told them apart. Poking has.</h2>
       <div class="x-verdict">
         <div><span class="v" data-to="0.06">0.00</span><span class="l">how well the copy built by watching agrees with real worms' echoes</span></div>
@@ -61,8 +64,7 @@
       </div>
       <p class="x-open">Still open: no copy yet matches the complexity of a real echo, and none passes every test. The experiments continue.</p>
       <div class="x-actions"><a class="x-go" href="#observation">See the evidence</a><a class="x-alt" href="log.html">Where the work stands</a><a class="x-alt" href="lab/index.html">3D lab</a></div>
-    </div>
-    <div class="x-nodata"><p>The opening experiment draws from the local copy of the recordings. Run <code>python scripts/export_site.py --local</code> and reload.</p></div>
+    </div></div>
   </div>
 </section>
 
@@ -221,7 +223,7 @@ Neural signal propagation atlas of Caenorhabditis elegans. Nature 623, 406 to 41
 <script src="data/brain.js" onerror="void 0"></script>
 <script src="assets/charts.js"></script>
 <script src="assets/scope.js?v=2"></script>
-<script src="assets/experiment.js?v=1"></script>
+<script src="assets/experiment.js?v=4"></script>
 <script src="assets/playback.js?v=3"></script>
 <script src="assets/echo.js?v=3"></script>
 <script src="assets/site.js?v=4"></script>

@@ -57,7 +57,7 @@
   const SPR = { live: sprite("61,214,155"), copy: sprite("240,98,180"), down: sprite("122,167,255"), idle: sprite("150,190,200", true), white: sprite("255,255,255") };
 
   // ------------------------------------------------------------------ dust
-  const DUST = Array.from({ length: 420 }, () => ({ x: Math.random(), y: Math.random(), z: Math.random(), s: Math.random() }));
+  const DUST = Array.from({ length: 240 }, () => ({ x: Math.random(), y: Math.random(), z: Math.random(), s: Math.random() }));
   // starting positions for the assembly: a wide, slow nebula
   const START = new Float32Array(N * 3);
   for (let i = 0; i < N; i++) { const a = Math.random() * Math.PI * 2, r = 300 + Math.random() * 900, h = (Math.random() - 0.5) * 900; START[3 * i] = 400 + Math.cos(a) * r; START[3 * i + 1] = h; START[3 * i + 2] = Math.sin(a) * r; }
@@ -73,7 +73,7 @@
   let W = 0, H = 0, dpr = 1, g = cv.getContext("2d");
   function resize() {
     const r = cv.getBoundingClientRect();
-    dpr = Math.min(2, devicePixelRatio || 1);
+    dpr = Math.min(1.5, devicePixelRatio || 1);
     W = r.width; H = r.height;
     cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -87,29 +87,34 @@
 
   // ------------------------------------------------------------------ stages
   const STAGES = root.querySelectorAll(".x-stage");
+  const STEPS = root.querySelectorAll(".x-step");
   const RAIL = root.querySelectorAll(".x-rail li");
-  const bounds = [0, 0.15, 0.34, 0.54, 0.8, 1.0];
 
-  let progress = 0, tStart = performance.now(), pokeStart = null;
-  function scrollProgress() {
-    const r = root.getBoundingClientRect();
-    return clamp(-r.top / (r.height - innerHeight));
+  // q runs from 0 to 5 as the five text steps pass the middle of the screen
+  let q = 0, tStart = performance.now(), pokeStart = null;
+  function scrollQ() {
+    const mid = innerHeight * 0.5;
+    let sum = 0;
+    STEPS.forEach((st) => { const r = st.getBoundingClientRect(); sum += clamp((mid - r.top) / r.height); });
+    return sum;
   }
 
   function frame(now) {
-    progress = reduce ? progress : mix(progress, scrollProgress(), 0.12);
-    if (reduce) progress = scrollProgress();
-    const p = progress;
-    const stage = Math.min(4, bounds.findIndex((b, i) => p >= b && p < bounds[i + 1]) === -1 ? 4 : bounds.findIndex((b, i) => p >= b && p < bounds[i + 1]));
+    const qT = scrollQ();
+    q = reduce ? qT : q + (qT - q) * 0.14;
+    if (Math.abs(qT - q) < 1e-3) q = qT;
+    const stage = Math.min(4, Math.floor(qT));
     STAGES.forEach((s, i) => s.classList.toggle("on", i === stage));
     RAIL.forEach((s, i) => { s.classList.toggle("on", i === stage); s.classList.toggle("done", i < stage); });
+    const p = q / 5;
 
     const tSec = (now - tStart) / 1000;
     const assemble = reduce ? 1 : easeOut(clamp((tSec - 0.3) / 3.4));   // the neurons fly in on arrival
-    const toHead = span(p, 0.12, 0.3);
-    const split = span(p, 0.36, 0.5);
-    const pokeOn = p >= 0.55;
-    const verdict = span(p, 0.8, 0.9);
+    // each picture is complete by the time its text reaches the middle of the screen
+    const toHead = span(q, 0.7, 1.35);
+    const split = span(q, 1.7, 2.35);
+    const pokeOn = q >= 2.85;
+    const verdict = span(q, 3.7, 4.3);
     if (pokeOn && pokeStart === null) pokeStart = now;
     if (!pokeOn) pokeStart = null;
 
@@ -122,7 +127,7 @@
     const scale = mix(baseScale, headScale, toHead);
     const focusX = mix(0, -320, toHead);          // world x the camera looks at: body centre, then the head
     const camD = 900;
-    const cxBase = W * (mobile ? 0.5 : mix(0.7, 0.6, toHead) + 0.08 * verdict), cyBase = H * (mobile ? mix(0.2, 0.36, toHead) : 0.42);
+    const cxBase = W * (mobile ? 0.5 : mix(0.7, 0.6, toHead) + 0.04 * split + 0.06 * verdict), cyBase = H * (mobile ? mix(0.2, 0.36, toHead) : 0.42);
     const sep = split * W * (mobile ? 0.25 : 0.18 - 0.03 * verdict);   // the two brains, side by side
 
     g.globalCompositeOperation = "source-over";
@@ -191,7 +196,7 @@
       g.globalAlpha = 1;
     }
     // wiring, faint, in the brain on the left (and its copy)
-    const showWires = 0.35 * (1 - span(p, 0.55, 0.62) * 0.6);
+    const showWires = 0.35 * (1 - span(q, 2.8, 3.2) * 0.6);
     for (const side of split > 0.01 ? [-1, 1] : [0]) {
       g.globalCompositeOperation = "lighter";
       g.strokeStyle = side > 0 ? "rgba(240,98,180,1)" : "rgba(80,200,170,1)";
