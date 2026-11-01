@@ -16,21 +16,24 @@ worms as real worms are to each other, no closer and no further.
 > Real worms are weird. Fake ones are average. And a brain can look real at rest while
 > being wrong about cause and effect.
 
-The headline so far (arc 4): on the same 113 stimulated worms, a model fitted to their
-ongoing activity passes 5 of 6 activity tests in every held-out pool, yet its echoes to a
-single-neuron poke agree with real worms at about 0.01 (real worms agree with each other at
-about 0.10) and reach two to four times too much of the brain. No artificial brain tested,
-including published models built for this atlas, answers a poke like a real worm.
+The headline so far (arc 4, rerun on the repaired data, 1 Nov 2026): on the same 113
+stimulated worms, a model fitted to their ongoing activity passes 3 to 5 of 6 activity tests
+in each of six held-out pools, yet its echoes to a single-neuron poke agree with real worms
+at 0.004 to 0.014 (real worms agree with each other at 0.087 to 0.121). A model that also
+learned from pokes agrees at 0.088 to 0.113, and on a stricter test (agreement within a
+tolerance fixed in advance, not merely no difference detected) its echo pattern is shown to
+match real worms in all six pools, while the model fitted to ongoing activity is shown not
+to in all six. Watching a brain did not reveal which copy was right; poking it did.
 
 > **Data repair, 1 Nov 2026.** Rebuilding the stimulated-worm data from the original archive
 > with a script anyone can run (`scripts/convert_pumpprobe.py`) showed that 3 of the 113
 > worms (20211128_112504, 20220331_142924, 20230304_112842) had been cut short when the
 > archive was unpacked here, and had been scored as about one minute of scrambled data each.
-> The other 110 rebuild exactly. The 3 are repaired. Every result below that uses the
-> stimulated worms (arcs 4 onward) was computed before the repair and is provisional until
-> rerun. A first check: in the one pool that holds none of the 3 worms, where they only
-> entered training, one or two of each headline model's eleven verdicts changed (the
-> poke-pattern verdicts did not). Reruns of the headline models are under way.
+> The other 110 rebuild exactly. The 3 are repaired. The three headline models are rerun
+> on both splits (`results/fixed_cv3`, `results/fixed_blocks1`): 16 of 132 verdicts changed,
+> almost all on activity levels near the boundary, and the headline above uses the repaired
+> numbers. Other results that use the stimulated worms (arcs 4 onward) were computed before
+> the repair and stay provisional until rerun.
 
 Nothing here claims that a worm or a model is conscious; the question is whether artificial
 brains have the measurable properties that, in people, separate a responsive brain from
@@ -332,8 +335,26 @@ pokes; the poked neuron's measured response is given to the copy as `drive`. Two
 `examples/copies/silent.py` (independent noise, the floor) and
 `examples/copies/linear_rest.py` (a linear model learned only from activity with no pulse
 nearby). The tool runs exactly the procedure of `scripts/run_same_worms.py`: on one pool,
-all eleven verdicts and values match. Verdicts mean "no difference detected at this
-power", not proof of agreement; an equivalence check with a stated tolerance is being added.
+all eleven verdicts and values match.
+
+**Inside is not agreement.** A verdict of inside means no difference was detected. For the
+poke levels the report also gives an equivalence verdict, with a rule fixed on 1 Nov 2026
+before any copy was checked against it: a copy *agrees* when the whole 90% bootstrap
+interval of its shift lies within plus or minus half the shift of a known-wrong control
+built from the same held-out worms (targets permuted for the pattern, responses tripled for
+the magnitude, time reversed for the kinetics). `scripts/annotate_equivalence.py` applies it
+to cached results. On the repaired data, over six pools:
+
+| Copy | Pattern agrees | Kinetics agrees | Magnitude agrees |
+|---|---|---|---|
+| hybrid that learned from pokes (`hybrid_kernels_regimes_obsfit`) | 6 of 6 | 6 of 6 | 6 of 6 |
+| plain hybrid (`hybrid_kernels`) | 4 of 6 | 6 of 6 | 6 of 6 |
+| linear model fitted to ongoing activity (`var3_spontaneous`) | 0 of 6 | 6 of 6 | 6 of 6 |
+
+The magnitude column shows a flaw in the rule as fixed: a threefold error is so large that
+half of it (about 1.7-fold) admits copies whose magnitude is detectably wrong (outside in
+most pools). It is reported as fixed and will be replaced in the next pre-registration by a
+control closer to the size of real differences between worms.
 
 
 ## Running the benchmark
