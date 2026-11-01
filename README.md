@@ -380,6 +380,26 @@ lack here, or the ruler cannot see their effect one worm at a time (arc 4 found 
 That unc-31 worms come out, if anything, slightly more alike than wild type is a lead for
 the individuality question, not a finding: 15 worms, and two of six pools.
 
+**Are real worms individuals? (1 Nov 2026, exploratory, `scripts/analyse_individuality.py`).**
+Each worm's stimulations are split in two, and the echo pattern from one half is compared
+with the other half of the same worm and with halves of other worms (98 wild-type worms with
+at least 20 pulses, repaired data):
+
+| Split | Same worm, two halves | Different worms | Per-worm excess (95% interval) | Worms with excess > 0 |
+|---|---|---|---|---|
+| alternate pulses | 0.146 | 0.083 | 0.100 (0.069 to 0.132) | 75% |
+| first half against second half | 0.170 | 0.088 | 0.099 (0.064 to 0.134) | 76% |
+
+A worm's echo agrees with itself almost twice as well as with other worms, and this holds
+across the length of a recording. So worm-to-worm differences in the echo are not only
+noise: each worm has a stable echo of its own. Two explanations remain open and this test
+cannot separate them: genuine individuality (wiring, state, history), or worm-specific
+measurement (neuron identities assigned once per worm, imaging conditions). If the first,
+it is a property that every copy scored so far lacks: they reproduce one average echo, and a
+single average cannot agree with a worm the way the worm agrees with itself. That makes
+individuality a measurable ingredient for move 3, and a copy built from one worm's own
+recordings is the next test.
+
 
 ## Running the benchmark
 
