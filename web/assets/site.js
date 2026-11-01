@@ -3,7 +3,7 @@
   // the top bar sits on the dark field until the hero has scrolled away
   // the top bar turns dark whenever it sits over a dark section
   const bar = document.getElementById("bar");
-  const dark = [...document.querySelectorAll(".arrival, .hero, .interlude, .masthead, footer.foot")];
+  const dark = [...document.querySelectorAll(".arrival, .experiment, .hero, .interlude, .masthead, footer.foot")];
   if (bar && dark.length) {
     let raf = 0;
     const check = () => { raf = 0; const y = 30; bar.classList.toggle("on-field", dark.some((d) => { const r = d.getBoundingClientRect(); return r.top <= y && r.bottom >= y; })); };

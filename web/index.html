@@ -29,18 +29,38 @@
   </nav>
 </header>
 
-<section class="arrival" aria-labelledby="h">
-  <div class="arrival-scene" aria-hidden="true"><iframe id="arrival-lab" src="lab/index.html?embed=1" tabindex="-1" title="Recorded worm and neural activity, animated in three dimensions" loading="eager"></iframe></div>
-  <a class="arrival-scene-link" href="lab/index.html" aria-label="Enter the interactive three-dimensional lab"></a>
-  <div class="arrival-inner">
-    <div class="arrival-top"><button class="arrival-motion-toggle" type="button" aria-label="Pause worm replay">Pause replay</button><span class="arrival-clock" aria-label="Recording time">00:00</span></div>
-    <div class="arrival-copy">
-      <p class="arrival-kicker">NEMATICA / A TEST FOR FAITHFUL BRAINS</p>
-      <h1 id="h">A brain copy can look alive. <em>Will it answer?</em></h1>
-      <p class="arrival-lede">This worm is real. Its neurons are lighting up as recorded. Step inside the lab, then see what happens when the same brain is tested with a poke.</p>
-      <div class="arrival-actions"><a href="lab/index.html" class="arrival-enter">Enter the 3D lab <span aria-hidden="true">↗</span></a><a href="#observation" class="arrival-evidence">See the poke test ↓</a></div>
+<section class="experiment" id="experiment" aria-label="The experiment, in five steps">
+  <div class="x-pin">
+    <canvas aria-hidden="true"></canvas>
+    <ol class="x-rail" aria-hidden="true"><li>Brain</li><li>Alive</li><li>Copy</li><li>Poke</li><li>Verdict</li></ol>
+    <div class="x-stage" data-i="0">
+      <p class="x-kicker">NEMATICA</p>
+      <h1>Three hundred and two neurons.</h1>
+      <p>The entire nervous system of the worm <i>C.&nbsp;elegans</i>, every cell drawn where it sits in the body, with the wires between them.</p>
+      <p class="x-hint">Scroll to run the experiment</p>
     </div>
-    <div class="arrival-bottom"><span>01 / WATCH A LIVING BRAIN</span><span>112 recorded neurons · copper-boundary test set · real-time replay</span><a href="#observation">SCROLL TO THE ECHO <span aria-hidden="true">↓</span></a></div>
+    <div class="x-stage" data-i="1">
+      <h2>This brain is alive.</h2>
+      <p>Each light is a neuron, flickering with activity recorded from a real worm, cell by cell. Neurons the microscope could not identify stay dim.</p>
+    </div>
+    <div class="x-stage" data-i="2">
+      <h2>This one is a copy.</h2>
+      <p>A model that learned from hours of recordings. Its neurons flicker just as convincingly. Watching the two, you cannot tell which is which, and most of the standard statistics cannot either.</p>
+    </div>
+    <div class="x-stage" data-i="3">
+      <h2>So we poke them.</h2>
+      <p>One neuron, ASH, the worm's danger sensor, is switched on with light in both brains. Then we watch where the signal goes. <span class="x-echo-clock"></span></p>
+    </div>
+    <div class="x-stage" data-i="4">
+      <h2>Watching could not tell them apart. One poke could.</h2>
+      <div class="x-verdict">
+        <div><span class="v" data-to="0.06">0.00</span><span class="l">how well the copy built by watching agrees with real worms' echoes</span></div>
+        <div><span class="v" data-to="0.42">0.00</span><span class="l">a copy that also learned from pokes</span></div>
+        <div><span class="v live">0.3 to 0.5</span><span class="l">the window a copy has to hit to pass as a real worm</span></div>
+      </div>
+      <div class="x-actions"><a class="x-go" href="#observation">See the evidence</a><a class="x-alt" href="lab/index.html">Enter the 3D lab</a></div>
+    </div>
+    <div class="x-nodata"><p>The opening experiment draws from the local copy of the recordings. Run <code>python scripts/export_site.py --local</code> and reload.</p></div>
   </div>
 </section>
 
@@ -196,8 +216,10 @@ Neural signal propagation atlas of Caenorhabditis elegans. Nature 623, 406 to 41
 <script src="data/results.js"></script>
 <script src="data/local.js" onerror="void 0"></script>
 <script src="data/echo.js" onerror="void 0"></script>
+<script src="data/brain.js" onerror="void 0"></script>
 <script src="assets/charts.js"></script>
 <script src="assets/scope.js?v=2"></script>
+<script src="assets/experiment.js?v=1"></script>
 <script src="assets/playback.js?v=3"></script>
 <script src="assets/echo.js?v=3"></script>
 <script src="assets/site.js?v=4"></script>

@@ -258,6 +258,27 @@ def sims(lab_data: Path = ROOT / "lab" / "public" / "data") -> int:
     return 0
 
 
+def brain() -> dict:
+    """Every neuron at its mean soma position (Skuhersky et al. 2022 atlas) with its class, and
+    the anatomical wiring between them (Kunert et al. 2014 matrices), for the opening experiment
+    on the home page. Local only (the atlas copy is not redistributed)."""
+    import ast
+    from nematica.data.pumpprobe import neuron_class
+    from nematica.export.atlas import load_atlas
+    atlas = load_atlas()
+    names = sorted(atlas)
+    idx = {n: i for i, n in enumerate(names)}
+    kn = [str(n) for n in ast.literal_eval((ROOT / "data_assets" / "kunert2014" / "neuron_names.txt").read_text())]
+    Gs, Gg = np.load(ROOT / "data_assets" / "kunert2014" / "Gs.npy"), np.load(ROOT / "data_assets" / "kunert2014" / "Gg.npy")
+    edges = []
+    for i, a in enumerate(kn):
+        for j, b in enumerate(kn):
+            if a in idx and b in idx and i != j and (Gs[i, j] > 0 or (Gg[i, j] > 0 and i < j)):
+                edges += [idx[b], idx[a]]       # from b onto a
+    return {"names": names, "cls": [neuron_class(n) for n in names],
+            "pos": [round(v, 1) for n in names for v in atlas[n]], "edges": edges}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--local", action="store_true")
@@ -278,6 +299,8 @@ def main() -> int:
             (OUT / "local.js").write_text("window.NEMATICA_LOCAL = " + json.dumps(local(args.data, args.folds, args.frames),
                                           separators=(",", ":")) + ";\n", encoding="utf-8")
             print("wrote", OUT / "local.js")
+        (OUT / "brain.js").write_text("window.NEMATICA_BRAIN = " + json.dumps(brain(), separators=(",", ":")) + ";\n", encoding="utf-8")
+        print("wrote", OUT / "brain.js")
         (OUT / "echo.js").write_text("window.NEMATICA_ECHO = " + json.dumps(echoes(args.data, args.folds),
                                      separators=(",", ":")) + ";\n", encoding="utf-8")
         print("wrote", OUT / "echo.js")
