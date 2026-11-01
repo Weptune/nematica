@@ -164,10 +164,11 @@ class TaskNet(BrainCopy):
                         clamp.setdefault(pk.frame + t, []).append((i, pk.frame, float(v)))
         x = np.zeros(n)
         hist = []
-        for t in range(burn):                                   # settle, and measure each unit's spread
+        for t in range(2 * burn):                               # settle, then measure each unit's spread
             u = 0.1 * rng.standard_normal(B.shape[1])
             x = (1 - a) * x + a * (W @ np.tanh(x) + B @ u + b) + self.noise * rng.standard_normal(n)
-            hist.append(np.tanh(x))
+            if t >= burn:
+                hist.append(np.tanh(x))
         spread = np.maximum(np.std(hist, axis=0), 1e-3)
         R = np.empty((n, T))
         base = {}

@@ -15,8 +15,12 @@ pool = pool[:14]
 m = CreamerCausal("connectome_constrained", protocol="native")
 quiet = copy.copy(m); quiet.Lq = 0 * m.Lq; quiet.sr = 0 * m.sr
 real = [response_set(r) for r in pool]
-noisy = [response_set(m.simulate(r, np.random.default_rng(i))) for i, r in enumerate(pool)]
-clean = [response_set(quiet.simulate(r, np.random.default_rng(i))) for i, r in enumerate(pool)]
+noisy_sims = [m.simulate(r, np.random.default_rng(i)) for i, r in enumerate(pool)]
+clean_sims = [quiet.simulate(r, np.random.default_rng(i)) for i, r in enumerate(pool)]
+noisy = [response_set(s) for s in noisy_sims]
+# the noise-free echo in the noisy run's units: with the noise off, a neuron's own
+# pre-stimulus fluctuation is near zero and would inflate its amplitudes
+clean = [response_set(n, x=c.x) for n, c in zip(noisy_sims, clean_sims)]
 def agree(A, B, same_ok=False):
     v = [1 - c_pattern(a, b) for i, a in enumerate(A) for j, b in enumerate(B) if (same_ok or i != j)]
     v = [x for x in v if np.isfinite(x)]

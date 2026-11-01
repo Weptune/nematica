@@ -40,8 +40,12 @@ def convert_one(src: Path, i: int, out: Path) -> str:
         print(f"skipped recording {i} ({uid}): {e}", file=sys.stderr)
         return ""
     t = np.loadtxt(src / f"{i}_t.txt", ndmin=1).astype(float)
-    labels = read_lines(src / f"{i}_labels.txt")[: x.shape[1]]
+    labels = read_lines(src / f"{i}_labels.txt")
+    while labels and labels[-1] == "" and len(labels) > x.shape[1]:
+        labels.pop()                                       # trailing newline only
     ids = np.array([s.strip() for s in labels])
+    if len(t) > 1 and not np.allclose(np.diff(t), 0.5):
+        raise ValueError(f"recording {i} ({uid}): frames are not 0.5 s apart")
     sc = np.loadtxt(src / f"{i}_stim_neurons.txt", ndmin=1).astype(np.int64)
     sf = np.loadtxt(src / f"{i}_stim_volume_i.txt", ndmin=1).astype(np.int64)
     if len(ids) != x.shape[1] or len(t) != x.shape[0] or len(sc) != len(sf):

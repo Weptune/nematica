@@ -66,6 +66,13 @@ class ClassNet(BrainCopy):
         for j, c in enumerate(worm.classes):
             if c in idx and worm.names[j]:
                 out[j] = z[idx[c]]
+        # one trace per class: the poked neuron's partner would otherwise copy the clamped
+        # drive exactly, a same-class "response" no neuron-level copy produces
+        for p in worm.pokes:
+            c = worm.classes[p.index]
+            for j, cj in enumerate(worm.classes):
+                if cj == c and j != p.index:
+                    out[j, p.frame:p.frame + len(p.drive)] = np.nan
         return out
 
     def run(self, worm, rng):
@@ -92,14 +99,24 @@ class LinearRest(ClassNet):
             for f in w.all_stim_frames:
                 quiet[max(f, 0):f + POST] = False
             ok = quiet[:-1] & quiet[1:]
-            X.append(np.nan_to_num(z[:, :-1][:, ok]))
-            Y.append(np.nan_to_num(z[:, 1:][:, ok]))
+            X.append(np.nan_to_num(z[:, :-1][:, ok]))    # an unseen class contributes nothing as input
+            Y.append(z[:, 1:][:, ok])                    # ...but is not a target of zero
         X, Y = np.hstack(X), np.hstack(Y)
-        self.A = Y @ X.T @ np.linalg.inv(X @ X.T + self.ridge * np.eye(C))
+        self.A = np.zeros((C, C))
+        self.noise = np.ones(C)
+        res = []
+        for i in range(C):                               # each class fitted only where it was seen
+            m = np.isfinite(Y[i])
+            if m.sum() < 50:
+                continue
+            Xi = X[:, m]
+            self.A[i] = Y[i, m] @ Xi.T @ np.linalg.inv(Xi @ Xi.T + self.ridge * np.eye(C))
+            res.append((i, Y[i, m] - self.A[i] @ Xi))
         r = np.abs(np.linalg.eigvals(self.A)).max()
         if r > 0.99:
-            self.A *= 0.99 / r                       # keep the free run stable
-        self.noise = (Y - self.A @ X).std(axis=1)
+            self.A *= 0.99 / r                           # keep the free run stable
+        for i, e in res:
+            self.noise[i] = e.std()
 
 
 class RandomNet(LinearRest):

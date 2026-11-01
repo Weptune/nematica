@@ -1,5 +1,6 @@
-"""The optogenetic signal-propagation atlas (Randi et al. 2023), as packaged by Creamer et
-al. 2025 ("pumpprobe" recordings), converted to one .npz per recording:
+"""The optogenetic signal-propagation atlas (Randi et al. 2023, OSF project e2syt), converted
+from the archive's exported_data folder to one .npz per recording ("pumpprobe" recordings;
+the same packaging also appears in Creamer et al.'s data release):
 
     x            (T, N) float32 fluorescence, NaN where a neuron was not tracked
     ids          (N,) neuron names, "" where unidentified
@@ -7,6 +8,7 @@ al. 2025 ("pumpprobe" recordings), converted to one .npz per recording:
     stim_frame   (S,) frame of each stimulation
 
 Convert the original text folders with `python scripts/convert_pumpprobe.py`. Local use only.
+Some loaders here also read the separate Creamer et al. 2025 packaging (data/raw/2025_creamer_lds_npz).
 """
 
 from __future__ import annotations

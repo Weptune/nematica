@@ -185,13 +185,15 @@ def score_sets(name: str, system: Sequence[ResponseSet], real: Sequence[Response
     _, gidx = np.unique(groups, return_inverse=True)
     n = len(real)
     for m, fn in levels.items():
-        key = (tuple(id(r) for r in real), m)
+        key = (tuple(id(r) for r in real), m, NORM)
         if key not in _BIO_CACHE:               # real-to-real distances, reused across systems
             d_bio = np.full((n, n), np.nan)
             for i, j in combinations(range(n), 2):
                 d_bio[i, j] = d_bio[j, i] = fn(real[i], real[j])
-            _BIO_CACHE[key] = d_bio
-        d_bio = _BIO_CACHE[key]
+            # the sets are stored with their distances so their ids cannot be reused by new
+            # objects while the entry exists
+            _BIO_CACHE[key] = (d_bio, list(real))
+        d_bio = _BIO_CACHE[key][0]
         bio = d_bio[np.triu_indices(n, 1)]
         bio = bio[np.isfinite(bio)]
         d_sys = np.array([[fn(s, r) if s.group != r.group else np.nan for r in real] for s in system], float)

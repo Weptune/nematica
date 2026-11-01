@@ -335,7 +335,8 @@ pokes; the poked neuron's measured response is given to the copy as `drive`. Two
 `examples/copies/silent.py` (independent noise, the floor) and
 `examples/copies/linear_rest.py` (a linear model learned only from activity with no pulse
 nearby). The tool runs exactly the procedure of `scripts/run_same_worms.py`: on one pool,
-all eleven verdicts and values match.
+all eleven verdicts and values match when both use the same
+response units (`score` uses `fluct`; pass `--norm fluct` to the runner).
 
 **Inside is not agreement.** A verdict of inside means no difference was detected. For the
 poke levels the report also gives an equivalence verdict, with a rule fixed on 1 Nov 2026
@@ -351,9 +352,9 @@ to cached results. On the repaired data, over six pools:
 | plain hybrid (`hybrid_kernels`) | 4 of 6 | 6 of 6 | 6 of 6 |
 | linear model fitted to ongoing activity (`var3_spontaneous`) | 0 of 6 | 6 of 6 | 6 of 6 |
 
-The magnitude column shows a flaw in the rule as fixed: a threefold error is so large that
-half of it (about 1.7-fold) admits copies whose magnitude is detectably wrong (outside in
-most pools). It is reported as fixed and will be replaced in the next pre-registration by a
+The magnitude column shows a flaw in the rule as fixed: the tripled-response control is so
+far off (a shift of about 0.9 in distance) that half of it, a tolerance of about 0.45,
+admits copies whose magnitude is detectably wrong (outside in most pools). It is reported as fixed and will be replaced in the next pre-registration by a
 control closer to the size of real differences between worms.
 
 **The reverse test, written before running (1 Nov 2026).** unc-31 worms cannot release
@@ -2003,41 +2004,52 @@ behaviour levels are not scored. Rotating pools (`docs/figures/published_combine
 - c302 (OpenWorm) is not scored yet.
 
 **Creamer et al.'s models on the stimulated worms, with their own stimulation (1 Nov 2026,
-exploratory: one pool, repaired data).** Their own measure first, reproduced from their
-published models and their published train and test response maps
-(`scripts/creamer_own_metric.py`; `measured_stams.pkl` from their repository, kept local):
-correlation of each model's time-integrated response map with the held-out map, relative to
-the train-to-test correlation (0.173): connectome-constrained 0.81, fully connected 0.69,
-shuffled 0.23. Their abstract reports 92% for the first; the ranking reproduces.
+exploratory: one pool, repaired data; checked by an independent review).** Their own measure
+first, recomputed from their published models and their published train and test response
+maps (`scripts/creamer_own_metric.py`; `measured_stams.pkl` from their repository, kept
+local): correlation of each model's time-integrated response map with the held-out map,
+relative to the train-to-test correlation of the maps (0.173). Connectome-constrained 0.81
+(an absolute correlation of 0.14), fully connected 0.69, shuffled 0.23. The ordering matches
+the paper; the first value does not (their abstract reports 92%), and the gap is not yet
+explained.
 
 Reading their code showed our earlier test of these models was not fair: we held the poked
 neuron to its measured response, while their models take a learned input filter (45 frames
-per neuron). `CreamerCausal(protocol="native")` now uses that filter. On the ruler (split
-cv3, pool 0), the connectome-constrained model is still outside on the poke pattern:
-simulated worms' echoes agree with real worms at 0.003, against 0.095 between real worms.
+per neuron, a unit input at each stimulation, as in their `sample()` and `calculate_irfs`).
+`CreamerCausal(protocol="native")` now uses that filter. On the ruler (split cv3, pool 0), the
+connectome-constrained model is still outside on the poke pattern: simulated worms' echoes
+agree with real worms at 0.003, against 0.095 between real worms.
 
-Why the two evaluations disagree (`scripts/diag_creamer_reliability.py`, 14 pool worms):
+What separates the two evaluations (`scripts/diag_creamer_reliability.py`,
+`scripts/diag_creamer_noise.py`, 14 pool worms; the noise-free echo is measured in the noisy
+run's units):
 
 | Comparison | Echo agreement |
 |---|---|
 | real worm with real worm | 0.094 |
-| model without its noise, with real worms | 0.110 |
+| model without its noise, with real worms | 0.126 |
 | model with its fitted noise, with real worms | 0.004 |
 | two simulated worms with each other | 0.010 |
 
-One real worm's echo correlates 0.20 with the mean of the others; one simulated worm's echo
-correlates 0.08 with its own model's noise-free echo. The model's average echo is about
-right, which is what their measure scores (a noise-free response map). A single simulated
-worm's echo, which is what an experiment sees, is buried in the model's own noise.
-Shrinking the noise does not rescue it (`scripts/diag_creamer_noise.py`): at one fifth of
-the fitted noise, simulated worms agree with each other as real worms do (0.106), but with
-real worms only at 0.042; at one tenth they become too alike (0.254) while still short of
-real worms (0.076). One mean echo plus noise cannot reproduce how real worms differ from each
-other: the model lacks individual variation, not just the right noise level.
+- **Single echoes are buried in the model's own noise.** The model's noise-free echo is
+  about 0.01 of its ongoing fluctuation, so one simulated worm's echo correlates only 0.09
+  with the model's own noise-free echo, while one real worm's echo correlates 0.20 with the
+  mean of the other real worms. Their measure scores the noise-free response map, so it
+  cannot see this; an experiment, which sees one worm at a time, would.
+- **The model's average echo is only partly right.** Its noise-free echo map correlates
+  0.23 with the real worms' mean echo map. Scaling the noise down shows the same thing:
+  if model and real echoes are each a mean echo plus independent noise, the implied
+  correlation between the two mean echoes is 0.42 at one fifth of the fitted noise and
+  0.49 at one tenth. At one fifth, simulated worms agree with each other as real worms do
+  (0.106), but with real worms only at 0.042, which a partly wrong mean echo accounts for.
+  These data do not show whether the model also lacks stable differences between
+  individual worms; that needs its own test.
 
-Caveats: one pool and 14 worms; the model's input is a unit pulse per stimulation, as in
-their response maps and their data preparation code (input 1 at each stimulation frame); their models were fitted on atlas worms that may
-include these, which favours them.
+Caveats: one pool and 14 worms; their models were fitted on atlas worms that may include
+these (only 2 of the 14 are in the held-out list of their example configuration), which
+favours them; in the gallery their models take a unit input at every stimulation, while
+other copies are given the poked neuron's measured response, which also tells them which
+stimulations took.
 
 ## Swarm view (arc 6)
 

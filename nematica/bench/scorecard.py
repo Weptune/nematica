@@ -137,7 +137,9 @@ def poke_tolerances(pool, real_c=None, frac: float = TOL_FRACTION, seed: int = 0
 
 
 def equivalence(row: dict, tol: float | None) -> str:
-    if tol is None or "shift_lo" not in row:
+    if row.get("verdict") == "not scored" or row.get("shift_lo") in (None, ""):
+        return "not scored"
+    if tol is None:
         return "no tolerance"
     lo, hi = float(row["shift_lo"]), float(row["shift_hi"])
     return "agrees" if (-tol < lo and hi < tol) else "not shown"
