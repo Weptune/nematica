@@ -558,6 +558,22 @@ blend weighs one poke at about 1/200 of the watching estimate for a pair. For a 
 request this supports is simple: spread pulses evenly over neurons, record ongoing activity
 too, and above all, more pulses.
 
+**The prediction checked on real worms (`scripts/run_data_scaling.py`,
+`docs/figures/data_scaling.csv`).** If watching hits a ceiling early and poking does not, a
+real copy that learns by watching should not improve with more training worms, and one that
+learns from pokes should. Each was fitted on 10% to 100% of the training worms (split cv3,
+pools 0 and 1) and its echo agreement with held-out real worms measured:
+
+| Training worms | 6 | 14 | 29 | 58 |
+|---|---|---|---|---|
+| learns by watching (`var3_spontaneous`) | 0.004 / 0.009 | 0.011 / 0.008 | 0.005 / 0.010 | 0.010 / 0.014 |
+| learns from pokes (`hybrid_kernels`) | 0.073 / 0.057 | 0.072 / 0.073 | 0.085 / 0.079 | 0.092 / 0.081 |
+| real worms with each other | 0.095 / 0.107 | | | |
+
+As predicted: watching stays near zero from 6 to 58 worms, while pokes from just 6 worms
+already beat 58 worms of watching by a factor of five to twenty, and keep improving with
+more worms.
+
 
 ## Running the benchmark
 

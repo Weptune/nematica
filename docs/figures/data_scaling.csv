@@ -1,0 +1,17 @@
+fold,model,fraction,train_worms,echo_agreement,real_agreement,verdict
+0,var3_spontaneous,0.1,6,0.0036,0.0949,outside
+0,var3_spontaneous,0.25,14,0.011,0.0949,outside
+0,var3_spontaneous,0.5,29,0.0053,0.0949,outside
+0,var3_spontaneous,1.0,58,0.0095,0.0949,outside
+0,hybrid_kernels,0.1,6,0.0726,0.0949,inside
+0,hybrid_kernels,0.25,14,0.0716,0.0949,inside
+0,hybrid_kernels,0.5,29,0.085,0.0949,inside
+0,hybrid_kernels,1.0,58,0.0921,0.0949,inside
+1,var3_spontaneous,0.1,6,0.0085,0.1072,outside
+1,var3_spontaneous,0.25,14,0.0079,0.1072,outside
+1,var3_spontaneous,0.5,29,0.0102,0.1072,outside
+1,var3_spontaneous,1.0,58,0.0137,0.1072,outside
+1,hybrid_kernels,0.1,6,0.0569,0.1072,outside
+1,hybrid_kernels,0.25,14,0.0734,0.1072,outside
+1,hybrid_kernels,0.5,29,0.0789,0.1072,outside
+1,hybrid_kernels,1.0,58,0.0811,0.1072,outside
