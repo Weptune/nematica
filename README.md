@@ -367,6 +367,27 @@ copies: only the copy that learned from pokes is shown to agree, in 2 of 6 pools
 are further from real worms than real worms are from each other in every pool (the measure
 is a distance, so it does not say whether their responses are too large or too small).
 
+**The ruler's resolution (1 Nov 2026, `scripts/run_resolution.py`, `docs/figures/resolution.csv`).**
+How large an error must a copy make before the ruler sees it? Known errors are put into real
+held-out worms' own responses, and the damaged worms are scored against the rest of their pool
+as a copy would be, in all six pools:
+
+| Error put into real worms | Called outside | Shown to agree (equivalence) |
+|---|---|---|
+| none (the worms as recorded) | 0 of 6 | 6 of 6 |
+| poked neuron misattributed in 25% of pulses | 2 of 6 | 4 of 6 |
+| misattributed in 50%, 75%, 100% | 6 of 6 each | 0 of 6 each |
+| every response x1.1 | 0 of 6 | 6 of 6 (x3 rule), 6 of 6 (x1.5 rule) |
+| every response x1.25 | 3 of 6 | 6 of 6 (x3 rule), 0 of 6 (x1.5 rule) |
+| every response x1.5 | 6 of 6 | 6 of 6 (x3 rule), 0 of 6 (x1.5 rule) |
+| every response x2 | 6 of 6 | 0 of 6 (both rules) |
+
+No false alarms on real worms. The ruler reliably catches a copy that gets half of who-drives-
+whom wrong, or misjudges response size by half; errors of about a quarter often pass. So a
+pass means "within about 25% of a real worm on these levels", not "faithful". The table also
+confirms the x3 magnitude rule is too lenient (a 50% error passes) and that the x1.5 rule
+draws the line at about 25%. Any claim made with this ruler should carry these numbers.
+
 **The reverse test, written before running (1 Nov 2026).** unc-31 worms cannot release
 neuropeptides from dense-core vesicles: real brains with one biological ingredient removed.
 Scored as a "copy" against each wild-type pool on all levels, with the equivalence check
