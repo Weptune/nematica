@@ -451,26 +451,47 @@ a reliability curve failed for that reason (agreement did not rise with the numb
 pulses used). Copying one particular animal needs repeated pokes of the same neurons in the
 same worm: a concrete design request for a lab, not something this atlas can settle.
 
-**Artificial networks against real worms: a first fingerprint (1 Nov 2026, preview on one
-pool, split cv3 pool 0; the full gallery on all six pools is queued, `scripts/run_gallery.py`).**
-Each family scored as a copy (`nematica/gallery.py`, `nematica/taskworm.py`):
+**Artificial networks against real worms: the fingerprint (1 Nov 2026; all six held-out pools,
+repaired data; `scripts/run_gallery.py`, `scripts/summarize_gallery.py`,
+`docs/figures/gallery_fingerprint.csv`).** Each family is scored as a copy
+(`nematica/gallery.py`, `nematica/taskworm.py`). Echo agreement is the median over pools;
+real worms agree with each other at 0.097. Counts are pools out of 6.
 
-| Network | Learned from | Watching tests inside (of 6) | Echo agreement with real worms | Pattern agrees | Complexity (P1, P2) |
-|---|---|---|---|---|---|
-| linear, fitted to recordings (`linear-rest`) | watching | 3 | 0.009 | no | outside, outside |
-| the same with who-drives-whom randomised (`random-wiring`) | watching | 4 | 0.001 | no | outside, outside |
-| task-trained, dense (`task-dense`) | a worm task, no neural data | 2 | 0.002 | no | outside, outside |
-| task-trained, wiring-shaped (`task-wired`) | a worm task, no neural data | 3 | 0.004 | no | outside, outside |
-| hybrid (`hybrid_kernels_regimes_obsfit`) | watching and pokes | 1 | 0.113 | yes | see arc 4 |
-| real worms with each other | | | 0.095 | | |
+| Network | Learned from | Watching tests inside (of 6) | Echo agreement [range] | Pattern agrees | Kinetics agrees | Magnitude agrees (x1.5 rule) |
+|---|---|---|---|---|---|---|
+| hybrid (`hybrid_kernels_regimes_obsfit`) | watching and pokes | 1 to 3 | 0.097 [0.088, 0.113] | 6 | 6 | 2 |
+| plain hybrid (`hybrid_kernels`) | watching and pokes | 4 | 0.084 [0.076, 0.096] | 4 | 6 | 0 |
+| Kunert 2014 wiring model (`kunert2014`) | nothing: wiring diagram and textbook physiology | 2 | 0.022 [0.015, 0.026] | 0 | 0 | 6* |
+| linear, fitted to recordings (`linear-rest`) | watching | 3 to 5 | 0.013 [0.008, 0.018] | 0 | 6 | 0 |
+| linear VAR, fitted to recordings (`var3_spontaneous`) | watching | 3 to 5 | 0.011 [0.004, 0.014] | 0 | 6 | 0 |
+| Creamer et al., own stimulation (`creamer-native`) | watching and pokes (published fit) | 2 to 4 | 0.008 [0.003, 0.009] | 0 | 6 | 6** |
+| task-trained, wiring-shaped (`task-wired`) | a worm task, no neural data | 1 to 3 | 0.004 [0.003, 0.007] | 0 | 0 | 2 |
+| task-trained, dense (`task-dense`) | a worm task, no neural data | 0 to 3 | 0.004 [0.002, 0.008] | 0 | 0 | 0 |
+| linear with who-drives-whom randomised (`random-wiring`) | watching | 2 to 4 | 0.001 [-0.003, 0.004] | 0 | 6 | 0 |
 
-On this pool, nothing that did not learn from pokes answers a poke like a worm, whatever its
-origin: fitted to recordings, randomly wired, trained on a task, with or without the real
-wiring diagram. The watching tests do not separate these networks from each other (2 to 4
-of 6), and a network whose couplings were dealt out at random passes as many as one fitted to
-real worms. The one copy that answers pokes like a worm fails most watching tests here: the
-two kinds of test measure different things. One pool only; the full run will say whether it
-holds.
+\* The Kunert model's poke strength is an assumption (current = 1 x the measured drive), so
+its magnitude verdict reflects that choice, not the model. \*\* Creamer et al.'s models take
+a unit input at every stimulation, while the other copies are given the poked neuron's
+measured response (which also tells them which stimulations took); the comparison is not
+like for like on magnitude.
+
+What the fingerprint says, within the ruler's resolution (about 25%, above):
+
+- **Only networks that learned from pokes answer a poke like a worm.** Everything else falls
+  four to a hundred times short on the echo pattern, in every pool, whatever its origin:
+  fitted to recordings, randomly wired, built from the wiring diagram, trained on a task
+  with or without the real wiring, or published and fitted to this atlas.
+- **The watching tests do not order the networks.** No family passes all six in any pool,
+  and the randomly wired network passes as many as the one fitted to real worms.
+- **Among networks that never saw a poke, structure helps a little.** The wiring-diagram
+  model, fitted to nothing, gets the most (0.022); a network fitted by watching gets 0.013,
+  and the same network with its couplings dealt out at random gets 0.001. Watching recovers
+  a little cause and effect, and the wiring diagram a little more, but both are far from a
+  real worm.
+- **Networks with their own dynamics get the time course wrong.** The wiring-diagram model
+  and the task-trained networks fail kinetics in every pool; the linear networks pass it.
+- **Training on a task does not produce a worm-like brain**, with or without the real wiring
+  as a constraint: the two task-trained networks are indistinguishable from each other here.
 
 
 ## Running the benchmark

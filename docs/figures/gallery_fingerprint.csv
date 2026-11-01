@@ -1,0 +1,10 @@
+family,label,pools,watching_inside_min,watching_inside_max,echo_agreement_median,echo_agreement_min,echo_agreement_max,real_agreement_median,pattern_agrees,kinetics_agrees,magnitude_agrees_x3,magnitude_agrees_x1.5
+hybrid_kernels_regimes_obsfit,hybrid (pokes),6,1,3,0.097,0.088,0.113,0.097,6,6,6,2
+hybrid_kernels,plain hybrid,6,4,4,0.084,0.076,0.096,0.097,4,6,6,0
+kunert2014,Kunert 2014 wiring model,6,2,2,0.022,0.015,0.026,0.097,0,0,6,6
+linear-rest,"linear, fitted to recordings",6,3,5,0.013,0.008,0.018,0.097,0,6,6,0
+var3_spontaneous,linear VAR (watching),6,3,5,0.011,0.004,0.014,0.097,0,6,6,0
+creamer-native,Creamer et al. (own input),6,2,4,0.008,0.003,0.009,0.097,0,6,6,6
+task-wired,"task-trained, wiring-shaped",6,1,3,0.004,0.003,0.007,0.097,0,0,6,2
+task-dense,"task-trained, dense",6,0,3,0.004,0.002,0.008,0.097,0,0,6,0
+random-wiring,"same, wiring randomised",6,2,4,0.001,-0.003,0.004,0.097,0,6,6,0
