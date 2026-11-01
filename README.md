@@ -520,7 +520,7 @@ about the size of the atlas, which has about 8,000 pulses.)
 - **Shared, unrecorded drives break it, and more data does not help.** A few slow
   brain-wide signals that no recording captures put a ceiling on watching that is reached
   within a few hours and never lifted (0.20 at 2.5 h and at 70 h). Poking is not fooled:
-  it keeps improving and passes watching at about 40 hours.
+  it keeps improving and passes watching between 40 and 70 hours of recording.
 - **Real worms look like the drive-dominated case.** In the two unstimulated immobilised
   worms of the atlas archive, the top three principal components carry 40% of the
   variance; in the synthetic worm that level is reached with drives of about 5% of the input
