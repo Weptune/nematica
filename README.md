@@ -420,6 +420,27 @@ a reliability curve failed for that reason (agreement did not rise with the numb
 pulses used). Copying one particular animal needs repeated pokes of the same neurons in the
 same worm: a concrete design request for a lab, not something this atlas can settle.
 
+**Artificial networks against real worms: a first fingerprint (1 Nov 2026, preview on one
+pool, split cv3 pool 0; the full gallery on all six pools is queued, `scripts/run_gallery.py`).**
+Each family scored as a copy (`nematica/gallery.py`, `nematica/taskworm.py`):
+
+| Network | Learned from | Watching tests inside (of 6) | Echo agreement with real worms | Pattern agrees | Complexity (P1, P2) |
+|---|---|---|---|---|---|
+| linear, fitted to recordings (`linear-rest`) | watching | 3 | 0.009 | no | outside, outside |
+| the same with who-drives-whom randomised (`random-wiring`) | watching | 4 | 0.001 | no | outside, outside |
+| task-trained, dense (`task-dense`) | a worm task, no neural data | 2 | 0.002 | no | outside, outside |
+| task-trained, wiring-shaped (`task-wired`) | a worm task, no neural data | 3 | 0.004 | no | outside, outside |
+| hybrid (`hybrid_kernels_regimes_obsfit`) | watching and pokes | 1 | 0.113 | yes | see arc 4 |
+| real worms with each other | | | 0.095 | | |
+
+On this pool, nothing that did not learn from pokes answers a poke like a worm, whatever its
+origin: fitted to recordings, randomly wired, trained on a task, with or without the real
+wiring diagram. The watching tests do not separate these networks from each other (2 to 4
+of 6), and a network whose couplings were dealt out at random passes as many as one fitted to
+real worms. The one copy that answers pokes like a worm fails most watching tests here: the
+two kinds of test measure different things. One pool only; the full run will say whether it
+holds.
+
 
 ## Running the benchmark
 
