@@ -10,7 +10,7 @@
 <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
 <meta name="theme-color" content="#0d161b">
 <meta property="og:site_name" content="NEMATICA">
-<link rel="stylesheet" href="assets/site.css?v=15">
+<link rel="stylesheet" href="assets/site.css?v=20">
 </head>
 <body>
 
@@ -38,6 +38,8 @@
     <nav class="toc" aria-label="Contents">
       <ol>
         <li><a href="#watching">Looking alive is not enough</a></li>
+        <li><a href="#gallery">Every kind of network</a></li>
+        <li><a href="#why">Why watching fails</a></li>
         <li><a href="#noise">Cause and effect, not noise</a></li>
         <li><a href="#fingerprints">Causal fingerprints</a></li>
         <li><a href="#ingredients">What it took</a></li>
@@ -49,11 +51,11 @@
 
     <!-- 1 -->
     <h2 id="watching">A brain can pass the watching tests and fail every poke.</h2>
-    <p>The obvious way to check an artificial brain is to compare its activity with a real one's: are the values, rhythms and correlations right? We ran that check and a harder one on the same 113 worms. A linear model fitted to the worms' ongoing activity is indistinguishable from held-out real worms on five of six activity statistics, in all three held-out groups. When one of its neurons is switched on, its echo agrees with real worms at a correlation of about 0.01, where two real worms agree at about 0.10, and it reaches two to four times too much of the brain.</p>
+    <p>The obvious way to check an artificial brain is to compare its activity with a real one's: are the values, rhythms and correlations right? We ran that check and a harder one on the same 113 worms. A linear model fitted to the worms' ongoing activity passes three to five of six activity statistics in each of six held-out groups of worms. When one of its neurons is switched on with light, its echo agrees with real worms at 0.004 to 0.014; two real worms agree with each other at 0.087 to 0.121. A brain that also learned from pokes reaches 0.088 to 0.113, and on a stricter test, fixed in advance, that asks for agreement within a stated tolerance rather than merely no difference detected, its echo pattern is shown to match real worms in all six groups. The brain that only watched: in none.</p>
     <p>That might be one unlucky model, so we scored every brain we built on both. In 88 model-group scores, the number of watching tests passed had a weak association with echo agreement (rank correlation about +0.09). Using the pre-specified continuous rest score instead, the correlation with poke-pattern distance was &minus;0.06 (p = 0.56). The 88 scores include repeated results from 30 model variants across held-out groups, so this does not prove that rest and poke performance are unrelated in general. It shows that passing these watching tests does not reliably identify the models that answer pokes correctly.</p>
     <aside class="note">
-      <div class="measure copy"><span class="v">0.01</span><span class="l">echo agreement of the best-looking linear brain with real worms</span></div>
-      <div class="measure"><span class="v">0.10</span><span class="l">agreement between two real worms</span></div>
+      <div class="measure copy"><span class="v">0.01</span><span class="l">echo agreement of the linear brain that watched, with real worms</span></div>
+      <div class="measure"><span class="v">0.10</span><span class="l">agreement between two real worms, and of the brain that also learned from pokes</span></div>
     </aside>
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 3</span>How alive a brain looks against how it answers a poke</p></div>
@@ -61,11 +63,33 @@
       <figcaption>Each dot is one artificial brain scored on one held-out group of worms. Horizontal: how many of the six watching tests it passes. Vertical: how well its echoes, across all stimulated pairs of neurons, correlate with a real worm's. The green line and band mark how well two real worms agree. Brains that look most alive at rest are no better at the poke test.</figcaption>
     </figure>
 
+    <!-- gallery -->
+    <h2 id="gallery">Every kind of network that skipped pokes fails, whatever it is.</h2>
+    <p>Is the failure about the linear model, or about something deeper? We put every family of artificial network we could build through the same test, on six held-out groups of worms: networks fitted to recordings; the same network with its connections dealt out at random; the classic model built from the wiring diagram with textbook physiology and fitted to nothing; networks trained to do a worm's job, steering towards food and away from harm, with or without the real wiring as a constraint and never shown a neural recording; and a published model fitted to this very atlas, run with its own stimulation model.</p>
+    <p>Only networks that learned from pokes answer a poke like a worm. Everything else falls four to a hundred times short, in every group. Among networks that never saw a poke, structure helps a little: the wiring diagram gets the most, a network that watched gets less, and the same network with random wiring gets nothing. The tests of ongoing activity do not put these networks in order: no family passes all six in any group, and the randomly wired network passes nearly as many as the one fitted to real worms.</p>
+    <figure class="plate wide">
+      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 4</span>Artificial networks against real worms</p></div>
+      <div data-chart="gallery"></div>
+      <figcaption>Each row is one family of network; the dot is its median echo agreement with real worms over six held-out groups, the bar its range. Filled dots learned from pokes. The green line is how well two real worms agree. Hover a row for how many groups it is shown to match on the echo pattern and how many tests of ongoing activity it passes. The published model takes a unit input at each stimulation, while the other networks are given the stimulated neuron's measured response, so the comparison is not like for like on response size.</figcaption>
+    </figure>
+
+    <!-- why -->
+    <h2 id="why">Why: watching cannot see past shared signals it does not record.</h2>
+    <p>A real worm cannot tell us its true cause and effect, so a model brain stands in: a published model of 154 neurons in which ongoing activity and responses to pokes come from the same dynamics. We record it the way the atlas was recorded, with half the neurons seen per recording, some never seen, and measurement noise, and try to learn its cause and effect from the recordings.</p>
+    <p>Watching works in principle. When each neuron's fluctuations are its own, it recovers cause and effect well, better than poking at the atlas's size. But add a few slow, shared, brain-wide signals that no recording captures, at a level that matches real resting worms, and watching hits a ceiling within a few hours that more data never lifts. Poking is not fooled by those signals: it keeps improving and overtakes watching between 40 and 70 hours of recording, the size of the atlas. A second published model as ground truth gives the same picture, and removing the strongest shared patterns before learning does not reliably help.</p>
+    <p>The real worms behave as predicted. A copy that learns by watching is no better after watching 58 worms than after 6 (echo agreement 0.004 to 0.014 throughout), while a copy given the pokes of just 6 worms already beats it four to seven times over, and keeps improving with more worms.</p>
+    <aside class="note"><p><span class="fig">What this would mean.</span> If real brains are driven by strong shared signals that recordings miss, a brain cannot be copied by watching it, however long. Intervention is then not a refinement but a necessity. The stand-in brains are linear and were themselves fitted to this atlas, and the drive level is matched to only two resting worms.</p></aside>
+    <figure class="plate wide">
+      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 5</span>Watching hits a ceiling; poking keeps climbing</p></div>
+      <div data-chart="ceiling"></div>
+      <figcaption>A synthetic worm with known cause and effect, recorded like the atlas (37-minute recordings, half the neurons seen in each, 30% never seen). Vertical: correlation of the learned cause and effect with the truth, averaged over two published models used as ground truth. Solid lines: with slow shared drives that no recording captures, carrying 5% of each neuron's input, which matches the share of activity in the top three patterns of real resting worms. Dashed: watching without those drives. Poking estimates each pair by averaging its responses, with no model.</figcaption>
+    </figure>
+
     <!-- 2 -->
     <h2 id="noise">The failure is about cause and effect, not noise.</h2>
     <p>A fair objection: maybe a model knows the right causal structure, and each single echo is just buried in the wrong kind of variability. If so, averaging many simulated repeats of the experiment should uncover it. It does not. Even ten full repeats averaged give an echo that agrees with the atlas average less than one real worm does. The published model fitted to this atlas comes closest, and still falls short.</p>
     <figure class="plate wide">
-      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 4</span>Averaging away the noise barely helps</p></div>
+      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 6</span>Averaging away the noise barely helps</p></div>
       <div data-chart="signalNoise"></div>
       <figcaption>Correlation of each model's echoes with the average echo of the training worms, for one simulated worm (open) and for ten simulated repeats averaged (filled). Held-out group 1, responses in units of pre-stimulus fluctuations, where one real worm reaches 0.26.</figcaption>
     </figure>
@@ -74,20 +98,21 @@
     <h2 id="fingerprints">Every worm has a causal fingerprint that watching does not reveal.</h2>
     <p>If real worms all answered pokes the same way, the failures above would just mean the models are imprecise. They do not. Split each worm's pokes into two halves: the two halves of the same worm agree with each other better than with other worms, in 36 of 43 worms (p = 5 &times; 10<sup>&minus;6</sup>). The effect is not a recording-day artefact; worms recorded on the same day are no closer than worms from other days.</p>
     <p>So we asked the sharper question. Fit a model to one worm's own resting activity. Does it predict that same worm's echoes better than models of other worms do? No: own model closer in 26 of 44 worms, median difference &minus;0.008, p = 0.11. Each brain has its own wiring of cause and effect, and watching that brain at rest does not tell you what it is.</p>
+    <p>On the repaired data, with responses in units of each neuron's fluctuations, a worm's two halves agree at 0.17 and different worms at 0.09, across 94 worms, and the gap holds when the halves are the first and second half of the recording. Two explanations remain open: genuine individuality, or worm-specific measurement such as neuron identities assigned once per worm. Can one particular worm then be copied from its own recording? Barely: predicting a worm's second half from a blend of its own first half and the average worm beats the average worm alone by 0.007. In the atlas a pulse mostly hits a new neuron, about 1.8 pulses per stimulated class per worm, so copying one animal needs repeated pokes of the same neurons in the same worm. That is the experiment we have asked for.</p>
     <figure class="plate wide">
-      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 5</span>Each worm against itself, and against other worms</p></div>
+      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 7</span>Each worm against itself, and against other worms</p></div>
       <div data-chart="fingerprint"></div>
       <figcaption>Each row is one worm. Its pokes are split into two halves; the green dot is the distance between the halves' echo patterns, the open dot is the median distance from that worm to every other worm. Rows are sorted by the gap. Median 0.85 against 0.92. Identification from echoes alone is still weak: a worm's own half ranks first among 43 in only 2 cases.</figcaption>
     </figure>
 
     <!-- 4 -->
     <h2 id="ingredients">What it took to answer a poke like a worm.</h2>
-    <p>Nonlinear neurons, sparse wiring and training directly on pokes each failed on their own. The first brain to pass the poke test, with its echo pattern and spread inside in all three held-out groups, needed four things together: causal links learned from pokes as links rather than as one-step dynamics; ongoing dynamics learned by watching; fast noise that does not propagate; and a brain that alternates between calm and active stretches.</p>
+    <p>Nonlinear neurons, sparse wiring and training directly on pokes each failed on their own. The first brain to pass the poke test, with its echo pattern and spread inside in all three held-out groups (and, on the repaired data, shown to agree on the echo pattern within a tolerance fixed in advance in all six), needed four things together: causal links learned from pokes as links rather than as one-step dynamics; ongoing dynamics learned by watching; fast noise that does not propagate; and a brain that alternates between calm and active stretches.</p>
     <p>The pass replicates: on a second, independently drawn split of the same worms, its echo pattern and spread are again inside in all three held-out groups. It is not the end of the story. That brain is weaker at rest than the plain linear model (three or four watching tests of six, against five), and its echoes are still too complex. Each fix we tried since moved one property toward real worms and pushed another away.</p>
     <figure class="plate wide">
-      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 6</span>Every brain, every test, every held-out group</p><div class="legend" data-legend></div></div>
+      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 8</span>Every brain, every test, every held-out group</p><div class="legend" data-legend></div></div>
       <div class="table-wrap" style="margin:0"><div data-chart="scorecard"></div></div>
-      <figcaption>Hover a cell for the brain's median distance from real worms against the real-worm median.</figcaption>
+      <figcaption>Hover a cell for the brain's median distance from real worms against the real-worm median. Computed before the 1 November data repair (three truncated recordings rebuilt from the original archive); the headline brains were rerun on the repaired data and their results held.</figcaption>
     </figure>
     <div class="table-wrap">
       <table class="data">
@@ -110,7 +135,7 @@
     <p>We expected models to fail by being too simple. They fail the other way: their echoes are more complex than real ones. After a poke, a third of a real worm's neuron classes never respond within 30 seconds, and the ones that do keep responding. In every model, almost every class flickers across the threshold at some point, briefly. The restlessness comes from the models' ongoing dynamics rather than their causal links, which is why it survived every fix to the links.</p>
     <aside class="note"><p><span class="fig">Not a claim about consciousness.</span> Nothing here says a worm or a model is conscious. These are the measurable properties that, in people, separate a responsive brain from an unresponsive one.</p></aside>
     <figure class="plate wide">
-      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 7</span>Who joins the echo after a poke</p></div>
+      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 9</span>Who joins the echo after a poke</p></div>
       <div data-chart="echoShape"></div>
       <figcaption>Diagnostic on held-out group 1. The hybrid is the brain that passes the poke test. To watch individual echoes spread through the head, use the <a href="index.html#echo-section">echo explorer</a> on the home page.</figcaption>
     </figure>
@@ -119,7 +144,7 @@
     <h2 id="mind">At rest, the same brains pass the consciousness-science measures.</h2>
     <p>Consciousness science has three standard measures of ongoing activity: how complex it is, how integrated its parts are, and how rich its repertoire of whole-brain states is. We expected linear models to come out too irregular. They do not: per-worm linear brains match real worms on all three, on two independent datasets. Measures of ongoing activity, however principled, cannot tell these copies from the real thing. The echo can.</p>
     <figure class="plate wide">
-      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 8</span>Complexity, integration and repertoire of ongoing activity</p><div class="legend" data-legend="noband"></div></div>
+      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 10</span>Complexity, integration and repertoire of ongoing activity</p><div class="legend" data-legend="noband"></div></div>
       <div class="table-wrap" style="margin:0"><div data-chart="mind"></div></div>
       <figcaption>Each mark is one held-out group. Rings show the outcome designed in advance for each calibration: green where it was met in every group, magenta where it was missed in at least one. The calibrations hit 24 of 27 designed outcomes on the copper dataset; the misses are all integration, where real worms differ a lot from each other.</figcaption>
     </figure>
@@ -131,6 +156,9 @@
       <li>Neuron classes, not single neurons, are the unit throughout; left and right partners are averaged.</li>
       <li>Calcium imaging is slow and indirect. A brain that matches these recordings matches what the microscope can see.</li>
       <li>The brain that passes the poke test was confirmed on a second, independently drawn split of the worms (echo pattern and spread inside in all three new groups). Both splits come from one lab's recordings.</li>
+      <li>The test has a measured resolution: it never flags real worms, always catches errors of half, and often misses errors of about a quarter. A pass means within about 25% of a real worm on these tests.</li>
+      <li>On 1 November three of the 113 recordings were found to have been cut short when the archive was unpacked, and were rebuilt. Results marked as rerun use the repaired data; older figures are labelled.</li>
+      <li>The explanation of why watching fails rests on synthetic worms built from linear published models; a nonlinear stand-in is the next check.</li>
       <li>No brain passes everything. The trade-offs above are the current frontier, and the next target is a brain whose dynamics are learned to match the statistics the ruler checks.</li>
     </ul>
     <p><a class="btn outline" href="method.html">How the test works</a> <a class="btn outline" href="log.html">The research log</a></p>
@@ -146,7 +174,7 @@
 </footer>
 
 <script src="data/results.js"></script>
-<script src="assets/charts.js"></script>
+<script src="assets/charts.js?v=2"></script>
 <script src="data/local.js" onerror="void 0"></script>
 <script src="assets/site.js?v=3"></script>
 </body>

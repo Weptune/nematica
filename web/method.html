@@ -10,7 +10,7 @@
 <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
 <meta name="theme-color" content="#0d161b">
 <meta property="og:site_name" content="NEMATICA">
-<link rel="stylesheet" href="assets/site.css?v=15">
+<link rel="stylesheet" href="assets/site.css?v=20">
 </head>
 <body>
 
@@ -41,6 +41,7 @@
         <li><a href="#tests">The tests</a></li>
         <li><a href="#calibration">Breaking real brains on purpose</a></li>
         <li><a href="#power">How sharp the poke test is</a></li>
+        <li><a href="#resolution">Agreement, and the test's resolution</a></li>
         <li><a href="#rules">Rules</a></li>
         <li><a href="#data">Data and code</a></li>
       </ol>
@@ -100,6 +101,24 @@
       <figcaption>Lines: agreement of synthetic brains with real worms as they carry more of the true average echo, one line per held-out group. Strips: the verdict at each step (three random reassignments each). Markers along the top: where models sit, from their averaged echoes against the atlas average (Figure 4). One expectation was missed: we predicted the window would be centred at 0.3, a single real worm's level; it sits nearer 0.4, because the atlas average is itself noisy.</figcaption>
     </figure>
 
+    <h2 id="resolution">Agreement, and the test's resolution.</h2>
+    <p>"Inside" only says that no difference was detected. For the poke tests we also ask for positive evidence of agreement, with a rule fixed before any brain was checked against it: a brain agrees when the whole 90% interval of its distance from real worms, minus the distance between real worms, lies within a tolerance. The tolerance is half the shift of a brain known to be wrong, built from the same held-out worms: the stimulated neuron credited at random for the echo pattern, the time course played backwards for the kinetics. For response size, the first rule used responses three times too big, which proved too lenient; it was replaced, again before results, by responses half again too big.</p>
+    <p>To know what a pass means, we put errors of known size into real held-out worms' own responses and scored the damaged worms against the rest of their group, as a brain would be scored, in all six groups.</p>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th>Error put into real worms</th><th>Called outside</th><th>Shown to agree</th></tr></thead>
+        <tbody>
+          <tr><td>None: the worms as recorded</td><td>0 of 6</td><td>6 of 6</td></tr>
+          <tr><td>Stimulated neuron credited wrongly in 25% of pulses</td><td>2 of 6</td><td>4 of 6</td></tr>
+          <tr><td>Credited wrongly in 50% or more</td><td>6 of 6</td><td>0 of 6</td></tr>
+          <tr><td>Every response 10% too big</td><td>0 of 6</td><td>6 of 6</td></tr>
+          <tr><td>Every response 25% too big</td><td>3 of 6</td><td>0 of 6</td></tr>
+          <tr><td>Every response 50% too big</td><td>6 of 6</td><td>0 of 6</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The test never flags real worms, always catches a brain that gets half its cause and effect wrong or misjudges response size by half, and often misses errors of about a quarter. A pass means within about 25% of a real worm on these tests, not a faithful copy. Sharper resolution needs more pulses per worm.</p>
+
     <h2 id="rules">Rules that keep the benchmark honest.</h2>
     <ol>
       <li>Predictions, including what would count as failure, are written into the project's record before each experiment runs. Misses are reported next to hits.</li>
@@ -119,7 +138,7 @@
           <tr><td>Atanas et al., <em>Cell</em> (2023)</td><td>Whole-brain recordings of freely moving worms. A second dataset for the tests of ongoing activity.</td></tr>
           <tr><td>Copper-boundary recordings, Dryad 10.5061/dryad.w9ghx3g4v (CC0)</td><td>Freely moving worms near an aversive copper boundary: the watching tests and the behaviour tests.</td></tr>
           <tr><td>Creamer, Leifer and Pillow (2024)</td><td>Published models fitted to the atlas, scored as they were released.</td></tr>
-          <tr><td>Kunert, Shlizerman and Kutz (2014); Neural Interactome</td><td>The wiring diagram used for wiring-constrained models.</td></tr>
+          <tr><td>Kunert, Shlizerman and Kutz (2014); Neural Interactome</td><td>The wiring diagram used for wiring-constrained models, and the classic wiring-diagram model in the gallery of networks.</td></tr>
         </tbody>
       </table>
     </div>
@@ -136,7 +155,7 @@
 </footer>
 
 <script src="data/results.js"></script>
-<script src="assets/charts.js"></script>
+<script src="assets/charts.js?v=2"></script>
 <script src="data/local.js" onerror="void 0"></script>
 <script src="assets/site.js?v=3"></script>
 </body>

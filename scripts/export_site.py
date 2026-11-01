@@ -88,6 +88,27 @@ def results() -> dict:
     out["mind"] = [{"dataset": r["dataset"], "fold": int(r["fold"]), "system": r["system"], "metric": r["metric"],
                     "verdict": r["verdict"], "expected": r.get("expected", "")}
                    for f in ("mind_copper.csv", "mind_atanas.csv") for r in rows(f)]
+    # artificial network families against real worms (scripts/summarize_gallery.py)
+    track = {"hybrid_kernels_regimes_obsfit": "pokes", "hybrid_kernels": "pokes", "creamer-native": "pokes (published)",
+             "linear-rest": "watching", "var3_spontaneous": "watching", "random-wiring": "watching, random wiring",
+             "kunert2014": "wiring diagram only", "task-dense": "a task", "task-wired": "a task, real wiring"}
+    out["gallery"] = [{"family": r["family"], "label": r["label"], "learned": track.get(r["family"], ""),
+                       "echo": num(r["echo_agreement_median"]), "lo": num(r["echo_agreement_min"]),
+                       "hi": num(r["echo_agreement_max"]), "real": num(r["real_agreement_median"]),
+                       "pattern": int(r["pattern_agrees"]), "pools": int(r["pools"]),
+                       "watchLo": int(r["watching_inside_min"]), "watchHi": int(r["watching_inside_max"])}
+                      for r in rows("gallery_fingerprint.csv")]
+    # synthetic worm: watching against poking (scripts/run_synthetic_watch.py)
+    out["synthetic"] = [{"model": r["model"], "regime": r["regime"], "hours": num(r["hours"]),
+                         "watching": num(r["watching"]), "poking": num(r["poking"])}
+                        for m in ("connectome_constrained", "fully_connected")
+                        for r in rows(f"synthetic_watch_{m}.csv") if r["regime"] in ("hidden", "drive05", "drive10")]
+    # real worms: more training worms (scripts/run_data_scaling.py)
+    out["scaling"] = [{"fold": int(r["fold"]), "model": r["model"], "worms": int(r["train_worms"]),
+                       "echo": num(r["echo_agreement"]), "real": num(r["real_agreement"])} for r in rows("data_scaling.csv")]
+    # the ruler's resolution (scripts/run_resolution.py)
+    out["resolution"] = [{"error": r["error"], "size": num(r["size"]), "verdict": r["verdict"], "agrees": r["agrees"],
+                          "agrees15": r["agrees_x1.5"]} for r in rows("resolution.csv")]
     return out
 
 

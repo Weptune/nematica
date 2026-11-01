@@ -483,6 +483,103 @@
     text(s, (m.l + W - m.r) / 2, H - 12, `${LEVELS[metric]}: distance from real worms, held-out group ${fold + 1}`, { "text-anchor": "middle", fill: C.ink2, "font-size": 12.5 });
   }
 
+  // ------------------------------------------------------------- Figure: artificial networks against real worms
+  const SHORT = { hybrid_kernels_regimes_obsfit: "Hybrid with noise and states", hybrid_kernels: "Plain hybrid",
+    kunert2014: "Wiring-diagram model (Kunert 2014)", "linear-rest": "Linear network", var3_spontaneous: "Linear VAR",
+    "creamer-native": "Published model (Creamer et al.)", "task-wired": "Task-trained, real wiring", "task-dense": "Task-trained, dense",
+    "random-wiring": "Linear network, wiring randomised" };
+  const TINY = { hybrid_kernels_regimes_obsfit: "Hybrid + noise, states", hybrid_kernels: "Plain hybrid",
+    kunert2014: "Wiring-diagram model", "linear-rest": "Linear network", var3_spontaneous: "Linear VAR",
+    "creamer-native": "Published model", "task-wired": "Task, real wiring", "task-dense": "Task, dense",
+    "random-wiring": "Random wiring" };
+  function gallery(host, opts) {
+    const small = !!(opts && opts.compact);
+    const D = (R.gallery || []).filter((d) => d.echo != null).slice().sort((a, b) => b.echo - a.echo);
+    if (!D.length) return;
+    const real = median(D.map((d) => d.real));
+    const W = widthOf(host, small ? 200 : 300);
+    const narrow = !small && W < 560;                      // a phone: the thumbnail layout, taller rows
+    const labelled = (small && W >= 380) || narrow;        // short labels, no second line
+    const compactLook = small || narrow;
+    const m = compactLook ? { l: labelled ? Math.round(Math.min(210, W * (narrow ? 0.5 : 0.36))) : 10, r: 14, t: 30, b: labelled ? 34 : 18 }
+      : { l: Math.round(Math.min(300, Math.max(190, W * 0.38))), r: 56, t: 44, b: 52 };
+    const rowH = narrow ? 34 : small ? (heightOf(host, W * 0.75) - m.t - m.b) / D.length : 46;
+    const H = narrow ? m.t + D.length * rowH + m.b : small ? heightOf(host, W * 0.75) : m.t + D.length * rowH + m.b;
+    const s = svg(host, W, H, "Echo agreement with real worms for each family of artificial network");
+    const x = lin(-0.005, 0.125, m.l, W - m.r);
+    if (!compactLook || labelled) {
+      [0, 0.05, 0.1].forEach((v) => { vline(s, x(v), m.t - 8, H - m.b, { stroke: v === 0 ? C.rule : C.soft }); text(s, x(v), H - m.b + (compactLook ? 16 : 20), fmt(v, 2), { "text-anchor": "middle", "font-size": compactLook ? 11 : null }); });
+      if (!compactLook) text(s, (m.l + W - m.r) / 2, H - 12, "How well its echoes agree with real worms' (median over six held-out groups)", { "text-anchor": "middle", fill: C.ink2, "font-size": 12.5 });
+      else text(s, (m.l + W - m.r) / 2, H - 2, "echo agreement with real worms", { "text-anchor": "middle", fill: C.ink3, "font-size": 11 });
+    }
+    el("rect", { x: Math.round(x(real)) - 1, y: m.t - (compactLook ? 8 : 14), width: 2, height: H - m.b - m.t + (compactLook ? 8 : 14), fill: C.live }, s);
+    text(s, x(real) - 6, m.t - (compactLook ? 14 : 22), compactLook ? "real worms" : `Two real worms agree at ${fmt(real, 3)}`,
+      { fill: C.live, "font-weight": 600, "text-anchor": "end", "font-size": compactLook ? 11 : 12.5 });
+    D.forEach((d, i) => {
+      const yy = Math.round(m.t + i * rowH + rowH / 2);
+      const poked = d.learned.startsWith("pokes");
+      if (labelled) text(s, m.l - 10, yy + 4, (narrow ? TINY[d.family] : SHORT[d.family]) || d.label, { "text-anchor": "end", "font-size": 11.5, fill: poked ? C.ink : C.ink2, "font-weight": poked ? 600 : 400 });
+      if (!compactLook) {
+        if (i % 2 === 0) el("rect", { x: 0, y: yy - rowH / 2 + 2, width: W, height: rowH - 4, rx: 6, fill: "#f7f8f9" }, s);
+        text(s, m.l - 16, yy - 1, SHORT[d.family] || d.label, { "text-anchor": "end", "font-size": 13, fill: C.ink, "font-weight": poked ? 600 : 400 });
+        text(s, m.l - 16, yy + 14, "learned from " + d.learned, { "text-anchor": "end", "font-size": 11.5, fill: C.ink3 });
+      }
+      el("line", { x1: x(d.lo), x2: x(d.hi), y1: yy, y2: yy, stroke: C.copy, "stroke-width": compactLook ? 1.5 : 2, opacity: 0.55 }, s);
+      el("circle", { cx: x(d.echo), cy: yy, r: compactLook ? 4 : 5.5, fill: poked ? C.copy : C.plate, stroke: C.copy, "stroke-width": 1.75 }, s);
+      if (!compactLook) text(s, x(d.hi) + 10, yy + 4.5, fmt(d.echo, 3), { "font-size": 12, fill: C.ink2 });
+      if (!small) {
+        const hit = el("rect", { x: 0, y: yy - rowH / 2, width: W, height: rowH, class: "hit" }, s);
+        hover(hit, `<b>${SHORT[d.family] || d.label}</b>${row("Learned from", d.learned)}${row("Echo agreement", fmt(d.echo, 3) + " (" + fmt(d.lo, 3) + " to " + fmt(d.hi, 3) + ")")}${row("Shown to agree on the echo pattern", d.pattern + " of " + d.pools + " groups")}${row("Watching tests passed", d.watchLo === d.watchHi ? d.watchLo + " of 6" : d.watchLo + " to " + d.watchHi + " of 6")}`);
+      }
+    });
+  }
+
+  // ------------------------------------------------------------- Figure: watching hits a ceiling, poking keeps climbing
+  function ceiling(host, opts) {
+    const small = !!(opts && opts.compact);
+    const S = R.synthetic || []; if (!S.length) return;
+    const hours = [...new Set(S.map((d) => d.hours))].sort((a, b) => a - b);
+    const avg = (regime, key) => hours.map((h) => { const v = S.filter((d) => d.regime === regime && d.hours === h).map((d) => d[key]); return [h, v.reduce((a, b) => a + b, 0) / v.length]; });
+    const series = [
+      { pts: avg("hidden", "watching"), c: C.copy, dash: "5 4", w: 1.5, label: "Watching, no shared hidden drives", op: 0.6 },
+      { pts: avg("drive05", "watching"), c: C.copy, w: 2.4, label: "Watching", op: 1 },
+      { pts: avg("drive05", "poking"), c: C.ink, w: 2.4, label: "Poking", op: 1 },
+    ];
+    const W = widthOf(host, small ? 200 : 300);
+    const narrow = !small && W < 560;
+    const H = small ? heightOf(host, W * 0.75) : Math.round(Math.min(440, Math.max(narrow ? 280 : 320, W * 0.55)));
+    const labelled = small && W >= 260;
+    const m = small ? { l: labelled ? 30 : 10, r: labelled ? Math.round(Math.min(150, W * 0.3)) : 12, t: 14, b: labelled ? 30 : 16 }
+      : { l: narrow ? 52 : 64, r: narrow ? 104 : Math.round(Math.min(230, W * 0.3)), t: 24, b: 58 };
+    const s = svg(host, W, H, "How well a synthetic worm's cause and effect is recovered, by watching and by poking, as recording hours grow");
+    const lx = (h) => Math.log10(h);
+    const x = lin(lx(0.5), lx(80), m.l, W - m.r), y = lin(0, 0.7, H - m.b, m.t);
+    if (labelled) {
+      [0, 0.2, 0.4, 0.6].forEach((v) => { hline(s, m.l, W - m.r, y(v), { stroke: v === 0 ? C.rule : C.soft }); text(s, m.l - 6, y(v) + 4, fmt(v, 1), { "text-anchor": "end", "font-size": 11 }); });
+      text(s, (m.l + W - m.r) / 2, H - 4, "hours of recording", { "text-anchor": "middle", fill: C.ink3, "font-size": 11 });
+      [1, 10, 70].forEach((h) => text(s, x(lx(h)), H - m.b + 15, String(h), { "text-anchor": "middle", "font-size": 11 }));
+    }
+    if (!small) {
+      [0, 0.2, 0.4, 0.6].forEach((v) => { hline(s, m.l, W - m.r, y(v), { stroke: v === 0 ? C.rule : C.soft }); text(s, m.l - 10, y(v) + 4, fmt(v, 1), { "text-anchor": "end" }); });
+      hours.filter((h) => !narrow || h !== 40).forEach((h) => text(s, x(lx(h)), H - m.b + 20, String(h), { "text-anchor": "middle" }));
+      text(s, (m.l + W - m.r) / 2, H - 14, narrow ? "Hours of recording (log scale)" : "Hours of recording (log scale; the real atlas is about 70)", { "text-anchor": "middle", fill: C.ink2, "font-size": 12.5 });
+      text(s, 0, 0, "Cause and effect recovered", { "text-anchor": "middle", fill: C.ink2, "font-size": 12.5, transform: `translate(18 ${(m.t + H - m.b) / 2}) rotate(-90)` });
+      vline(s, x(lx(70)), m.t, H - m.b, { stroke: C.rule, "stroke-dasharray": "2 3" });
+    }
+    series.forEach((sr) => {
+      el("path", { d: sr.pts.map((p, i) => (i ? "L" : "M") + x(lx(p[0])).toFixed(1) + "," + y(p[1]).toFixed(1)).join(""), fill: "none", stroke: sr.c, "stroke-width": small ? sr.w * 0.8 : sr.w, "stroke-dasharray": sr.dash || null, opacity: sr.op }, s);
+      sr.pts.forEach((p) => {
+        const c = el("circle", { cx: x(lx(p[0])), cy: y(p[1]), r: small ? 2.5 : 4, fill: sr.dash ? C.plate : sr.c, stroke: sr.c, "stroke-width": 1.5, opacity: sr.op }, s);
+        if (!small) hover(c, `<b>${sr.label}</b>${row("Hours", p[0])}${row("Recovered", fmt(p[1], 2))}`);
+      });
+      if (!small || labelled) {
+        const last = sr.pts[sr.pts.length - 1];
+        const fs = small || narrow ? 11.5 : 12.5, lh = small || narrow ? 13 : 15;
+        wrapWords(sr.label, small || narrow ? 14 : 22).forEach((ln, k) => text(s, x(lx(last[0])) + (small ? 8 : 12), y(last[1]) + 4 + k * lh, ln, { "font-size": fs, fill: sr.c, "font-weight": sr.dash ? 400 : 600, opacity: sr.op }));
+      }
+    });
+  }
+
   // ------------------------------------------------------------- legend for verdict glyphs
   function verdictLegend(host) {
     host.innerHTML = '<span class="k"><span class="sw full"></span>Inside: as real as a real worm</span>' +
@@ -491,7 +588,7 @@
       (host.dataset.legend === "noband" ? "" : '<span class="k"><span class="sw band"></span>Inside in all three groups</span>');
   }
 
-  const FIGS = { rulerStrip, scorecard, restPoke, power, signalNoise, fingerprint, echoShape, calibration, mind };
+  const FIGS = { rulerStrip, scorecard, restPoke, power, signalNoise, fingerprint, echoShape, calibration, mind, gallery, ceiling };
   window.NematicaCharts = Object.assign({ verdictLegend, name }, FIGS);
 
   // mount every <div data-chart="..."> and redraw when its width changes

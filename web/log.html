@@ -10,7 +10,7 @@
 <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
 <meta name="theme-color" content="#0d161b">
 <meta property="og:site_name" content="NEMATICA">
-<link rel="stylesheet" href="assets/site.css?v=15">
+<link rel="stylesheet" href="assets/site.css?v=20">
 </head>
 <body>
 
@@ -78,6 +78,33 @@
         <p>Many simulated worms in one arena, touching and avoiding each other. Does a crowd of identical average worms behave differently from a crowd of distinct individuals? The earlier exported run crossed its intended copper escape limit. A live behavioral sandbox now contains the worms and exposes the contact rule, but its crowd statistics are not yet evidence about real swarms; the mixed-versus-clone difference is not established across seeds.</p>
         <p class="status">Open: repair and re-run the boundary behavior, then use real multi-worm recordings to calibrate touch and crowding.</p>
       </div><aside class="log-aside"><div class="measure"><span class="v">32</span><span class="l">model-informed worms in a live crowd prototype</span></div><a href="sim.html#swarm">Run the live prototype</a></aside></li>
+      <li class="done"><div class="log-main">
+        <p class="when">1 Nov 2026 · Data</p>
+        <h3>Three recordings were broken, and are repaired</h3>
+        <p>Rebuilding the stimulated-worm data from the original archive with a script anyone can run showed that 3 of the 113 recordings had been cut short when the archive was unpacked, and had been scored as about a minute of scrambled data each. The other 110 rebuild exactly. The headline brains were rerun on the repaired data: 16 of 132 verdicts changed, almost all on activity tests near the boundary, and the poke-pattern result held.</p>
+      </div><aside class="log-aside"><div class="measure"><span class="v">110 of 113</span><span class="l">recordings rebuilt exactly from the original archive</span></div><a href="https://github.com/Weptune/nematica#nematica">Full record</a></aside></li>
+      <li class="done"><div class="log-main">
+        <p class="when">1 Nov 2026 · Gallery</p>
+        <h3>Every kind of network that skipped pokes fails</h3>
+        <p>Networks fitted to recordings, randomly wired, built from the wiring diagram, trained on a worm task with or without the real wiring, and a published model with its own stimulation: on six held-out groups, all answer a poke four to a hundred times worse than real worms answer each other. Only networks that learned from pokes reach the real-worm level, and on a stricter test fixed in advance the best of them is shown to agree in all six groups.</p>
+      </div><aside class="log-aside"><div class="measure"><span class="v">6 of 6</span><span class="l">groups where the brain that learned from pokes is shown to agree; the brain that watched, 0</span></div><a href="findings.html#gallery">Read the findings</a></aside></li>
+      <li class="done"><div class="log-main">
+        <p class="when">1 Nov 2026 · Why</p>
+        <h3>Watching hits a ceiling that more data does not lift</h3>
+        <p>In synthetic worms whose cause and effect is known, watching learns it until a few slow, shared, unrecorded signals cap it within hours; poking keeps improving and overtakes it at about the atlas's size. On real worms, a watching copy is no better after 58 worms than after 6, while pokes from 6 worms already beat it four to seven times over.</p>
+        <p class="status">Open: repeat with a nonlinear stand-in brain.</p>
+      </div><aside class="log-aside"><div class="measure"><span class="v">0.20</span><span class="l">ceiling on what watching recovers, at 2.5 hours and at 70</span></div><a href="findings.html#why">Read the findings</a></aside></li>
+      <li class="done"><div class="log-main">
+        <p class="when">1 Nov 2026 · Resolution</p>
+        <h3>How sharp the test is</h3>
+        <p>Errors of known size put into real worms: no false alarms, a copy that credits the wrong neuron for half its pokes or gets response size wrong by half is always caught, and errors of about a quarter often pass. A pass means within about 25% of a real worm on these tests.</p>
+      </div><aside class="log-aside"><div class="measure"><span class="v">25%</span><span class="l">the size of error the test often misses</span></div><a href="method.html#resolution">Read the method</a></aside></li>
+      <li class="open"><div class="log-main">
+        <p class="when">1 Nov 2026 · Individuals</p>
+        <h3>Can one particular worm be copied?</h3>
+        <p>A worm's echoes agree with themselves twice as well as with other worms, but one recording barely beats the average worm at predicting them: the atlas rarely pokes the same neuron twice in one animal. Worms that cannot release neuropeptides still look fully real (63 of 66 verdicts).</p>
+        <p class="status">Open: repeated pokes of the same neurons in the same worm, requested from the lab.</p>
+      </div><aside class="log-aside"><div class="measure"><span class="v">+0.007</span><span class="l">what a worm's own first half adds over the average worm</span></div><a href="findings.html#fingerprints">Read the findings</a></aside></li>
     </ol>
   </div>
 </main>
