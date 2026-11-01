@@ -22,6 +22,16 @@ single-neuron poke agree with real worms at about 0.01 (real worms agree with ea
 about 0.10) and reach two to four times too much of the brain. No artificial brain tested,
 including published models built for this atlas, answers a poke like a real worm.
 
+> **Data repair, 1 Nov 2026.** Rebuilding the stimulated-worm data from the original archive
+> with a script anyone can run (`scripts/convert_pumpprobe.py`) showed that 3 of the 113
+> worms (20211128_112504, 20220331_142924, 20230304_112842) had been cut short when the
+> archive was unpacked here, and had been scored as about one minute of scrambled data each.
+> The other 110 rebuild exactly. The 3 are repaired. Every result below that uses the
+> stimulated worms (arcs 4 onward) was computed before the repair and is provisional until
+> rerun. A first check: in the one pool that holds none of the 3 worms, where they only
+> entered training, one or two of each headline model's eleven verdicts changed (the
+> poke-pattern verdicts did not). Reruns of the headline models are under way.
+
 Nothing here claims that a worm or a model is conscious; the question is whether artificial
 brains have the measurable properties that, in people, separate a responsive brain from
 an unresponsive one.
@@ -300,6 +310,31 @@ Raw data is not in this repository. Download it into `data/raw/`:
 - **Atanas et al. 2023**: `python scripts/fetch_atanas_copy.py` (a third-party copy of the
   WormWideWeb JSON, for local development; the processed `.h5` files are on Zenodo)
 - **Neuron position atlas** (Skuhersky et al. 2022): `python scripts/fetch_atlas.py`
+- **Stimulated-worm atlas** (Randi et al. 2023, OSF project e2syt): download
+  `exported_data.tar.gz` from https://osf.io/e2syt/, unpack it, then
+  `python scripts/convert_pumpprobe.py --src path/to/exported_data --out data/raw/randi2023_wt_npz`
+  (113 wild-type worms; the script reports any file that does not read cleanly)
+
+## Score your own brain copy
+
+A copy is any program that, given a worm's neurons and a schedule of single-neuron pokes,
+produces their activity. Subclass `nematica.score.BrainCopy` and implement `run(worm, rng)`
+(and optionally `fit(worms)`); the docstring in `nematica/score.py` gives the contract. Then
+
+```powershell
+python -m nematica score examples/copies/linear_rest.py:LinearRest --quick   # one pool, about 4 minutes
+python -m nematica score path/to/my_copy.py:MyCopy                           # all six held-out pools
+```
+
+It prints the verdict on every level and writes a JSON report to `results/scores/`. The
+copy is fitted on the training worms and run on each held-out worm with that worm's own
+pokes; the poked neuron's measured response is given to the copy as `drive`. Two examples:
+`examples/copies/silent.py` (independent noise, the floor) and
+`examples/copies/linear_rest.py` (a linear model learned only from activity with no pulse
+nearby). The tool runs exactly the procedure of `scripts/run_same_worms.py`: on one pool,
+all eleven verdicts and values match. Verdicts mean "no difference detected at this
+power", not proof of agreement; an equivalence check with a stated tolerance is being added.
+
 
 ## Running the benchmark
 
