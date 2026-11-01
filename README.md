@@ -356,6 +356,16 @@ half of it (about 1.7-fold) admits copies whose magnitude is detectably wrong (o
 most pools). It is reported as fixed and will be replaced in the next pre-registration by a
 control closer to the size of real differences between worms.
 
+**The reverse test, written before running (1 Nov 2026).** unc-31 worms cannot release
+neuropeptides from dense-core vesicles: real brains with one biological ingredient removed.
+Scored as a "copy" against each wild-type pool on all levels, with the equivalence check
+(`scripts/run_reverse_unc31.py`, 15 unc-31 worms with neuron identities, both splits).
+Expectations: echo pattern and kinetics agree within tolerance in most pools (they are real
+worms, and the mutation changes a minority of pairs; arc 4 found them inside on pattern);
+activity levels mostly inside. If instead unc-31 worms fail to agree on the pattern, losing
+neuropeptides moves a real brain toward the artificial fingerprint, and peptide signalling
+is a candidate for what the artificial networks lack.
+
 
 ## Running the benchmark
 
