@@ -1,7 +1,7 @@
 """The reverse test: unc-31 worms (no neuropeptide release) scored as a copy against each
-wild-type held-out pool, on every level, with the poke-level equivalence check. Each pool
-worm is matched to one unc-31 worm in turn (its activity and its own pokes are used as they
-were recorded; the pool worm only supplies the slot).
+wild-type held-out pool, on every level, with the poke-level equivalence check. Each unc-31
+worm counts once, as its own group, compared with every wild-type pool worm (activity and
+pokes as recorded).
 
 Usage:
   python scripts/run_reverse_unc31.py --split cv3
@@ -21,19 +21,33 @@ from nematica.data.pumpprobe import load_pumpprobe_dir  # noqa: E402
 from nematica.data.splits import load_folds  # noqa: E402
 
 
-class Replay:
-    """Returns recorded worms in turn instead of simulating."""
-
-    def __init__(self, worms):
-        self.worms, self.k = worms, 0
-
-    def fit(self, train, val):
-        return self
-
-    def simulate(self, rec, rng):
-        w = self.worms[self.k % len(self.worms)]
-        self.k += 1
-        return w
+def score_recorded(name, worms, ruler):
+    """FoldRuler.score, for recorded worms instead of a model: one sample per worm."""
+    import numpy as np
+    from nematica.bench.causal import response_set, score_sets
+    from nematica.bench.perturbational import PCI_LEVELS, pci_set
+    from nematica.bench.reference import score_system
+    from nematica.bench.scorecard import ACTIVITY_LEVELS, bench_sample, equivalence, poke_tolerances
+    rows = []
+    samples = [bench_sample(w, ruler.classes, f"{name}:{w.uid}", w.uid) for w in worms]
+    rows += [{"kind": "activity", **r} for r in score_system(name, samples, ruler.real_b, ruler.ref)
+             if r["metric"] in ACTIVITY_LEVELS]
+    tol = poke_tolerances(ruler.pool, ruler.real_c)
+    sets = []
+    for w in worms:
+        rs = response_set(w, f"{name}:{w.uid}")
+        rs.group = w.uid
+        sets.append(rs)
+    for r in score_sets(name, sets, ruler.real_c):
+        t = tol.get(r["metric"], {}).get("tolerance")
+        rows.append({"kind": "causal", **r, "tolerance": t, "equivalence": equivalence(r, t)})
+    ps = []
+    for w in worms:
+        p = pci_set(w, f"{name}:{w.uid}")
+        p.group = w.uid
+        ps.append(p)
+    rows += [{"kind": "complexity", **r} for r in score_sets(name, ps, ruler.real_p, levels=PCI_LEVELS)]
+    return rows
 
 
 def main() -> int:
@@ -56,7 +70,7 @@ def main() -> int:
         if f.exists():
             continue
         ruler = FoldRuler(*fold_parts(recs, folds, fi), pci=True)
-        rows = ruler.score("unc31", Replay(unc), seed_base=1000 * fi)
+        rows = score_recorded("unc31", unc, ruler)
         with f.open("w", newline="", encoding="utf-8") as fh:
             w = csv.DictWriter(fh, fieldnames=list(dict.fromkeys(k for r in rows for k in r)))
             w.writeheader()
