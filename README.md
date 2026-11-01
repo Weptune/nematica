@@ -1790,6 +1790,26 @@ above: wired-only fails echo pattern in at least 2 of 3 pools on each split, as 
 count-matched unwired, with wired-only no more than 0.02 above count-matched unwired in echo
 agreement; unwired-only passes echo pattern in at least 2 of 3 on each split.
 
+**Result (repaired data, 1 Nov 2026; `results/fixed_cv3`, `results/fixed_blocks1`).** Echo
+pattern verdict and agreement with real worms, three pools per split:
+
+| brain | split cv3 | split blocks1 |
+|---|---|---|
+| full (all links) | inside 0.113, 0.094, 0.088 | inside 0.108, 0.100, 0.090 |
+| wired links only (`wiredk`) | outside 0.068, 0.056, 0.041 | outside 0.066, 0.053, 0.047 |
+| shuffled wiring (`shuffledk`) | outside 0.060, 0.043, 0.028 | outside 0.052, 0.035, 0.037 |
+| as many random unwired links (`unwirednk`) | outside 0.052, 0.044, 0.021 | outside 0.052, 0.035, 0.035 |
+| all unwired links (`unwiredk`) | 1 of 3 inside: 0.095, 0.075, 0.070 | 1 of 3 inside: 0.088, 0.072, 0.071 |
+
+Against the expectations: wired-only fails in 3 of 3 pools on both splits (met); shuffled
+and count-matched unwired fail everywhere (met); wired-only beats an equal number of random
+unwired links by 0.012 to 0.020 (met: no more than 0.02); unwired-only was expected to pass in
+at least 2 of 3 on each split and passes in 1 of 3 (not met). **The wiring diagram is not
+enough to copy how a worm answers a poke: a copy built only on its links agrees with real
+worms about half as well as the full copy, and each wired link is worth only a little more
+than a random unwired one. But the unwired links are not enough either: a working copy
+needs both.**
+
 ## Signatures of a mind: perturbational complexity
 
 Nobody can measure consciousness directly, and whether a worm experiences anything is an
