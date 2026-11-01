@@ -411,10 +411,14 @@ the average of all other worms, and scored by correlation with the worm's second
 
 The average of 95 other worms predicts a worm better than the worm's own first half does,
 and the best blend adds only 0.007 over the average. Individual echoes exist (the table
-above), but about 45 pulses per worm (about 22 per half) are too few to pin one down: with this
-much data, a copy of the average worm is nearly as good as a copy of the individual. How
-many pulses per worm a faithful individual copy would need is a question this data can start
-to answer, and a design target for any lab that wants to copy one particular animal.
+above), but about 45 pulses per worm are too few to pin one down: with this much data, a
+copy of the average worm is nearly as good as a copy of the individual. More pulses of the
+same kind would not simply fix this. In this atlas a pulse mostly hits a new neuron (1.8
+pulses per stimulated neuron class per worm; 42% of stimulated classes hit more than once),
+so more pulses add breadth, not repeats, and an attempt to extrapolate the data needed with
+a reliability curve failed for that reason (agreement did not rise with the number of
+pulses used). Copying one particular animal needs repeated pokes of the same neurons in the
+same worm: a concrete design request for a lab, not something this atlas can settle.
 
 
 ## Running the benchmark
