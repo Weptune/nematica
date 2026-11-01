@@ -58,6 +58,32 @@ def main() -> int:
     print(f"per-worm excess (own half minus other worms): mean {np.mean(excess):.3f}, "
           f"95% interval [{np.percentile(boot, 2.5):.3f}, {np.percentile(boot, 97.5):.3f}], "
           f"positive in {np.mean(excess > 0):.0%} of worms")
+    # a copy of one worm: predict its second half from a blend of its own first half and the
+    # average of the other worms (w = weight on the worm's own data)
+    full = [response_set(r) for r in recs]
+    keys_all = set().union(*[set(f.traces) for f in full])
+    tot = {k: [f.amp(k) for f in full if k in f.traces] for k in keys_all}
+    print("predicting each worm's second half (agreement with it, median over worms):")
+    for w in (0.0, 0.25, 0.5, 0.75, 1.0):
+        scores = []
+        for i in range(n):
+            mine = full[i]
+            xs, ys = [], []
+            for k in B[i].traces:
+                b = B[i].amp(k)
+                others = [v for v in tot.get(k, []) if np.isfinite(v)]
+                own_in = k in mine.traces and np.isfinite(mine.amp(k))
+                if own_in and k in full[i].traces:
+                    others = [v for f, v in ((f, f.amp(k)) for j, f in enumerate(full) if j != i and k in f.traces) if np.isfinite(v)]
+                if not np.isfinite(b) or len(others) < 3:
+                    continue
+                pop = float(np.mean(others))
+                a = A[i].amp(k) if k in A[i].traces else np.nan
+                xs.append(pop if not np.isfinite(a) else w * a + (1 - w) * pop)
+                ys.append(b)
+            if len(xs) >= 15 and np.std(xs) > 0 and np.std(ys) > 0:
+                scores.append(np.corrcoef(xs, ys)[0, 1])
+        print(f"  weight on own first half {w:.2f}: {np.median(scores):.3f}  ({len(scores)} worms)")
     return 0
 
 

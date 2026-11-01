@@ -400,6 +400,22 @@ single average cannot agree with a worm the way the worm agrees with itself. Tha
 individuality a measurable ingredient for move 3, and a copy built from one worm's own
 recordings is the next test.
 
+**Can one worm be copied from its own recording? (same script, first half against second
+half.)** Each worm's second-half echoes are predicted from a blend of its own first half and
+the average of all other worms, and scored by correlation with the worm's second half
+(median over 96 worms):
+
+| Weight on the worm's own first half | 0 (average worm) | 0.25 | 0.5 | 0.75 | 1 (own half only) |
+|---|---|---|---|---|---|
+| Agreement with its second half | 0.225 | 0.232 | 0.217 | 0.203 | 0.187 |
+
+The average of 95 other worms predicts a worm better than the worm's own first half does,
+and the best blend adds only 0.007 over the average. Individual echoes exist (the table
+above), but about 35 pulses per worm are too few and too noisy to pin one down: with this
+much data, a copy of the average worm is nearly as good as a copy of the individual. How
+many pulses per worm a faithful individual copy would need is a question this data can start
+to answer, and a design target for any lab that wants to copy one particular animal.
+
 
 ## Running the benchmark
 
