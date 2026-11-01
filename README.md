@@ -363,8 +363,9 @@ near the size of real differences between worms), tolerance again half its shift
 pattern and kinetics rules are unchanged. Both the old and the new magnitude verdicts will
 be reported for every copy.
 Under the x1.5 rule (tolerance 0.10 to 0.11 on the distance shift), magnitude separates the
-copies: only the copy that learned from pokes is shown to agree, in 2 of 6 pools, and every
-copy's responses tend to be too large.
+copies: only the copy that learned from pokes is shown to agree, in 2 of 6 pools; the others
+are further from real worms than real worms are from each other in every pool (the measure
+is a distance, so it does not say whether their responses are too large or too small).
 
 **The reverse test, written before running (1 Nov 2026).** unc-31 worms cannot release
 neuropeptides from dense-core vesicles: real brains with one biological ingredient removed.
