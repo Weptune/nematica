@@ -92,7 +92,7 @@ export default function Overlay({ index, onPick }) {
             : 'one colour per neuron class (display only, not NeuroPAL colours)'}</div>
         </div>
         {shown != null && <NeuronCard index={shown} pinned={selected === shown} />}
-        {shown == null && <div className="hint">Hover a neuron to see its name and trace. Drag to orbit, scroll to zoom.</div>}
+        {shown == null && <div className="hint">The cyan line is the worm’s recent tracked path. Hover a neuron to see its trace. Drag to orbit, scroll to zoom.</div>}
       </div>
 
       <footer>

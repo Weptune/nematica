@@ -19,7 +19,9 @@ python scripts/fetch_atlas.py
 python scripts/export_replay.py data/raw/doi_10_5061_dryad_w9ghx3g4v__v20260415 --split configs/splits/copper2026.yaml --out lab/public/data
 ```
 
-`npm run build` writes a static site to `dist/` (serve it with `python -m http.server -d dist`).
+`npm run build` writes the static lab into `../web/lab/`, including the exported replay data.
+Serve `web/` to view the main site and lab together (for example,
+`python -m http.server 8080 -d web`). Port 5173 is only the Vite development server.
 
 ## URL options
 

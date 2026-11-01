@@ -135,6 +135,10 @@
     const r = cv.getBoundingClientRect();
     const t = Math.max(0, Math.min(nT - 1, Math.floor(((e.clientX - r.left) / r.width) * nT)));
     const row = Math.max(0, Math.min(nC - 1, Math.floor(((e.clientY - r.top) / r.height) * nC)));
+    // Keep the time and neuron-class probe aligned on both recordings.
+    host.style.setProperty("--probe-x", `${cv.offsetLeft + e.clientX - r.left}px`);
+    host.style.setProperty("--probe-row", `${((row + .5) / nC) * 100}%`);
+    host.classList.add("probing");
     const z = (a) => { const q = a[row * nT + t]; return q === 0 ? "n/a" : (-1.5 + ((q - 1) / 254) * 4.5).toFixed(1).replace("-", "−"); };
     const last = D.stims.filter((s) => s.frame <= t).pop();
     const since = last ? (t - last.frame) * D.dt : null;
@@ -149,7 +153,10 @@
   }
   [["live", cvLive], ["copy", cvCopy]].forEach(([w, cv]) => {
     cv.addEventListener("pointermove", (e) => onMove(e, w));
-    cv.addEventListener("pointerleave", () => (read.style.display = "none"));
+    cv.addEventListener("pointerleave", () => {
+      read.style.display = "none";
+      host.classList.remove("probing");
+    });
   });
 
   // brain switch

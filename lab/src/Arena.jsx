@@ -48,7 +48,7 @@ export default function Arena({ replay: given }) {
     uniforms: { uCentre: { value: new THREE.Vector2(centre[0], centre[1]) }, uRadius: { value: radius } },
   }), [centre[0], centre[1], radius])
 
-  // faint trail of where the real worm has been (last 60 s)
+  // Short, lightly smoothed path trail. Smoothing only affects the display, not the replay.
   const trail = useMemo(() => {
     const g = new THREE.BufferGeometry()
     g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(400 * 3), 3))
@@ -63,8 +63,12 @@ export default function Arena({ replay: given }) {
     let count = 0
     for (let j = 0; j < t.length && count < 400; j++) {
       if (t[j] > time) break
-      if (t[j] < time - 60) continue
-      pos[3 * count] = P[2 * j]; pos[3 * count + 1] = 0.0005; pos[3 * count + 2] = P[2 * j + 1]
+      if (t[j] < time - 8) continue
+      let x = 0, z = 0, samples = 0
+      for (let k = Math.max(0, j - 2); k <= Math.min(t.length - 1, j + 2); k++) {
+        x += P[2 * k]; z += P[2 * k + 1]; samples++
+      }
+      pos[3 * count] = x / samples; pos[3 * count + 1] = 0.004; pos[3 * count + 2] = z / samples
       count++
     }
     trail.setDrawRange(0, count)
@@ -83,8 +87,8 @@ export default function Arena({ replay: given }) {
           <meshBasicMaterial color="#c9874a" transparent opacity={0.55} toneMapped={false} />
         </mesh>
       )}
-      <line ref={trailRef} geometry={trail}>
-        <lineBasicMaterial color="#2f6f86" transparent opacity={0.22} />
+      <line ref={trailRef} geometry={trail} renderOrder={1}>
+        <lineBasicMaterial color="#2f6f86" transparent opacity={0.28} />
       </line>
     </group>
   )

@@ -7,29 +7,30 @@
 <meta name="description" content="How NEMATICA scores an artificial brain: a ruler built from the differences between real worms, calibrated before any model is scored.">
 <link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
 <meta name="theme-color" content="#0d161b">
 <meta property="og:site_name" content="NEMATICA">
-<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/site.css?v=15">
 </head>
 <body>
 
 <header class="bar on-field" id="bar">
   <a class="wordmark" href="index.html" aria-label="NEMATICA home">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.2" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".55"/><circle cx="12" cy="12" r="5.2" fill="none" stroke="#0a7a5a" stroke-width="2.2"/><circle cx="17.2" cy="12" r="2.1" fill="#c8489c"/></svg>
+    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 44c10 0 11-23 23-23 11 0 11 22 20 22 5 0 7-7 9-13-1 11-5 18-11 18-12 0-10-22-19-22-8 0-11 23-22 23z" fill="currentColor"/><path d="M29 8v9" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><circle cx="29" cy="23.5" r="4" fill="#dc5b9d"/></svg>
     NEMATICA
   </a>
-  <nav aria-label="Site">
+  <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu"><span class="menu-lines" aria-hidden="true"></span><span>Menu</span></button>
+  <nav id="site-nav" aria-label="Site">
     <a href="findings.html">Findings</a>
     <a href="method.html" aria-current="page">Method</a>
     <a href="sim.html">Simulations</a>
     <a href="log.html" class="optional">Research log</a>
-    <a href="https://github.com/Weptune/nematica" class="optional">Code</a>
+    <a href="lab/index.html">3D Lab</a>
   </nav>
 </header>
 
-<section class="masthead grain"><div class="in"><h1 class="title">A ruler for brains, measured in real worms.</h1>
-    <p class="standfirst">There is no single right answer for what a worm's brain should do; healthy worms differ. So NEMATICA never asks whether a brain matches a worm. It asks whether the brain differs from real worms by about as much as real worms differ from each other.</p></div></section>
+<section class="masthead grain" data-index="02"><div class="in"><div class="folio" aria-hidden="true" style="--step:2"><div class="folio-head"><span>NEMATICA / FIELD INDEX</span><span>02 / 04</span></div><strong class="folio-number">02</strong><div class="folio-foot"><span>METHOD</span><i class="folio-track"></i></div></div><h1 class="title">A ruler for brains, measured in real worms.</h1>
+    <p class="standfirst">There is no single right answer for what a worm's brain should do; healthy worms differ. So NEMATICA never asks whether a brain matches a worm. It asks whether the brain differs from real worms by about as much as real worms differ from each other.</p><a class="mast-jump" href="#ruler">Read the method <span aria-hidden="true">↓</span></a></div></section>
 
 <main class="page">
 
@@ -137,6 +138,6 @@
 <script src="data/results.js"></script>
 <script src="assets/charts.js"></script>
 <script src="data/local.js" onerror="void 0"></script>
-<script src="assets/site.js"></script>
+<script src="assets/site.js?v=3"></script>
 </body>
 </html>

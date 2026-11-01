@@ -7,32 +7,38 @@
 <meta name="description" content="The questions NEMATICA has asked so far, in the order they were asked, with what came back.">
 <link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
 <meta name="theme-color" content="#0d161b">
 <meta property="og:site_name" content="NEMATICA">
-<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/site.css?v=15">
 </head>
 <body>
 
 <header class="bar on-field" id="bar">
   <a class="wordmark" href="index.html" aria-label="NEMATICA home">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.2" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".55"/><circle cx="12" cy="12" r="5.2" fill="none" stroke="#0a7a5a" stroke-width="2.2"/><circle cx="17.2" cy="12" r="2.1" fill="#c8489c"/></svg>
+    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 44c10 0 11-23 23-23 11 0 11 22 20 22 5 0 7-7 9-13-1 11-5 18-11 18-12 0-10-22-19-22-8 0-11 23-22 23z" fill="currentColor"/><path d="M29 8v9" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><circle cx="29" cy="23.5" r="4" fill="#dc5b9d"/></svg>
     NEMATICA
   </a>
-  <nav aria-label="Site">
+  <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu"><span class="menu-lines" aria-hidden="true"></span><span>Menu</span></button>
+  <nav id="site-nav" aria-label="Site">
     <a href="findings.html">Findings</a>
     <a href="method.html">Method</a>
     <a href="sim.html">Simulations</a>
     <a href="log.html" class="optional" aria-current="page">Research log</a>
-    <a href="https://github.com/Weptune/nematica" class="optional">Code</a>
+    <a href="lab/index.html">3D Lab</a>
   </nav>
 </header>
 
-<section class="masthead grain"><div class="in"><h1 class="title">One question, asked six ways.</h1>
-    <p class="standfirst">Can you tell a copied brain from a real one? Each line of work below asked it from a different side, in the order we asked. Filled markers are settled; open ones are still running.</p></div></section>
+<section class="masthead grain" data-index="04"><div class="in"><div class="folio" aria-hidden="true" style="--step:4"><div class="folio-head"><span>NEMATICA / FIELD INDEX</span><span>04 / 04</span></div><strong class="folio-number">04</strong><div class="folio-foot"><span>RESEARCH LOG</span><i class="folio-track"></i></div></div><h1 class="title">The notebook is still open.</h1>
+    <p class="standfirst">Can you tell a copied brain from a real one? This log keeps the question, the prediction, the result and the miss together. Completed experiments have filled markers; open work has outlined markers. A finished experiment can still leave its larger question unresolved.</p><a class="mast-jump" href="#lab-notes">Read the research log <span aria-hidden="true">↓</span></a></div></section>
 
-<main class="page">
+<main class="page" id="lab-notes">
   <div class="sheet">
+    <div class="lab-status wide">
+      <div><span class="lab-status-tag">CURRENT QUESTION</span><p>Can one model match a worm at rest and after a neuron is switched on?</p></div>
+      <div><span class="lab-status-tag">A PREDICTION THAT MISSED</span><p>We expected model echoes to be too simple. The first hybrid to match their pattern still makes them too complex.</p></div>
+      <div><span class="lab-status-tag">NEXT CHECK</span><p>Improve the dynamics, then score the same model against every held-out test. The live swarm sandbox now stays inside its copper limit; its contact and steering rules need real multi-worm calibration.</p></div>
+    </div>
 
     <ol class="log wide" style="grid-column:text-start/note-end">
       <li class="done"><div class="log-main">
@@ -53,14 +59,14 @@
       <li class="done"><div class="log-main">
         <p class="when">Arc 5</p>
         <h3>A worm that senses copper</h3>
-        <p>A brain model connected to a simulated body in each real worm's own arena, with copper fed back as the body moves. The first version spent 40% of its time near copper, against 3% for real worms. By the eleventh version, with copper entering the brain only through the sensory neuron ASH, simulated worms are inside on 9 of 10 activity tests and all three behaviour tests.</p>
+        <p>A brain model connected to a simulated body in each real worm's own arena, with copper fed back as the body moves. The first version spent 40% of its time near copper, against 3% for real worms. By the eleventh version, with copper entering the brain only through the sensory neuron ASH, simulated worms are inside on 9 of 10 activity tests and all three behaviour tests. It still spends more time near copper than real worms do (13% against 3%).</p>
       </div><aside class="log-aside"><div class="measure"><span class="v">9 of 10</span><span class="l">activity tests, and all three behaviour tests, for the eleventh version</span></div><a href="sim.html">Watch it in the simulations</a></aside></li>
       <li class="open"><div class="log-main">
         <p class="when">Arc 4, the headline</p>
         <h3>The causal Turing test</h3>
-        <p>Watch a brain, then poke it. Brains that pass the watching tests fail the poke tests, and how alive a brain looks at rest says nothing about how it answers a poke. Each worm has its own causal fingerprint. One hybrid brain now passes the poke test in all three held-out groups; none yet matches the echo's complexity while staying realistic at rest.</p>
-        <p class="status">Open: a learned brain trained to match the ruler's own statistics; confirmation on a second frozen split of the worms.</p>
-      </div><aside class="log-aside"><div class="measure copy"><span class="v">−0.06</span><span class="l">rank correlation between looking alive and answering a poke, over 88 brain scores</span></div><a href="findings.html">Read the findings</a></aside></li>
+        <p>Watch a brain, then poke it. Brains that pass the watching tests fail the poke tests, and passing our rest checks has not reliably identified good poke responses. Each worm has its own causal fingerprint. One hybrid brain now passes the poke test in all three held-out groups; none yet matches the echo's complexity while staying realistic at rest.</p>
+        <p class="status">Open: improve the echo’s complexity without losing rest behavior. The echo pattern and spread have already passed on a second frozen split of the same worms.</p>
+      </div><aside class="log-aside"><div class="measure copy"><span class="v">−0.06</span><span class="l">rest-score/poke-distance correlation across 88 model-group scores; variants repeat across groups</span></div><a href="findings.html">Read the findings</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">Signatures of a mind</p>
         <h3>Measures from consciousness science</h3>
@@ -69,9 +75,9 @@
       <li class="open"><div class="log-main">
         <p class="when">Arc 6</p>
         <h3>From one brain to a swarm</h3>
-        <p>Many simulated worms in one arena, touching and avoiding each other. Does a crowd of identical average worms behave differently from a crowd of distinct individuals? With the interactions assumed so far, the difference is not established across seeds.</p>
-        <p class="status">Open: real multi-worm recordings to calibrate touch and crowding.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">32</span><span class="l">brains, each fitted to a different worm, in one dish</span></div><a href="sim.html#swarm">Watch the swarm</a></aside></li>
+        <p>Many simulated worms in one arena, touching and avoiding each other. Does a crowd of identical average worms behave differently from a crowd of distinct individuals? The earlier exported run crossed its intended copper escape limit. A live behavioral sandbox now contains the worms and exposes the contact rule, but its crowd statistics are not yet evidence about real swarms; the mixed-versus-clone difference is not established across seeds.</p>
+        <p class="status">Open: repair and re-run the boundary behavior, then use real multi-worm recordings to calibrate touch and crowding.</p>
+      </div><aside class="log-aside"><div class="measure"><span class="v">32</span><span class="l">model-informed worms in a live crowd prototype</span></div><a href="sim.html#swarm">Run the live prototype</a></aside></li>
     </ol>
   </div>
 </main>
@@ -84,6 +90,6 @@
   </div>
 </footer>
 <script src="data/local.js" onerror="void 0"></script>
-<script src="assets/site.js"></script>
+<script src="assets/site.js?v=3"></script>
 </body>
 </html>

@@ -1,10 +1,9 @@
-/* Simulations: a held-out real worm beside its closed-loop model worm in the same copper arena,
-   and a swarm of 32 model worms. Canvas 2D, drawn at device resolution.
+/* A held-out real worm beside its closed-loop model worm in the same copper arena.
+   Canvas 2D, drawn at device resolution.
    Data: web/data/sim/*.js (local only; python scripts/export_site.py --sims). */
 (function () {
   "use strict";
   const SIM = (window.NEMATICA_SIM = window.NEMATICA_SIM || {});
-  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const LIVE = "#3dd69b", COPY = "#f062b4", COPPER = "#c98546";
   const RBAR = 0.025, EPS = 0.004;
   const radiusAt = (u) => (u <= 0 || u >= 1 ? 0 : (RBAR * 2 * Math.sqrt((EPS + u) * (EPS + 1 - u))) / (1 + 2 * EPS));
@@ -53,17 +52,26 @@
     });
     const playBtn = twin.querySelector(".tw-play"), scrub = twin.querySelector(".tw-scrub"), timeEl = twin.querySelector(".tw-time");
     const speeds = twin.querySelectorAll(".tw-speed button");
-    let P = null, t = 0, speed = 4, playing = false, last = 0, dur = 1, lastFrameDrawn = -1;
+    let P = null, t = 0, dur = 1, openVersion = 0;
+    const pending = new Map();
 
     async function open(id) {
-      if (!SIM[id]) await load(`data/sim/${id}.js`);
+      const version = ++openVersion;
+      clock.play(false);
+      try {
+        if (!SIM[id]) {
+          if (!pending.has(id)) pending.set(id, load(`data/sim/${id}.js`).finally(() => pending.delete(id)));
+          await pending.get(id);
+        }
+      } catch (_) { if (version === openVersion) timeEl.textContent = "Could not load. Select a worm to retry."; return; }
+      if (version !== openVersion) return;
       P = SIM[id];
       for (const k of ["real", "model"]) {
         const s = P.sides[k];
         s.A = Float32Array.from(s.angles); s.Pth = Float32Array.from(s.path); s.T = Float64Array.from(s.t);
         const raw = atob(s.levels); s.L = new Uint8Array(raw.length); for (let i = 0; i < raw.length; i++) s.L[i] = raw.charCodeAt(i);
       }
-      dur = P.sides.real.T[P.sides.real.n - 1];
+      dur = Math.min(...["real", "model"].map(k => P.sides[k].T[P.sides[k].n - 1]));
       t = Math.min(t, dur);
       scrub.max = String(Math.floor(dur));
       // a few row names beside the raster
@@ -78,8 +86,8 @@
           const sp = document.createElement("span"); sp.style.top = y + "%"; sp.textContent = w; c.labels.appendChild(sp);
         });
       });
-      lastFrameDrawn = -1;
-      draw();
+      clock.setDuration(dur);
+      clock.seek(0);
     }
 
     function frameAt(T, n, time) {
@@ -173,7 +181,7 @@
       c.state.textContent = rev ? "Reversing" : "Forward";
       c.state.classList.toggle("rev", !!rev);
       const dEdge = s.radius - Math.hypot(pts[0] - s.centre[0], pts[1] - s.centre[1]);
-      c.dist.textContent = `${Math.max(0, dEdge).toFixed(2)} mm from copper`;
+      c.dist.textContent = `${Math.abs(dEdge).toFixed(2)} mm ${dEdge >= 0 ? "inside" : "beyond"} copper`;
     }
 
     function drawRaster(c, s, f) {
@@ -207,82 +215,16 @@
       scrub.style.setProperty("--p", `${(t / dur) * 100}%`);
       timeEl.textContent = `${fmtT(t)} of ${fmtT(dur)}`;
     }
-    function play(on) {
-      playing = on; playBtn.textContent = on ? "Pause" : "Play";
-      if (on) { last = performance.now(); requestAnimationFrame(tick); }
-    }
-    function tick(now) {
-      if (!playing) return;
-      t += ((now - last) / 1000) * speed; last = now;
-      if (t >= dur) t = 0;
-      draw(); requestAnimationFrame(tick);
-    }
-    playBtn.addEventListener("click", () => play(!playing));
-    scrub.addEventListener("input", () => { t = +scrub.value; draw(); });
-    speeds.forEach((b) => b.addEventListener("click", () => { speed = +b.dataset.speed; speeds.forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }));
-    addEventListener("resize", () => draw());
+    const clock = NematicaPlayback({ duration: dur, speed: 4, render: seconds => { t = seconds; draw(); },
+      onState: (on, ended) => { playBtn.textContent = on ? "Pause" : ended ? "Replay" : "Play"; playBtn.setAttribute("aria-pressed", String(on)); } });
+    playBtn.addEventListener("click", () => clock.play(!clock.playing));
+    scrub.addEventListener("input", () => { clock.play(false); clock.seek(+scrub.value); });
+    speeds.forEach(b => b.addEventListener("click", () => { clock.setSpeed(+b.dataset.speed); speeds.forEach(x => x.setAttribute("aria-pressed", String(x === b))); }));
+    addEventListener("resize", draw);
+    let inView = true;
+    new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; clock.setVisible(inView && !document.hidden); }).observe(twin);
+    document.addEventListener("visibilitychange", () => clock.setVisible(inView && !document.hidden));
     await open(idx.pairs[0].id);
-    t = 125; draw();
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting && !reduce && !playing) play(true); if (!e.isIntersecting && playing) play(false); }, { threshold: 0.25 });
-    io.observe(twin);
   })();
 
-  // ============================================================== swarm
-  const swarm = document.getElementById("swarm");
-  if (swarm) (async function () {
-    try { await load("data/sim/swarm.js"); } catch (e) {
-      swarm.querySelector(".swarm-stage").innerHTML = '<div class="scope-empty"><div>The swarm draws from the local data.<br>Run <code>python scripts/export_site.py --sims</code> and reload.</div></div>';
-      return;
-    }
-    const D = SIM.swarm, cv = swarm.querySelector("canvas"), timeEl = swarm.querySelector(".sw-time"), playBtn = swarm.querySelector(".sw-play");
-    const Pn = D.points, seg = D.length_mm / Pn, R = D.radius_mm, dur = D.frames * D.dt;
-    let t = 0, playing = false, last = 0;
-    const speedBtns = swarm.querySelectorAll(".sw-speed button");
-    let speed = 8;
-    function draw() {
-      const { g, W, H } = fit(cv);
-      const f = Math.min(D.frames - 1, Math.floor(t / D.dt));
-      const sc = (Math.min(W, H) * 0.47) / (R + 0.9), cx = W / 2, cy = H / 2;
-      const X = (x) => cx + x * sc, Y = (y) => cy - y * sc;
-      const bg = g.createRadialGradient(cx, cy, 10, cx, cy, Math.max(W, H) * 0.7);
-      bg.addColorStop(0, "#122027"); bg.addColorStop(1, "#081014");
-      g.fillStyle = bg; g.fillRect(0, 0, W, H);
-      g.fillStyle = "rgba(201, 133, 70, 0.14)"; g.beginPath(); g.arc(cx, cy, (R + 0.9) * sc, 0, Math.PI * 2); g.arc(cx, cy, R * sc, 0, Math.PI * 2, true); g.fill();
-      g.strokeStyle = "rgba(214, 150, 88, 0.85)"; g.lineWidth = 1.5; g.beginPath(); g.arc(cx, cy, R * sc, 0, Math.PI * 2); g.stroke();
-      g.lineCap = "round"; g.lineJoin = "round";
-      let rev = 0, touch = 0;
-      D.worms.forEach((w) => {
-        let x = w.head[2 * f], y = w.head[2 * f + 1];
-        const pts = [[x, y]];
-        for (let p = 0; p < Pn; p++) { const a = w.angles[f * Pn + p]; x += seg * Math.cos(a); y += seg * Math.sin(a); pts.push([x, y]); }
-        const r = w.reversing[f]; if (r) rev++;
-        g.strokeStyle = r ? COPY : "#d3dedb"; g.lineWidth = Math.max(2.2, 0.05 * sc);
-        g.beginPath(); pts.forEach((p, i) => (i ? g.lineTo(X(p[0]), Y(p[1])) : g.moveTo(X(p[0]), Y(p[1])))); g.stroke();
-        g.fillStyle = r ? "#ffd3ea" : "#ffffff"; g.beginPath(); g.arc(X(pts[0][0]), Y(pts[0][1]), Math.max(1.6, 0.03 * sc), 0, Math.PI * 2); g.fill();
-        if (w.touch[f]) { touch++; g.strokeStyle = "rgba(255,255,255,0.9)"; g.lineWidth = 1.2; g.beginPath(); g.arc(X(pts[0][0]), Y(pts[0][1]), 7, 0, Math.PI * 2); g.stroke(); }
-      });
-      g.fillStyle = "rgba(230,238,240,0.85)"; g.fillRect(18, H - 24, 1 * sc, 2);
-      g.font = "500 11px 'Schibsted Grotesk', system-ui"; g.fillText("1 mm", 18, H - 32);
-      timeEl.textContent = `${fmtT(t)} of ${fmtT(dur)}`;
-      swarm.querySelector(".sw-rev").textContent = String(rev);
-      swarm.querySelector(".sw-touch").textContent = String(touch);
-    }
-    function play(on) { playing = on; playBtn.textContent = on ? "Pause" : "Play"; if (on) { last = performance.now(); requestAnimationFrame(tick); } }
-    function tick(now) { if (!playing) return; t = (t + ((now - last) / 1000) * speed) % dur; last = now; draw(); requestAnimationFrame(tick); }
-    playBtn.addEventListener("click", () => play(!playing));
-    speedBtns.forEach((b) => b.addEventListener("click", () => { speed = +b.dataset.speed; speedBtns.forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }));
-    addEventListener("resize", draw);
-    const s = D.notes && D.notes.summary;
-    if (s) {
-      const set = (k, v) => { const n = swarm.querySelector(`[data-k="${k}"]`); if (n) n.textContent = v; };
-      set("contact", `${Math.round(s.contact * 100)}%`);
-      set("cluster", `${Math.round(s.frac_in_cluster * 100)}%`);
-      set("rev0", s.rev_per_min_density_0.toFixed(1));
-      set("rev2", s["rev_per_min_density_2+"].toFixed(1));
-      set("copper", `${Math.round(s.near_copper * 100)}%`);
-    }
-    t = 120; draw();
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting && !reduce && !playing) play(true); if (!e.isIntersecting && playing) play(false); }, { threshold: 0.25 });
-    io.observe(swarm);
-  })();
 })();

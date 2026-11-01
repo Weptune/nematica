@@ -3,12 +3,55 @@
   // the top bar sits on the dark field until the hero has scrolled away
   // the top bar turns dark whenever it sits over a dark section
   const bar = document.getElementById("bar");
-  const dark = [...document.querySelectorAll(".hero, .interlude, .masthead, footer.foot")];
+  const dark = [...document.querySelectorAll(".arrival, .hero, .interlude, .masthead, footer.foot")];
   if (bar && dark.length) {
     let raf = 0;
     const check = () => { raf = 0; const y = 30; bar.classList.toggle("on-field", dark.some((d) => { const r = d.getBoundingClientRect(); return r.top <= y && r.bottom >= y; })); };
     addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(check); }, { passive: true });
     check();
+  }
+  const arrival = document.querySelector('.arrival');
+  const arrivalFrame = document.getElementById('arrival-lab');
+  if (arrival && arrivalFrame) {
+    const clock = arrival.querySelector('.arrival-clock');
+    const motionButton = arrival.querySelector('.arrival-motion-toggle');
+    let moving = true;
+    motionButton?.addEventListener('click', () => {
+      moving = !moving;
+      arrivalFrame.contentWindow?.postMessage({ type: 'nematica-lab-play', playing: moving }, location.origin);
+      motionButton.textContent = moving ? 'Pause replay' : 'Play replay';
+      motionButton.setAttribute('aria-label', moving ? 'Pause worm replay' : 'Play worm replay');
+    });
+    arrivalFrame.addEventListener('load', () => {
+      if (!moving) arrivalFrame.contentWindow?.postMessage({ type: 'nematica-lab-play', playing: false }, location.origin);
+    });
+    addEventListener('message', (event) => {
+      if (event.origin !== location.origin || event.source !== arrivalFrame.contentWindow || event.data?.type !== 'nematica-lab-time') return;
+      const seconds = Math.max(0, Math.floor(Number(event.data.seconds) || 0));
+      clock.textContent = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+    });
+  }
+  const menuButton = bar?.querySelector(".menu-toggle");
+  const siteNav = bar?.querySelector("#site-nav");
+  if (menuButton && siteNav) {
+    const setMenu = (open) => {
+      bar.classList.toggle("menu-open", open);
+      menuButton.setAttribute("aria-expanded", String(open));
+      menuButton.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      menuButton.lastElementChild.textContent = open ? "Close" : "Menu";
+    };
+    menuButton.addEventListener("click", () => setMenu(!bar.classList.contains("menu-open")));
+    siteNav.addEventListener("click", (event) => { if (event.target.closest("a")) setMenu(false); });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && bar.classList.contains("menu-open")) {
+        setMenu(false);
+        menuButton.focus();
+      }
+    });
+    document.addEventListener("click", (event) => {
+      if (bar.classList.contains("menu-open") && !bar.contains(event.target)) setMenu(false);
+    });
+    matchMedia("(min-width: 721px)").addEventListener("change", (event) => { if (event.matches) setMenu(false); });
   }
   // verdict legends
   document.querySelectorAll("[data-legend]").forEach((n) => window.NematicaCharts && window.NematicaCharts.verdictLegend(n));

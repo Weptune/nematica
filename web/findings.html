@@ -7,29 +7,30 @@
 <meta name="description" content="What happens when artificial brains are watched and poked like living worms: results on 113 recorded C. elegans.">
 <link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
 <meta name="theme-color" content="#0d161b">
 <meta property="og:site_name" content="NEMATICA">
-<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/site.css?v=15">
 </head>
 <body>
 
 <header class="bar on-field" id="bar">
   <a class="wordmark" href="index.html" aria-label="NEMATICA home">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.2" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".55"/><circle cx="12" cy="12" r="5.2" fill="none" stroke="#0a7a5a" stroke-width="2.2"/><circle cx="17.2" cy="12" r="2.1" fill="#c8489c"/></svg>
+    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 44c10 0 11-23 23-23 11 0 11 22 20 22 5 0 7-7 9-13-1 11-5 18-11 18-12 0-10-22-19-22-8 0-11 23-22 23z" fill="currentColor"/><path d="M29 8v9" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><circle cx="29" cy="23.5" r="4" fill="#dc5b9d"/></svg>
     NEMATICA
   </a>
-  <nav aria-label="Site">
+  <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu"><span class="menu-lines" aria-hidden="true"></span><span>Menu</span></button>
+  <nav id="site-nav" aria-label="Site">
     <a href="findings.html" aria-current="page">Findings</a>
     <a href="method.html">Method</a>
     <a href="sim.html">Simulations</a>
     <a href="log.html" class="optional">Research log</a>
-    <a href="https://github.com/Weptune/nematica" class="optional">Code</a>
+    <a href="lab/index.html">3D Lab</a>
   </nav>
 </header>
 
-<section class="masthead grain"><div class="in"><h1 class="title">Looking like a brain and working like one are different things.</h1>
-    <p class="standfirst">We fitted artificial brains to whole-brain recordings of living worms, then tested them on worms they had never seen: first by watching, then by switching single neurons on with light. Every prediction below was written down before the experiment ran, and the results that went against us are kept.</p></div></section>
+<section class="masthead grain" data-index="01"><div class="in"><div class="folio" aria-hidden="true" style="--step:1"><div class="folio-head"><span>NEMATICA / FIELD INDEX</span><span>01 / 04</span></div><strong class="folio-number">01</strong><div class="folio-foot"><span>FINDINGS</span><i class="folio-track"></i></div></div><h1 class="title">Looking like a brain and working like one are different things.</h1>
+    <p class="standfirst">We fitted artificial brains to whole-brain recordings of living worms, then tested them on worms they had never seen: first by watching, then by switching single neurons on with light. Every prediction below was written down before the experiment ran, and the results that went against us are kept.</p><a class="mast-jump" href="#watching">Explore the evidence <span aria-hidden="true">↓</span></a></div></section>
 
 <main class="page">
 
@@ -49,7 +50,7 @@
     <!-- 1 -->
     <h2 id="watching">A brain can pass the watching tests and fail every poke.</h2>
     <p>The obvious way to check an artificial brain is to compare its activity with a real one's: are the values, rhythms and correlations right? We ran that check and a harder one on the same 113 worms. A linear model fitted to the worms' ongoing activity is indistinguishable from held-out real worms on five of six activity statistics, in all three held-out groups. When one of its neurons is switched on, its echo agrees with real worms at a correlation of about 0.01, where two real worms agree at about 0.10, and it reaches two to four times too much of the brain.</p>
-    <p>That might be one unlucky model, so we scored every brain we built on both. Across 88 brain scores, how many watching tests a brain passes has no relation to how well it answers a poke (rank correlation &minus;0.06, p = 0.56). The few brains that come close to real worms on the poke test are the ones given causal links learned from pokes; the watching tests do not single them out.</p>
+    <p>That might be one unlucky model, so we scored every brain we built on both. In 88 model-group scores, the number of watching tests passed had a weak association with echo agreement (rank correlation about +0.09). Using the pre-specified continuous rest score instead, the correlation with poke-pattern distance was &minus;0.06 (p = 0.56). The 88 scores include repeated results from 30 model variants across held-out groups, so this does not prove that rest and poke performance are unrelated in general. It shows that passing these watching tests does not reliably identify the models that answer pokes correctly.</p>
     <aside class="note">
       <div class="measure copy"><span class="v">0.01</span><span class="l">echo agreement of the best-looking linear brain with real worms</span></div>
       <div class="measure"><span class="v">0.10</span><span class="l">agreement between two real worms</span></div>
@@ -147,6 +148,6 @@
 <script src="data/results.js"></script>
 <script src="assets/charts.js"></script>
 <script src="data/local.js" onerror="void 0"></script>
-<script src="assets/site.js"></script>
+<script src="assets/site.js?v=3"></script>
 </body>
 </html>

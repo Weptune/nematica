@@ -7,38 +7,46 @@
 <meta name="description" content="A benchmark that scores artificial nervous systems against whole-brain recordings of living C. elegans, measured in units of how much real worms differ from each other.">
 <link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
 <meta name="theme-color" content="#0d161b">
 <meta property="og:site_name" content="NEMATICA">
-<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/site.css?v=18">
 </head>
 <body>
 
 <header class="bar on-field" id="bar">
   <a class="wordmark" href="index.html" aria-label="NEMATICA home">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.2" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".55"/><circle cx="12" cy="12" r="5.2" fill="none" stroke="#3dd69b" stroke-width="2.2"/><circle cx="17.2" cy="12" r="2.1" fill="#f062b4"/></svg>
+    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 44c10 0 11-23 23-23 11 0 11 22 20 22 5 0 7-7 9-13-1 11-5 18-11 18-12 0-10-22-19-22-8 0-11 23-22 23z" fill="currentColor"/><path d="M29 8v9" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><circle cx="29" cy="23.5" r="4" fill="#dc5b9d"/></svg>
     NEMATICA
   </a>
-  <nav aria-label="Site">
+  <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu"><span class="menu-lines" aria-hidden="true"></span><span>Menu</span></button>
+  <nav id="site-nav" aria-label="Site">
     <a href="findings.html">Findings</a>
     <a href="method.html">Method</a>
     <a href="sim.html">Simulations</a>
-    <a href="log.html" class="optional">Research log</a>
-    <a href="https://github.com/Weptune/nematica" class="optional">Code</a>
+    <a href="log.html">Research log</a>
+    <a href="lab/index.html">3D Lab</a>
   </nav>
 </header>
 
-<section class="hero grain" aria-labelledby="h">
-  <div class="hero-grid">
-    <div>
-      <h1 id="h">A copied brain can look alive and still be wrong.</h1>
-      <p class="lede">NEMATICA tests artificial nervous systems against whole-brain recordings of living <em>C.&nbsp;elegans</em>. Each brain is watched at rest, then poked one neuron at a time, and every verdict is measured against <strong>how much real worms differ from one another</strong>.</p>
-      <div class="actions">
-        <a class="btn primary" href="findings.html">Read the findings</a>
-        <a class="btn ghost" href="method.html">How the test works</a>
-      </div>
-      <div class="hero-meta"><span><b>113</b> worms recorded while single neurons were switched on with light</span><span>Data from Randi et al., <i>Nature</i> 2023</span></div>
+<section class="arrival" aria-labelledby="h">
+  <div class="arrival-scene" aria-hidden="true"><iframe id="arrival-lab" src="lab/index.html?embed=1" tabindex="-1" title="Recorded worm and neural activity, animated in three dimensions" loading="eager"></iframe></div>
+  <a class="arrival-scene-link" href="lab/index.html" aria-label="Enter the interactive three-dimensional lab"></a>
+  <div class="arrival-inner">
+    <div class="arrival-top"><button class="arrival-motion-toggle" type="button" aria-label="Pause worm replay">Pause replay</button><span class="arrival-clock" aria-label="Recording time">00:00</span></div>
+    <div class="arrival-copy">
+      <p class="arrival-kicker">NEMATICA / A TEST FOR FAITHFUL BRAINS</p>
+      <h1 id="h">A brain copy can look alive. <em>Will it answer?</em></h1>
+      <p class="arrival-lede">This worm is real. Its neurons are lighting up as recorded. Step inside the lab, then see what happens when the same brain is tested with a poke.</p>
+      <div class="arrival-actions"><a href="lab/index.html" class="arrival-enter">Enter the 3D lab <span aria-hidden="true">↗</span></a><a href="#observation" class="arrival-evidence">See the poke test ↓</a></div>
     </div>
+    <div class="arrival-bottom"><span>01 / WATCH A LIVING BRAIN</span><span>112 recorded neurons · copper-boundary test set · real-time replay</span><a href="#observation">SCROLL TO THE ECHO <span aria-hidden="true">↓</span></a></div>
+  </div>
+</section>
+
+<section class="hero grain observation" id="observation" aria-label="Recorded and simulated neural activity under the same pokes">
+  <div class="hero-grid">
+    <div class="scope-prelude"><strong>OBSERVATION 01</strong><span>One recorded worm · 52 neuron classes · eight minutes</span><span>Real activity / simulated activity</span></div>
     <div class="scope" id="scope">
       <div class="scope-head">
         <span class="worm">Recorded worm</span>
@@ -56,9 +64,19 @@
       <div class="scope-read" aria-hidden="true"></div>
     </div>
   </div>
-  <div class="hero-grid" style="align-items:start">
-    <div></div>
-    <p class="scope-caption"><b style="color:var(--field-ink);font-weight:600">Figure 1.</b> Eight minutes of one worm the models never saw: 52 neuron classes, each a row, brighter when more active, while single neurons are switched on with light (named along the top). Below, an artificial brain given the same eight minutes and the same pokes. The hybrid brain answers pokes the way worms do, yet flickers where real neurons hold long quiet and active stretches; the linear brain looks closer at rest and answers the pokes wrongly. Hover to read any neuron.</p>
+  <div class="hero-caption-wrap">
+    <p class="scope-caption"><b style="color:var(--field-ink);font-weight:600">Figure 1.</b> Eight minutes of one worm the models never saw: 52 neuron classes, each a row, brighter when more active, while single neurons are switched on with light (named along the top). Below, an artificial brain given the same eight minutes and the same pokes. The hybrid brain answers pokes the way worms do, yet flickers where real neurons hold long quiet and active stretches; the linear brain looks closer at rest and answers the pokes wrongly. Hover to read any neuron. Source: Randi et al., <i>Nature</i> (2023).</p>
+  </div>
+</section>
+
+<section class="workbench" id="now" aria-labelledby="now-title">
+  <div class="workbench-inner">
+    <div class="workbench-heading"><div><p class="workbench-kicker">ON THE BENCH</p><h2 id="now-title">The work is still moving.</h2></div><a href="log.html">Follow the research log <span aria-hidden="true">↗</span></a></div>
+    <div class="workbench-grid">
+      <article><span class="workbench-number"><b>01</b><small>OPEN TEST</small></span><h3>What would count as a faithful echo?</h3><p>A hybrid model matches the pattern and spread of real responses, but its echo is still too complex. The next test is whether its dynamics can improve without losing realistic behavior at rest.</p><a href="findings.html#complexity">See the mismatch →</a></article>
+      <article><span class="workbench-number"><b>02</b><small>CLAIM LIMIT</small></span><h3>Does rest ever predict a poke?</h3><p>Across the models tested, passing our rest checks has not reliably predicted poke responses. That does not establish a universal absence of a relationship; broader model families are needed.</p><a href="findings.html#watching">Inspect the comparison →</a></article>
+      <article><span class="workbench-number"><b>03</b><small>LIVE PROTOTYPE</small></span><h3>What changes when worms share a dish?</h3><p>A live swarm now lets us switch worm interactions on or off and repeat the run with new seeds. Its behavior rules are still assumptions; the next check is real multi-worm tracking.</p><a href="sim.html#swarm">Run the swarm →</a></article>
+    </div>
   </div>
 </section>
 
@@ -67,24 +85,24 @@
 
     <h2 class="sec-name">Summary</h2>
     <div>
-      <p style="font-size:1.32rem;line-height:1.5">People are building digital nervous systems, and sooner or later someone will claim that an artificial brain is a faithful copy of a real one. There is no agreed way to check that claim. We built one, on the only animal whose brain can be compared completely: the nematode <em>C.&nbsp;elegans</em>, with 302 neurons, every connection mapped, and every neuron in its head imaged while it lives.</p>
+      <p style="font-size:1.32rem;line-height:1.5">People are building digital nervous systems, and sooner or later someone will claim that an artificial brain is a faithful copy of a real one. There is no agreed way to check that claim. We are building a test around the nematode <em>C.&nbsp;elegans</em>, with 302 neurons, every connection mapped, and every neuron in its head imaged while it lives.</p>
       <p>The test treats an artificial brain the way a neurologist examines a patient who cannot speak. Watch it at rest. Perturb it. Read the echo, including with the measure that consciousness science uses to tell a responsive brain from an unresponsive one. Every score is expressed in units of how different real worms are from each other, so a brain passes a test when it is as close to real worms as they are to each other: no closer, and no further.</p>
     </div>
-    <aside class="note">
-      <div class="measure"><span class="v">113 worms</span><span class="l">recorded while single neurons were switched on with light (Randi et al. 2023 atlas)</span></div>
-      <div class="measure"><span class="v">3 held-out groups</span><span class="l">every brain is scored on worms it never saw</span></div>
-      <div class="measure copy"><span class="v">0 brains</span><span class="l">pass every test so far</span></div>
+    <aside class="note summary-measures">
+      <div class="measure"><span class="v"><b>113</b><small>worms</small></span><span class="l">recorded while single neurons were switched on with light (Randi et al. 2023 atlas)</span></div>
+      <div class="measure"><span class="v"><b>3</b><small>held-out groups</small></span><span class="l">every brain is scored on worms it never saw</span></div>
+      <div class="measure copy"><span class="v"><b>0</b><small>brains</small></span><span class="l">pass every test so far</span></div>
     </aside>
 
     <div class="gap-xl"></div>
 
-    <h2 class="sec-name">Key results</h2>
-    <h2 style="grid-column:text-start/note-end">Watching a brain does not tell you how it works.</h2>
+    <h2 class="sec-name">What we found</h2>
+    <h2 style="grid-column:text-start/note-end">Watching alone has not been enough.</h2>
     <div class="findings-list">
       <a class="finding" href="findings.html#watching">
         <div class="thumb" data-chart="restPoke" data-compact></div>
         <h3>Looking alive is not enough</h3>
-        <p>A brain that passes five of six tests of ongoing activity still gets cause and effect wrong. Across 88 brain scores, how alive a brain looks at rest says nothing about how it answers a poke (rank correlation &minus;0.06).</p>
+        <p>A brain that passes five of six tests of ongoing activity still gets its poke response wrong. Across the models tested, the number of rest tests passed did not reliably predict echo agreement (rank correlation about +0.09 across 88 model-group scores). A separate continuous rest score had rank correlation &minus;0.06 with poke-pattern distance. These results show that passing the rest tests cannot certify the model's poke response.</p>
       </a>
       <a class="finding" href="findings.html#fingerprints">
         <div class="thumb" data-chart="fingerprint" data-compact></div>
@@ -105,25 +123,25 @@
   <div class="in">
     <div class="intro">
       <h2 id="echo-h">Poke one neuron. Watch the echo.</h2>
-      <p>Each map is the head of a worm, nose to the left, with every neuron class at its real position. Choose a neuron to switch on and watch the average response spread over the next 30 seconds: <strong>in real worms, and in two artificial brains run on the same worms with the same pokes</strong>. Real echoes stay local. The linear brain's average echo is faint and lands in the wrong places; the hybrid answers in roughly the right places, and too strongly.</p>
+      <p>Each labelled cell is a neuron class, in the same position in all three grids. Choose a neuron to switch on and compare its average response over the next 30 seconds: <strong>in real worms, and in two artificial brains run on the same worms with the same pokes</strong>. Real echoes stay local. The linear brain's average echo is faint and lands in the wrong places; the hybrid answers in roughly the right places, and too strongly.</p>
     </div>
     <div class="echo-panel" id="echo">
       <div class="echo-bar">
-        <span class="poked-now">Poked: <b class="echo-poked">ASH</b></span>
+        <label class="poked-now">Stimulate <select class="echo-select" aria-label="Neuron to stimulate"></select></label>
         <button type="button" class="echo-play" aria-pressed="false">Play</button>
         <input type="range" class="echo-scrub" min="0" max="30" step="1" value="0" aria-label="Time after the poke">
         <span class="echo-time">0 s after the poke</span>
       </div>
-      <div class="echo-chips" role="group" aria-label="Neuron to poke"></div>
-      <div class="echo-maps"></div>
+      <div class="echo-grid-guide"><span>90 neuron classes · same layout in every brain</span><span>Hover to compare · click a class to stimulate</span></div>
+      <div class="echo-maps"></div><div class="echo-inspect" aria-live="off"></div>
       <div class="echo-legend">
         <span class="k"><i style="background:#3dd69b"></i>Real worms: rises</span>
         <span class="k"><i style="background:#f062b4"></i>Artificial brain: rises</span>
         <span class="k"><i style="background:#8fb8ff"></i>Falls</span>
-        <span class="k"><i style="border:1px dashed #3a4c56"></i>Not measured for this poke</span>
+        <span class="k"><i style="border:1px dashed #3a4c56"></i>No shared measurement</span>
       </div>
     </div>
-    <p class="echo-caption"><b style="color:var(--field-ink);font-weight:600">Figure 2.</b> Average response of each neuron class after the chosen class is switched on, over the held-out group of worms (real) and the same worms simulated (artificial). Size and glow show the response in standard deviations of each class's activity. Agreement is the correlation, across responding classes, of the first 15 seconds of response with the real average, for this poke and pooled over all pokes. Pooled, the hybrid brain reaches about 0.4 and the linear brain about 0.06; the poke test's window for a real-like brain is 0.3 to 0.5. Click any outlined neuron in a map to poke it.</p>
+    <p class="echo-caption"><b style="color:var(--field-ink);font-weight:600">Figure 2.</b> Average response of each neuron class after the chosen class is switched on, over the held-out group of worms (real) and the same worms simulated (artificial). Cell brightness shows the response in standard deviations of each class's activity. Agreement is the correlation, across measured classes, of the first 15 seconds of response with the real average, for this poke and pooled over all pokes. Pooled, the hybrid brain reaches about 0.4 and the linear brain about 0.06; the poke test's window for a real-like brain is 0.3 to 0.5. Cells are arranged alphabetically, not anatomically. Only classes measured in all three brains are coloured and counted. Choose any available stimulus from the selector.</p>
   </div>
 </section>
 
@@ -179,8 +197,9 @@ Neural signal propagation atlas of Caenorhabditis elegans. Nature 623, 406 to 41
 <script src="data/local.js" onerror="void 0"></script>
 <script src="data/echo.js" onerror="void 0"></script>
 <script src="assets/charts.js"></script>
-<script src="assets/scope.js"></script>
-<script src="assets/echo.js"></script>
-<script src="assets/site.js"></script>
+<script src="assets/scope.js?v=2"></script>
+<script src="assets/playback.js?v=3"></script>
+<script src="assets/echo.js?v=3"></script>
+<script src="assets/site.js?v=4"></script>
 </body>
 </html>

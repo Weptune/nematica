@@ -1943,6 +1943,13 @@ writes one twin swarm (rotation 0, interactions on) to `lab/public/data/swarm1/`
 lab with `?mode=swarm` to watch 32 model worms from above, with reversals in orange, touches
 ringed, the copper shaded, and live counts. Click a worm to follow it.
 
+The public site at `web/sim.html#swarm` is a separate, live behavioral sandbox. Run
+`python scripts/export_swarm_profiles.py` after exporting a fitted swarm to refresh its
+32 speed, reversal and turning priors. The browser advances new trajectories from a
+seed, handles head contact and copper steering, and recomputes crowd measures as it runs.
+It does not advance the fitted neural state; its contact and copper rules are stated
+assumptions, and its numbers are not validation against real multi-worm recordings.
+
 ## "Which one is real?" (prototype)
 
 Two worms crawl side by side on agar. One is a held-out real worm (body, path and brain

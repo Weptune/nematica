@@ -4,38 +4,40 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Simulations: NEMATICA</title>
-<meta name="description" content="The brain models tested on this site, given a body: a real worm beside its model in the same copper arena, and a swarm of 32 model worms.">
+<meta name="description" content="A real worm beside its fitted model in a copper arena, plus a live 32-worm behavioral sandbox informed by individual model runs.">
 <link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
 <meta name="theme-color" content="#0d161b">
 <meta property="og:site_name" content="NEMATICA">
-<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/site.css?v=15">
 </head>
 <body>
 
 <header class="bar on-field" id="bar">
   <a class="wordmark" href="index.html" aria-label="NEMATICA home">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.2" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".55"/><circle cx="12" cy="12" r="5.2" fill="none" stroke="#3dd69b" stroke-width="2.2"/><circle cx="17.2" cy="12" r="2.1" fill="#f062b4"/></svg>
+    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 44c10 0 11-23 23-23 11 0 11 22 20 22 5 0 7-7 9-13-1 11-5 18-11 18-12 0-10-22-19-22-8 0-11 23-22 23z" fill="currentColor"/><path d="M29 8v9" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><circle cx="29" cy="23.5" r="4" fill="#dc5b9d"/></svg>
     NEMATICA
   </a>
-  <nav aria-label="Site">
+  <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu"><span class="menu-lines" aria-hidden="true"></span><span>Menu</span></button>
+  <nav id="site-nav" aria-label="Site">
     <a href="findings.html">Findings</a>
     <a href="method.html">Method</a>
     <a href="sim.html" aria-current="page">Simulations</a>
     <a href="log.html" class="optional">Research log</a>
-    <a href="https://github.com/Weptune/nematica" class="optional">Code</a>
+    <a href="lab/index.html">3D Lab</a>
   </nav>
 </header>
 
-<section class="masthead grain"><div class="in"><h1 class="title">Brains with bodies.</h1>
-  <p class="standfirst">The brain models tested on this site can also drive a simulated worm through a real worm's arena. These are demonstrations of what the models do, not evidence: every claim on this site rests on the tests in the findings.</p></div></section>
+<section class="masthead grain" data-index="03"><div class="in"><div class="folio" aria-hidden="true" style="--step:3"><div class="folio-head"><span>NEMATICA / FIELD INDEX</span><span>03 / 04</span></div><strong class="folio-number">03</strong><div class="folio-foot"><span>SIMULATIONS</span><i class="folio-track"></i></div></div><h1 class="title">Brains with bodies.</h1>
+  <p class="standfirst">One view replays a fitted brain driving a worm beside a real recording. The other is a live crowd built from the models' individual motion profiles. Both make behavior visible; claims about brain fidelity still rest on the held-out tests.</p><a class="mast-jump" href="#twin-h">Watch the comparison <span aria-hidden="true">↓</span></a></div></section>
 
 <section class="interlude grain sim-interlude" aria-labelledby="twin-h">
   <div class="in">
     <div class="intro">
       <h2 id="twin-h">A real worm and its model, in the same arena.</h2>
       <p>Left, a worm the model never saw, as recorded: its body, its path, and its brain. Right, a model worm in the same dish. <strong>Its brain senses copper only through the sensory neuron ASH, decides when to reverse, and steers its own body</strong>; only its body shapes are borrowed from real worms. Copper lines the edge of the dish and real worms avoid it.</p>
+      <a class="sim-lab-link" href="lab/index.html"><span>NEW / THREE-DIMENSIONAL RECORDING</span><strong>Enter the living brain</strong><span aria-hidden="true">↗</span></a>
     </div>
     <div class="twin" id="twin">
       <div class="twin-bar">
@@ -70,8 +72,8 @@
   <div class="sheet">
     <h2 class="sec-name">Swarm</h2>
     <div>
-      <h2>Thirty-two brains in one dish.</h2>
-      <p>Every simulated worm here has its own brain, each fitted to a different real worm, sharing one copper arena. Heads that come within a body width of another worm can trigger a reversal, and no worm can crawl through another. Does a crowd of individuals behave differently from a crowd of identical average worms? With the interactions assumed so far, the difference is not established across random seeds.</p>
+      <h2>Thirty-two worms in one dish.</h2>
+      <p>Thirty-two worms now move in a live, seeded arena. Their speed, turning and reversal tendencies come from motion profiles of sixteen fitted individual brain models, two worms per model. Copper avoidance and contact responses are explicit behavioral assumptions. Pause, follow one worm, switch worm interactions off, or start a new seed to see how a crowd forms. This is a working sandbox for the next experiment, not a scored result against real swarms.</p>
     </div>
   </div>
 </main>
@@ -79,20 +81,26 @@
 <section class="interlude grain sim-interlude tight" aria-label="Swarm simulation">
   <div class="in">
     <div class="swarm" id="swarm">
-      <div class="swarm-stage"><canvas aria-label="Thirty-two model worms in one copper arena, seen from above"></canvas></div>
+      <div class="swarm-stage"><div class="swarm-stage-title"><span>LIVE SHARED ARENA</span><span>32 model-informed worms</span></div><canvas aria-label="Live simulation of thirty-two worms moving and interacting inside a copper arena, seen from above"></canvas><div class="swarm-stage-caption"><span class="copper-key"></span> Orange: copper cue · outer rim: simulation limit</div></div>
       <aside class="swarm-side">
+        <h3 class="swarm-title">Explore the swarm</h3><p class="swarm-subtitle">Live behavioral prototype · seed <span class="sw-seed-value">07</span></p>
         <div class="twin-bar">
           <button type="button" class="sw-play echo-play">Play</button>
           <div class="sw-speed seg-dark" role="group" aria-label="Playback speed">
-            <button type="button" data-speed="4" aria-pressed="false">4&times;</button>
-            <button type="button" data-speed="8" aria-pressed="true">8&times;</button>
+            <button type="button" data-speed="1" aria-pressed="false">1&times;</button>
+            <button type="button" data-speed="4" aria-pressed="true">4&times;</button>
+            <button type="button" data-speed="8" aria-pressed="false">8&times;</button>
             <button type="button" data-speed="32" aria-pressed="false">32&times;</button>
           </div>
         </div>
-        <p class="sw-time echo-time">0:00</p>
+        <div class="swarm-timeline"><input type="range" class="sw-scrub echo-scrub" min="0" max="1" step="0.1" value="0" aria-label="Swarm time"><div><span class="sw-time echo-time">0:00</span><button type="button" class="sw-restart">Restart</button></div></div>
+        <div class="sw-conditions"><span>Worm interactions</span><button type="button" class="sw-contact" aria-pressed="true" aria-label="Worm interactions on">On</button><button type="button" class="sw-new-run">New seed ↗</button></div>
+        <label class="swarm-select-label">Inspect a worm<select class="sw-select" aria-label="Worm to inspect"><option value="-1">All 32 worms</option></select></label><p class="sw-inspect">Select a worm to see its path and state.</p>
+        <h4 class="swarm-section-label">At this moment</h4>
         <dl class="stats">
           <div><dt>Reversing now</dt><dd class="sw-rev">0</dd></div>
           <div><dt>Heads touching now</dt><dd class="sw-touch">0</dd></div>
+          </dl><h4 class="swarm-section-label">This run so far</h4><dl class="stats run-stats">
           <div><dt>Share of time in contact</dt><dd data-k="contact"></dd></div>
           <div><dt>Worms in a cluster</dt><dd data-k="cluster"></dd></div>
           <div><dt>Reversals per minute, alone</dt><dd data-k="rev0"></dd></div>
@@ -100,7 +108,7 @@
           <div><dt>Time near the copper edge</dt><dd data-k="copper"></dd></div>
         </dl>
         <p class="swarm-key"><span><i style="background:#d3dedb"></i>Crawling forward</span><span><i style="background:#f062b4"></i>Reversing</span><span><i class="ring"></i>Head touching another worm</span></p>
-        <p class="swarm-note">Touch reverses a worm with probability 0.3 and bodies keep 0.1 mm apart. Both are assumptions until they can be calibrated against recordings of real crowds.</p>
+        <p class="swarm-note">The 32 motion profiles come from fitted individual closed-loop models. Interactions on adds a 0.3 chance of reversing on a touched forward step and 0.1 mm head exclusion; off is the pass-through baseline. Copper steering and a small containment limit apply in both modes. These rules have not been calibrated against real multi-worm tracking. The numbers above describe only the run on screen.</p>
       </aside>
     </div>
   </div>
@@ -112,9 +120,9 @@
     <div>
       <h2>What these simulations are not.</h2>
       <ul>
-        <li>They are not the benchmark. Each model was scored on held-out worms by the tests described in the method; these views only show the same models in motion.</li>
-        <li>Body shapes are borrowed from real worms; the models decide speed, reversals and steering.</li>
-        <li>The brains here are the copper-sensing linear models of the behaviour work, not the hybrid brain that passes the poke test.</li>
+        <li>They are not the benchmark. The paired replay shows scored models in motion; the live swarm tests proposed crowd rules and has not been scored against real swarms.</li>
+        <li>The paired replay borrows body postures from real worms. The live swarm draws procedural bodies and uses fitted model motion profiles with explicitly assumed contact and copper rules.</li>
+        <li>The fitted profiles come from copper-sensing linear models of the behavior work, not the hybrid brain that passes the poke test.</li>
         <li>Nothing here suggests that a model worm, or a real one, experiences anything.</li>
       </ul>
       <p><a class="btn outline" href="findings.html">Read the findings</a></p>
@@ -131,7 +139,11 @@
 </footer>
 
 <script src="data/local.js" onerror="void 0"></script>
-<script src="assets/sim.js"></script>
-<script src="assets/site.js"></script>
+<script src="assets/playback.js?v=3"></script>
+<script src="data/sim/swarm-profiles.js?v=1"></script>
+<script src="assets/swarm-engine.js?v=1"></script>
+<script src="assets/sim.js?v=3"></script>
+<script src="assets/swarm-live.js?v=3"></script>
+<script src="assets/site.js?v=3"></script>
 </body>
 </html>
