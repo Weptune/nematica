@@ -33,10 +33,11 @@
   <div class="x-pin">
     <canvas aria-hidden="true"></canvas>
     <ol class="x-rail" aria-hidden="true"><li>Brain</li><li>Alive</li><li>Copy</li><li>Poke</li><li>Verdict</li></ol>
-    <div class="x-stage" data-i="0">
-      <p class="x-kicker">NEMATICA</p>
-      <h1>Three hundred and two neurons.</h1>
-      <p>The entire nervous system of the worm <i>C.&nbsp;elegans</i>, every cell drawn where it sits in the body, with the wires between them.</p>
+    <div class="x-stage x-first" data-i="0">
+      <p class="x-kicker">NEMATICA / AN OPEN EXPERIMENT IN COPYING BRAINS</p>
+      <h1>A brain copy can look alive. <em>Will it answer?</em></h1>
+      <p>NEMATICA is a test for artificial brains. We build copies of a real nervous system, the 302 neurons of the worm <i>C.&nbsp;elegans</i>, then check them against living worms: first by watching, then by switching single neurons on with light. Every verdict is measured against how much real worms differ from each other.</p>
+      <p class="x-status"><span class="x-dot" aria-hidden="true"></span>Research in progress. No copy passes every test yet.</p>
       <p class="x-hint">Scroll to run the experiment</p>
     </div>
     <div class="x-stage" data-i="1">
@@ -52,13 +53,14 @@
       <p>One neuron, ASH, the worm's danger sensor, is switched on with light in both brains. Then we watch where the signal goes. <span class="x-echo-clock"></span></p>
     </div>
     <div class="x-stage" data-i="4">
-      <h2>Watching could not tell them apart. One poke could.</h2>
+      <h2>So far, watching has not told them apart. Poking has.</h2>
       <div class="x-verdict">
         <div><span class="v" data-to="0.06">0.00</span><span class="l">how well the copy built by watching agrees with real worms' echoes</span></div>
-        <div><span class="v" data-to="0.42">0.00</span><span class="l">a copy that also learned from pokes</span></div>
+        <div><span class="v" data-to="0.42">0.00</span><span class="l">our best copy, which also learned from pokes</span></div>
         <div><span class="v live">0.3 to 0.5</span><span class="l">the window a copy has to hit to pass as a real worm</span></div>
       </div>
-      <div class="x-actions"><a class="x-go" href="#observation">See the evidence</a><a class="x-alt" href="lab/index.html">Enter the 3D lab</a></div>
+      <p class="x-open">Still open: no copy yet matches the complexity of a real echo, and none passes every test. The experiments continue.</p>
+      <div class="x-actions"><a class="x-go" href="#observation">See the evidence</a><a class="x-alt" href="log.html">Where the work stands</a><a class="x-alt" href="lab/index.html">3D lab</a></div>
     </div>
     <div class="x-nodata"><p>The opening experiment draws from the local copy of the recordings. Run <code>python scripts/export_site.py --local</code> and reload.</p></div>
   </div>

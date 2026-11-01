@@ -117,12 +117,12 @@
     const spin = reduce ? 0.6 : tSec * 0.16 + p * 2.4;
     const tilt = mix(0.42, 0.22, toHead);
     const mobile = W < 760;
-    const baseScale = (mobile ? 0.86 : 0.62) * W / 820;
+    const baseScale = (mobile ? 0.86 : 0.5) * W / 820;
     const headScale = (mobile ? 0.8 : 0.34) * W / 140 * mix(1, mobile ? 0.5 : 0.72, split) * (1 - 0.14 * verdict);
     const scale = mix(baseScale, headScale, toHead);
     const focusX = mix(0, -320, toHead);          // world x the camera looks at: body centre, then the head
     const camD = 900;
-    const cxBase = W * (mobile ? 0.5 : mix(0.56, 0.6, toHead) + 0.08 * verdict), cyBase = H * (mobile ? 0.36 : 0.42);
+    const cxBase = W * (mobile ? 0.5 : mix(0.7, 0.6, toHead) + 0.08 * verdict), cyBase = H * (mobile ? mix(0.2, 0.36, toHead) : 0.42);
     const sep = split * W * (mobile ? 0.25 : 0.18 - 0.03 * verdict);   // the two brains, side by side
 
     g.globalCompositeOperation = "source-over";
