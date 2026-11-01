@@ -1971,6 +1971,43 @@ behaviour levels are not scored. Rotating pools (`docs/figures/published_combine
   4.04). The unconstrained model has the most realistic dimensionality.
 - c302 (OpenWorm) is not scored yet.
 
+**Creamer et al.'s models on the stimulated worms, with their own stimulation (1 Nov 2026,
+exploratory: one pool, repaired data).** Their own measure first, reproduced from their
+published models and their published train and test response maps
+(`scripts/creamer_own_metric.py`; `measured_stams.pkl` from their repository, kept local):
+correlation of each model's time-integrated response map with the held-out map, relative to
+the train-to-test correlation (0.173): connectome-constrained 0.81, fully connected 0.69,
+shuffled 0.23. Their abstract reports 92% for the first; the ranking reproduces.
+
+Reading their code showed our earlier test of these models was not fair: we held the poked
+neuron to its measured response, while their models take a learned input filter (45 frames
+per neuron). `CreamerCausal(protocol="native")` now uses that filter. On the ruler (split
+cv3, pool 0), the connectome-constrained model is still outside on the poke pattern:
+simulated worms' echoes agree with real worms at 0.003, against 0.095 between real worms.
+
+Why the two evaluations disagree (`scripts/diag_creamer_reliability.py`, 14 pool worms):
+
+| Comparison | Echo agreement |
+|---|---|
+| real worm with real worm | 0.094 |
+| model without its noise, with real worms | 0.110 |
+| model with its fitted noise, with real worms | 0.004 |
+| two simulated worms with each other | 0.010 |
+
+One real worm's echo correlates 0.20 with the mean of the others; one simulated worm's echo
+correlates 0.08 with its own model's noise-free echo. The model's average echo is about
+right, which is what their measure scores (a noise-free response map). A single simulated
+worm's echo, which is what an experiment sees, is buried in the model's own noise.
+Shrinking the noise does not rescue it (`scripts/diag_creamer_noise.py`): at one fifth of
+the fitted noise, simulated worms agree with each other as real worms do (0.106), but with
+real worms only at 0.042; at one tenth they become too alike (0.254) while still short of
+real worms (0.076). One mean echo plus noise cannot reproduce how real worms differ from each
+other: the model lacks individual variation, not just the right noise level.
+
+Caveats: one pool and 14 worms; the model's input is a unit pulse per stimulation, as in
+their response maps and their data preparation code (input 1 at each stimulation frame); their models were fitted on atlas worms that may
+include these, which favours them.
+
 ## Swarm view (arc 6)
 
 `python scripts/export_swarm.py --data <copper folder> --folds configs/splits/copper2026_cv3.yaml`
