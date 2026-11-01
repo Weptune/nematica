@@ -357,6 +357,12 @@ far off (a shift of about 0.9 in distance) that half of it, a tolerance of about
 admits copies whose magnitude is detectably wrong (outside in most pools). It is reported as fixed and will be replaced in the next pre-registration by a
 control closer to the size of real differences between worms.
 
+*Replacement written before the full gallery results (1 Nov 2026):* for magnitude, the
+known-wrong control becomes every response scaled by 1.5 (a 50% error, clearly wrong but
+near the size of real differences between worms), tolerance again half its shift. The
+pattern and kinetics rules are unchanged. Both the old and the new magnitude verdicts will
+be reported for every copy.
+
 **The reverse test, written before running (1 Nov 2026).** unc-31 worms cannot release
 neuropeptides from dense-core vesicles: real brains with one biological ingredient removed.
 Scored as a "copy" against each wild-type pool on all levels, with the equivalence check

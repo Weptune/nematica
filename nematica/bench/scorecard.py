@@ -115,18 +115,22 @@ class FoldRuler:
 # already used to check the levels (nematica.bench.causal.CALIBRATIONS).
 TOL_FRACTION = 0.5
 TOL_CONTROL = {"C1.pattern": "permuted_targets", "C2.magnitude": "scaled_x3", "C3.kinetics": "time_reversed"}
+# magnitude control from 1 Nov 2026 (README): responses x1.5; reported beside the x3 rule
+TOL_CONTROL_V2 = {"C2.magnitude": "scaled_x1.5"}
 
 
-def poke_tolerances(pool, real_c=None, frac: float = TOL_FRACTION, seed: int = 0) -> dict:
+def poke_tolerances(pool, real_c=None, frac: float = TOL_FRACTION, seed: int = 0, controls: dict | None = None) -> dict:
     """Per poke level: the known-wrong control's median shift, and the tolerance from it."""
-    from .causal import CALIBRATIONS, CAUSAL_LEVELS
+    from .causal import CALIBRATIONS, CAUSAL_LEVELS, scaled
     real_c = real_c or [response_set(r) for r in pool]
+    calib = dict(CALIBRATIONS)
+    calib["scaled_x1.5"] = lambda r, rng: scaled(r, 1.5)
     out = {}
-    for level, ctrl in TOL_CONTROL.items():
+    for level, ctrl in (controls or TOL_CONTROL).items():
         rng = np.random.default_rng(seed)
         sets = []
         for r in pool:
-            cs = CALIBRATIONS[ctrl](r, rng)
+            cs = calib[ctrl](r, rng)
             cs.group = r.uid
             sets.append(cs)
         row = score_sets(ctrl, sets, real_c, levels={level: CAUSAL_LEVELS[level]})[0]

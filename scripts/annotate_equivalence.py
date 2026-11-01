@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from nematica.bench.scorecard import POKE_LEVELS, equivalence, fold_parts, poke_tolerances, set_norm  # noqa: E402
+from nematica.bench.scorecard import POKE_LEVELS, TOL_CONTROL_V2, equivalence, fold_parts, poke_tolerances, set_norm  # noqa: E402
 from nematica.data.pumpprobe import load_pumpprobe_dir  # noqa: E402
 from nematica.data.splits import load_folds  # noqa: E402
 
@@ -37,15 +37,18 @@ def main() -> int:
             continue
         _, _, pool = fold_parts(recs, folds, fi)
         tol = poke_tolerances(pool)
+        tol2 = poke_tolerances(pool, controls=TOL_CONTROL_V2)
         for level, t in tol.items():
             print(f"fold {fi} {level}: control {t['control']} shift {t['control_shift']}, tolerance {t['tolerance']}")
         for f in files:
             for r in csv.DictReader(f.open(encoding="utf-8")):
                 if r["metric"] in POKE_LEVELS:
                     t = tol[r["metric"]]["tolerance"]
+                    t2 = tol2.get(r["metric"], {}).get("tolerance")
                     out_rows.append({"fold": fi, "system": r["system"], "metric": r["metric"], "verdict": r["verdict"],
                                      "shift_lo": r["shift_lo"], "shift_hi": r["shift_hi"], "tolerance": t,
-                                     "equivalence": equivalence(r, t)})
+                                     "equivalence": equivalence(r, t),
+                                     "tolerance_v2": t2, "equivalence_v2": equivalence(r, t2) if t2 is not None else ""})
     out = Path(args.out or Path(args.cache) / "equivalence.csv")
     with out.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=list(out_rows[0]))
