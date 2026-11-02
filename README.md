@@ -725,7 +725,7 @@ wiring, saturating, so responses depend on the state the network is in), optiona
 slow drives that no recording sees. True cause and effect K[i, j] is unit i's summed 15 s
 response to a kick of unit j, estimated by twin runs (the same network run twice from the
 same visited state with identical noise, once kicked), averaged over 40 visited states
-(two independent estimates correlate at 0.99). Kicks push the hidden state of the unit for
+(two independent estimates correlate at 0.96 to 0.99, lower with strong hidden drives). Kicks push the hidden state of the unit for
 4 s, like an optogenetic pulse, and the networks are calibrated so that two individuals'
 single-poke echoes agree about as well as two worms' do (0.09 to 0.12 in the base species
 of lab B, against 0.09 to 0.12 in the atlas; 0.05 to 0.15 across all species tested).
@@ -798,7 +798,8 @@ matter most: the watchers' kick ("added": 3 added to the recorded value for 4 s,
 table above; "held": the unit's recorded value held at 0.95, near saturation, as a strongly
 driven unit is and as NEMATICA clamps a stimulated neuron), and memory (a network given the
 last 5 s of activity, and the recurrent watcher trained four times longer with twice the
-memory).
+memory). The plain network is also trained twice as long here (6,000 steps against
+3,000), so its "added" scores are not the same estimator as in the table above.
 
 | Recording (one brain, 40 h) | Linear, added / held | Network, added / held | Network with 5 s of history, held | Recurrent (4x training, larger), added / held | Poking, same brain |
 |---|---|---|---|---|---|
@@ -811,8 +812,10 @@ kicked or however much memory it has, against 0.82 for poking: that plateau is r
 the atlas-like recordings the watchers' scores depend on how they are kicked (the plain
 network falls from 0.52 to 0.23 when the unit is held rather than added to), so the exact
 values there are fragile, but no version reaches 0.55 against 0.84 to 0.86 for poking.
-Memory helps a little (the network with 5 s of history is the best held-kick watcher in
-every setting) and does not close the gap.
+Short memory helps a little (the network with 5 s of history is the best held-kick watcher
+in every setting) and does not close the gap. That is all this shows: the drives last 90 s,
+longer than either watcher's memory (5 s of history, 30 s of warm-up), and it is one brain
+and one training run.
 
 **B. Does the ruler's verdict match the truth? (`scripts/run_ann_ruler.py`,
 `docs/figures/ann_ruler_*.csv`.)** A species of 60 individuals that differ (every
