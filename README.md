@@ -946,7 +946,8 @@ unlock:
 
 1. **Complete, fully identified recordings.** The artificial lab says watching can be
    rescued only when every neuron is recorded (part C), and the real-worm attempt fails as
-   predicted. The atlas identifies about half the head neurons per worm. Needed: whole-brain
+   predicted. The atlas identifies a median of 72 neurons per worm (of 123 tracked, in a
+   nervous system of 302). Needed: whole-brain
    recordings with every neuron identified, ideally in the same worms that are then poked,
    so a copy fitted by watching can be checked against pokes in the same animals.
 2. **Repeated pokes of the same neurons in the same worm.** Worms have individual echoes,
