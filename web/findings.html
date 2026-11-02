@@ -10,7 +10,7 @@
 <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
 <meta name="theme-color" content="#0d161b">
 <meta property="og:site_name" content="NEMATICA">
-<link rel="stylesheet" href="assets/site.css?v=20">
+<link rel="stylesheet" href="assets/site.css?v=21">
 </head>
 <body>
 
@@ -30,7 +30,7 @@
 </header>
 
 <section class="masthead grain" data-index="01"><div class="in"><div class="folio" aria-hidden="true" style="--step:1"><div class="folio-head"><span>NEMATICA / FIELD INDEX</span><span>01 / 04</span></div><strong class="folio-number">01</strong><div class="folio-foot"><span>FINDINGS</span><i class="folio-track"></i></div></div><h1 class="title">Looking like a brain and working like one are different things.</h1>
-    <p class="standfirst">We fitted artificial brains to whole-brain recordings of living worms, then tested them on worms they had never seen: first by watching, then by switching single neurons on with light. Every prediction below was written down before the experiment ran, and the results that went against us are kept.</p><a class="mast-jump" href="#watching">Explore the evidence <span aria-hidden="true">↓</span></a></div></section>
+    <p class="standfirst">Every finding here answers part of one question: how would anyone check that an artificial brain is a faithful copy of a real one? We fitted artificial brains to living worms and tested them on worms they had never seen, by watching and by switching single neurons on with light, then repeated the test in artificial brains whose truth is known. Predictions were written down before the experiments ran, exploratory results are labelled, and the results that went against us are kept.</p><a class="mast-jump" href="#watching">Explore the evidence <span aria-hidden="true">↓</span></a></div></section>
 
 <main class="page">
 
@@ -40,12 +40,14 @@
         <li><a href="#watching">Looking alive is not enough</a></li>
         <li><a href="#gallery">Every kind of network</a></li>
         <li><a href="#why">Why watching fails</a></li>
+        <li><a href="#lab">Where the truth is known</a></li>
         <li><a href="#context">Nothing transfers across contexts</a></li>
         <li><a href="#noise">Cause and effect, not noise</a></li>
         <li><a href="#fingerprints">Causal fingerprints</a></li>
         <li><a href="#ingredients">What it took</a></li>
         <li><a href="#complexity">The echo's complexity</a></li>
         <li><a href="#mind">Signatures of a mind at rest</a></li>
+        <li><a href="#wall">Where the data runs out</a></li>
         <li><a href="#limits">What this does not show</a></li>
       </ol>
     </nav>
@@ -79,11 +81,29 @@
     <p>A real worm cannot tell us its true cause and effect, so a model brain stands in: a published model of 154 neurons in which ongoing activity and responses to pokes come from the same dynamics. We record it the way the atlas was recorded, with half the neurons seen per recording, some never seen, and measurement noise, and try to learn its cause and effect from the recordings.</p>
     <p>Watching works in principle. When each neuron's fluctuations are its own, it recovers cause and effect well, better than poking at the atlas's size. But add a few slow, shared, brain-wide signals that no recording captures, at a level that matches real resting worms, and watching hits a ceiling within a few hours that more data never lifts. Poking is not fooled by those signals: it keeps improving and overtakes watching between 40 and 70 hours of recording, the size of the atlas. A second published model as ground truth gives the same picture, and removing the strongest shared patterns before learning does not reliably help.</p>
     <p>The real worms behave as predicted. A copy that learns by watching is no better after watching 58 worms than after 6 (echo agreement 0.004 to 0.014 throughout), while a copy given the pokes of just 6 worms already beats it four to seven times over, and keeps improving with more worms.</p>
-    <aside class="note"><p><span class="fig">What this would mean.</span> If real brains are driven by strong shared signals that recordings miss, a brain cannot be copied by watching it, however long. Intervention is then not a refinement but a necessity. The stand-in brains are linear and were themselves fitted to this atlas, and the drive level is matched to only two resting worms.</p></aside>
+    <aside class="note"><p><span class="fig">What this would mean.</span> If real brains are driven by strong shared signals that recordings miss, a brain cannot be copied by watching it, however long. Intervention is then not a refinement but a necessity. These stand-in brains are linear and were themselves fitted to this atlas; the nonlinear test that follows confirms the ceiling and refines the explanation.</p></aside>
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 5</span>Watching hits a ceiling; poking keeps climbing</p></div>
       <div data-chart="ceiling"></div>
       <figcaption>A synthetic worm with known cause and effect, recorded like the atlas (37-minute recordings, half the neurons seen in each, 30% never seen). Vertical: correlation of the learned cause and effect with the truth, averaged over two published models used as ground truth. Solid lines: with slow shared drives that no recording captures, carrying 5% of each neuron's input, which matches the share of activity in the top three patterns of real resting worms. Dashed: watching without those drives. Poking estimates each pair by averaging its responses, with no model.</figcaption>
+    </figure>
+
+    <!-- lab -->
+    <h2 id="lab">Where the truth is known, the law holds, and the test can be checked.</h2>
+    <p>Real worms cannot tell us their true cause and effect, so we built artificial brains that can: nonlinear networks of 120 units, tuned so that two individuals' single-poke echoes agree about as well as two worms' do, with cause and effect known by construction. Recordings copy the atlas's design.</p>
+    <p><strong>Watching versus poking.</strong> When every unit is recorded and nothing hidden drives them, a neural network that watches recovers cause and effect well (0.82), though poking still passes it with enough recording (0.91). Add slow hidden signals and no watching copy passes 0.62, however it is poked or however much memory it has, while poking reaches 0.82. Recorded like the atlas, half the units at a time, the watching copies stay at about 0.5 or below and poking reaches 0.65 to 0.88 by 40 hours. Poking passes every watching copy by 40 hours of recording in every setting.</p>
+    <p><strong>Taking the hidden signals out.</strong> Given the strongest slow patterns of its own recordings, a watching copy recovers most of what the hidden signals cost, from 0.61 to 0.77, but only when every unit is recorded. Recorded like the atlas, the same step changes nothing (0.30 to 0.30), and even the true hidden signals lift it only to 0.48 against 0.76 for poking. On real worms the same step changed nothing either (echo agreement 0.004 to 0.014 with or without it), as the artificial brains predicted.</p>
+    <figure class="plate wide">
+      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 5b</span>The law in brains whose truth is known</p></div>
+      <div data-chart="law"></div>
+      <figcaption>Correlation of the learned cause and effect with the truth, by hours of recording, in three recording designs. Pink: copies that learned by watching (dashed: linear; solid: a neural network). Black: averaging real pokes. Two independently drawn brains per setting, averaged; differences of 0.04 or less between them mean nothing. The watching copies are poked by adding to the recorded value of the unit; holding it near saturation instead changes their scores by up to 0.3 in the atlas-like design without changing the conclusion.</figcaption>
+    </figure>
+    <p><strong>The test, checked against the truth.</strong> A species of 60 artificial individuals, each recorded once like an atlas worm, split three ways as the atlas is, and scored with the unchanged test. Copies of known quality: the species-average brain, another individual, and the species brain with 10%, 25% or all of its connections moved; plus the two copies we built for worms. Where echoes are as reliable as worms', the test separates good copies from bad ones as the truth does, rejects every copy with a quarter of its connections moved, and certifies copies within about 20% of an individual. The watching copy reaches 48% to 70% of an individual's closeness and fails; the poke-trained copy reaches 80% to 90% and mostly passes, as on real worms.</p>
+    <p>The check also found limits. The test cannot rank close copies correctly (it put the poke-trained copy above a genuine individual where the truth puts it below). When individuals differ a lot, or hidden signals dominate, data the size of the atlas cannot certify anything. And with twice the individuals, the agreement rule fixed on 1 November becomes lenient enough to certify the watching copy in two of three groups, so it must be tightened before any larger dataset is scored.</p>
+    <figure class="plate wide">
+      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 5c</span>What the test said, against how close each copy truly is</p></div>
+      <div data-chart="rulerTruth"></div>
+      <figcaption>One species of artificial individuals (connections varying by about 30% between individuals, slow hidden signals at 5% of input). Bars: how closely each copy's noise-averaged echo matches real individuals', as a share of how closely individuals match each other; the green line is an individual, the band within 20% of one. Right: in how many of three held-out groups the test showed the copy to agree. One draw of each copy per species, so the three groups are not independent replicates.</figcaption>
     </figure>
 
     <!-- context -->
@@ -159,6 +179,18 @@
       <figcaption>Each mark is one held-out group. Rings show the outcome designed in advance for each calibration: green where it was met in every group, magenta where it was missed in at least one. The calibrations hit 24 of 27 designed outcomes on the copper dataset; the misses are all integration, where real worms differ a lot from each other.</figcaption>
     </figure>
 
+    <!-- wall -->
+    <h2 id="wall">Where the data runs out.</h2>
+    <p>Everything that can be done with existing data has now been tried at least once. The last test asked whether recording more of one worm helps it be copied by watching. The atlas names a median of 72 neurons per worm but tracks about 123, and the unnamed ones are recorded, only not identifiable across worms. Within single worms, a watching copy that includes them does slightly better than one with named neurons only (better in 26 of 44 worms), and taking out slow patterns adds nothing. But each worm offers only about 3 usable minutes of unpoked activity, and the average of other worms' pokes predicts each worm's own echoes far better (0.22 against 0.05) in 43 of 44 worms.</p>
+    <p>What would answer the rest, in order of what it would unlock:</p>
+    <ol>
+      <li>Whole-brain recordings with nearly every neuron identified, 30 to 60 minutes long, in worms that are then poked. Our prediction: a watching copy with the slow shared signals taken out comes close to predicting that worm's own pokes. If not, our explanation is wrong.</li>
+      <li>Repeated pokes of the same neurons in the same worm, to build and check a copy of one individual.</li>
+      <li>Many more pokes per neuron, about 160 worms each for a reliable echo, aimed where echoes are least reliable.</li>
+      <li>Pokes in freely moving worms, with the worm's behaviour recorded.</li>
+      <li>Reporters for whatever carries the slow shared signals.</li>
+    </ol>
+
     <!-- 7 -->
     <h2 id="limits">What this does not show.</h2>
     <ul>
@@ -168,7 +200,8 @@
       <li>The brain that passes the poke test was confirmed on a second, independently drawn split of the worms (echo pattern and spread inside in all three new groups). Both splits come from one lab's recordings.</li>
       <li>The test has a measured resolution: it never flags real worms, always catches errors of half, and often misses errors of about a quarter. A pass means within about 25% of a real worm on these tests.</li>
       <li>On 1 November three of the 113 recordings were found to have been cut short when the archive was unpacked, and were rebuilt. Results marked as rerun use the repaired data; older figures are labelled.</li>
-      <li>The explanation of why watching fails rests on synthetic worms built from linear published models; a nonlinear stand-in is the next check.</li>
+      <li>The explanation of why watching fails rests on synthetic and artificial brains, linear and nonlinear, and on one prediction confirmed in real worms. What the hidden shared signals are in real worms is unknown; neuropeptides are not the main candidate.</li>
+      <li>Nothing learned in still, immobilised worms has been shown to carry over to freely moving ones.</li>
       <li>No brain passes everything. The trade-offs above are the current frontier, and the next target is a brain whose dynamics are learned to match the statistics the ruler checks.</li>
     </ul>
     <p><a class="btn outline" href="method.html">How the test works</a> <a class="btn outline" href="log.html">The research log</a></p>
@@ -184,7 +217,7 @@
 </footer>
 
 <script src="data/results.js"></script>
-<script src="assets/charts.js?v=2"></script>
+<script src="assets/charts.js?v=3"></script>
 <script src="data/local.js" onerror="void 0"></script>
 <script src="assets/site.js?v=3"></script>
 </body>

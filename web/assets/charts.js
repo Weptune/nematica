@@ -501,7 +501,7 @@
     const narrow = !small && W < 560;                      // a phone: the thumbnail layout, taller rows
     const labelled = (small && W >= 380) || narrow;        // short labels, no second line
     const compactLook = small || narrow;
-    const m = compactLook ? { l: labelled ? Math.round(Math.min(210, W * (narrow ? 0.5 : 0.36))) : 10, r: 14, t: 30, b: labelled ? 34 : 18 }
+    const m = compactLook ? { l: labelled ? Math.round(Math.min(210, W * (narrow ? 0.5 : 0.46))) : 10, r: 14, t: 30, b: labelled ? 34 : 18 }
       : { l: Math.round(Math.min(300, Math.max(190, W * 0.38))), r: 56, t: 44, b: 52 };
     const rowH = narrow ? 34 : small ? (heightOf(host, W * 0.75) - m.t - m.b) / D.length : 46;
     const H = narrow ? m.t + D.length * rowH + m.b : small ? heightOf(host, W * 0.75) : m.t + D.length * rowH + m.b;
@@ -580,6 +580,107 @@
     });
   }
 
+
+  // ------------------------------------------------------------- Figure: the law in brains whose truth is known
+  function law(host, opts) {
+    const small = !!(opts && opts.compact);
+    const A = R.ann || []; if (!A.length) return;
+    const panels = [
+      { rec: "every", share: 0, tau: 10, title: "Every neuron recorded", sub: "no hidden drives" },
+      { rec: "every", share: 0.25, tau: 90, title: "Every neuron recorded", sub: "slow hidden drives" },
+      { rec: "atlas", share: 0.05, tau: 90, title: "Recorded like the atlas", sub: "half the neurons, slow drives" },
+    ];
+    const use = small ? [panels[2]] : panels;
+    const W = widthOf(host, small ? 200 : 300);
+    const stack = !small && W < 620;
+    const pw = stack ? W : W / use.length;
+    const ph = small ? heightOf(host, W * 0.75) : Math.round(stack ? 230 : Math.min(330, Math.max(250, pw * 0.95)));
+    const H = stack ? ph * use.length : ph;
+    const s = svg(host, W, H, "Cause and effect recovered by watching and by poking, in artificial brains whose truth is known, as recording hours grow");
+    const lx = (h) => Math.log10(h);
+    use.forEach((P, i) => {
+      const ox = stack ? 0 : i * pw, oy = stack ? i * ph : 0;
+      const labelled = !small || pw >= 260;
+      const m = small ? { l: labelled ? 30 : 10, r: labelled ? 92 : 12, t: 14, b: labelled ? 30 : 14 } : { l: i === 0 || stack ? 46 : 18, r: 74, t: 48, b: 40 };
+      const x = lin(lx(2), lx(85), ox + m.l, ox + pw - m.r), y = lin(0, 1, oy + ph - m.b, oy + m.t);
+      const pick = A.filter((d) => d.rec === P.rec && d.share === P.share && d.tau === P.tau);
+      const hours = [...new Set(pick.map((d) => d.hours))].sort((a, b) => a - b);
+      const mean = (k) => hours.map((h) => { const v = pick.filter((d) => d.hours === h).map((d) => d[k]); return [h, v.reduce((a, b) => a + b, 0) / v.length]; });
+      const ser = [
+        { k: "linear", c: C.copy, w: 1.4, dash: "4 3", op: 0.65, label: "Linear watcher" },
+        { k: "mlp", c: C.copy, w: 2.4, label: "Neural-net watcher" },
+        { k: "poke", c: C.ink, w: 2.4, label: "Poking" },
+      ];
+      if (labelled) {
+        [0, 0.5, 1].forEach((v) => { hline(s, ox + m.l, ox + pw - m.r, y(v), { stroke: v === 0 ? C.rule : C.soft }); if (i === 0 || stack || small) text(s, ox + m.l - 6, y(v) + 4, fmt(v, 1), { "text-anchor": "end", "font-size": 11 }); });
+        hours.forEach((h) => text(s, x(lx(h)), oy + ph - m.b + 15, String(h), { "text-anchor": "middle", "font-size": 11 }));
+        if (!small) {
+          text(s, ox + m.l, oy + 18, P.title, { "font-weight": 600, "font-size": 13, fill: C.ink });
+          text(s, ox + m.l, oy + 34, P.sub, { "font-size": 12, fill: C.ink2 });
+          text(s, (ox + m.l + ox + pw - m.r) / 2, oy + ph - 6, "hours of recording", { "text-anchor": "middle", fill: C.ink3, "font-size": 11 });
+        }
+      }
+      // end labels, nudged apart so they never overlap
+      const ends = ser.map((sr) => { const pts = mean(sr.k); return { sr, yy: y(pts[pts.length - 1][1]) + 4 }; }).sort((a, b) => a.yy - b.yy);
+      for (let j = 1; j < ends.length; j++) if (ends[j].yy - ends[j - 1].yy < 13) ends[j].yy = ends[j - 1].yy + 13;
+      ser.forEach((sr) => { sr.labelY = ends.find((e) => e.sr === sr).yy; });
+      ser.forEach((sr) => {
+        const pts = mean(sr.k);
+        el("path", { d: pts.map((p, j) => (j ? "L" : "M") + x(lx(p[0])).toFixed(1) + "," + y(p[1]).toFixed(1)).join(""), fill: "none", stroke: sr.c, "stroke-width": small ? sr.w * 0.8 : sr.w, "stroke-dasharray": sr.dash || null, opacity: sr.op || 1 }, s);
+        pts.forEach((p) => {
+          const c = el("circle", { cx: x(lx(p[0])), cy: y(p[1]), r: small ? 2.3 : 3.6, fill: sr.dash ? C.plate : sr.c, stroke: sr.c, "stroke-width": 1.4, opacity: sr.op || 1 }, s);
+          if (!small) hover(c, `<b>${sr.label}</b>${row("Recording", P.title + ", " + P.sub)}${row("Hours", p[0])}${row("Cause and effect recovered", fmt(p[1], 2))}`);
+        });
+        if (labelled) {
+          const last = pts[pts.length - 1];
+          text(s, x(lx(last[0])) + 8, sr.labelY, small ? sr.label.replace(" watcher", "") : sr.label.split(" ")[0], { "font-size": 11, fill: sr.c, "font-weight": sr.dash ? 400 : 600, opacity: sr.op || 1 });
+        }
+      });
+    });
+  }
+
+  // ------------------------------------------------------------- Figure: the ruler checked against known truth
+  const TRUTH_NAMES = {
+    species_mean: "The species-average brain", another_individual: "Another individual",
+    "scrambled_0.1": "10% of connections moved", "scrambled_0.25": "25% of connections moved", "scrambled_1.0": "All connections moved",
+    hybrid_kernels: "Copy that learned from pokes", var3_spontaneous: "Copy that learned by watching",
+  };
+  function rulerTruth(host, opts) {
+    const small = !!(opts && opts.compact);
+    const D = (R.annRuler || []).filter((d) => d.species === "base" && TRUTH_NAMES[d.copy]).sort((a, b) => b.ratio - a.ratio);
+    if (!D.length) return;
+    const W = widthOf(host, small ? 200 : 300);
+    const narrow = !small && W < 600;
+    const rowH = small ? (heightOf(host, W * 0.75) - 20) / D.length : narrow ? 46 : 38;
+    const m = small ? { l: 8, r: 8, t: 8, b: 12 } : { l: narrow ? 8 : 210, r: narrow ? 8 : 190, t: 34, b: 34 };
+    const H = Math.round(m.t + m.b + rowH * D.length);
+    const s = svg(host, W, H, "How close each copy truly is to real individuals, against what the ruler said");
+    const x = lin(0, 1.25, m.l, W - m.r);
+    if (!small) {
+      [0, 0.5, 1].forEach((v) => text(s, x(v), H - 12, v === 1 ? "as close as an individual" : Math.round(v * 100) + "%", { "text-anchor": "middle", "font-size": 11, fill: C.ink3 }));
+      text(s, m.l, 18, "Echo closeness to real individuals, as a share of how close individuals are to each other", { "font-size": 12, fill: C.ink2 });
+    }
+    el("rect", { x: x(0.8), y: m.t - 4, width: x(1.25) - x(0.8), height: H - m.t - m.b + 8, fill: C.liveWash }, s);
+    vline(s, x(1), m.t - 4, H - m.b + 4, { stroke: C.live, "stroke-width": 1.5 });
+    D.forEach((d, i) => {
+      const yy = m.t + i * rowH;
+      const col = d.copy === "hybrid_kernels" ? C.live : d.copy === "var3_spontaneous" ? C.copy : C.ink3;
+      const bh = small ? Math.max(3, rowH * 0.5) : 12;
+      const by = narrow ? yy + 20 : yy + (rowH - bh) / 2;
+      el("rect", { x: x(0), y: by, width: Math.max(1, x(Math.max(0, d.ratio)) - x(0)), height: bh, fill: col, rx: 2 }, s);
+      if (!small) {
+        const lab = TRUTH_NAMES[d.copy];
+        if (narrow) text(s, m.l, yy + 13, lab, { "font-size": 12, fill: C.ink, "font-weight": 500 });
+        else text(s, m.l - 12, by + bh - 1, lab, { "text-anchor": "end", "font-size": 12.5, fill: C.ink });
+        const verdict = d.agrees + " of " + d.pools + " groups";
+        if (narrow) text(s, W - m.r, yy + 13, "shown to agree: " + verdict, { "text-anchor": "end", "font-size": 11, fill: d.agrees ? C.live : C.ink3 });
+        else text(s, W - m.r + 12, by + bh - 1, "ruler: agrees in " + verdict, { "font-size": 12, fill: d.agrees ? C.live : C.ink3, "font-weight": d.agrees ? 600 : 400 });
+        const hit = el("rect", { x: 0, y: yy, width: W, height: rowH, class: "hit" }, s);
+        hover(hit, `<b>${lab}</b>${row("Echo closeness vs an individual", Math.round(d.ratio * 100) + "%")}${row("Pattern verdict inside", d.inside + " of " + d.pools)}${row("Shown to agree", verdict)}`);
+      }
+    });
+  }
+
   // ------------------------------------------------------------- legend for verdict glyphs
   function verdictLegend(host) {
     host.innerHTML = '<span class="k"><span class="sw full"></span>Inside: as real as a real worm</span>' +
@@ -588,7 +689,7 @@
       (host.dataset.legend === "noband" ? "" : '<span class="k"><span class="sw band"></span>Inside in all three groups</span>');
   }
 
-  const FIGS = { rulerStrip, scorecard, restPoke, power, signalNoise, fingerprint, echoShape, calibration, mind, gallery, ceiling };
+  const FIGS = { rulerStrip, scorecard, restPoke, power, signalNoise, fingerprint, echoShape, calibration, mind, gallery, ceiling, law, rulerTruth };
   window.NematicaCharts = Object.assign({ verdictLegend, name }, FIGS);
 
   // mount every <div data-chart="..."> and redraw when its width changes

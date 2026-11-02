@@ -109,6 +109,29 @@ def results() -> dict:
     # the ruler's resolution (scripts/run_resolution.py)
     out["resolution"] = [{"error": r["error"], "size": num(r["size"]), "verdict": r["verdict"], "agrees": r["agrees"],
                           "agrees15": r["agrees_x1.5"]} for r in rows("resolution.csv")]
+    # artificial lab A: watching vs poking in nonlinear brains with known truth (scripts/run_ann_watch.py)
+    ann = []
+    for fname, rec in (("ann_watch_fullobs.csv", "every"), ("ann_watch.csv", "atlas")):
+        for r in rows(fname):
+            ann.append({"rec": rec, "seed": int(r["seed"]), "share": num(r["share"]), "tau": num(r["tau"]),
+                        "hours": num(r["hours"]), "linear": num(r["linear"]), "mlp": num(r["mlp"]),
+                        "gru": num(r["gru"]), "poke": num(r["poke"])})
+    out["ann"] = ann
+    # artificial lab B: the ruler against known truth (scripts/run_ann_ruler.py), base species
+    rb = []
+    for tag in ("base", "nodrive", "strongdrive", "sigma0.1", "sigma0.6"):
+        rs = rows(f"ann_ruler_{tag}.csv")
+        for c in sorted({r["copy"] for r in rs}):
+            sub = [r for r in rs if r["copy"] == c]
+            me = sum(num(r["mean_echo_copy_vs_individuals"]) for r in sub) / len(sub)
+            mi = sum(num(r["mean_echo_individuals_vs_each_other"]) for r in sub) / len(sub)
+            rb.append({"species": tag, "copy": c, "ratio": me / mi if mi else None,
+                       "inside": sum(r["verdict"] == "inside" for r in sub),
+                       "agrees": sum(r["equivalence"] == "agrees" for r in sub), "pools": len(sub)})
+    out["annRuler"] = rb
+    # artificial lab C: taking the drives out (scripts/run_ann_deconfound.py)
+    out["annDeconf"] = [{"rec": r["recording"], "watcher": r["watcher"], "score": num(r["score"])}
+                        for r in rows("ann_deconfound.csv")]
     return out
 
 

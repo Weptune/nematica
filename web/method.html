@@ -10,7 +10,7 @@
 <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
 <meta name="theme-color" content="#0d161b">
 <meta property="og:site_name" content="NEMATICA">
-<link rel="stylesheet" href="assets/site.css?v=20">
+<link rel="stylesheet" href="assets/site.css?v=21">
 </head>
 <body>
 
@@ -119,6 +119,8 @@
     </div>
     <p>The test never flags real worms, always catches a brain that gets half its cause and effect wrong or misjudges response size by half, and often misses errors of about a quarter. A pass means within about 25% of a real worm on these tests, not a faithful copy. Sharper resolution needs more pulses per worm.</p>
 
+    <p><strong>Checked against known truth.</strong> In artificial brains whose cause and effect is known (see <a href="findings.html#lab">the findings</a>), the same test, unchanged, rejects copies with a quarter of their connections moved and certifies copies within about 20% of an individual, wherever echoes are as reliable as worms'. It cannot rank close copies, it cannot certify anything when individuals differ a lot or hidden signals dominate at the atlas's size, and with twice the data its agreement rule becomes too lenient. Before scoring any larger dataset, that rule must be tightened.</p>
+
     <h2 id="rules">Rules that keep the benchmark honest.</h2>
     <ol>
       <li>Predictions, including what would count as failure, are written into the project's record before each experiment runs. Misses are reported next to hits.</li>
@@ -155,7 +157,7 @@
 </footer>
 
 <script src="data/results.js"></script>
-<script src="assets/charts.js?v=2"></script>
+<script src="assets/charts.js?v=3"></script>
 <script src="data/local.js" onerror="void 0"></script>
 <script src="assets/site.js?v=3"></script>
 </body>

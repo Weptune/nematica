@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NEMATICA: testing artificial brains against living ones</title>
-<meta name="description" content="A benchmark that scores artificial nervous systems against whole-brain recordings of living C. elegans, measured in units of how much real worms differ from each other.">
+<title>NEMATICA: how would you know an artificial brain is a faithful copy?</title>
+<meta name="description" content="An open attempt to answer one question: how would anyone check that an artificial brain is a faithful copy of a real one? Tested on the 302-neuron brain of C. elegans and on artificial brains whose truth is known.">
 <link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
 <meta name="theme-color" content="#0d161b">
 <meta property="og:site_name" content="NEMATICA">
-<link rel="stylesheet" href="assets/site.css?v=20">
+<link rel="stylesheet" href="assets/site.css?v=21">
 </head>
 <body>
 
@@ -37,10 +37,10 @@
   </div>
   <div class="x-steps">
     <div class="x-step"><div class="x-stage x-first" data-i="0">
-      <p class="x-kicker">NEMATICA / AN OPEN EXPERIMENT IN COPYING BRAINS</p>
-      <h1>A brain copy can look alive. <em>Will it answer?</em></h1>
-      <p>NEMATICA is a test for artificial brains. We build copies of a real nervous system, the 302 neurons of the worm <i>C.&nbsp;elegans</i>, then check them against living worms: first by watching, then by switching single neurons on with light. Every verdict is measured against how much real worms differ from each other.</p>
-      <p class="x-status"><span class="x-dot" aria-hidden="true"></span>Research in progress. No copy passes every test yet.</p>
+      <p class="x-kicker">NEMATICA / ONE QUESTION, ASKED OPENLY</p>
+      <h1>How would you know a brain copy is faithful? <em>Will it answer like the real one?</em></h1>
+      <p>One day someone will say an artificial brain is a copy of a real one. Nobody agrees how to check. NEMATICA is building that check, on the one brain small enough to compare completely, the 302 neurons of the worm <i>C.&nbsp;elegans</i>, and on artificial brains whose truth we know.</p>
+      <p class="x-status"><span class="x-dot" aria-hidden="true"></span>Research in progress. Part of the question is answered; the rest needs new data.</p>
       <p class="x-hint">Scroll to run the experiment</p>
     </div></div>
     <div class="x-step"><div class="x-stage" data-i="1">
@@ -64,9 +64,177 @@
       </div>
       <p class="x-proof">On a stricter test fixed in advance, the copy that learned from pokes is shown to match real worms' echo pattern in all six held-out groups of worms. The copy built by watching, in none.</p>
       <p class="x-open">Still open: no copy yet matches the complexity of a real echo, and none passes every test. The experiments continue.</p>
-      <div class="x-actions"><a class="x-go" href="#observation">See the evidence</a><a class="x-alt" href="log.html">Where the work stands</a><a class="x-alt" href="lab/index.html">3D lab</a></div>
+      <div class="x-actions"><a class="x-go" href="#question">The question, and where it stands</a><a class="x-alt" href="#observation">See the evidence</a><a class="x-alt" href="log.html">Research log</a></div>
     </div></div>
   </div>
+</section>
+
+<section class="q-section" id="question" aria-labelledby="question-title">
+  <div class="q-inner">
+    <p class="q-kicker">THE QUESTION</p>
+    <h2 id="question-title" class="q-title">If someone hands you an artificial brain and says <em>this is a copy of a real one</em>, how would you check?</h2>
+    <div class="q-why">
+      <p>People are building digital nervous systems: brain models fitted to recordings, simulations built from wiring diagrams, AI networks trained to behave like animals. Sooner or later one of them will be called a faithful copy. Today the usual evidence is that the model reproduces recorded activity. We think that is not enough, and the work on this site is about finding out what is.</p>
+      <p>Underneath sits a second question, about artificial and real networks in general: <strong>what can you learn about a brain by watching it, and what only by intervening?</strong></p>
+    </div>
+
+    <div class="pillars">
+      <article class="pillar">
+        <svg viewBox="0 0 120 64" aria-hidden="true"><path d="M8 52 C30 52 34 14 60 14 S90 52 112 52" fill="none" stroke="currentColor" stroke-width="2"/><rect x="40" y="10" width="40" height="44" fill="var(--live-tint)" opacity=".7"/><line x1="60" y1="8" x2="60" y2="56" stroke="var(--live)" stroke-width="2"/><circle cx="96" cy="46" r="4" fill="var(--copy)"/></svg>
+        <h3>A yardstick made of individuals</h3>
+        <p>No two real worms are alike. So a copy passes a test when it is as close to real worms as they are to each other: no closer (that would be an average, not a brain), and no further.</p>
+      </article>
+      <article class="pillar">
+        <svg viewBox="0 0 120 64" aria-hidden="true"><ellipse cx="32" cy="32" rx="22" ry="13" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="32" cy="32" r="6" fill="currentColor"/><path d="M84 8 L74 34 H86 L78 58 L102 26 H89 L97 8 Z" fill="var(--copy)"/></svg>
+        <h3>Two ways to know a brain</h3>
+        <p>Watch it: record what it does on its own. Or poke it: switch on one neuron with light and see where the signal goes. A faithful copy should get both right. We test each, and test which one can teach a copy cause and effect.</p>
+      </article>
+      <article class="pillar">
+        <svg viewBox="0 0 120 64" aria-hidden="true"><path d="M8 44c14 0 16-26 32-26 15 0 15 25 28 25 9 0 12-9 15-17-1 15-8 25-17 25-17 0-14-25-27-25-11 0-15 26-31 26z" fill="currentColor"/><circle cx="96" cy="20" r="3" fill="var(--live)"/><circle cx="106" cy="30" r="3" fill="var(--live)"/><circle cx="94" cy="38" r="3" fill="var(--live)"/></svg>
+        <h3>Brains small enough to check completely</h3>
+        <p>The worm <i>C.&nbsp;elegans</i>: 302 neurons, every connection mapped, 113 worms recorded while single neurons were poked. And artificial brains built so that their true cause and effect is known, so the test itself can be checked.</p>
+      </article>
+    </div>
+
+    <h3 class="q-subhead">Where the question stands</h3>
+    <ol class="qmap">
+      <li class="q-done">
+        <span class="st">Answered</span>
+        <h4>Can a copy's faithfulness be measured at all?</h4>
+        <p>Yes, within limits we know. The test always catches a copy with half its cause and effect wrong, and lets through errors under about 20 to 25%. Checked on real worms with planted errors, and on artificial brains where the truth is known.</p>
+        <a href="findings.html#lab">How the test was checked</a>
+      </li>
+      <li class="q-done">
+        <span class="st">Answered</span>
+        <h4>Does a copy that looks alive work like the real thing?</h4>
+        <p>No. Copies can pass most tests of ongoing activity and still answer a poke 4 to 100 times worse than one real worm answers like another. Looking alive does not predict answering right.</p>
+        <a href="findings.html#watching">The evidence</a>
+      </li>
+      <li class="q-done">
+        <span class="st">Answered for the worm</span>
+        <h4>Which copies pass?</h4>
+        <p>Only copies that learned from pokes. Every kind of network that skipped them fails: fitted to recordings, built from the wiring diagram, randomly wired, trained on a worm's task, or published.</p>
+        <a href="findings.html#gallery">Every network family</a>
+      </li>
+      <li class="q-strong">
+        <span class="st">Strong evidence</span>
+        <h4>Why does watching fail?</h4>
+        <p>Because what goes unrecorded, unseen neurons or slow signals shared across the brain, caps what watching can learn, however long you watch. Poking is not capped. Shown in worms and in artificial brains, and one prediction from it came true on real worms.</p>
+        <a href="#law">The law</a>
+      </li>
+      <li class="q-blocked">
+        <span class="st">Needs new data</span>
+        <h4>Can one particular brain be copied?</h4>
+        <p>Real worms have individual echoes, but no dataset pokes the same neuron enough times in one animal to build or check a copy of that animal.</p>
+        <a href="findings.html#fingerprints">Why it is blocked</a>
+      </li>
+      <li class="q-open">
+        <span class="st">Not yet</span>
+        <h4>Does a faithful copy carry over to behaviour and other situations?</h4>
+        <p>Nothing has transferred so far. Copies of freely moving worms fail the poke test, and poking the copper sensor in still worms does not predict how moving worms' brains answer copper.</p>
+        <a href="findings.html#context">What did not transfer</a>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="q-section q-law" id="law" aria-labelledby="law-title">
+  <div class="q-inner">
+    <p class="q-kicker">THE LAW WE KEEP FINDING</p>
+    <h2 id="law-title" class="q-title">Watching is capped by what you do not record. Poking is not.</h2>
+    <div class="law-grid">
+      <div class="law-text">
+        <p>To test this where the answer is known, we built artificial brains: nonlinear networks tuned so their responses are as noisy as real worms', with cause and effect known by construction. Then we tried to learn that cause and effect, by watching (with copies that are themselves neural networks) and by poking.</p>
+        <p>When every neuron is recorded and nothing hidden drives them, watching works well. Add slow signals that no recording sees, or record the way real experiments do, half the neurons at a time, and every watching copy falls short, most of them levelling off within hours, while poking keeps climbing past them.</p>
+        <p>Taking the hidden signals out of a watching copy rescues it only when every neuron is recorded (0.61 to 0.77). Recorded like the atlas, it changes nothing (0.30 to 0.30). On real worms, as predicted, it changed nothing too.</p>
+      </div>
+      <figure class="plate law-plate">
+        <div data-chart="law"></div>
+        <figcaption>Correlation of the learned cause and effect with the truth, in artificial brains, by hours of recording. Pink: copies that learned by watching (linear, and a neural network). Black: averaging real pokes. Two brains per setting, averaged.</figcaption>
+      </figure>
+    </div>
+    <div class="law-numbers">
+      <div class="measure"><span class="v">4 to 7&times;</span><span class="l">how much better pokes from 6 real worms do than watching 58 worms</span></div>
+      <div class="measure"><span class="v">0.62</span><span class="l">the best any watching copy reached with slow hidden signals, however poked or however much memory it had; poking 0.82</span></div>
+      <div class="measure copy"><span class="v">72 of 302</span><span class="l">neurons identified in a typical worm of the best dataset that exists, far from the complete recording that rescuing watching would need</span></div>
+    </div>
+  </div>
+</section>
+
+<main class="page" id="learned">
+  <div class="sheet">
+    <h2 class="sec-name">What we found</h2>
+    <h2 style="grid-column:text-start/note-end">Discoveries so far, including the ones that went against us.</h2>
+    <div class="findings-list">
+      <a class="finding" href="findings.html#watching">
+        <div class="thumb" data-chart="restPoke" data-compact></div>
+        <h3>Looking alive is not working right</h3>
+        <p>A network with randomly dealt connections passes nearly as many tests of ongoing activity (2 to 4 of 6) as one fitted to real worms (3 to 5). Those tests cannot certify cause and effect.</p>
+      </a>
+      <a class="finding" href="findings.html#gallery">
+        <div class="thumb" data-chart="gallery" data-compact></div>
+        <h3>Only pokes teach cause and effect</h3>
+        <p>Every family of artificial network that never saw a poke answers one 4 to 100 times worse than real worms answer each other. Only copies that learned from pokes reach the real-worm level.</p>
+      </a>
+      <a class="finding" href="findings.html#lab">
+        <div class="thumb" data-chart="law" data-compact></div>
+        <h3>The same law in artificial brains</h3>
+        <p>In networks whose truth is known, every watching copy falls short, including neural networks with memory; poking passes all of them by 40 hours of recording in every setting.</p>
+      </a>
+      <a class="finding" href="findings.html#lab">
+        <div class="thumb" data-chart="rulerTruth" data-compact></div>
+        <h3>The test, checked against the truth</h3>
+        <p>On a species of artificial individuals, the unchanged test rejects badly wrong copies and certifies copies within about 20% of an individual. It also repeats the worm verdicts: the watching copy fails, the poke-trained copy mostly passes.</p>
+      </a>
+      <a class="finding" href="findings.html#context">
+        <div class="thumb stat"><span class="big">&minus;0.01</span><span class="small">how much meeting copper resembles poking ASH, the copper sensor</span></div>
+        <h3>Nothing transfers across contexts</h3>
+        <p>Copies learned from freely moving worms answer pokes at chance. The echo of poking ASH in still worms does not resemble moving worms' brains meeting copper; no poked neuron's echo does better than chance.</p>
+      </a>
+      <a class="finding" href="findings.html#context">
+        <div class="thumb stat"><span class="big">160+</span><span class="small">worms poking one neuron for a reliable echo; the atlas has 22</span></div>
+        <h3>Not peptides, and pokes are noisy</h3>
+        <p>We predicted the hidden signals were neuropeptides. Wrong: worms that release far fewer show the same slow shared activity. And one worm's echo agrees with another's at only 0.07, so reliable echoes need many more pokes.</p>
+      </a>
+      <a class="finding" href="findings.html#wall">
+        <div class="thumb stat"><span class="big">26 of 44</span><span class="small">worms where watching every tracked neuron beat watching only the named ones</span></div>
+        <h3>Recording more of a worm helps, a little</h3>
+        <p>The direction the explanation predicts, but the gain is tiny: each worm has about 3 usable minutes of unpoked activity, and other worms' pokes still predict it far better. Existing data cannot settle it.</p>
+      </a>
+    </div>
+  </div>
+</main>
+
+<section class="q-section q-next" id="next" aria-labelledby="next-title">
+  <div class="q-inner">
+    <p class="q-kicker">WHAT WOULD ANSWER THE REST</p>
+    <h2 id="next-title" class="q-title">We have reached the edge of the data that exists.</h2>
+    <div class="next-grid">
+      <div class="prediction">
+        <p class="pred-label">A prediction, written down before the experiment exists</p>
+        <p class="pred-text">Record a worm's whole brain, with nearly every neuron identified, for 30 to 60 minutes before poking it. Then a copy that only watched, with the slow shared signals taken out, should come close to predicting that same worm's pokes.</p>
+        <p class="pred-foot">If it does, brain copies could be checked without poking every neuron. If it does not, our explanation is wrong. Today a worm offers about 3 usable minutes of unpoked activity: adding its unnamed neurons helps a little (better in 26 of 44 worms), far too little data to decide.</p>
+      </div>
+      <ol class="needs">
+        <li><b>Complete, fully identified recordings</b> in worms that are then poked.</li>
+        <li><b>Repeated pokes of the same neurons</b> in the same worm, to copy one individual.</li>
+        <li><b>Many more pokes per neuron</b>, aimed where echoes are least reliable.</li>
+        <li><b>Pokes in freely moving worms</b>, with what the worm is doing recorded.</li>
+        <li><b>Reporters for the slow shared signals</b>, to find what carries them.</li>
+      </ol>
+    </div>
+    <div class="roadmap">
+      <div class="stage done"><span class="when">Now</span><h4>The worm</h4><p>A test with known resolution, the watching-versus-poking result, and its explanation.</p></div>
+      <div class="stage done"><span class="when">Now</span><h4>Artificial brains</h4><p>The same law where truth is known; the test checked against it. No data needed.</p></div>
+      <div class="stage"><span class="when">Next</span><h4>The decisive recording</h4><p>Long, complete recordings followed by pokes, to test the prediction above.</p></div>
+      <div class="stage"><span class="when">Later</span><h4>Bigger brains</h4><p>Any brain with repeated individuals and interventions: fly, fish, mouse, and people with implanted electrodes.</p></div>
+    </div>
+    <p class="next-links"><a href="log.html">Follow the research log</a><a href="findings.html">Read every finding</a><a href="https://github.com/Weptune/nematica">Code and full record</a></p>
+  </div>
+</section>
+
+<section class="evidence-band" aria-label="The evidence">
+  <div class="q-inner"><p class="q-kicker">THE EVIDENCE</p><p class="evidence-lede">One real worm and two artificial brains, under the same pokes. Then every echo, and the full scorecard.</p></div>
 </section>
 
 <section class="hero grain observation" id="observation" aria-label="Recorded and simulated neural activity under the same pokes">
@@ -93,56 +261,6 @@
     <p class="scope-caption"><b style="color:var(--field-ink);font-weight:600">Figure 1.</b> Eight minutes of one worm the models never saw: 52 neuron classes, each a row, brighter when more active, while single neurons are switched on with light (named along the top). Below, an artificial brain given the same eight minutes and the same pokes. The hybrid brain answers pokes the way worms do, yet flickers where real neurons hold long quiet and active stretches; the linear brain looks closer at rest and answers the pokes wrongly. Hover to read any neuron. Source: Randi et al., <i>Nature</i> (2023).</p>
   </div>
 </section>
-
-<section class="workbench" id="now" aria-labelledby="now-title">
-  <div class="workbench-inner">
-    <div class="workbench-heading"><div><p class="workbench-kicker">ON THE BENCH</p><h2 id="now-title">The work is still moving.</h2></div><a href="log.html">Follow the research log <span aria-hidden="true">↗</span></a></div>
-    <div class="workbench-grid">
-      <article><span class="workbench-number"><b>01</b><small>WHY WATCHING FAILS</small></span><h3>Can a brain be copied by watching it?</h3><p>In a synthetic worm whose cause and effect we know, watching learns it, until a few shared brain-wide signals that no recording captures cap it within hours. Poking keeps improving. Real worms behave as if they are driven that way. The next check is a nonlinear stand-in brain.</p><a href="findings.html#why">See the evidence →</a></article>
-      <article><span class="workbench-number"><b>02</b><small>NEEDS NEW DATA</small></span><h3>Can one particular worm be copied?</h3><p>A worm's echoes agree with themselves twice as well as with other worms. But one recording barely beats the average worm at predicting them, because the atlas rarely pokes the same neuron twice in one animal. We have asked the lab for repeated pokes.</p><a href="findings.html#fingerprints">See the test →</a></article>
-      <article><span class="workbench-number"><b>03</b><small>CLAIM LIMIT</small></span><h3>How sharp is the test?</h3><p>Errors put into real worms show what it can see: no false alarms, a copy that gets half its cause and effect wrong is always caught, and errors of about a quarter often pass. A pass means within about 25% of a real worm, not faithful.</p><a href="method.html#resolution">See the resolution →</a></article>
-    </div>
-  </div>
-</section>
-
-<main class="page">
-  <div class="sheet">
-
-    <h2 class="sec-name">Summary</h2>
-    <div>
-      <p style="font-size:1.32rem;line-height:1.5">People are building digital nervous systems, and sooner or later someone will claim that an artificial brain is a faithful copy of a real one. There is no agreed way to check that claim. We are building a test around the nematode <em>C.&nbsp;elegans</em>, with 302 neurons, every connection mapped, and every neuron in its head imaged while it lives.</p>
-      <p>The test treats an artificial brain the way a neurologist examines a patient who cannot speak. Watch it at rest. Perturb it. Read the echo, including with the measure that consciousness science uses to tell a responsive brain from an unresponsive one. Every score is expressed in units of how different real worms are from each other, so a brain passes a test when it is as close to real worms as they are to each other: no closer, and no further.</p>
-    </div>
-    <aside class="note summary-measures">
-      <div class="measure"><span class="v"><b>113</b><small>worms</small></span><span class="l">recorded while single neurons were switched on with light (Randi et al. 2023 atlas)</span></div>
-      <div class="measure"><span class="v"><b>6</b><small>held-out groups</small></span><span class="l">every brain is scored on worms it never saw, on two independent splits</span></div>
-      <div class="measure copy"><span class="v"><b>0</b><small>brains</small></span><span class="l">pass every test so far</span></div>
-    </aside>
-
-    <div class="gap-xl"></div>
-
-    <h2 class="sec-name">What we found</h2>
-    <h2 style="grid-column:text-start/note-end">Only brains that learned from pokes answer like a worm.</h2>
-    <div class="findings-list">
-      <a class="finding" href="findings.html#gallery">
-        <div class="thumb" data-chart="gallery" data-compact></div>
-        <h3>Every other kind of network fails</h3>
-        <p>Networks fitted to recordings, randomly wired, built from the wiring diagram, trained on a worm task, and a published model fitted to this atlas: all answer a poke four to a hundred times worse than one real worm answers like another. Only networks that learned from pokes reach the real-worm level.</p>
-      </a>
-      <a class="finding" href="findings.html#why">
-        <div class="thumb" data-chart="ceiling" data-compact></div>
-        <h3>Watching hits a ceiling</h3>
-        <p>In a synthetic worm with known cause and effect, a few shared signals no recording captures cap what watching can learn within hours, and more data never lifts the cap. Poking keeps improving. On real worms, a copy that watches 58 worms is no better than one that watches 6; a copy given the pokes of 6 worms already beats both.</p>
-      </a>
-      <a class="finding" href="findings.html#watching">
-        <div class="thumb" data-chart="restPoke" data-compact></div>
-        <h3>Looking alive is not enough</h3>
-        <p>A brain can pass most tests of ongoing activity and still get its poke response wrong, and a network whose connections were dealt out at random passes nearly as many of those tests (2 to 4 of 6) as one fitted to real worms (3 to 5). Passing the rest tests cannot certify a brain's cause and effect.</p>
-      </a>
-    </div>
-
-  </div>
-</main>
 
 <section class="interlude grain" aria-labelledby="echo-h" id="echo-section">
   <div class="in">
@@ -193,6 +311,7 @@
       <p>Two healthy worms never behave the same, and a good copy of a worm should not be more average than any real one. So each test asks where a brain falls among the distances between real worms. A brain that is closer to real worms than they are to each other is flagged as too typical, which catches models that have learned an average worm instead of a worm.</p>
       <p>The poke test is narrow. A brain must carry a correlation of roughly 0.3 to 0.5 with the true average echo: less and it does not know enough cause and effect; more and it is more stereotyped than any worm.</p>
       <p>We measured how sharp that is by putting known errors into real worms' own responses. The test never flags real worms, always catches a copy that credits the wrong neuron for half its pokes or gets response size wrong by half, and often misses errors of about a quarter. A pass means within about 25% of a real worm on these tests, not a faithful copy.</p>
+      <p>We then checked the test where the truth is known, on a species of artificial individuals: in species whose echoes are as reliable as worms', it rejects copies with a quarter of their connections moved in every group and certifies copies within about 20% of an individual. It also has limits we found that way: when individuals differ a lot, or hidden signals dominate, data the size of the atlas cannot certify anything, and with much more data the agreement rule fixed on 1 November becomes too lenient and must be tightened.</p>
       <p><a class="btn outline" href="method.html#resolution">See how sharp the test is</a></p>
     </div>
 
@@ -223,7 +342,7 @@ Neural signal propagation atlas of Caenorhabditis elegans. Nature 623, 406 to 41
 <script src="data/local.js" onerror="void 0"></script>
 <script src="data/echo.js" onerror="void 0"></script>
 <script src="data/brain.js" onerror="void 0"></script>
-<script src="assets/charts.js?v=2"></script>
+<script src="assets/charts.js?v=3"></script>
 <script src="assets/scope.js?v=2"></script>
 <script src="assets/experiment.js?v=4"></script>
 <script src="assets/playback.js?v=3"></script>
