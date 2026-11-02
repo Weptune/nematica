@@ -903,6 +903,14 @@ separate tests and disagree in a few pools; both are reported.
   2 of 3 pools. Real worms sit at 0.09 to 0.12, near the edge of that regime: more worms per
   neuron would sharpen every verdict, which is test 2's conclusion reached from the other
   side.
+- **With twice the individuals the two checks pull apart** (`docs/figures/ann_ruler_base_n120.csv`;
+  120 individuals, sigma 0.3, 5% drives, so 40 per held-out pool). The pattern verdict gets
+  stricter: the 10%-scrambled brain (17% short of an individual) is now outside in 2 of 3
+  pools. The equivalence check gets more lenient, because its tolerance is fixed (half the
+  shift of a known-wrong copy) while the intervals narrow: it now confirms the watching copy
+  in 2 of 3 pools, although that copy's noise-averaged echo is 30% short of an
+  individual's. So the tolerance chosen on 1 Nov is sized for atlas-sized data; with more
+  data it must be tightened, or "shown to agree" will certify copies that watching made.
 - **The average brain is flagged, as the project's motto predicts.** The species brain is
   closer to every individual than individuals are to each other (0.82 against 0.68), and the
   activity levels call it too typical in every pool of every species. With no hidden drives

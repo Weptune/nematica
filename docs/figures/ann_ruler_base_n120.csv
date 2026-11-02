@@ -1,0 +1,19 @@
+sigma,fold,copy,echo_agreement,real_agreement,verdict,equivalence,activity_inside,activity_levels,true_copy_vs_individuals,true_individuals_vs_each_other,mean_echo_copy_vs_individuals,mean_echo_individuals_vs_each_other,share,tau,act_L1.distribution,act_L2.correlation,act_L4.leadlag
+0.3,0,species_mean,0.1181,0.1039,inside,agrees,0,3,0.8204,0.6831,0.4627,0.3834,0.05,90.0,too typical,too typical,too typical
+0.3,0,another_individual,0.0983,0.1039,inside,agrees,2,3,0.7069,0.6831,0.3856,0.3834,0.05,90.0,too typical,inside,inside
+0.3,0,scrambled_0.1,0.0853,0.1039,outside,agrees,0,3,0.563,0.6831,0.3268,0.3834,0.05,90.0,outside,outside,outside
+0.3,0,scrambled_0.25,0.0453,0.1039,outside,not shown,0,3,0.3059,0.6831,0.1695,0.3834,0.05,90.0,outside,outside,outside
+0.3,0,var3_spontaneous,0.0745,0.1039,outside,agrees,0,3,,0.6831,0.2637,0.3834,0.05,90.0,outside,outside,outside
+0.3,0,hybrid_kernels,0.095,0.1039,inside,agrees,0,3,,0.6831,0.3877,0.3834,0.05,90.0,outside,outside,outside
+0.3,1,species_mean,0.1111,0.1029,inside,agrees,0,3,0.8032,0.6686,0.4586,0.3818,0.05,90.0,too typical,too typical,too typical
+0.3,1,another_individual,0.0907,0.1029,inside,agrees,2,3,0.6842,0.6686,0.3854,0.3818,0.05,90.0,too typical,inside,inside
+0.3,1,scrambled_0.1,0.0757,0.1029,outside,agrees,0,3,0.5546,0.6686,0.3261,0.3818,0.05,90.0,outside,outside,outside
+0.3,1,scrambled_0.25,0.0426,0.1029,outside,not shown,0,3,0.3016,0.6686,0.183,0.3818,0.05,90.0,outside,outside,outside
+0.3,1,var3_spontaneous,0.0657,0.1029,outside,not shown,0,3,,0.6686,0.2799,0.3818,0.05,90.0,outside,outside,outside
+0.3,1,hybrid_kernels,0.0877,0.1029,outside,agrees,0,3,,0.6686,0.3859,0.3818,0.05,90.0,outside,outside,outside
+0.3,2,species_mean,0.1207,0.0959,too typical,agrees,0,3,0.8156,0.6803,0.4713,0.3912,0.05,90.0,too typical,too typical,too typical
+0.3,2,another_individual,0.0992,0.0959,inside,agrees,2,3,0.697,0.6803,0.3912,0.3912,0.05,90.0,too typical,inside,inside
+0.3,2,scrambled_0.1,0.091,0.0959,inside,agrees,0,3,0.5633,0.6803,0.3379,0.3912,0.05,90.0,outside,outside,outside
+0.3,2,scrambled_0.25,0.0503,0.0959,outside,not shown,0,3,0.2902,0.6803,0.1784,0.3912,0.05,90.0,outside,outside,outside
+0.3,2,var3_spontaneous,0.067,0.0959,outside,agrees,0,3,,0.6803,0.2614,0.3912,0.05,90.0,outside,outside,outside
+0.3,2,hybrid_kernels,0.0976,0.0959,inside,agrees,0,3,,0.6803,0.4035,0.3912,0.05,90.0,outside,outside,outside
