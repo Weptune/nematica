@@ -1,0 +1,46 @@
+split,fold,copy,metric,copy_median,real_median,verdict,equivalence,shift_lo,shift_hi,radius,val_r2
+cv3,0,behaving_atanas_var3,C1.pattern,0.9993,0.9051,outside,not shown,0.0654,0.1208,1.007,0.9074
+cv3,0,behaving_atanas_var3,C2.magnitude,0.223,0.1871,inside,agrees,-0.008,0.0913,1.007,0.9074
+cv3,0,behaving_atanas_var3,C3.kinetics,0.0809,0.0772,inside,agrees,-0.0045,0.0104,1.007,0.9074
+cv3,0,behaving_copper_var3,C1.pattern,0.9935,0.9051,outside,not shown,0.0614,0.1154,1.0087,0.8719
+cv3,0,behaving_copper_var3,C2.magnitude,0.2209,0.1871,inside,agrees,-0.011,0.0919,1.0087,0.8719
+cv3,0,behaving_copper_var3,C3.kinetics,0.0807,0.0772,inside,agrees,-0.0046,0.0101,1.0087,0.8719
+cv3,0,behaving_both_var3,C1.pattern,0.9976,0.9051,outside,not shown,0.0649,0.1203,1.0071,0.8923
+cv3,0,behaving_both_var3,C2.magnitude,0.2301,0.1871,inside,agrees,-0.0032,0.1052,1.0071,0.8923
+cv3,0,behaving_both_var3,C3.kinetics,0.0805,0.0772,inside,agrees,-0.0045,0.0103,1.0071,0.8923
+cv3,0,var3_spontaneous,C1.pattern,0.9905,0.9051,outside,not shown,0.056,0.1129,0.985,0.8718
+cv3,0,var3_spontaneous,C2.magnitude,0.3594,0.1871,outside,agrees,0.1129,0.2382,0.985,0.8718
+cv3,0,var3_spontaneous,C3.kinetics,0.0795,0.0772,inside,agrees,-0.0058,0.0089,0.985,0.8718
+cv3,0,hybrid_kernels,C1.pattern,0.9079,0.9051,inside,agrees,-0.0199,0.0258,0.985,0.8718
+cv3,0,hybrid_kernels,C2.magnitude,0.441,0.1871,outside,agrees,0.1939,0.3114,0.985,0.8718
+cv3,0,hybrid_kernels,C3.kinetics,0.0833,0.0772,inside,agrees,-0.0024,0.0122,0.985,0.8718
+cv3,1,behaving_atanas_var3,C1.pattern,0.9941,0.8928,outside,not shown,0.0787,0.1356,1.0057,0.907
+cv3,1,behaving_atanas_var3,C2.magnitude,0.2358,0.2112,inside,agrees,-0.022,0.0823,1.0057,0.907
+cv3,1,behaving_atanas_var3,C3.kinetics,0.0777,0.0809,inside,agrees,-0.0118,0.003,1.0057,0.907
+cv3,1,behaving_copper_var3,C1.pattern,0.9951,0.8928,outside,not shown,0.0812,0.1343,1.0085,0.8716
+cv3,1,behaving_copper_var3,C2.magnitude,0.2427,0.2112,inside,agrees,-0.023,0.0955,1.0085,0.8716
+cv3,1,behaving_copper_var3,C3.kinetics,0.0785,0.0809,inside,agrees,-0.0108,0.0053,1.0085,0.8716
+cv3,1,behaving_both_var3,C1.pattern,0.9974,0.8928,outside,not shown,0.0811,0.1365,1.0077,0.8921
+cv3,1,behaving_both_var3,C2.magnitude,0.2693,0.2112,inside,agrees,-0.0061,0.1225,1.0077,0.8921
+cv3,1,behaving_both_var3,C3.kinetics,0.0787,0.0809,inside,agrees,-0.0113,0.0039,1.0077,0.8921
+cv3,1,var3_spontaneous,C1.pattern,0.9863,0.8928,outside,not shown,0.0713,0.126,0.9858,0.8613
+cv3,1,var3_spontaneous,C2.magnitude,0.3558,0.2112,outside,agrees,0.0706,0.2212,0.9858,0.8613
+cv3,1,var3_spontaneous,C3.kinetics,0.0785,0.0809,inside,agrees,-0.0118,0.0045,0.9858,0.8613
+cv3,1,hybrid_kernels,C1.pattern,0.9189,0.8928,outside,not shown,0.0073,0.0536,0.9858,0.8613
+cv3,1,hybrid_kernels,C2.magnitude,0.4265,0.2112,outside,agrees,0.1337,0.2911,0.9858,0.8613
+cv3,1,hybrid_kernels,C3.kinetics,0.0799,0.0809,inside,agrees,-0.0105,0.0051,0.9858,0.8613
+cv3,2,behaving_atanas_var3,C1.pattern,1.0038,0.9067,outside,not shown,0.0734,0.1247,1.0057,0.907
+cv3,2,behaving_atanas_var3,C2.magnitude,0.2829,0.2089,outside,agrees,0.0034,0.1444,1.0057,0.907
+cv3,2,behaving_atanas_var3,C3.kinetics,0.0884,0.0915,inside,agrees,-0.0173,0.0055,1.0057,0.907
+cv3,2,behaving_copper_var3,C1.pattern,1.0018,0.9067,outside,not shown,0.0711,0.1231,1.0085,0.8716
+cv3,2,behaving_copper_var3,C2.magnitude,0.2642,0.2089,inside,agrees,-0.0056,0.1382,1.0085,0.8716
+cv3,2,behaving_copper_var3,C3.kinetics,0.0875,0.0915,inside,agrees,-0.0181,0.0058,1.0085,0.8716
+cv3,2,behaving_both_var3,C1.pattern,1.0035,0.9067,outside,not shown,0.0715,0.1256,1.0077,0.8921
+cv3,2,behaving_both_var3,C2.magnitude,0.2916,0.2089,outside,agrees,0.0173,0.1604,1.0077,0.8921
+cv3,2,behaving_both_var3,C3.kinetics,0.0883,0.0915,inside,agrees,-0.017,0.006,1.0077,0.8921
+cv3,2,var3_spontaneous,C1.pattern,0.996,0.9067,outside,not shown,0.0648,0.1153,0.9807,0.8764
+cv3,2,var3_spontaneous,C2.magnitude,0.3966,0.2089,outside,agrees,0.1096,0.2559,0.9807,0.8764
+cv3,2,var3_spontaneous,C3.kinetics,0.0888,0.0915,inside,agrees,-0.0173,0.0066,0.9807,0.8764
+cv3,2,hybrid_kernels,C1.pattern,0.9239,0.9067,inside,not shown,-0.0031,0.0411,0.9807,0.8764
+cv3,2,hybrid_kernels,C2.magnitude,0.4413,0.2089,outside,agrees,0.1535,0.3164,0.9807,0.8764
+cv3,2,hybrid_kernels,C3.kinetics,0.0913,0.0915,inside,agrees,-0.0144,0.0081,0.9807,0.8764

@@ -56,6 +56,9 @@ def true_K(A: np.ndarray) -> np.ndarray:
     return K
 
 
+DRIVE_TAU_S = 10.0
+
+
 def simulate(A, Lq, sr, frames, rng, kicks=None, burn=600, D=None):
     """One recording; kicks: dict frame -> neuron (unit kick to the state). D (n, k): loadings
     of k shared, unobserved drives (slow, AR(1) with a 10 s timescale) added to the noise."""
@@ -64,7 +67,7 @@ def simulate(A, Lq, sr, frames, rng, kicks=None, burn=600, D=None):
     y = np.empty((frames, n))
     k = 0 if D is None else D.shape[1]
     s = np.zeros(k)
-    a = np.exp(-0.5 / 10.0)
+    a = np.exp(-0.5 / DRIVE_TAU_S)
     for t in range(-burn, frames):
         x = A @ x + Lq @ rng.standard_normal(n)
         if k:
@@ -122,7 +125,11 @@ def main() -> int:
     ap.add_argument("--hours", default="0.6,2.5,10,40,70")
     ap.add_argument("--regimes", default="full,noisy,partial,hidden,drive25,drive50,drive75")
     ap.add_argument("--out", default=None)
+    ap.add_argument("--drive-k", type=int, default=3, help="number of hidden shared drives")
+    ap.add_argument("--drive-tau", type=float, default=10.0, help="their timescale in seconds")
     args = ap.parse_args()
+    global DRIVE_TAU_S
+    DRIVE_TAU_S = args.drive_tau
     z = np.load(Path(DEFAULT_DIR) / f"{args.model}.npz")
     A, Q, R = z["A"], z["Q"], z["R"]
     n = len(A)
@@ -134,7 +141,7 @@ def main() -> int:
     off = ~np.eye(n, dtype=bool)
     rows = []
     for regime in args.regimes.split(","):
-        D = shared_drive(Lq, int(regime[5:]) / 100, 3, np.random.default_rng(7)) if regime.startswith("drive") else None
+        D = shared_drive(Lq, int(regime[5:]) / 100, args.drive_k, np.random.default_rng(7)) if regime.startswith("drive") else None
         for hours in [float(h) for h in args.hours.split(",")]:
             t0 = time.time()
             n_rec = max(1, int(round(hours * 3600 / (FRAMES / 2))))

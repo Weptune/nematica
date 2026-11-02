@@ -40,6 +40,7 @@
         <li><a href="#watching">Looking alive is not enough</a></li>
         <li><a href="#gallery">Every kind of network</a></li>
         <li><a href="#why">Why watching fails</a></li>
+        <li><a href="#context">Nothing transfers across contexts</a></li>
         <li><a href="#noise">Cause and effect, not noise</a></li>
         <li><a href="#fingerprints">Causal fingerprints</a></li>
         <li><a href="#ingredients">What it took</a></li>
@@ -84,6 +85,15 @@
       <div data-chart="ceiling"></div>
       <figcaption>A synthetic worm with known cause and effect, recorded like the atlas (37-minute recordings, half the neurons seen in each, 30% never seen). Vertical: correlation of the learned cause and effect with the truth, averaged over two published models used as ground truth. Solid lines: with slow shared drives that no recording captures, carrying 5% of each neuron's input, which matches the share of activity in the top three patterns of real resting worms. Dashed: watching without those drives. Poking estimates each pair by averaging its responses, with no model.</figcaption>
     </figure>
+
+    <!-- context -->
+    <h2 id="context">On the data we have, nothing transfers across contexts.</h2>
+    <p>Four more tests use every dataset we have: worms with neuropeptide release much reduced, freely moving worms, and worms meeting a copper boundary.</p>
+    <p><strong>No sign that the hidden signals are neuropeptides.</strong> They spread through the body without the wiring, so they were the obvious suspect, and we predicted watching would do better in worms that release far fewer of them. It did not: watching stays near zero (0.009 against 0.017 in normal worms, in the same small design), and the shared slow structure is just as strong, about seven shared patterns with a timescale near 90 seconds in both strains. Watching sits at its floor in both, so a small gain could hide there. A synthetic worm given slow drives of this shape still shows the ceiling, but when those drives are weak, poking needs more than the atlas's 70 hours to overtake watching.</p>
+    <p><strong>How many pokes a lab needs (exploratory).</strong> One worm's echo agrees with another's at only 0.07, and averaging helps more slowly than textbook noise would. Projecting from the largest groups we can measure, pinning one neuron's echo down takes at least about 160 worms poking it, against a median of 22 in the atlas. The feeding organ's own small nervous system gives echoes three times as reproducible as the rest; beyond it there is no clean rule.</p>
+    <p><strong>Copies learned from freely moving worms fail the poke test.</strong> Fitted by watching 27 to 57 moving worms, they predict the next moment of activity well and answer a poke at about chance, like every other watching copy.</p>
+    <p><strong>Meeting copper is not like poking its sensor.</strong> In moving worms, the brain-wide response to the copper boundary does not resemble the echo of poking ASH, the copper sensor, in still worms (r = &minus;0.01), and no poked neuron's echo matches it better than chance would. This is one stimulus, and copper reaches other sensors too, so it is a warning rather than a law.</p>
+    <aside class="note"><p><span class="fig">What this would mean.</span> A faithful copy needs pokes, the brain state they were given in, and the context the copy will be used in. We know of no public dataset with all three for the same worms.</p></aside>
 
     <!-- 2 -->
     <h2 id="noise">The failure is about cause and effect, not noise.</h2>

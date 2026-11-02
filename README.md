@@ -574,6 +574,147 @@ As predicted: watching stays near zero from 6 to 58 worms, while pokes from just
 already beat 58 worms of watching by a factor of four to seven, and keep improving with
 more worms.
 
+## Four tests on the data we have (2 Nov 2026)
+
+The worm results above come from one experiment. These four use every dataset on disk
+(113 wild-type and 15 identified unc-31 stimulated worms, 30 freely moving Atanas worms, 27
+copper-arena worms) to test the explanation, not repeat the demonstration.
+
+*Data note found along the way:* the atlas names a stimulated neuron it could not identify
+"target", and NEMATICA's class mapping had treated that as a neuron class (1.2% of echo
+pairs, in 19 worms). It barely touches scoring (real-to-real echo agreement over 60 worms is
+0.1229 with and without it), so earlier results stand; tests 2 and 4 below exclude it.
+
+**1. Are the hidden drives neuropeptides? (prediction stated in the project log before
+running, though not in a dated block here: yes, so watching should do better in unc-31
+worms.)** Neuropeptides spread through the body without the
+wiring, which makes them a natural candidate for the shared drives that defeat watching
+(see the synthetic worm). unc-31 worms release far fewer of them. Both strains get the same small
+design: 15 worms, train on 10 (8 for fitting, 2 for choosing the ridge), test on 5, three folds, re-split 6 times (wild type re-drawn
+from 113 each time), copies fitted and scored within the strain
+(`scripts/run_unc31_watch.py`, `docs/figures/unc31_watch.csv`):
+
+| Echo agreement (mean of 18 splits) | Watching copy | Poke-trained copy | Real worms with each other |
+|---|---|---|---|
+| wild type | 0.017 | 0.058 | 0.107 |
+| unc-31 | 0.009 | 0.072 | 0.095 |
+
+**The prediction failed.** Watching is no better without neuropeptides (unc-31 minus wild
+type: -0.008, 90% interval -0.027 to +0.011, resampling the 6 re-splits), and the gap
+between watching and poking is, if anything, wider (+0.022, 0.007 to 0.037). A model-free
+look agrees (`scripts/diag_shared_drive.py`, `docs/figures/shared_drive.csv`): in the few
+seconds before each poke, neurons' baseline levels rise and fall together from one poke to
+the next just as much in unc-31 (median worm's mean |r| 0.162, 16 worms) as in wild type
+(0.175, 99 worms; p = 0.2). In both strains about 7 shared components stand above a shuffle null, and the
+main one is slow: its correlation between windows 31 s apart is 0.7 in both, a timescale of
+about 90 s. Caveats: the 15 unc-31 worms are reused in every re-split, so the intervals
+are too narrow if anything; unc-31 reduces rather than abolishes dense-core vesicle release;
+and baseline co-fluctuation includes real coupled dynamics, not only hidden drives.
+
+So the shared slow structure is present with neuropeptide release much reduced, and there
+is no evidence that peptides are the main source of the drives. This is weaker than ruling
+them out: watching sits near zero in both strains, so a floor effect could hide a real gain
+(the interval allows unc-31 watching up to about 65% better than wild type), and release
+is reduced, not abolished.
+
+The synthetic worm was rerun with drives shaped like these measurements: 7 drives with a
+90 s timescale instead of 3 at 10 s (`--drive-k 7 --drive-tau 90`,
+`docs/figures/synthetic_watch_slowdrives.csv`, connectome-constrained ground truth). Seven
+components above a shuffle null is not proof of seven drives; this is a shape check, not a
+fit. Watching still peaks within hours and then falls with more data, but where poking
+catches up depends on how much of the input the drives carry, which these measurements do
+not pin down:
+
+| Slow drives' share of input | Watching, 2.5 h | Watching, 70 h | Poking, 40 h | Poking, 70 h |
+|---|---|---|---|---|
+| 5% (the share that matched resting worms for the fast drives above) | 0.34 | 0.27 | 0.18 | 0.25 |
+| 10% | 0.30 | 0.20 | 0.14 | 0.20 |
+| 25% | 0.21 | 0.11 | 0.09 | 0.13 |
+
+With slow drives at 5% of input, poking has not overtaken watching by 70 hours (0.25
+against 0.27); at 10% they tie; at 25% poking passes between 40 and 70 hours. So the claim
+"poking overtakes at about the atlas's size" holds for fast drives and for strong slow
+ones, and needs more data than the atlas for weak slow ones. The ceiling itself holds in
+every case.
+
+**2. How many pokes, and of which neurons? (`scripts/run_poke_budget.py`,
+`docs/figures/poke_budget*.csv`.)** For each neuron poked in at least 6 worms (74 targets),
+the echo from one group of worms is correlated with the echo from another group. One
+worm's echo agrees with another worm's at a median of 0.074. Averaging helps more slowly
+than independent noise would (for the 33 neurons poked in at least 24 worms: 4 worms per
+group, 0.14 measured against 0.24 expected; 12 worms, 0.23 against 0.49). Projecting from
+one worm's agreement with the textbook formula would say about 50 worms per neuron for a
+reliability of 0.8; projecting the same formula from the largest split actually measured
+(column `k80_half`) says a median of about 160 (half of targets between 80 and 370; 4%
+within 20). Because the measured curves keep flattening, even 160 is probably an
+underestimate. The atlas, the largest such dataset, has a median of 22 or 23 worms per
+target (of those poked in at least 6).
+
+Which neurons pay off is not random (exploratory, found after looking): pharyngeal neurons
+(the feeding organ's own small nervous system, joined to the rest by one pair of neurons)
+give echoes three times as reproducible as the rest (4 worms per group: 0.39 against 0.13;
+Mann-Whitney p = 0.0002). That fits the idea that echoes are cleaner where brain-wide state
+reaches least, but it was not a test of where the drives act, and the pharynx has other
+reasons to be reproducible (its neurons respond strongly and together). Beyond the pharynx
+there is no clean rule: the five most reproducible non-pharyngeal targets by one-worm
+agreement are sensory (ASH, ASG, ASK, ASI, ASE), but other sensory neurons (AWC-ON, FLP,
+URB, ASJ) sit in the bottom fifth of 62, and sensory against other neurons is not
+significant (p from 0.06 to 0.34, depending on the measure and which neurons count as
+sensory). For a lab:
+budget pokes per neuron by its measured reliability, which this file lists, rather than
+evenly.
+
+**3. Do copies learned from freely moving worms pass the poke test? (pre-registered in arc
+4 as model 2, expected to do worse than atlas copies; `scripts/run_behaving_pokes.py`,
+`docs/figures/behaving_pokes.csv`.)** VARs fitted by watching freely moving worms (Atanas,
+copper, or both, resampled to the atlas's 0.5 s frames; next-frame prediction R^2 0.87 to
+0.91) are poked on the held-out atlas worms of each fold:
+
+| Copy | Echo agreement with held-out atlas worms (split cv3, pools 0 / 1 / 2) | Pattern verdicts |
+|---|---|---|
+| watching Atanas worms (30) | 0.001 / 0.006 / -0.004 | outside in 3 of 3 |
+| watching copper worms (27) | 0.006 / 0.005 / -0.002 | outside in 3 of 3 |
+| watching both (57) | 0.002 / 0.003 / -0.004 | outside in 3 of 3 |
+| watching the atlas's own unpoked frames | 0.009 / 0.014 / 0.004 | outside in 3 of 3 |
+| learned from pokes (`hybrid_kernels`) | 0.092 / 0.081 / 0.076 | inside in 2 of 3 |
+| real worms with each other | 0.095 / 0.107 / 0.093 | |
+
+Expectation (c) is met, but only nominally: copies of moving worms answer a poke at about
+chance, below the watching copy fitted to the atlas itself by 0.005 to 0.01, with both at
+the floor, and an order of magnitude below the poke-trained copy. Watching 57 moving worms
+does no better than watching 27 or 30. That fits the ceiling, but at the floor it cannot be
+told apart from a plain mismatch between datasets (moving against immobilised worms,
+different labs' pipelines). Their response size passes more often (magnitude inside in 7
+of 9 pools) but this is not a mark of quality: the poke-trained copy fails magnitude in all
+3, and these VARs are slightly unstable before the simulator rescales them (spectral
+radius 1.006 to 1.009).
+
+**4. Is meeting copper like poking ASH? (`scripts/run_copper_vs_pokes.py`,
+`docs/figures/copper_vs_pokes*.csv`; question set before running, no expectation
+written.)** ASH is the worm's copper sensor. If pokes show how signals really flow, the
+brain-wide response of freely moving worms meeting the copper boundary (Level 6 definition,
+70 encounters in 27 worms) should resemble the echo of poking ASH in immobilised worms. Each
+of 74 poked neurons' mean echo is correlated with the encounter response over the classes
+seen in both (44 to 70). **It does not.** ASH ranks 36th of 74 (r = -0.01, 90% interval
+-0.23 to +0.16, resampling worms on both sides). The best match is AIB, an interneuron
+just downstream of ASH (r = 0.30), but the best of 74 is no better than chance: with the
+encounter shuffled across classes, the best of 74 reaches 0.31 at the median (p = 0.53).
+The two ends are reproducible on their own (encounter split-half 0.62; ASH echo split-half
+0.40 at 21 worms). On full samples (Spearman-Brown: 0.77 and 0.57) a true resemblance of
+0.3 would show as about 0.3 x sqrt(0.77 x 0.57) = 0.20, just above the interval's top
+(0.16): a real resemblance of that size is unlikely but not excluded. Copies poked at ASH match the encounter no better (VAR fitted by watching copper
+worms: 0.07; by watching the atlas's unpoked frames: -0.08).
+
+**What the four say together.** On these data, nothing transfers across contexts. Copies
+learned by watching moving worms reproduce those worms well (arcs 2 and 5) and know
+nothing about pokes; the echo of poking the copper sensor in still worms does not resemble
+how moving worms' brains answer copper. That is one stimulus, and copper reaches more
+sensory neurons than ASH, and a moving worm's response includes activity from moving, so
+it is a warning, not a law. Slow shared structure is present in both strains and is not
+removed by reducing neuropeptide release. The working conclusion: a faithful copy needs
+pokes, the brain state they were given in, and the context it will be used in. We know of
+no public dataset with all three for the same worms.
+
 
 ## Running the benchmark
 
