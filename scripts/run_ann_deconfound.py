@@ -116,6 +116,18 @@ def atlas_like(rows):
         W, mu = fit_partial(recs, u, br.n)
         rows.append({"recording": "atlas-like", "watcher": name, "score": round(L.score(K_clamped(W, mu), K, mask), 4)})
         print(rows[-1], flush=True)
+    # oracle: the same design, recorded together with the true drives
+    rng = np.random.default_rng(402)
+    orecs, ous = [], []
+    for _ in range(len(recs)):
+        obs = (rng.random(br.n) < 0.5) & ~hidden
+        y, S = record_with_drives(br, rng)
+        y[:, ~obs] = np.nan
+        orecs.append((y, obs, None))
+        ous.append(S)
+    W, mu = fit_partial(orecs, ous, br.n)
+    rows.append({"recording": "atlas-like", "watcher": "oracle_true_drives", "score": round(L.score(K_clamped(W, mu), K, mask), 4)})
+    print(rows[-1], flush=True)
     P = L.recordings(br, 40.0, np.random.default_rng(403), hidden, poke=True)
     rows.append({"recording": "atlas-like", "watcher": "poking", "score": round(L.score(L.K_poke(P, br.n), K, mask), 4)})
     print(rows[-1], flush=True)

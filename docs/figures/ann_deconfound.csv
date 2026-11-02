@@ -8,4 +8,5 @@ every unit,poking,0.8139
 atlas-like,plain,0.3021
 atlas-like,slow_pcs_3,0.3043
 atlas-like,slow_pcs_6,0.3036
+atlas-like,oracle_true_drives,0.4833
 atlas-like,poking,0.7605

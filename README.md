@@ -918,7 +918,7 @@ itself (activity smoothed over 30 s; the truth has 3 drives).
 | Linear watcher given | Every unit recorded | Atlas-like recording |
 |---|---|---|
 | nothing | 0.61 | 0.30 |
-| the true drives | 0.86 | not run |
+| the true drives | 0.86 | 0.48 |
 | 3 slow patterns | 0.77 | 0.30 |
 | 6 slow patterns | 0.73 | 0.30 |
 | 12 slow patterns | 0.72 | not run |
@@ -926,8 +926,9 @@ itself (activity smoothed over 30 s; the truth has 3 drives).
 
 With every unit recorded, taking out the slow patterns recovers most of what the drives cost
 (0.61 to 0.77, near poking's 0.81), and knowing the drives would beat poking. With
-atlas-like recording it does nothing (0.30 to 0.30): each recording sees a different half,
-and what is never seen cannot be separated from what drives it.
+atlas-like recording the estimated patterns do nothing (0.30 to 0.30), and even the true
+drives lift the watcher only to 0.48, far below poking's 0.76: once much of the brain goes
+unrecorded, knowing the drives is not enough.
 
 **The same on real worms (`scripts/run_deconfound_atlas.py`,
 `docs/figures/deconfound_atlas.csv`).** NEMATICA's watching copy was refitted with each
@@ -965,8 +966,10 @@ unlock:
 
 One further step is possible without new data and is not done: a watching copy with a
 latent-variable model trained properly over long windows (part A's memory tests used 5 to
-30 s). Parts A and C suggest it would not get past what is never recorded, but it has not
-been tried.
+30 s). Part C bounds the part of its job that is inferring the drives: a linear watcher
+given the true drives reaches 0.48 under atlas-like recording, against 0.76 for poking. A
+latent model that also infers the unrecorded neurons themselves is not bounded by this,
+and has not been tried.
 
 ## Running the benchmark
 
