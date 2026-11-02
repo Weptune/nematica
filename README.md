@@ -965,6 +965,21 @@ only about 7 minutes of unpoked activity, far less than the hours watching neede
 artificial lab. A positive result would be a reason to ask for long unpoked recordings; a
 null result says only that this data cannot answer the question.
 
+**Result (`docs/figures/own_worm_watch.csv`).** 44 of 113 worms had enough unpoked
+activity to fit (at least 200 frames in at least 5 stretches, and 10 stimulations of named
+neurons); in those, a median of 124.5 neurons tracked and 91.5 named, and only 354 unpoked
+frames (about 3 minutes), less than the 7 minutes estimated above. As expected, all three
+watching copies are near zero: median echo agreement with the worm's own echo 0.044 (named
+only), 0.050 (all tracked), 0.052 (all tracked plus slow patterns). Adding the unnamed
+neurons helps a little and fairly consistently (median +0.003, mean +0.012, better in 26 of
+44 worms, Wilcoxon p = 0.024); the slow patterns add nothing on top (better in 16 of 44,
+p = 0.14). The average echo of other worms predicts each worm's own echo at 0.22, better
+than all three watching copies in 43 of 44 worms. So a worm's own 3 minutes of watching,
+even with every tracked neuron, tells you less about its echoes than other worms' pokes
+do. The small gain from recording more of the worm is in the direction the theory
+predicts, but far too small, on far too little data, to carry weight. This is the limit of
+what existing data can say.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
