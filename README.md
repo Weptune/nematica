@@ -909,6 +909,64 @@ separate tests and disagree in a few pools; both are reported.
   its echo is so much closer than individuals' that the two-sided equivalence check does not
   confirm it either.
 
+**C. Can the hidden drives be taken out of a watching copy? (`scripts/run_ann_deconfound.py`,
+`docs/figures/ann_deconfound.csv`; one brain, slow drives at 25% of input, 40 hours, kicks
+held.)** A linear watcher is given extra inputs while it is fitted: the true drives (an
+upper bound no experiment has), or the k strongest slow patterns of the recorded activity
+itself (activity smoothed over 30 s; the truth has 3 drives).
+
+| Linear watcher given | Every unit recorded | Atlas-like recording |
+|---|---|---|
+| nothing | 0.61 | 0.30 |
+| the true drives | 0.86 | not run |
+| 3 slow patterns | 0.77 | 0.30 |
+| 6 slow patterns | 0.73 | 0.30 |
+| 12 slow patterns | 0.72 | not run |
+| (poking, for comparison) | 0.81 | 0.76 |
+
+With every unit recorded, taking out the slow patterns recovers most of what the drives cost
+(0.61 to 0.77, near poking's 0.81), and knowing the drives would beat poking. With
+atlas-like recording it does nothing (0.30 to 0.30): each recording sees a different half,
+and what is never seen cannot be separated from what drives it.
+
+**The same on real worms (`scripts/run_deconfound_atlas.py`,
+`docs/figures/deconfound_atlas.csv`).** NEMATICA's watching copy was refitted with each
+worm's own 3 or 6 strongest slow patterns as extra inputs (dropped again when the copy is
+poked). Echo agreement, pools 0 / 1 / 2: 0.0095 / 0.0137 / 0.0040 without, 0.0092 / 0.0143
+/ 0.0037 with 3 patterns, 0.0097 / 0.0145 / 0.0036 with 6; outside in every pool. Exactly
+what the artificial lab predicts for recordings that miss much of the brain. (The atlas's
+unpoked stretches are short, so a 30 s smoothing is a coarse estimate of the slow patterns;
+that is a second reason this could fail.)
+
+## Where the data runs out (2 Nov 2026)
+
+Everything above that can be done with existing data has been tried at least once. What is
+left needs data that does not exist yet, as far as we know. In order of what it would
+unlock:
+
+1. **Complete, fully identified recordings.** The artificial lab says watching can be
+   rescued only when every neuron is recorded (part C), and the real-worm attempt fails as
+   predicted. The atlas identifies about half the head neurons per worm. Needed: whole-brain
+   recordings with every neuron identified, ideally in the same worms that are then poked,
+   so a copy fitted by watching can be checked against pokes in the same animals.
+2. **Repeated pokes of the same neurons in the same worm.** Worms have individual echoes,
+   but the atlas rarely pokes one neuron twice in one animal, so no copy of one particular
+   worm can be built or checked.
+3. **Many more pokes per neuron, aimed by reliability.** About 160 or more worms per neuron
+   for a reliable echo, against 22 in the atlas (test 2), and the artificial lab shows the
+   ruler cannot certify copies of drive-dominated or highly individual species at atlas
+   size. `docs/figures/poke_budget.csv` lists which neurons need the most.
+4. **Pokes in freely moving worms, with the behavioural state recorded.** Nothing learned in
+   one context transferred to the other (tests 3 and 4).
+5. **Recordings of candidate drive sources.** The slow shared structure survives reduced
+   neuropeptide release; what carries it (other neuromodulators, unrecorded neurons, the
+   body's state) needs reporters for those sources.
+
+One further step is possible without new data and is not done: a watching copy with a
+latent-variable model trained properly over long windows (part A's memory tests used 5 to
+30 s). Parts A and C suggest it would not get past what is never recorded, but it has not
+been tried.
+
 ## Running the benchmark
 
 ```powershell
