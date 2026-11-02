@@ -1,0 +1,22 @@
+sigma,fold,copy,echo_agreement,real_agreement,verdict,equivalence,activity_inside,activity_levels,true_copy_vs_individuals,true_individuals_vs_each_other,mean_echo_copy_vs_individuals,mean_echo_individuals_vs_each_other,share,tau,act_L1.distribution,act_L2.correlation,act_L4.leadlag
+0.3,0,species_mean,0.1046,0.0942,inside,agrees,0,3,0.8212,0.6871,0.4632,0.3813,0.05,90.0,too typical,too typical,too typical
+0.3,0,another_individual,0.0878,0.0942,inside,agrees,1,3,0.6982,0.6871,0.3805,0.3813,0.05,90.0,too typical,too typical,inside
+0.3,0,scrambled_0.1,0.074,0.0942,inside,agrees,1,3,0.5649,0.6871,0.3247,0.3813,0.05,90.0,inside,outside,outside
+0.3,0,scrambled_0.25,0.0384,0.0942,outside,not shown,0,3,0.3055,0.6871,0.1773,0.3813,0.05,90.0,outside,outside,outside
+0.3,0,scrambled_1.0,-0.0078,0.0942,outside,not shown,0,3,0.0024,0.6871,0.0026,0.3813,0.05,90.0,outside,outside,outside
+0.3,0,var3_spontaneous,0.0551,0.0942,outside,not shown,0,3,,0.6871,0.2221,0.3813,0.05,90.0,outside,outside,outside
+0.3,0,hybrid_kernels,0.0789,0.0942,inside,agrees,0,3,,0.6871,0.3456,0.3813,0.05,90.0,outside,outside,outside
+0.3,1,species_mean,0.1189,0.117,inside,agrees,0,3,0.8268,0.6921,0.4691,0.4023,0.05,90.0,too typical,too typical,too typical
+0.3,1,another_individual,0.1025,0.117,inside,agrees,2,3,0.7075,0.6921,0.3975,0.4023,0.05,90.0,too typical,inside,inside
+0.3,1,scrambled_0.1,0.0867,0.117,outside,agrees,1,3,0.5689,0.6921,0.3348,0.4023,0.05,90.0,inside,outside,outside
+0.3,1,scrambled_0.25,0.042,0.117,outside,not shown,0,3,0.3045,0.6921,0.1788,0.4023,0.05,90.0,outside,outside,outside
+0.3,1,scrambled_1.0,0.0038,0.117,outside,not shown,0,3,0.0002,0.6921,0.0029,0.4023,0.05,90.0,outside,outside,outside
+0.3,1,var3_spontaneous,0.0619,0.117,outside,not shown,0,3,,0.6921,0.2594,0.4023,0.05,90.0,outside,outside,outside
+0.3,1,hybrid_kernels,0.0833,0.117,outside,not shown,0,3,,0.6921,0.3596,0.4023,0.05,90.0,outside,outside,outside
+0.3,2,species_mean,0.1224,0.1037,inside,agrees,0,3,0.7972,0.6609,0.4622,0.3784,0.05,90.0,too typical,too typical,too typical
+0.3,2,another_individual,0.0967,0.1037,inside,agrees,2,3,0.6928,0.6609,0.3853,0.3784,0.05,90.0,too typical,inside,inside
+0.3,2,scrambled_0.1,0.0871,0.1037,inside,agrees,1,3,0.5596,0.6609,0.3297,0.3784,0.05,90.0,inside,outside,outside
+0.3,2,scrambled_0.25,0.0474,0.1037,outside,not shown,0,3,0.2987,0.6609,0.1768,0.3784,0.05,90.0,outside,outside,outside
+0.3,2,scrambled_1.0,-0.0003,0.1037,outside,not shown,0,3,0.0038,0.6609,0.0048,0.3784,0.05,90.0,outside,outside,outside
+0.3,2,var3_spontaneous,0.0529,0.1037,outside,not shown,0,3,,0.6609,0.2266,0.3784,0.05,90.0,outside,outside,outside
+0.3,2,hybrid_kernels,0.0908,0.1037,inside,agrees,0,3,,0.6609,0.3456,0.3784,0.05,90.0,outside,outside,outside
