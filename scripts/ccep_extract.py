@@ -13,8 +13,8 @@ Per recording (one run of one patient), written to one .npz:
                            so watching copies can be refitted with any ridge without the
                            raw data; rows are [x(t-1) ... x(t-5), 1], targets x(t)
   seg_seconds              how much between-pulse activity went into them
-Preprocessing: good ECoG channels only (status "good" in channels.tsv); 2048 to 512 Hz by
-4-sample block means after a 120 Hz low-pass; 50, 100 and 150 Hz notches; common average
+Preprocessing: good ECoG channels only (status "good" in channels.tsv); to 512 Hz by block means
+after a 120 Hz low-pass (recordings at 2048 Hz; the five at 512 Hz are only low-passed); 50, 100 and 150 Hz notches; common average
 reference over good channels (for responses: excluding the stimulated pair); pulses and
 segments touching an annotated artefact are dropped.
 
@@ -30,8 +30,7 @@ from pathlib import Path
 
 import numpy as np
 
-FS_IN, DS = 2048, 4
-FS = FS_IN // DS                       # 512 Hz
+FS = 512                               # analysis rate; recordings are 2048 Hz (112) or 512 Hz (5)
 LAGS = 5
 SEG_START_S, SEG_END_GAP_S = 1.0, 0.02
 EP_PRE_S, EP_POST_S, BASE_END_S = 0.2, 0.5, 0.01
@@ -76,10 +75,11 @@ def open_data(h):
     return raw[: T * h["n"]].reshape(h["n"], T), "CT"
 
 
-def downsample(data, layout, cols, res, chunk=2048 * 60):
-    """Low-pass, block-mean to 512 Hz, in chunks; returns (T512, C) float32."""
+def downsample(data, layout, cols, res, fs_in, chunk=2048 * 60):
+    """Low-pass at 120 Hz, block-mean to 512 Hz, in chunks; returns (T512, C) float32."""
     from scipy.signal import butter, sosfiltfilt
-    sos = butter(4, 120, fs=FS_IN, output="sos")
+    DS = int(round(fs_in / FS))
+    sos = butter(4, 120, fs=fs_in, output="sos")
     T = data.shape[0] if layout == "TC" else data.shape[1]
     out = []
     pad = 2048
@@ -115,8 +115,9 @@ def process(vhdr: Path) -> dict:
     stem = vhdr.name.replace("_ieeg.vhdr", "")
     folder = vhdr.parent
     h = read_vhdr(vhdr)
-    if abs(h["fs"] - FS_IN) > 1:
-        raise ValueError(f"{vhdr.name}: sampling rate {h['fs']}, expected {FS_IN}")
+    ds = h["fs"] / FS
+    if h["fs"] < FS - 1 or abs(ds - round(ds)) > 1e-6:
+        raise ValueError(f"{vhdr.name}: sampling rate {h['fs']} is not a multiple of {FS} Hz")
     ch = read_tsv(folder / f"{stem}_channels.tsv")
     ev = read_tsv(folder / f"{stem}_events.tsv")
     ses = folder / next(p.name for p in folder.iterdir() if p.name.endswith("_electrodes.tsv"))
@@ -124,7 +125,7 @@ def process(vhdr: Path) -> dict:
     good = [r["name"] for r in ch if r["type"].upper() == "ECOG" and r["status"] == "good" and r["name"] in h["names"]]
     cols = [h["names"].index(g) for g in good]
     data, layout = open_data(h)
-    x = notch(downsample(data, layout, cols, h["res"]))
+    x = notch(downsample(data, layout, cols, h["res"], h["fs"]))
     T, C = x.shape
     bad = bad_mask(T, ev)
     car = x - x.mean(1, keepdims=True)
