@@ -719,23 +719,31 @@ no public dataset with all three for the same worms.
 ## The artificial lab: brains whose cause and effect is known (2 Nov 2026)
 
 Real worms cannot tell us their true cause and effect, so every worm result above is a
-comparison between imperfect measurements. In artificial brains it can be known exactly.
+comparison between imperfect measurements. In artificial brains it can be known.
 `nematica/annlab.py` builds nonlinear rate networks of 120 tanh units (sparse random
 wiring, saturating, so responses depend on the state the network is in), optionally with
 slow drives that no recording sees. True cause and effect K[i, j] is unit i's summed 15 s
-response to a kick of unit j, measured exactly by twin runs (the same network run twice from
-the same visited state with identical noise, once kicked). Kicks are held for 4 s, like an
-optogenetic pulse, and the networks are calibrated so that two individuals' single-poke
-echoes agree about as well as two worms' do (0.09 to 0.12 in the base species of lab B,
-against 0.09 to 0.12 in the atlas; 0.05 to 0.15 across all species tested). Recordings copy the atlas: 37 minutes at 2 Hz, with measurement noise.
+response to a kick of unit j, estimated by twin runs (the same network run twice from the
+same visited state with identical noise, once kicked), averaged over 40 visited states
+(two independent estimates correlate at 0.99). Kicks push the hidden state of the unit for
+4 s, like an optogenetic pulse, and the networks are calibrated so that two individuals'
+single-poke echoes agree about as well as two worms' do (0.09 to 0.12 in the base species
+of lab B, against 0.09 to 0.12 in the atlas; 0.05 to 0.15 across all species tested).
+Recordings copy the atlas: 37 minutes at 2 Hz, with measurement noise. These ground truths
+differ from the synthetic worm above in more than nonlinearity (held kicks, a 15 s window,
+a different network), so the two are not directly comparable.
 
 **A. Can a nonlinear brain be copied by watching it, if the copy is a neural network too?
 (`scripts/run_ann_watch.py`, `docs/figures/ann_watch.csv`, `ann_watch_fullobs.csv`; two
-independently drawn brains, averaged.)** Four ways to learn K: a linear model fitted by
+independently drawn brains, averaged; differences between the two of up to 0.04, so
+differences that small mean nothing.)** Four ways to learn K: a linear model fitted by
 watching (NEMATICA's watching copy), a neural network that predicts the next frame from the
 current one, a recurrent neural network with memory (which could in principle infer slow
-hidden drives from history), each fitted by watching and then kicked in silico; and plain
-averaging of real kicks. Score: correlation with the true K.
+hidden drives from history; trained for a fixed 1,500 steps, not tuned), each fitted by
+watching and then kicked in silico; and plain averaging of real kicks. In this table the
+watchers' in-silico kick adds 3 to the kicked unit's recorded value on each of 8 frames,
+which is not the same as the truth's kick to the hidden state; the follow-up below repeats
+the key settings with the unit held near saturation instead. Score: correlation with K.
 
 | Recording | Hidden drives | Hours | Linear watcher | Neural-network watcher | Recurrent watcher | Poking |
 |---|---|---|---|---|---|---|
@@ -748,39 +756,63 @@ averaging of real kicks. Score: correlation with the true K.
 | half the units, 30% never | none | 2.5 | 0.28 | 0.30 | 0.11 | 0.43 |
 | half the units, 30% never | none | 10 | 0.31 | 0.50 | 0.31 | 0.61 |
 | half the units, 30% never | none | 40 | 0.28 | 0.50 | 0.32 | 0.88 |
+| half the units, 30% never | none | 70 | 0.25 | 0.52 | 0.36 | 0.93 |
 | half the units, 30% never | 5%, 10 s | 2.5 | 0.29 | 0.28 | 0.06 | 0.39 |
 | half the units, 30% never | 5%, 10 s | 10 | 0.33 | 0.43 | 0.29 | 0.53 |
 | half the units, 30% never | 5%, 10 s | 40 | 0.31 | 0.42 | 0.32 | 0.82 |
+| half the units, 30% never | 5%, 10 s | 70 | 0.30 | 0.42 | 0.35 | 0.89 |
 | half the units, 30% never | 5%, 90 s | 2.5 | 0.29 | 0.27 | 0.08 | 0.42 |
 | half the units, 30% never | 5%, 90 s | 10 | 0.33 | 0.41 | 0.32 | 0.57 |
 | half the units, 30% never | 5%, 90 s | 40 | 0.30 | 0.38 | 0.38 | 0.85 |
+| half the units, 30% never | 5%, 90 s | 70 | 0.31 | 0.39 | 0.42 | 0.90 |
 | half the units, 30% never | 25%, 10 s | 2.5 | 0.28 | 0.24 | 0.10 | 0.23 |
 | half the units, 30% never | 25%, 10 s | 10 | 0.32 | 0.30 | 0.20 | 0.35 |
 | half the units, 30% never | 25%, 10 s | 40 | 0.30 | 0.29 | 0.20 | 0.65 |
+| half the units, 30% never | 25%, 10 s | 70 | 0.30 | 0.26 | 0.19 | 0.75 |
 | half the units, 30% never | 25%, 90 s | 2.5 | 0.29 | 0.25 | 0.10 | 0.31 |
 | half the units, 30% never | 25%, 90 s | 10 | 0.32 | 0.34 | 0.31 | 0.48 |
 | half the units, 30% never | 25%, 90 s | 40 | 0.29 | 0.28 | 0.34 | 0.77 |
+| half the units, 30% never | 25%, 90 s | 70 | 0.30 | 0.24 | 0.36 | 0.84 |
 
-- **Watching works when nothing that matters goes unrecorded.** With every unit recorded and
-  no hidden drives, the neural-network watcher recovers cause and effect at 0.82 from
-  2.5 hours, better than poking until poking has about 40 hours (0.91). The linear watcher
-  stops at 0.69: in a nonlinear brain, a linear copy is wrong in shape.
-- **Anything unrecorded that drives many units caps it.** Slow hidden drives (25% of input)
-  cap every watcher near 0.6 at any amount of data; poking passes them by 10 hours.
-  Recording the atlas way (half the units each time, 30% never) caps watching at 0.3
-  (linear) to 0.5 (neural network) even with no hidden drives at all: unrecorded units are
-  themselves unrecorded causes. With both, the neural-network watcher falls to 0.3.
-- **More data never lifts the cap; poking keeps climbing** to 0.77 to 0.93 by 40 to 70 hours
-  in every setting. This is the law the worm suggested, now in brains that are nonlinear,
-  copied by neural networks, with the truth known: watching is limited by what is not
-  recorded, not by how long you watch.
-- The recurrent watcher did worst. It was trained for a fixed budget (1,500 steps) and not
-  tuned, so this is not evidence that memory cannot help; a well-trained latent-variable
-  model is the obvious next attempt.
+- **Given enough pokes, poking beats every watcher in every setting.** By 40 hours poking
+  reaches 0.65 to 0.91, above every watcher in the same setting (highest watcher: 0.83).
+- **Watchers plateau early.** None improves much beyond 10 hours, with one exception: the
+  recurrent watcher keeps climbing slowly under slow drives (0.08 to 0.42 from 2.5 to 70
+  hours in the atlas-like recording with 5% drives at 90 s).
+- **Even with everything recorded and no hidden drives, watching stops short.** The
+  neural-network watcher reaches 0.82 at 2.5 hours and stays there; poking passes it by 40
+  hours (0.91). The linear watcher stops at 0.69: in a nonlinear brain, a linear copy is
+  wrong in shape.
+- **Hidden drives lower the plateau.** With every unit recorded and slow drives at 25% of
+  input, the linear and neural-network watchers stop near 0.6 (the recurrent one near 0.3);
+  poking ties them at 10 hours and passes them by 40 (0.81).
+- **Atlas-like recording lowers it further** (half the units each time, 30% never): 0.3
+  (linear) to 0.5 (neural network) with no drives. This run changes two things at once
+  (units never seen, and different units seen each time), and the watchers fill unseen
+  units with zeros and then roll out on their own predictions, so how much of the drop is
+  the brain's and how much the estimators' is not separated.
 
-This also corrects the synthetic-worm section above, where watching with 30% of neurons
-never seen still reached 0.56 to 0.66 without drives: that ground truth was linear. In a
-nonlinear brain, unseen neurons alone are enough to stop watching.
+**Follow-up: is the plateau the watchers' fault? (`scripts/run_ann_memory.py`,
+`docs/figures/ann_memory.csv`; one brain, 40 hours.)** Two objections, tested where they
+matter most: the watchers' kick ("added": 3 added to the recorded value for 4 s, as in the
+table above; "held": the unit's recorded value held at 0.95, near saturation, as a strongly
+driven unit is and as NEMATICA clamps a stimulated neuron), and memory (a network given the
+last 5 s of activity, and the recurrent watcher trained four times longer with twice the
+memory).
+
+| Recording (one brain, 40 h) | Linear, added / held | Network, added / held | Network with 5 s of history, held | Recurrent (4x training, larger), added / held | Poking, same brain |
+|---|---|---|---|---|---|
+| every unit, drives 25%, 90 s | 0.58 / 0.58 | 0.61 / 0.60 | 0.62 | 0.57 / 0.53 | 0.82 |
+| atlas-like, no drives | 0.29 / 0.30 | 0.52 / 0.23 | 0.46 | 0.42 / 0.30 | 0.86 |
+| atlas-like, drives 5%, 90 s | 0.34 / 0.37 | 0.42 / 0.41 | 0.48 | 0.47 / 0.37 | 0.84 |
+
+With every unit recorded and slow drives at 25%, no watcher passes 0.62 however it is
+kicked or however much memory it has, against 0.82 for poking: that plateau is robust. In
+the atlas-like recordings the watchers' scores depend on how they are kicked (the plain
+network falls from 0.52 to 0.23 when the unit is held rather than added to), so the exact
+values there are fragile, but no version reaches 0.55 against 0.84 to 0.86 for poking.
+Memory helps a little (the network with 5 s of history is the best held-kick watcher in
+every setting) and does not close the gap.
 
 **B. Does the ruler's verdict match the truth? (`scripts/run_ann_ruler.py`,
 `docs/figures/ann_ruler_*.csv`.)** A species of 60 individuals that differ (every
@@ -831,34 +863,48 @@ full recordings) correlated with individuals' noise-averaged echoes.
 | sigma 0.6, drives 5% | hybrid_kernels | not defined (0.32) | 0.16 (0.19) | inside 3 of 3 | 0 of 3 |
 | sigma 0.6, drives 5% | var3_spontaneous | not defined (0.32) | 0.13 (0.19) | inside 2 of 3 | 0 of 3 |
 
-- **Where the ruler has power, it orders copies as the truth does**, and the two NEMATICA
-  copies land where they land in worms. The watching copy's noise-averaged echo reaches
-  about half to two thirds of an individual's (48% to 70% across species) and it is outside
-  in every pool of the three species with worm-like echo reliability; the poke-trained
-  copy reaches 80% to 90% and is shown to agree in 2 of 3 pools (sigma 0.3) and 3 of 3
-  (sigma 0.1), though in only 1 of 3 without hidden drives, where it is inside everywhere
-  but its interval runs past the tolerance on the too-close side.
-- **"Shown to agree" means within about 20%, not "as good as an individual".** With
-  sigma 0.3, the species brain with 10% of its connections moved has true agreement 0.56
-  against individuals' 0.68 (18% short) and is shown to agree in all 3 pools. On worms the
-  same ruler's resolution was measured as about 25% by planting errors; here the truth
-  confirms it.
-- **The ruler's resolution is set by how different individuals are**, as designed: when
-  individuals are nearly identical (sigma 0.1, agreement 0.94) the same 10% scrambling (true
-  0.65) is caught in every pool.
+Each species configuration uses one draw of the species brain, of the extra individual and
+of each scrambled brain, so its three pools share those copies and are not independent
+replicates. Model copies are simulated by replaying the kicked unit's own response recorded
+from the species brain (NEMATICA's clamp), while brain copies and individuals are kicked
+physically. The pattern verdict ("inside") and the equivalence check ("shown to agree") are
+separate tests and disagree in a few pools; both are reported.
+
+- **Where echoes are as reliable as worms', the ruler separates good from bad copies.** In
+  the three species with worm-like echo reliability (sigma 0.3 with 5% or no drives, sigma
+  0.1), brains with a quarter or all of their connections moved are outside in every pool,
+  and so is NEMATICA's watching copy, whose noise-averaged echo reaches about half to two
+  thirds of an individual's (48% to 70% across all species). The poke-trained copy
+  reaches 80% to 90%; it is shown to agree in 2 of 3 pools (sigma 0.3, 5% drives), 3 of 3
+  (sigma 0.1), 1 of 3 with no drives (inside in all 3, but its interval runs past the
+  tolerance on the too-close side) and 0 of 3 in the two species where echoes are less
+  reliable.
+- **It does not rank close copies correctly.** With no drives, the ruler puts the
+  poke-trained copy above a genuine individual in every pool (echo agreement 0.115 to 0.14
+  against 0.097 to 0.115), while the truth puts it below (0.32 against 0.40). The ruler
+  answers "close enough or not", not "which is closer".
+- **"Shown to agree" means within about 20%, not "as good as an individual".** With sigma
+  0.3 and 5% drives, the species brain with 10% of its connections moved has true agreement
+  0.56 against individuals' 0.68 (17% short) and is shown to agree in all 3 pools, though
+  the pattern verdict puts it outside in one. On worms the same ruler's resolution was
+  measured as about 25% by planting errors; here the truth gives a similar answer.
+- **Its resolution is set by how different individuals are**, as designed: when individuals
+  are nearly identical (sigma 0.1, agreement 0.94), the same 10% scrambling (true 0.65) is
+  outside in all 3 pools on the pattern verdict, though the equivalence check confirms it
+  in 1.
 - **Some species cannot be judged with atlas-sized data.** When hidden drives carry 25% of
   input, or individuals differ a lot (sigma 0.6, true agreement 0.32), single echoes agree
   at only 0.05 to 0.07. Then the ruler can neither reject the watching copy reliably
   (inside in 2 of 3 pools in both) nor confirm a genuine individual (0 of 3 in both), and
   with sigma 0.6 a brain with a quarter of its connections moved passes the pattern level in
-  2 of 3 pools. Real worms sit at 0.09 to 0.12, at the edge of that regime: more worms per
+  2 of 3 pools. Real worms sit at 0.09 to 0.12, near the edge of that regime: more worms per
   neuron would sharpen every verdict, which is test 2's conclusion reached from the other
   side.
 - **The average brain is flagged, as the project's motto predicts.** The species brain is
   closer to every individual than individuals are to each other (0.82 against 0.68), and the
-  activity levels call it too typical; real individuals are weird, average copies are not.
-  With no hidden drives its echo is so much closer than individuals' that the equivalence
-  check, which is two-sided, does not confirm it either.
+  activity levels call it too typical in every pool of every species. With no hidden drives
+  its echo is so much closer than individuals' that the two-sided equivalence check does not
+  confirm it either.
 
 ## Running the benchmark
 
