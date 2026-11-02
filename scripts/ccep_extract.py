@@ -47,11 +47,19 @@ def read_vhdr(path: Path) -> dict:
     txt = path.read_text(encoding="utf-8", errors="replace")
     get = lambda k: (re.search(rf"^{k}=(.*)$", txt, re.M) or [None, None])[1]
     n = int(get("NumberOfChannels"))
+    lines = {}
+    for line in txt.splitlines():
+        m = re.match(r"^Ch(\d+)=(.*)$", line.strip())
+        if m:
+            lines[int(m.group(1))] = m.group(2)
     names, res = [], []
     for i in range(1, n + 1):
-        m = re.search(rf"^Ch{i}=([^,]*),[^,]*,([^,]*)", txt, re.M)
-        names.append(m.group(1).strip())
-        res.append(float(m.group(2)) if m.group(2).strip() else 1.0)
+        parts = [p.strip() for p in lines[i].split(",")]        # name, reference, resolution, unit
+        names.append(parts[0].replace("\\1", ","))
+        try:
+            res.append(float(parts[2]) if len(parts) > 2 and parts[2] else 1.0)
+        except ValueError:
+            res.append(1.0)
     fmt = (get("BinaryFormat") or "IEEE_FLOAT_32").strip()
     orient = (get("DataOrientation") or "MULTIPLEXED").strip()
     fs = 1e6 / float(get("SamplingInterval"))
