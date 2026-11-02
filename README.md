@@ -947,6 +947,24 @@ what the artificial lab predicts for recordings that miss much of the brain. (Th
 unpoked stretches are short, so a 30 s smoothing is a coarse estimate of the slow patterns;
 that is a second reason this could fail.)
 
+**Per-worm test of "record everything", written before running (2 Nov 2026,
+`scripts/run_own_worm_watch.py`).** The atlas names a median of 72 neurons per worm but
+tracks 123; the unnamed ones are recorded, only not identifiable across worms. So within one
+worm, a watching copy can include every tracked neuron. For each wild-type worm, a linear
+model (one-frame lag, ridge chosen on held-out stretches of the same worm) is fitted to that
+worm's unpoked frames only, in three versions: (A) named neurons only; (B) every tracked
+neuron; (C) every tracked neuron plus the worm's 3 strongest slow patterns as extra inputs
+while fitting. Each is then poked like the worm was (the target held to its own measured
+response) and its echo compared with the worm's own measured echo, over pairs where both
+neurons are named, so all three are scored on the same pairs. Reference: the average echo of
+the other worms for the same pairs.
+
+Expectations: if what is unrecorded is what defeats watching, C beats B beats A. What we
+expect to actually see: all three near zero and no reliable difference, because a worm has
+only about 7 minutes of unpoked activity, far less than the hours watching needed in the
+artificial lab. A positive result would be a reason to ask for long unpoked recordings; a
+null result says only that this data cannot answer the question.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
