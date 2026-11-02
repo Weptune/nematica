@@ -1012,6 +1012,40 @@ given the true drives reaches 0.48 under atlas-like recording, against 0.76 for 
 latent model that also infers the unrecorded neurons themselves is not bounded by this,
 and has not been tried.
 
+## Beyond the worm: the same test in human brains (pre-registered 2 Nov 2026)
+
+**Data.** The open CCEP ECoG dataset of van Blooijs et al. (2023; OpenNeuro ds004080, CC0):
+74 epilepsy-surgery patients aged 4 to 51 with electrode grids on the cortex, recorded at
+2048 Hz while pairs of electrodes were given single electrical pulses, one every 5 s
+(about 390 pulses and 38 minutes in the smallest patient checked). Electrode positions
+carry Destrieux atlas labels. Downloaded locally, never redistributed.
+
+**The test, mapped from the worm.** Poking: the average response of every other electrode
+to each stimulated pair (the cortico-cortical evoked potential, CCEP). Watching: the
+activity between pulses, from 1 s after each pulse to the next. Individuals: the patients.
+For each patient, a watching copy (a linear model of the between-pulse activity,
+downsampled to 512 Hz, common-average referenced, stimulated and bad channels excluded) is
+pulsed at the stimulated pair and its predicted response compared with the patient's own
+measured responses. Score: correlation, across (stimulated pair, responding electrode),
+of response amplitude in the 10 to 100 ms window. References scored on the same pairs:
+(a) a distance-only model (amplitude falling with distance from the stimulated pair);
+(b) other patients' measured responses, matched by Destrieux region pair (pokes from other
+individuals); (c) the patient's own responses, split by odd and even pulses (the ceiling).
+
+**Expectations, written before any data is downloaded.** An electrode grid records a tiny
+fraction of the brain, so by the worm and artificial-lab results almost everything that
+drives the recorded cortex goes unrecorded. Therefore: (1) the watching copy predicts the
+patient's own responses no better than the distance-only model; in particular, for
+responding electrodes more than 2 cm from the stimulated pair, its advantage over distance
+has an interval that includes zero; (2) other patients' pokes, matched by region, predict
+better than the watching copy (pokes beat watching across individuals, as in worms). If
+the watching copy clearly beats distance far from the stimulated site, expectation (1) is
+wrong, and recording a small part of a brain is less limiting than the worm suggests.
+
+**Plan.** A pilot on the 10 smallest patients (about 17 GB), processed on the machine that
+holds the data into small per-patient summaries, before deciding on the rest (about
+289 GB in all).
+
 ## Running the benchmark
 
 ```powershell
