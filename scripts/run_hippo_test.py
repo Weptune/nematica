@@ -330,7 +330,9 @@ def main() -> int:
     inc = [r for r in ok if r["n_stims"] >= MIN_STIMS and r["n_scored"] >= MIN_CELLS
            and np.isfinite(r["ceiling"]) and r["ceiling"] >= MIN_CEILING]
     rng = np.random.default_rng(0)
-    lines = ["Mouse hippocampus: watching versus poking (pre-registered)", "",
+    title = ("Mouse hippocampus: watching versus poking (follow-up: sessions with 1 to 3 stimulated cells)"
+             if MULTI else "Mouse hippocampus: watching versus poking (pre-registered)")
+    lines = [title, "",
              f"sessions found {len(rows)}, analysable {len(ok)}, included (ceiling >= {MIN_CEILING}) {len(inc)}",
              "status counts: " + ", ".join(f"{s}: {sum(1 for r in rows if r.get('status') == s)}"
                                            for s in sorted({r.get('status') for r in rows})), ""]

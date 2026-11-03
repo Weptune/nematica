@@ -85,10 +85,31 @@ def plain_npy(raw: bytes) -> np.ndarray:
     return np.load(io.BytesIO(raw), allow_pickle=False)
 
 
+REFETCH = False   # --refetch: files zeroed by a crash count as missing and are replaced
+
+
+def damaged(path: Path) -> bool:
+    """A file left zeroed by a crash: text with NUL bytes, or an array whose last values are all
+    exactly zero."""
+    if not path.exists():
+        return False
+    try:
+        if path.suffix in (".txt", ".csv"):
+            return b"\x00" in path.read_bytes()
+        a = np.load(path, mmap_mode="r").reshape(-1)
+        return a.size > 0 and not np.any(np.asarray(a[-min(a.size, 200000):]))
+    except Exception:
+        return True
+
+
+def have(path: Path) -> bool:
+    return path.exists() and not (REFETCH and damaged(path))
+
+
 def combine_if_ready(sdir: Path) -> None:
     """When both raw halves are present, write Fc.npy and remove the two temporary halves."""
     a, b = sdir / "_F.npy", sdir / "_Fneu.npy"
-    if (sdir / "Fc.npy").exists() or not (a.exists() and b.exists()):
+    if have(sdir / "Fc.npy") or not (have(a) and have(b)):
         return
     F = np.load(a).astype(np.float32)
     N = np.load(b).astype(np.float32)
@@ -112,7 +133,7 @@ def handle(member: tarfile.TarInfo, tar, stats: dict) -> None:
     in_s2p = "/s2p_processed/" in member.name
     target = None
     if in_s2p and base in ("F.npy", "Fneu.npy"):
-        if (sdir / "Fc.npy").exists():
+        if have(sdir / "Fc.npy"):
             return
         target = sdir / ("_" + base)
     elif in_s2p and base == "stat.npy":
@@ -121,7 +142,7 @@ def handle(member: tarfile.TarInfo, tar, stats: dict) -> None:
         target = sdir / base
     elif not in_s2p and base.lower().endswith(TEXT_EXT) and member.size < 5e6:
         target = sdir / base
-    if target is None or target.exists():
+    if target is None or have(target):
         return
     fh = tar.extractfile(member)
     if fh is None:
@@ -193,9 +214,13 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--min-free-gb", type=float, default=5.0)
     ap.add_argument("--tries", type=int, default=3)
+    ap.add_argument("--refetch", action="store_true",
+                    help="read the archive again even if marked done, replacing files zeroed by a crash")
     args = ap.parse_args()
+    global REFETCH
+    REFETCH = args.refetch
     OUT.mkdir(parents=True, exist_ok=True)
-    if (OUT / "STREAM_DONE.txt").exists():
+    if (OUT / "STREAM_DONE.txt").exists() and not REFETCH:
         print("already done (delete data/derived/hippo/STREAM_DONE.txt to run again)")
         return 0
     for attempt in range(1, args.tries + 1):
@@ -204,7 +229,7 @@ def main() -> int:
             for sdir in OUT.iterdir():
                 if sdir.is_dir():
                     combine_if_ready(sdir)
-            (OUT / "STREAM_DONE.txt").write_text(time.strftime("%Y-%m-%d %H:%M:%S") + "\n")
+            (OUT / "STREAM_DONE.txt").write_text(time.strftime("%Y-%m-%d %H:%M:%S") + " complete pass\n")
             n = sum(1 for s in OUT.iterdir() if (s / "Fc.npy").exists())
             print(f"done: {n} sessions with traces in {OUT}")
             return 0

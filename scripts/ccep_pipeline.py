@@ -1,6 +1,7 @@
 """The whole workflow in one command. Human test: stream and reduce every recording, then
 score them. Then the mouse hippocampus test: finish its one-pass download if needed, then
-score it. Last, download the mouse touch-cortex sessions (about 12 GB, about 1 GB kept). Safe to start while ccep_stream.py is already running in another window: it
+score it. Then download the mouse touch-cortex sessions (about 12 GB, about 1 GB kept). Last, if
+the hippocampus download was cut short, read its archive once more and rescore. Safe to start while ccep_stream.py is already running in another window: it
 waits until that run has gone quiet for 30 minutes before doing anything, so the two never
 download at the same time. Then it finishes whatever is missing (including recordings that
 failed earlier), and runs the pre-registered analysis.
@@ -54,7 +55,17 @@ def main() -> int:
     hippo_rc = hippo(py)
     print("Touch cortex: downloading (scoring is added once its prediction is written) ...", flush=True)
     touch_rc = subprocess.run([py, str(ROOT / "scripts" / "touch_stream.py")], cwd=ROOT).returncode
-    return max(human_rc, hippo_rc, touch_rc)
+    refetch_rc = 0
+    done = HIPPO / "STREAM_DONE.txt"
+    if not done.exists() or "complete pass" not in done.read_text(encoding="utf-8", errors="replace"):
+        print("Hippocampus: reading the archive once more to replace crash-damaged files and add the "
+              "sessions the interrupted download never reached (about 2.5 hours) ...", flush=True)
+        refetch_rc = subprocess.run([py, str(ROOT / "scripts" / "hippo_stream.py"), "--refetch"], cwd=ROOT).returncode
+        if refetch_rc == 0:
+            for extra in ([], ["--multi"]):
+                subprocess.run([py, str(ROOT / "scripts" / "run_hippo_test.py"), *extra], cwd=ROOT)
+            print("Hippocampus rescored on every recovered session.", flush=True)
+    return max(human_rc, hippo_rc, touch_rc, refetch_rc)
 
 
 def hippo(py: str) -> int:
