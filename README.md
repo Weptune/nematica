@@ -1232,6 +1232,41 @@ uses distance to the nearest stimulated cell. Same inclusion rules and compariso
 for all included sessions together and for the multi-cell sessions alone. The pre-registered
 result stays the primary one.
 
+**Amendments to the pre-registration, recorded 3 Nov 2026 after an independent review.** The
+analysis paragraph above was edited in place for the first two; the original wording is kept
+here. Changes made before any real trace was opened: (i) the stimulated-ROI check was "top 2%"
+under the first reading that passes, among three readings; it became "top 5%" under the reading
+with the largest response, among four (all ROIs, curated cells, old_cell_idx in both
+directions), after synthetic tests; (ii) sessions without a curation file count every ROI as a
+cell. Changes made after real data was seen: (iii) a guard for sessions whose stimulation file
+lists nothing; (iv) files zeroed by a PC crash are detected and their sessions excluded (9
+sessions: 230, 270, 289, 307, 357, 359, 373, 380, 406; this check was added after a first
+partial run had printed per-session scores); (v) bug fix: some stimulation files list every
+stimulation twice, which made the odd/even ceiling compare each trial with itself (ceilings of
+0.998 to 1.000 in 5 included sessions); entries closer than 50 frames are now merged; (vi) bug
+fix: traces were stored at reduced precision and very bright ROIs overflowed, silently failing
+the check; such sessions are now reported as such and are re-extracted at full precision by the
+recovery pass. Implementation details the paragraph above does not state: the response window
+starts one frame after the stimulation ends; watching runs from frame 0 to 50 frames before the
+first stimulation and needs at least 2000 frames; the in-silico drive uses the median
+stimulation length; the VAR is fitted on scored and stimulated cells and its spectral radius
+capped at 0.99; the top 5% is taken over all ROIs; distance deciles are ranks within each
+session and the generic profile pools the other analysable sessions.
+
+**Exploratory checks, written before they were run.** The review showed that the
+stimulated-ROI check can select sessions in which a cell happened to be active after the
+stimulation, and that watching, which learns spontaneous co-activation, then appears to predict
+"responses" with no causal effect at all (on synthetic sessions where stimulation does nothing,
+8 sessions passed and watching beat the generic profile by 0.35). So: (a) the same analysis at
+sham times, 130 frames after each stimulation (midway between stimulations), with the reading
+search and with the reading fixed to "all ROIs"; (b) the real analysis with the reading fixed to
+"all ROIs"; (c) the ceiling comparison on matched halves (watching scored against the even
+stimulations, beside the odd/even ceiling), as a ratio of means with a bootstrap interval and
+the median of per-session ratios; (d) the main difference bootstrapped by recording day as well
+as by session, since sessions from one day are probably one mouse. Reading: if sham times give
+about as many included sessions and a similar watching-minus-generic difference as real
+stimulations, the hippocampus result says nothing about pokes.
+
 ## Running the benchmark
 
 ```powershell

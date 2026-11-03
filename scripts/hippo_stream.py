@@ -4,7 +4,8 @@ the 18.5 GB archive, keeping only what the watching-versus-poking test needs.
 The archive's files are shuffled (session folders are interleaved), so it cannot be handled
 session by session. Instead this streams it once, never storing the archive, and keeps:
 
-  F.npy + Fneu.npy  ->  one neuropil-corrected trace per ROI, Fc = F - 0.7 * Fneu (float16)
+  F.npy + Fneu.npy  ->  one neuropil-corrected trace per ROI, Fc = F - 0.7 * Fneu (float32;
+                        float16 until 3 Nov, which overflowed for bright ROIs)
   iscell.npy, old_cell_idx.npy and other small plain arrays (as they are)
   stat.npy          ->  ROI centre positions only (read with a restricted unpickler that can
                         only rebuild plain numpy arrays and dicts; nothing else is executed)
@@ -97,6 +98,8 @@ def damaged(path: Path) -> bool:
         if path.suffix in (".txt", ".csv"):
             return b"\x00" in path.read_bytes()
         a = np.load(path, mmap_mode="r").reshape(-1)
+        if a.size and a.dtype.kind == "f" and not np.isfinite(np.asarray(a)).all():
+            return True        # overflowed when traces were stored at reduced precision
         return a.size > 0 and not np.any(np.asarray(a[-min(a.size, 200000):]))
     except Exception:
         return True
@@ -114,7 +117,7 @@ def combine_if_ready(sdir: Path) -> None:
     F = np.load(a).astype(np.float32)
     N = np.load(b).astype(np.float32)
     if F.shape == N.shape:
-        np.save(sdir / "Fc.npy", (F - NEUROPIL * N).astype(np.float16))
+        np.save(sdir / "Fc.npy", (F - NEUROPIL * N).astype(np.float32))
     else:
         (sdir / "SHAPE_MISMATCH.txt").write_text(f"{F.shape} vs {N.shape}\n")
     a.unlink()
@@ -152,7 +155,7 @@ def handle(member: tarfile.TarInfo, tar, stats: dict) -> None:
     tmp = target.with_suffix(target.suffix + ".part")
     try:
         if target.name in ("_F.npy", "_Fneu.npy"):
-            arr = plain_npy(raw).astype(np.float16)
+            arr = plain_npy(raw).astype(np.float32)   # float16 overflowed for bright ROIs (fixed 3 Nov)
         elif target.name == "pos.npy":
             arr = stat_positions(raw)
         elif target.suffix == ".npy":

@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import re
 import sys
 from pathlib import Path
 
@@ -52,6 +53,8 @@ RIDGE = 0.05
 SPEED_LAGS = 8
 MIN_STIMS, MIN_CELLS, MIN_CEILING = 8, 50, 0.1
 N_BOOT = 2000
+SHAM = 0        # exploratory control: score responses at stimulation times + SHAM frames (none poked)
+READING = None  # exploratory: force one reading of the stimulated index ("all", "cells", ...)
 MULTI = False   # follow-up (written 3 Nov 2026 before it was run): also sessions with 2 or 3 stimulated cells
 
 
@@ -77,7 +80,14 @@ def read_stims(path: Path):
                 rows.append((s, max(1, d)))
             except ValueError:
                 pass
-    return rows
+    # bug fix (3 Nov, after review): some files list every stimulation twice; entries closer
+    # than 50 frames to the previous one (normal spacing about 260) are the same stimulation
+    rows.sort()
+    out = []
+    for s, d in rows:
+        if not out or s - out[-1][0] >= 50:
+            out.append((s, d))
+    return out
 
 
 def read_int(path: Path):
@@ -162,6 +172,8 @@ def find_stim_roi(idxs, resp_all, iscell, sdir):
     if o is not None:
         readings["old->new"] = lambda k: int(o[k]) if k < len(o) else -1
         readings["new<-old"] = lambda k: int(np.flatnonzero(o == k)[0]) if (o == k).any() else -1
+    if READING:
+        readings = {k: v for k, v in readings.items() if k == READING}
     cands = []
     for how, f in readings.items():
         rois = [f(k) for k in idxs]
@@ -208,10 +220,27 @@ def load_session(sdir: Path):
     stims = sorted(read_stims(sdir / "stim_frames_true.txt"))
     if not stims:
         return {"id": sdir.name, "status": "no stimulations listed"}
+    if not np.isfinite(Fc).all():
+        # traces were stored at reduced precision; very bright ROIs overflowed (bug, fixed in
+        # hippo_stream.py; these sessions are recovered by its --refetch pass)
+        return {"id": sdir.name, "status": "trace overflow (stored at reduced precision)"}
     if Fc.shape[0] != len(pos) or Fc.shape[0] != len(iscell):
         return {"id": sdir.name, "status": "ROI counts disagree"}
     return dict(id=sdir.name, Fc=Fc, pos=pos, iscell=iscell, stims=stims, stim_idx=list(stim_ids),
-                sdir=sdir, status="ok")
+                sdir=sdir, status="ok", day=recording_day(sdir))
+
+
+def recording_day(sdir: Path) -> str:
+    """The recording date from the session's file names (sessions on one day are probably one
+    mouse and field of view), used to bootstrap by day as well as by session."""
+    for f in sorted(p.name for p in sdir.iterdir()):
+        m = re.search(r"(20\d\d)-(\d\d)-(\d\d)-\d\d-\d\d", f)
+        if m:
+            return "-".join(m.groups())
+        m = re.search(r"frametimes_(\d\d)-(\d\d)-(\d\d)_", f)
+        if m:
+            return f"20{m.group(3)}-{m.group(2)}-{m.group(1)}"
+    return ""
 
 
 def analyse(S):
@@ -224,7 +253,7 @@ def analyse(S):
         out["status"] = "watching period too short"
         return out
     Z = preprocess(Fc, watch_end)
-    per = poke_responses(Z, stims)
+    per = poke_responses(Z, [(s + SHAM, d) for s, d in stims])
     out["n_stims"] = len(per)
     if len(per) < MIN_STIMS:
         out["status"] = "too few stimulations"
@@ -253,11 +282,14 @@ def analyse(S):
 
     odd, even = per[0::2].mean(0), per[1::2].mean(0)
     out["ceiling"] = spearman(odd[scored], even[scored])
+    out["day"] = S.get("day", "")
     measured = resp[scored]
 
     Zw = Z[use][:, :watch_end]
     A = fit_var(Zw)
-    out["watching"] = spearman(var_response(A, s_local, d_stim)[sc_local], measured)
+    pred = var_response(A, s_local, d_stim)[sc_local]
+    out["watching"] = spearman(pred, measured)
+    out["watching_even"] = spearman(pred, even[scored])   # on the same half-data scale as the ceiling
     C = np.corrcoef(Zw)[s_local].mean(axis=0)
     out["corr"] = spearman(C[sc_local], measured)
     sp = read_speed(S["sdir"], T)
@@ -292,10 +324,14 @@ def main() -> int:
     ap.add_argument("--out", default=str(FIG))
     ap.add_argument("--multi", action="store_true",
                     help="follow-up: include sessions with 2 or 3 stimulated cells (all driven together)")
+    ap.add_argument("--sham", type=int, default=0,
+                    help="exploratory control: score at stimulation times + this many frames")
+    ap.add_argument("--reading", default=None, help="exploratory: force one reading of the stimulated index")
     args = ap.parse_args()
-    global MULTI
-    MULTI = args.multi
-    tag = "hippo_followup" if MULTI else "hippo"
+    global MULTI, SHAM, READING
+    MULTI, SHAM, READING = args.multi, args.sham, args.reading
+    tag = ("hippo_followup" if MULTI else "hippo") + (f"_sham{SHAM}" if SHAM else "") + (
+        f"_reading-{READING}" if READING else "")
     data, out_dir = Path(args.data), Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
     rows = []
@@ -319,8 +355,8 @@ def main() -> int:
             continue
         prof = np.nanmean(others, 0)
         r["others"] = spearman(prof[r["_bins"]], r["_measured"])
-    keys = ["id", "status", "index_reading", "n_stimulated", "n_rois", "frames", "watch_frames", "n_stims", "n_scored",
-            "stim_response", "ceiling", "watching", "corr", "deconf", "others"]
+    keys = ["id", "day", "status", "index_reading", "n_stimulated", "n_rois", "frames", "watch_frames", "n_stims", "n_scored",
+            "stim_response", "ceiling", "watching", "watching_even", "corr", "deconf", "others"]
     with open(out_dir / f"{tag}_sessions.csv", "w", newline="") as fh:
         w = csv.writer(fh)
         w.writerow(keys)
@@ -332,6 +368,9 @@ def main() -> int:
     rng = np.random.default_rng(0)
     title = ("Mouse hippocampus: watching versus poking (follow-up: sessions with 1 to 3 stimulated cells)"
              if MULTI else "Mouse hippocampus: watching versus poking (pre-registered)")
+    if SHAM or READING:
+        title += (f"; EXPLORATORY: sham times {SHAM} frames after each stimulation" if SHAM else "") + (
+            f"; EXPLORATORY: index reading fixed to '{READING}'" if READING else "")
     lines = [title, "",
              f"sessions found {len(rows)}, analysable {len(ok)}, included (ceiling >= {MIN_CEILING}) {len(inc)}",
              "status counts: " + ", ".join(f"{s}: {sum(1 for r in rows if r.get('status') == s)}"
@@ -347,9 +386,29 @@ def main() -> int:
             d = [r.get(a, np.nan) - r.get(b, np.nan) for r in sel]
             m, lo, hi, n = boot(d, rng)
             lines.append(f"  {a} - {b}: {m:+.3f}  95% CI [{lo:+.3f}, {hi:+.3f}]  n={n}")
-        cm = np.nanmean([r["ceiling"] for r in sel]) if sel else np.nan
-        wm = np.nanmean([r["watching"] for r in sel]) if sel else np.nan
-        lines.append(f"  watching as a fraction of ceiling: {wm / cm:.2f}" if sel else "  (none)")
+        if not sel:
+            lines.append("  (none)")
+            lines.append("")
+            return
+        c = np.array([r["ceiling"] for r in sel], float)
+        we = np.array([r["watching_even"] for r in sel], float)
+        idx = rng.integers(0, len(sel), (N_BOOT, len(sel)))
+        ratio = we.mean() / c.mean()
+        bs = we[idx].mean(1) / c[idx].mean(1)
+        lines.append(f"  watching (vs even stimulations) / ceiling (odd vs even), ratio of means: {ratio:.2f}"
+                     f"  95% CI [{np.quantile(bs, .025):.2f}, {np.quantile(bs, .975):.2f}];"
+                     f" median of per-session ratios {np.median(we / c):.2f}")
+        days = sorted({r.get("day", "") for r in sel})
+        if len(days) > 1:
+            dd = [r.get("watching", np.nan) - r.get("others", np.nan) for r in sel]
+            byday = {d: [x for x, r in zip(dd, sel) if r.get("day", "") == d] for d in days}
+            bsd = []
+            for _ in range(N_BOOT):
+                pick = rng.choice(days, len(days))
+                vals = [x for d in pick for x in byday[d] if np.isfinite(x)]
+                bsd.append(np.mean(vals))
+            lines.append(f"  watching - others, bootstrapped by recording day ({len(days)} days): "
+                         f"95% CI [{np.quantile(bsd, .025):+.3f}, {np.quantile(bsd, .975):+.3f}]")
         lines.append("")
 
     block("INCLUDED sessions (primary)", inc)
