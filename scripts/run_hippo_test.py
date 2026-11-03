@@ -175,10 +175,24 @@ def find_stim_roi(idx, resp_all, iscell, sdir):
     return None, "failed"
 
 
+def damaged(path: Path) -> bool:
+    """A file left zeroed by a crash: text with NUL bytes, or an array whose last values are
+    all exactly zero (real fluorescence, positions and indices are not)."""
+    if not path.exists():
+        return False
+    if path.suffix in (".txt", ".csv"):
+        return b"\x00" in path.read_bytes()
+    a = np.load(path, mmap_mode="r").reshape(-1)
+    return a.size > 0 and not np.any(np.asarray(a[-min(a.size, 200000):]))
+
+
 def load_session(sdir: Path):
     need = ["Fc.npy", "pos.npy", "stim_frames_true.txt", "suite2p_stim.txt"]
     if not all((sdir / f).exists() for f in need):
         return None
+    used = need + ["iscell.npy", "old_cell_idx.npy", "additional_data.csv"]
+    if any(damaged(sdir / f) for f in used):
+        return {"id": sdir.name, "status": "file damaged (zeroed by a PC crash)"}
     stim_ids = read_int(sdir / "suite2p_stim.txt")
     if len(stim_ids) != 1:
         return {"id": sdir.name, "status": f"{len(stim_ids)} stimulated ROIs listed (need 1)"}
