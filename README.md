@@ -1062,6 +1062,52 @@ ceiling below 0.2 are reported but left out of the comparisons.
 and reduced to small per-recording summaries (`scripts/ccep_stream.py`, `scripts/ccep_extract.py`),
 then scored by `scripts/run_ccep_test.py`.
 
+## Beyond the worm: mouse hippocampus (pre-registered 3 Nov 2026)
+
+**Data.** The all-optical CA1 recordings of Bocchio, Vorobyev et al. (Cossart lab; Zenodo
+11500028, CC BY 4.0): head-fixed mice on a treadmill, two-photon calcium imaging of hundreds
+of CA1 neurons per session at about 8.4 frames per second. A session is 15,000 frames: the
+first 10,000 untouched, then about 10 optogenetic stimulations of one identified
+interneuron, 3 to 4 frames each, about 31 s apart. Running speed is recorded. Streamed
+locally in one pass (`scripts/hippo_stream.py`), never redistributed. Before writing this, only
+file names, array shapes and the small text files (stimulation frames, stimulated ROI number,
+frame times) were looked at; no trace was opened.
+
+**The test, mapped from the worm.** Poking: each recorded cell's mean change after the
+interneuron is stimulated. Watching: the 10,000 untouched frames before the first
+stimulation. Mouse neurons have no shared identities across animals, so each session is
+its own individual, and the "other individuals" reference becomes a generic profile:
+the mean response by distance from the stimulated cell, learned from all other sessions.
+
+**Analysis, fixed before any trace is loaded** (`scripts/run_hippo_test.py`; checked only
+on synthetic sessions with a known network, where watching reached 0.93 against a ceiling
+of 0.97). Traces: F minus 0.7 times neuropil, slow drift removed (501-frame moving
+average), z-scored on the watching period. Response to one stimulation: mean over the 25
+frames (about 3 s) after the stimulation ends, minus the mean of the 17 frames before it.
+The stimulated ROI number is read as an index into all ROIs, into the curated cells, or
+through `old_cell_idx`; the reading under which that ROI responds most is used, and it must
+be in the top 5% of responders or the session is excluded. Scored cells: curated cells,
+minus the stimulated ROI and any ROI within 10 pixels of it. Models: (a) watching copy,
+a VAR(1) fitted to the watching period (ridge 0.05 times the mean variance), the
+stimulated cell driven by +1 for the stimulation's length, read in the same window;
+(b) correlation with the stimulated cell during watching; (c) the watching copy after
+regressing running speed (lags 0 to 8 frames) out of every trace; (d) the generic profile
+from other sessions (distance deciles). Ceiling: odd against even stimulations. Score:
+Spearman across scored cells. Included: at least 8 stimulations, 50 scored cells and a
+ceiling of at least 0.1; all analysable sessions are also reported. Comparisons: paired
+differences with 95% bootstrap intervals over sessions.
+
+**Expectations.** A field of view in CA1 records a few hundred cells out of hundreds of
+thousands, and CA1 is driven mostly from CA3 and entorhinal cortex, which are not
+recorded. By the worm and artificial-lab results: (1) the watching copy reaches less than
+half of the ceiling on average; (2) it does not beat the generic profile from other
+sessions (the interval for watching minus generic includes zero or lies below it);
+(3) regressing out the one recorded drive, running, changes the watching score little
+(the interval for the change includes zero), because most of what drives the cells is not
+recorded at all. If the watching copy reaches most of the ceiling here, expectation (1)
+is wrong and, at least for the local effect of one interneuron, watching a few hundred
+cells is enough.
+
 ## Running the benchmark
 
 ```powershell

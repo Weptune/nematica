@@ -1,12 +1,14 @@
-"""Human test, the whole workflow in one command: stream and reduce every recording, then
-score them. Safe to start while ccep_stream.py is already running in another window: it
+"""The whole workflow in one command. Human test: stream and reduce every recording, then
+score them. Then the mouse hippocampus test: finish its one-pass download if needed, then
+score it. Safe to start while ccep_stream.py is already running in another window: it
 waits until that run has gone quiet for 30 minutes before doing anything, so the two never
 download at the same time. Then it finishes whatever is missing (including recordings that
 failed earlier), and runs the pre-registered analysis.
 
 Usage (from the project folder):
   python scripts/ccep_pipeline.py
-Results: docs/figures/ccep_summary.txt, ccep_patients.csv, ccep_recordings.csv
+Results: docs/figures/ccep_summary.txt, ccep_patients.csv, ccep_recordings.csv,
+         docs/figures/hippo_summary.txt, hippo_sessions.csv
 """
 
 from __future__ import annotations
@@ -19,12 +21,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "derived" / "ccep"
 WORK = ROOT / "data" / "raw" / "ds004080_work"
+HIPPO = ROOT / "data" / "derived" / "hippo"
 QUIET_S = 30 * 60
 
 
-def last_activity() -> float:
+def last_activity(bases=(OUT, WORK)) -> float:
     times = [0.0]
-    for base in (OUT, WORK):
+    for base in bases:
         if base.exists():
             times += [p.stat().st_mtime for p in base.rglob("*") if p.is_file()]
     return max(times)
@@ -41,13 +44,35 @@ def main() -> int:
     print("Streaming any recordings still missing ...", flush=True)
     r = subprocess.run([py, str(ROOT / "scripts" / "ccep_stream.py")], cwd=ROOT)
     if r.returncode != 0:
-        print("Streaming stopped with an error; fix it and run this again.")
-        return r.returncode
+        print("Human streaming stopped with an error; scoring what there is, then the hippocampus.")
     print("Scoring ...", flush=True)
     r = subprocess.run([py, str(ROOT / "scripts" / "run_ccep_test.py")], cwd=ROOT)
     if r.returncode == 0:
         (OUT / "PIPELINE_DONE.txt").write_text(time.strftime("%Y-%m-%d %H:%M:%S") + "\n", encoding="utf-8")
-        print("All done. Results in docs/figures/ccep_summary.txt")
+        print("Human test done. Results in docs/figures/ccep_summary.txt", flush=True)
+    human_rc = r.returncode
+    return max(human_rc, hippo(py))
+
+
+def hippo(py: str) -> int:
+    """Mouse hippocampus. If a separate hippo_stream.py run is still going, wait for it."""
+    while not (HIPPO / "STREAM_DONE.txt").exists():
+        idle = time.time() - last_activity((HIPPO,))
+        if idle >= QUIET_S:
+            break
+        print(f"Hippocampus download still working (last activity {idle / 60:.0f} min ago); "
+              "checking again in 10 min.", flush=True)
+        time.sleep(600)
+    print("Hippocampus: finishing the download if needed ...", flush=True)
+    r = subprocess.run([py, str(ROOT / "scripts" / "hippo_stream.py")], cwd=ROOT)
+    if r.returncode != 0:
+        print("Hippocampus download stopped with an error; run this again later.")
+        return r.returncode
+    print("Hippocampus: scoring ...", flush=True)
+    r = subprocess.run([py, str(ROOT / "scripts" / "run_hippo_test.py")], cwd=ROOT)
+    if r.returncode == 0:
+        (HIPPO / "PIPELINE_DONE.txt").write_text(time.strftime("%Y-%m-%d %H:%M:%S") + "\n", encoding="utf-8")
+        print("Hippocampus done. Results in docs/figures/hippo_summary.txt")
     return r.returncode
 
 
