@@ -1267,6 +1267,49 @@ as by session, since sessions from one day are probably one mouse. Reading: if s
 about as many included sessions and a similar watching-minus-generic difference as real
 stimulations, the hippocampus result says nothing about pokes.
 
+**Result (3 Nov 2026; `docs/figures/hippo_*`; reviewed independently, and the review's must-fix
+points are fixed above).** A PC crash interrupted the one-pass download; 165 sessions with
+traces were recovered (the archive order is random, so the missing ones are a random subset)
+and a recovery pass is scheduled. Of the 127 single-cell sessions with intact files, 74 fail the
+stimulated-ROI check, 37 pass it but have a ceiling below 0.1, and 16 are included. Primary,
+pre-registered analysis (16 sessions):
+
+| | Mean (95% interval) |
+|---|---|
+| ceiling (odd against even stimulations) | 0.21 (0.16 to 0.28) |
+| watching copy | 0.14 (0.04 to 0.25) |
+| correlation with the stimulated cell | 0.16 (0.06 to 0.28) |
+| generic profile from other sessions | −0.03 (−0.06 to −0.00) |
+| watching minus generic | +0.17 (+0.08 to +0.29); by recording day (12 days) +0.06 to +0.28 |
+| watching with running regressed out, minus watching | +0.002 (−0.03 to +0.04) |
+| watching on matched halves / ceiling, ratio of means | 0.70 (0.30 to 1.00); median per session 0.58 |
+
+Against the expectations: (1) "under half of the ceiling" is not supported (0.70, interval
+0.30 to 1.00); (2) "no better than the generic profile" is wrong as stated: watching beats it,
+though the generic profile itself predicts nothing; (3) running makes no difference: confirmed.
+The dynamical copy adds nothing over plain correlation with the stimulated cell.
+
+**But the sham control undercuts the main result.** At sham times, when nothing was poked:
+
+| | Real stimulation | Sham times | Real minus sham |
+|---|---|---|---|
+| reading search: sessions analysable / included | 53 / 16 | 27 / 9 | |
+| reading search: watching minus generic | +0.17 | +0.10 (+0.02 to +0.19) | +0.07 (−0.07 to +0.21) |
+| reading fixed to "all ROIs": analysable / included | 40 / 11 | 18 / 8 | |
+| reading fixed: watching minus generic | +0.21 (+0.09 to +0.35) | +0.06 (−0.03 to +0.16) | +0.15 (−0.005 to +0.31) |
+
+Half as many sessions pass the check at sham times as at real times, and watching "predicts"
+their sham responses too. Real stimulation does better, but the difference is not significant.
+**So this data does not show that watching predicts responses to pokes in mouse CA1, as opposed
+to the spontaneous co-activity the inclusion check selects for.** In sessions where the
+stimulation was verified, ranking cells by how they co-fluctuated with the stimulated
+interneuron during watching ordered their responses weakly (Spearman about 0.15) where distance
+ordered nothing; whether that reflects the poke needs more sessions with verified stimulation.
+Other notes: the 74 failed checks are 58% of single-cell sessions; the review found that the
+pre-registered window (starting one frame after the stimulation ends) can miss fast transients,
+so some of these may be timing rather than failed stimulation; the multi-cell follow-up adds no
+sessions (27 of 29 fail the check). No session overflowed the reduced-precision storage.
+
 ## Running the benchmark
 
 ```powershell

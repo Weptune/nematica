@@ -1,0 +1,31 @@
+Mouse hippocampus: watching versus poking (pre-registered)
+
+sessions found 165, analysable 53, included (ceiling >= 0.1) 16
+status counts: 2 stimulated ROIs listed (need 1): 7, 3 stimulated ROIs listed (need 1): 22, file damaged (zeroed by a PC crash): 9, ok: 53, stimulated ROI not a top responder: 74
+
+INCLUDED sessions (primary)
+  ceiling   mean +0.214  95% CI [+0.163, +0.281]  n=16
+  watching  mean +0.138  95% CI [+0.035, +0.254]  n=16
+  corr      mean +0.159  95% CI [+0.057, +0.281]  n=16
+  deconf    mean +0.140  95% CI [+0.050, +0.245]  n=16
+  others    mean -0.031  95% CI [-0.055, -0.003]  n=16
+  watching - others: +0.169  95% CI [+0.076, +0.286]  n=16
+  corr - others: +0.190  95% CI [+0.090, +0.304]  n=16
+  watching - corr: -0.021  95% CI [-0.072, +0.021]  n=16
+  deconf - watching: +0.002  95% CI [-0.034, +0.041]  n=16
+  watching (vs even stimulations) / ceiling (odd vs even), ratio of means: 0.70  95% CI [0.30, 1.00]; median of per-session ratios 0.58
+  watching - others, bootstrapped by recording day (12 days): 95% CI [+0.058, +0.282]
+
+ALL analysable sessions (secondary)
+  ceiling   mean +0.070  95% CI [+0.037, +0.107]  n=53
+  watching  mean +0.059  95% CI [+0.014, +0.109]  n=53
+  corr      mean +0.060  95% CI [+0.009, +0.109]  n=53
+  deconf    mean +0.054  95% CI [+0.007, +0.100]  n=50
+  others    mean +0.002  95% CI [-0.018, +0.023]  n=53
+  watching - others: +0.057  95% CI [+0.004, +0.109]  n=53
+  corr - others: +0.058  95% CI [-0.001, +0.115]  n=53
+  watching - corr: -0.001  95% CI [-0.028, +0.027]  n=53
+  deconf - watching: -0.003  95% CI [-0.017, +0.013]  n=50
+  watching (vs even stimulations) / ceiling (odd vs even), ratio of means: 0.63  95% CI [-0.17, 1.35]; median of per-session ratios 0.24
+  watching - others, bootstrapped by recording day (25 days): 95% CI [-0.009, +0.125]
+
