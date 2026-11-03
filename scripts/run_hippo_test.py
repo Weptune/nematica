@@ -190,6 +190,8 @@ def load_session(sdir: Path):
     else:  # some sessions ship without a curation file: every ROI counts as a cell
         iscell = np.ones(len(pos), bool)
     stims = sorted(read_stims(sdir / "stim_frames_true.txt"))
+    if not stims:
+        return {"id": sdir.name, "status": "no stimulations listed"}
     if Fc.shape[0] != len(pos) or Fc.shape[0] != len(iscell):
         return {"id": sdir.name, "status": "ROI counts disagree"}
     return dict(id=sdir.name, Fc=Fc, pos=pos, iscell=iscell, stims=stims, stim_idx=stim_ids[0],
