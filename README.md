@@ -1077,7 +1077,7 @@ individuals' agreement with each other; worms: watching copies 4% to 22%, poke-t
   were tuned toward the worm values, one with unrecorded slow drives at 75% of input and one
   with the network's own rank-3 global modes, with 15 s pokes so that individuals agree at
   0.07 to 0.10. Watching still works: the drift-removed stitched copy reaches 90% to 94%
-  (drives) and 85% to 107% (internal modes), all inside, beside poke-trained 90% to 121%; the old
+  (drives) and 84% to 107% (internal modes), all inside, beside poke-trained 90% to 121%; the old
   watching copy falls to 49% to 64% with strong drives. Caveats from review: the comparison of
   resting statistics was not like-for-like (worm segments have about 115 units and 121 frames,
   lab segments about 45 units and 400 frames; at matched sizes the drives brain matches worm

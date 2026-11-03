@@ -49,6 +49,7 @@
         <li><a href="#mind">Signatures of a mind at rest</a></li>
         <li><a href="#mouse">Beyond the worm: mouse hippocampus</a></li>
         <li><a href="#wall">Where the data runs out</a></li>
+        <li><a href="#trust">How much to trust each finding</a></li>
         <li><a href="#limits">What this does not show</a></li>
       </ol>
     </nav>
@@ -95,7 +96,8 @@
     <p><strong>Watching versus poking.</strong> When every unit is recorded and nothing hidden drives them, a neural network that watches recovers cause and effect well (0.82), though poking still passes it with enough recording (0.91). Add slow hidden signals and none of these watching copies passes 0.62, however it is poked or however much memory it has, while poking reaches 0.82. Recorded like the atlas, half the units at a time, the watching copies stay at about 0.5 or below and poking reaches 0.65 to 0.88 by 40 hours. Poking passes every one of these watching copies by 40 hours of recording in every setting. (These copies all fill unrecorded units with zeros; a better-built copy, below, does much better.)</p>
     <p><strong>Taking the hidden signals out.</strong> Given the strongest slow patterns of its own recordings, a watching copy recovers most of what the hidden signals cost, from 0.61 to 0.77, when every unit is recorded. Recorded like the atlas, the same step changed nothing (0.30 to 0.30), and even the true hidden signals lifted it only to 0.48 against 0.76 for poking. We read this as a limit of the data. It was a limit of the copy.</p>
     <p><strong>Much of that was the copy.</strong> Every watching copy above fills the units a recording missed with zeros, so it learns from only part of its inputs. A copy that learns each pair of units only from the recordings where both were seen, with each unit's slow drift removed, changes the picture. Recorded like the atlas with slow hidden signals, it reaches 0.79 (from 0.34), against 0.85 for poking with the same drift correction; with less data than that it can lead (10 hours of each: 0.71 against 0.59), and with signals as fast as the responses it trails further (0.59 against 0.76). Built better, watching comes close to poking in artificial brains, but does not overtake it when poking has comparable data.</p>
-    <p><strong>Scored exactly as worms are, the difference stays.</strong> Artificial individuals recorded like atlas worms (113 of them, about 2 minutes unpoked, then a poke every 30 seconds) and scored with the unchanged test: the better watching copy reaches 62% to 82% of how well individuals agree, beside 75% to 89% for the poke-trained copy, and passes in two of three groups when the hidden signals are strong. On real worms, built and scored the same way, watching copies reach 4% to 22% and the poke-trained copy 76% to 97%. Real worms are far harder to copy by watching than these artificial brains, and not because of the recording design, the amount of unpoked data or the score. Untested candidates: pokes drive neurons far beyond the range they visit at rest, waking links that are silent in ongoing activity; worm activity is dominated by a few global behavioural states; worm neurons respond nonlinearly in ways these units do not.</p>
+    <p><strong>Scored exactly as worms are, the difference stays.</strong> Artificial individuals recorded like atlas worms (113 of them, about 2 minutes unpoked, then a poke every 30 seconds) and scored with the unchanged test: the better watching copy reaches 62% to 82% of how well individuals agree, beside 75% to 89% for the poke-trained copy, and passes in two of three groups when the hidden signals are strong. On real worms, built and scored the same way, watching copies reach 4% to 22% and the poke-trained copy 76% to 97%. Real worms are far harder to copy by watching than these artificial brains, and not because of the recording design, the amount of unpoked data or the score. </p>
+    <p><strong>Looking for why (exploratory).</strong> We built candidate explanations into the artificial brains one at a time and scored each the same way. A slow calcium indicator changed nothing. Making their resting activity as smooth and low-dimensional as a worm's, whether through hidden outside signals or the network's own global modes, left them easy to copy by watching (84% to 107% of individuals' agreement). Only one change brought watching near the worms' level: connections that stay silent in ongoing activity but carry most of the response to a poke (watching 19% to 28%, poke-trained 82% to 86%). That shows one way the worm result can arise, not that worms work this way; anything a poke evokes that ongoing activity does not express would do the same, including stimulation side effects. Telling these apart needs the same neuron stimulated at several strengths.</p>
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 5b</span>Our first watching copies, in brains whose truth is known</p></div>
       <div data-chart="law"></div>
@@ -199,6 +201,26 @@
       <li>Reporters for whatever carries the slow shared signals.</li>
     </ol>
 
+    <h2 id="trust">How much to trust each finding.</h2>
+    <p>Every major result here was checked by an independent review, but those reviews were done by another instance of the same AI system, not by neuroscientists who know these data. Predictions are written down before data is opened, and changes made afterwards are listed. With that in mind:</p>
+    <div class="table-wrap wide">
+      <table class="data">
+        <thead><tr><th>Finding</th><th>How sure</th><th>Main reason for doubt</th></tr></thead>
+        <tbody>
+          <tr><td>In these worms, copies that never saw a poke fail and poke-trained copies pass</td><td>Strong</td><td>One dataset; watching had only about 3 minutes of unpoked activity per worm</td></tr>
+          <tr><td>Each worm has its own causal fingerprint</td><td>Moderate to strong</td><td>Artefacts specific to one recording are not ruled out</td></tr>
+          <tr><td>The test certifies copies within about 20% of an individual</td><td>Moderate</td><td>Checked only on our own artificial brains</td></tr>
+          <tr><td>In artificial brains, much of the watching shortfall was our method</td><td>Strong, for that kind of network</td><td>One family of artificial networks</td></tr>
+          <tr><td>Worms are far harder to copy by watching than artificial brains scored the same way</td><td>Moderate</td><td>Artificial brains have perfect neuron identities and no imaging artefacts</td></tr>
+          <tr><td>Calcium smearing and worm-like resting activity do not explain it</td><td>Weak</td><td>Few settings, approximate calibration</td></tr>
+          <tr><td>Pathways silent at rest can explain it</td><td>A lead</td><td>Built and tuned to show it is possible, in one artificial brain</td></tr>
+          <tr><td>The shared slow signals are not neuropeptides</td><td>Weak to moderate</td><td>15 worms; watching already near its floor</td></tr>
+          <tr><td>Nothing transfers across contexts</td><td>Moderate, for the tests run</td><td>Small samples, one stimulus</td></tr>
+          <tr><td>Mouse hippocampus</td><td>Inconclusive</td><td>A sham control matches much of the effect</td></tr>
+        </tbody>
+      </table>
+    </div>
+
     <!-- 7 -->
     <h2 id="limits">What this does not show.</h2>
     <ul>
@@ -208,7 +230,7 @@
       <li>The brain that passes the poke test was confirmed on a second, independently drawn split of the worms (echo pattern and spread inside in all three new groups). Both splits come from one lab's recordings.</li>
       <li>The test has a measured resolution: it never flags real worms, always catches errors of half, and often misses errors of about a quarter. A pass means within about 25% of a real worm on these tests.</li>
       <li>On 1 November three of the 113 recordings were found to have been cut short when the archive was unpacked, and were rebuilt. Results marked as rerun use the repaired data; older figures are labelled.</li>
-      <li>The explanation of why watching fails rests on synthetic and artificial brains, linear and nonlinear, and on one prediction confirmed in real worms. What the hidden shared signals are in real worms is unknown; neuropeptides are not the main candidate.</li>
+      <li>Why real worms resist watching is not known. Among the mechanisms we built into artificial brains, only pathways that are silent at rest reproduced it; that is a constructed demonstration of one possibility, not evidence about worms.</li>
       <li>Nothing learned in still, immobilised worms has been shown to carry over to freely moving ones.</li>
       <li>No brain passes everything; each fix so far has cost something elsewhere.</li>
     </ul>
