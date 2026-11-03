@@ -52,6 +52,7 @@ RIDGE = 0.05
 SPEED_LAGS = 8
 MIN_STIMS, MIN_CELLS, MIN_CEILING = 8, 50, 0.1
 N_BOOT = 2000
+MULTI = False   # follow-up (written 3 Nov 2026 before it was run): also sessions with 2 or 3 stimulated cells
 
 
 def spearman(a, b):
@@ -150,28 +151,27 @@ def regress_out(Z, sp, watch_end):
     return Z[:, :watch_end] - (D.T @ beta).T
 
 
-def find_stim_roi(idx, resp_all, iscell, sdir):
-    """Pick the reading of the stimulated index under which that ROI is a top responder."""
+def find_stim_roi(idxs, resp_all, iscell, sdir):
+    """Pick the reading of the stimulated indices under which they respond most (the weakest of
+    them, for several); every stimulated ROI must be in the top 5% of all ROIs."""
     n = len(resp_all)
     cut = np.quantile(resp_all, 1 - TOP_FRACTION)
-    cands = [("all", idx)]
     cells = np.flatnonzero(iscell)
-    if idx < len(cells):
-        cands.append(("cells", int(cells[idx])))
-    old = sdir / "old_cell_idx.npy"
-    if old.exists():
-        o = np.load(old).astype(int).ravel()
-        if idx < len(o):
-            cands.append(("old->new", int(o[idx])))
-        w = np.flatnonzero(o == idx)
-        if len(w):
-            cands.append(("new<-old", int(w[0])))
-    cands = [(how, r) for how, r in cands if 0 <= r < n]
+    o = np.load(sdir / "old_cell_idx.npy").astype(int).ravel() if (sdir / "old_cell_idx.npy").exists() else None
+    readings = {"all": lambda k: k, "cells": lambda k: int(cells[k]) if k < len(cells) else -1}
+    if o is not None:
+        readings["old->new"] = lambda k: int(o[k]) if k < len(o) else -1
+        readings["new<-old"] = lambda k: int(np.flatnonzero(o == k)[0]) if (o == k).any() else -1
+    cands = []
+    for how, f in readings.items():
+        rois = [f(k) for k in idxs]
+        if all(0 <= r < n for r in rois) and len(set(rois)) == len(rois):
+            cands.append((how, rois))
     if not cands:
         return None, "failed"
-    how, r = max(cands, key=lambda c: resp_all[c[1]])
-    if resp_all[r] >= cut:
-        return r, how
+    how, rois = max(cands, key=lambda c: min(resp_all[r] for r in c[1]))
+    if min(resp_all[r] for r in rois) >= cut:
+        return rois, how
     return None, "failed"
 
 
@@ -194,7 +194,9 @@ def load_session(sdir: Path):
     if any(damaged(sdir / f) for f in used):
         return {"id": sdir.name, "status": "file damaged (zeroed by a PC crash)"}
     stim_ids = read_int(sdir / "suite2p_stim.txt")
-    if len(stim_ids) != 1:
+    if MULTI and 1 <= len(stim_ids) <= 3:
+        pass
+    elif len(stim_ids) != 1:
         return {"id": sdir.name, "status": f"{len(stim_ids)} stimulated ROIs listed (need 1)"}
     Fc = np.load(sdir / "Fc.npy").astype(np.float32)
     pos = np.load(sdir / "pos.npy")
@@ -208,7 +210,7 @@ def load_session(sdir: Path):
         return {"id": sdir.name, "status": "no stimulations listed"}
     if Fc.shape[0] != len(pos) or Fc.shape[0] != len(iscell):
         return {"id": sdir.name, "status": "ROI counts disagree"}
-    return dict(id=sdir.name, Fc=Fc, pos=pos, iscell=iscell, stims=stims, stim_idx=stim_ids[0],
+    return dict(id=sdir.name, Fc=Fc, pos=pos, iscell=iscell, stims=stims, stim_idx=list(stim_ids),
                 sdir=sdir, status="ok")
 
 
@@ -233,9 +235,10 @@ def analyse(S):
     if src is None:
         out["status"] = "stimulated ROI not a top responder"
         return out
-    out["stim_response"] = float(resp[src])
+    out["n_stimulated"] = len(src)
+    out["stim_response"] = float(min(resp[r] for r in src))
     d_stim = int(np.median([d for _, d in stims]))
-    dist = np.linalg.norm(S["pos"] - S["pos"][src], axis=1)
+    dist = np.min([np.linalg.norm(S["pos"] - S["pos"][r], axis=1) for r in src], axis=0)
     scored = S["iscell"].copy()
     scored[src] = False
     scored &= ~(dist < NEAR_PX)
@@ -244,8 +247,8 @@ def analyse(S):
     if scored.sum() < MIN_CELLS:
         out["status"] = "too few cells"
         return out
-    use = np.flatnonzero(scored | (np.arange(len(scored)) == src))
-    s_local = int(np.flatnonzero(use == src)[0])
+    use = np.flatnonzero(scored | np.isin(np.arange(len(scored)), src))
+    s_local = [int(np.flatnonzero(use == r)[0]) for r in src]
     sc_local = np.flatnonzero(scored[use])
 
     odd, even = per[0::2].mean(0), per[1::2].mean(0)
@@ -255,7 +258,7 @@ def analyse(S):
     Zw = Z[use][:, :watch_end]
     A = fit_var(Zw)
     out["watching"] = spearman(var_response(A, s_local, d_stim)[sc_local], measured)
-    C = np.corrcoef(Zw)[s_local]
+    C = np.corrcoef(Zw)[s_local].mean(axis=0)
     out["corr"] = spearman(C[sc_local], measured)
     sp = read_speed(S["sdir"], T)
     if sp is not None:
@@ -287,7 +290,12 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", default=str(DATA))
     ap.add_argument("--out", default=str(FIG))
+    ap.add_argument("--multi", action="store_true",
+                    help="follow-up: include sessions with 2 or 3 stimulated cells (all driven together)")
     args = ap.parse_args()
+    global MULTI
+    MULTI = args.multi
+    tag = "hippo_followup" if MULTI else "hippo"
     data, out_dir = Path(args.data), Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
     rows = []
@@ -311,9 +319,9 @@ def main() -> int:
             continue
         prof = np.nanmean(others, 0)
         r["others"] = spearman(prof[r["_bins"]], r["_measured"])
-    keys = ["id", "status", "index_reading", "n_rois", "frames", "watch_frames", "n_stims", "n_scored",
+    keys = ["id", "status", "index_reading", "n_stimulated", "n_rois", "frames", "watch_frames", "n_stims", "n_scored",
             "stim_response", "ceiling", "watching", "corr", "deconf", "others"]
-    with open(out_dir / "hippo_sessions.csv", "w", newline="") as fh:
+    with open(out_dir / f"{tag}_sessions.csv", "w", newline="") as fh:
         w = csv.writer(fh)
         w.writerow(keys)
         for r in rows:
@@ -345,7 +353,7 @@ def main() -> int:
     block("INCLUDED sessions (primary)", inc)
     block("ALL analysable sessions (secondary)", ok)
     text = "\n".join(lines)
-    (out_dir / "hippo_summary.txt").write_text(text + "\n", encoding="utf-8")
+    (out_dir / f"{tag}_summary.txt").write_text(text + "\n", encoding="utf-8")
     print(text)
     return 0
 

@@ -1222,6 +1222,16 @@ recorded at all. If the watching copy reaches most of the ceiling here, expectat
 is wrong and, at least for the local effect of one interneuron, watching a few hundred
 cells is enough.
 
+**Follow-up, written 3 Nov 2026 before it was run (`run_hippo_test.py --multi`).** The
+pre-registered rules leave out sessions in which 2 or 3 cells were stimulated together. The
+follow-up includes them with the same analysis, except: every listed cell must be in the top
+5% of responders (under one common reading of the indices); the watching copy is driven in
+all of them at once; scored cells exclude all of them and anything within 10 pixels of any;
+the correlation model uses the mean correlation with the stimulated cells; the generic profile
+uses distance to the nearest stimulated cell. Same inclusion rules and comparisons, reported
+for all included sessions together and for the multi-cell sessions alone. The pre-registered
+result stays the primary one.
+
 ## Running the benchmark
 
 ```powershell
