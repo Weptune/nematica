@@ -1,6 +1,6 @@
 """The whole workflow in one command. Human test: stream and reduce every recording, then
 score them. Then the mouse hippocampus test: finish its one-pass download if needed, then
-score it. Safe to start while ccep_stream.py is already running in another window: it
+score it. Last, download the mouse touch-cortex sessions (about 12 GB, about 1 GB kept). Safe to start while ccep_stream.py is already running in another window: it
 waits until that run has gone quiet for 30 minutes before doing anything, so the two never
 download at the same time. Then it finishes whatever is missing (including recordings that
 failed earlier), and runs the pre-registered analysis.
@@ -51,7 +51,10 @@ def main() -> int:
         (OUT / "PIPELINE_DONE.txt").write_text(time.strftime("%Y-%m-%d %H:%M:%S") + "\n", encoding="utf-8")
         print("Human test done. Results in docs/figures/ccep_summary.txt", flush=True)
     human_rc = r.returncode
-    return max(human_rc, hippo(py))
+    hippo_rc = hippo(py)
+    print("Touch cortex: downloading (scoring is added once its prediction is written) ...", flush=True)
+    touch_rc = subprocess.run([py, str(ROOT / "scripts" / "touch_stream.py")], cwd=ROOT).returncode
+    return max(human_rc, hippo_rc, touch_rc)
 
 
 def hippo(py: str) -> int:

@@ -114,11 +114,11 @@
         <p>Only copies that learned from pokes. Every kind of network that skipped them fails: fitted to recordings, built from the wiring diagram, randomly wired, trained on a worm's task, or published.</p>
         <a href="findings.html#gallery">Every network family</a>
       </li>
-      <li class="q-strong">
-        <span class="st">Strong evidence</span>
+      <li class="q-open">
+        <span class="st">Reopened</span>
         <h4>Why does watching fail?</h4>
-        <p>Because what goes unrecorded, unseen neurons or slow signals shared across the brain, caps what watching can learn, however long you watch. Poking is not capped. Shown in worms and in artificial brains, and one prediction from it came true on real worms.</p>
-        <a href="#law">The law</a>
+        <p>Not only for the reason we thought. In artificial brains our first watching copies failed partly because of how they were built; built better, watching comes close to poking, even scored exactly as worms are. On real worms the same copies stay far behind. Worms are much harder to copy by watching, and finding why is now the open question.</p>
+        <a href="#law">The gap</a>
       </li>
       <li class="q-blocked">
         <span class="st">Needs new data</span>
@@ -138,23 +138,23 @@
 
 <section class="q-section q-law" id="law" aria-labelledby="law-title">
   <div class="q-inner">
-    <p class="q-kicker">THE LAW WE KEEP FINDING</p>
-    <h2 id="law-title" class="q-title">Watching is capped by what you do not record. Poking is not.</h2>
+    <p class="q-kicker">THE GAP WE FOUND</p>
+    <h2 id="law-title" class="q-title">Artificial brains can nearly be copied by watching. Real worms cannot.</h2>
     <div class="law-grid">
       <div class="law-text">
         <p>To test this where the answer is known, we built artificial brains: nonlinear networks tuned so their responses are as noisy as real worms', with cause and effect known by construction. Then we tried to learn that cause and effect, by watching (with copies that are themselves neural networks) and by poking.</p>
-        <p>When every neuron is recorded and nothing hidden drives them, watching works well. Add slow signals that no recording sees, or record the way real experiments do, half the neurons at a time, and every watching copy falls short, most of them levelling off within hours, while poking keeps climbing past them.</p>
-        <p>Taking the hidden signals out of a watching copy rescues it only when every neuron is recorded (0.61 to 0.77). Recorded like the atlas, it changes nothing (0.30 to 0.30). On real worms, as predicted, it changed nothing too.</p>
+        <p>Our first watching copies fell short whenever slow hidden signals were present or recordings missed neurons, levelling off within hours while poking kept climbing (the chart). We took this as a law. Much of it was our method: those copies filled every neuron a recording missed with zeros.</p>
+        <p>A copy that learns each pair of neurons only from the recordings where both were seen, with slow drift removed, climbs from 0.34 to 0.79, close to drift-corrected poking at 0.85. Scored exactly as worms are, with worm-sized data, it reaches 62% to 82% of how well individuals agree, beside 75% to 89% for a copy trained on pokes. On real worms the same copy reaches 5% to 22%, the poke-trained copy 76% to 97%. Worms are far harder to copy by watching than these artificial brains, and not because of how they are recorded or scored.</p>
       </div>
       <figure class="plate law-plate">
         <div data-chart="law"></div>
-        <figcaption>Correlation of the learned cause and effect with the truth, in artificial brains, by hours of recording. Pink: copies that learned by watching (linear, and a neural network). Black: averaging real pokes. Two brains per setting, averaged.</figcaption>
+        <figcaption>Correlation of the learned cause and effect with the truth, in artificial brains, by hours of recording. Pink: our first watching copies (linear, and a neural network), which fill unrecorded neurons with zeros. Black: averaging real pokes. Two brains per setting, averaged. Built to use only what was recorded, watching comes close to poking (see the numbers below).</figcaption>
       </figure>
     </div>
     <div class="law-numbers">
-      <div class="measure"><span class="v">4 to 7&times;</span><span class="l">how much better pokes from 6 real worms do than watching 58 worms</span></div>
-      <div class="measure"><span class="v">0.62</span><span class="l">the best any watching copy reached with slow hidden signals, however poked or however much memory it had; poking 0.82</span></div>
-      <div class="measure copy"><span class="v">72 of 302</span><span class="l">neurons identified in a typical worm of the best dataset that exists, far from the complete recording that rescuing watching would need</span></div>
+      <div class="measure"><span class="v">0.79</span><span class="l">a better-built watching copy in artificial brains recorded like the worm atlas; drift-corrected poking 0.85</span></div>
+      <div class="measure"><span class="v">62&ndash;82%</span><span class="l">of individuals' agreement for that copy in artificial brains scored like worms; on real worms 5&ndash;22%</span></div>
+      <div class="measure copy"><span class="v">4 to 7&times;</span><span class="l">how much better pokes from 6 real worms do than watching 58 worms</span></div>
     </div>
   </div>
 </section>
@@ -176,8 +176,8 @@
       </a>
       <a class="finding" href="findings.html#lab">
         <div class="thumb" data-chart="law" data-compact></div>
-        <h3>The same law in artificial brains</h3>
-        <p>In networks whose truth is known, every watching copy falls short, including neural networks with memory; poking passes all of them by 40 hours of recording in every setting.</p>
+        <h3>Artificial brains can nearly be copied by watching; worms cannot</h3>
+        <p>Built better, watching comes close to poking in artificial brains, even scored exactly as worms are. On real worms the same copies stay far behind, so worms differ from these brains in a way that matters.</p>
       </a>
       <a class="finding" href="findings.html#lab">
         <div class="thumb" data-chart="rulerTruth" data-compact></div>
@@ -210,8 +210,8 @@
     <div class="next-grid">
       <div class="prediction">
         <p class="pred-label">A prediction, written down before the experiment exists</p>
-        <p class="pred-text">Record a worm's whole brain, with nearly every neuron identified, for 30 to 60 minutes before poking it. Then a copy that only watched, with the slow shared signals taken out, should come close to predicting that same worm's pokes.</p>
-        <p class="pred-foot">If it does, brain copies could be checked without poking every neuron. If it does not, our explanation is wrong. Today a worm offers about 3 usable minutes of unpoked activity: adding its unnamed neurons helps a little (better in 26 of 44 worms), far too little data to decide.</p>
+        <p class="pred-text">Record a worm's whole brain, with nearly every neuron identified, for 30 to 60 minutes before poking it. If missing neurons are why watching fails in worms, a copy that only watched should then come close to predicting that same worm's pokes.</p>
+        <p class="pred-foot">If it does, brain copies could be checked without poking every neuron. If it does not, worms differ from our artificial brains in a deeper way, for example links that stay silent in ongoing activity and only show when a neuron is driven hard. Today a worm offers about 3 usable minutes of unpoked activity, too little to decide.</p>
       </div>
       <ol class="needs">
         <li><b>Complete, fully identified recordings</b> in worms that are then poked.</li>
@@ -223,7 +223,7 @@
     </div>
     <div class="roadmap">
       <div class="stage done"><span class="when">Now</span><h4>The worm</h4><p>A test with known resolution, the watching-versus-poking result, and its explanation.</p></div>
-      <div class="stage done"><span class="when">Now</span><h4>Artificial brains</h4><p>The same law where truth is known; the test checked against it. No data needed.</p></div>
+      <div class="stage done"><span class="when">Now</span><h4>Artificial brains</h4><p>Where truth is known, watching comes close to poking once built right; the test checked against the truth. No data needed.</p></div>
       <div class="stage"><span class="when">Next</span><h4>The decisive recording</h4><p>Long, complete recordings followed by pokes, to test the prediction above.</p></div>
       <div class="stage"><span class="when">Later</span><h4>Bigger brains</h4><p>Any brain with repeated individuals and interventions: fly, fish, mouse, and people with implanted electrodes.</p></div>
     </div>

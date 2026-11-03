@@ -234,6 +234,8 @@ class ClassVAR:
         # classes this worm does not show stay at zero, as missing classes did in training
         seen = np.zeros(C, bool)
         seen[[idx[c] for c in own]] = True
+        if getattr(self, "run_unseen", False):       # stitched copies: unrecorded classes keep running
+            seen[:] = True
         z = np.zeros((C, T + burn))
         A = self.W[:p * C].reshape(p, C, C).copy()     # A[L-1][from, to]
         # the fitted dynamics are slightly explosive for some worms' class sets (slow drifts in

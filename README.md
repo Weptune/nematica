@@ -520,7 +520,10 @@ about the size of the atlas, which has about 8,000 pulses.)
 - **Shared, unrecorded drives break it, and more data does not help.** A few slow
   brain-wide signals that no recording captures put a ceiling on watching that is reached
   within a few hours and never lifted (0.20 at 2.5 h and at 70 h). Poking is not fooled:
-  it keeps improving and passes watching between 40 and 70 hours of recording.
+  it keeps improving and passes watching between 40 and 70 hours of recording. (True of
+  the zero-filling linear watcher used here. In the artificial lab's nonlinear brains, with
+  drives at 25% of input, a stitched watcher with slow drift removed gets much closer to
+  poking; see part D of the artificial lab below. This synthetic worm was not re-tested.)
 - **Real worms look like the drive-dominated case.** In the two unstimulated immobilised
   worms of the atlas archive, the top three principal components carry 40% of the
   variance; in the synthetic worm that level is reached with drives of about 5% of the input
@@ -936,7 +939,8 @@ With every unit recorded, taking out the slow patterns recovers most of what the
 (0.61 to 0.77, near poking's 0.81), and knowing the drives would beat poking. With
 atlas-like recording the estimated patterns do nothing (0.30 to 0.30), and even the true
 drives lift the watcher only to 0.48, far below poking's 0.76: once much of the brain goes
-unrecorded, knowing the drives is not enough.
+unrecorded, knowing the drives is not enough. (Part D, below, shows this holds only for this zero-filling
+watcher.)
 
 **The same on real worms (`scripts/run_deconfound_atlas.py`,
 `docs/figures/deconfound_atlas.csv`).** NEMATICA's watching copy was refitted with each
@@ -946,6 +950,113 @@ poked). Echo agreement, pools 0 / 1 / 2: 0.0095 / 0.0137 / 0.0040 without, 0.009
 what the artificial lab predicts for recordings that miss much of the brain. (The atlas's
 unpoked stretches are short, so a 30 s smoothing is a coarse estimate of the slow patterns;
 that is a second reason this could fail.)
+
+**D. Is the watching limit the data or the method? (3 Nov 2026, `scripts/run_ann_stitch.py`,
+`docs/figures/ann_stitch.csv`; reviewed independently before release.)** Every watching copy
+above, like NEMATICA's watching copy for worms, fills each recording's unrecorded units with
+zeros, so its regressions silently drop the inputs it did not see. A watcher that STITCHES
+recordings together avoids this: the lag-0 and lag-1 covariance of each pair of units is
+pooled over the recordings where both were seen, and the dynamics are A = C1 C0^-1. A second
+version first removes each unit's 30 s moving average (the smoothing used in part C, fixed
+before any of these scores) to take out slow drives. The ridge is chosen on held-out
+recordings (fit on half, predict the other half's lag-1 covariances; no poke data). This rule
+was added after a fixed ridge collapsed in one setting; an automatic choice of the drift
+window was tried and dropped, because held-out losses on differently filtered data are not
+comparable. Poking is scored two ways: the plain average response (as in parts A to C) and
+with a drift-corrected baseline (a line between the 10 frames before the kick and the 10
+after the response window), so both sides get drift correction. Every estimate is scored on
+the same pairs. Two brains (seeds 0, 1; worm-calibrated: rho 1.3, kicks of 6 held for 4 s);
+mean (range) of the correlation with the true cause and effect:
+
+| Recording, hidden drives, data | Old watcher | Stitched | Stitched, drift removed | Poking | Poking, drift-corrected |
+|---|---|---|---|---|---|
+| every unit, none, 40 h | 0.92 | 0.91 | 0.89 | 0.90 | 0.92 |
+| half per recording, none, 40 h | 0.54 | 0.91 | 0.88 | 0.82 | 0.85 |
+| atlas-like, none, 40 h | 0.46 | 0.81 | 0.77 | 0.88 | 0.90 |
+| every unit, 25% slow, 40 h | 0.64 | 0.63 | 0.87 | 0.81 | 0.87 |
+| half per recording, 25% slow, 40 h | 0.36 | 0.32 | 0.86 | 0.70 | 0.79 |
+| atlas-like, 25% slow, 40 h | 0.34 | 0.30 | 0.79 (0.78 to 0.80) | 0.78 | 0.85 |
+| the same, 2.5 h of each | 0.38 | 0.23 | 0.49 | 0.35 | 0.43 |
+| the same, 10 h of each | 0.33 | 0.26 | 0.71 | 0.48 | 0.59 |
+| the same, fast drives (10 s) | 0.32 | 0.39 | 0.59 | 0.67 | 0.76 |
+| the same, a different individual per recording (sigma 0.3) | 0.38 | 0.32 | 0.80 (0.78 to 0.82) | 0.73 | 0.81 |
+| the same, individuals, 5 h of each | 0.33 | 0.25 | 0.59 (0.53 to 0.64) | 0.33 | 0.41 |
+| atlas-sized: 113 individuals, 2.5 min watched and 37 min poked each | 0.36 | 0.40 | 0.75 (0.72 to 0.77) | 0.81 | 0.87 |
+
+"Stitched" columns use the held-out ridge. What this shows, in the artificial lab:
+- **Most of the watching gap was the method.** Under atlas-like recording with slow drives
+  the old watcher reaches 0.34; built to use only what each recording saw, with slow drift
+  removed, the same data gives 0.79. Part C's sentence "once much of the brain goes
+  unrecorded, knowing the drives is not enough" was true of the zero-filling watcher only.
+- **Poking still leads when it has comparable data.** Against drift-corrected poking the
+  fixed watcher is behind by 0.06 (atlas-like, 40 h), 0.13 without drives, 0.12 at atlas size
+  (the atlas pokes far more than it records unpoked), and 0.17 with fast drives, which a 30 s
+  filter cannot separate from responses. It is level only with a different individual per
+  recording (0.80 against 0.81).
+- **With equal, scarce data, watching leads** (2.5 h: 0.49 against 0.43; 10 h: 0.71 against
+  0.59; individuals, 5 h: 0.59 against 0.41), because every frame of watching informs every
+  pair while a poke informs one column.
+- **Caveats.** Two brains per setting; differences of about 0.04 or less mean nothing. Scores
+  depend on the drift window: in a check by the reviewer, windows of 10, 30, 60 and 120 s gave
+  0.72, 0.80, 0.74 and 0.66 (40 h, slow drives, seed 0), and without drives longer windows do
+  better. The kick is a clamp near saturation, which suits the lab's kick; the worm protocol
+  clamps to the measured response. A latent state-space watcher (`fit_latent`) is written
+  but not run.
+
+**The same on real worms (`scripts/run_worm_stitch.py`, `docs/figures/worm_stitch.csv`).**
+The stitched copy (VAR(3) on unpoked frames, covariances pooled per pair of classes over the
+worms that recorded both, ridge chosen on the fold's validation worms by the same rule,
+unrecorded classes left running when poked; for the drift-removed version the 30 s average
+is taken over unpoked frames only) was scored on the poke test exactly like every copy.
+Each atlas worm records a median of about two thirds of the fold's neuron classes, so the old
+copy zero-fills about a third of its inputs. Echo agreement, pools 0 / 1 / 2 (real
+worm-to-worm agreement 0.095 / 0.107 / 0.093):
+
+| Copy | Pool 0 | Pool 1 | Pool 2 |
+|---|---|---|---|
+| existing watching copy (zero-filled) | 0.0095 | 0.0137 | 0.0040 |
+| stitched | 0.0102 | 0.0241 | 0.0186 |
+| stitched, slow drift removed | 0.0143 | 0.0117 | 0.0047 |
+| the same, unrecorded classes held at zero | 0.0126 | 0.0137 | 0.0073 |
+| (poke-trained copy, earlier runs) | 0.092 | 0.081 | 0.076 |
+
+All watching copies are outside in every pool. Stitching helps somewhat in pools 1 and 2
+(about 2 and 5 times the old copy's agreement) but reaches only 11% to 22% of the worm-to-worm
+agreement; removing drift adds nothing. The poke-trained copy reaches 76% to 97%.
+
+**The decisive check: lab brains through the worm pipeline (`scripts/run_ann_ruler_stitch.py`,
+`docs/figures/ann_ruler_stitch_*.csv`).** The lab and worm numbers above are not comparable
+(correlation with the true K against echo agreement with real worms; long continuous watching
+against short fragments between pokes). So lab brains were recorded exactly like atlas worms
+(113 individuals, sigma 0.3, 37 min each, half the units seen, 30% never, a poke every 30 s
+after about 2 minutes of unpoked activity, matching the atlas median of 232 usable unpoked
+frames), and every copy was fitted and scored by the unchanged pipeline. (A first attempt
+with the earlier lab recording design, pokes from the first 30 s, left only 57 usable
+unpoked frames per individual and was stopped; in its first pool every watching copy failed.)
+Echo agreement as a share of the individuals' agreement with each other:
+
+| Copy | Lab brains, drives 5% | Lab brains, drives 25% | Real worms |
+|---|---|---|---|
+| existing watching copy | 63 / 64 / 72% | 68 / 64 / 68% | 10 / 13 / 4% |
+| stitched | 52 / 51 / 53% | 60 / 51 / 57% | 11 / 22 / 20% |
+| stitched, slow drift removed | 62 / 66 / 71% | 78 / 82 / 79% (inside in 2 of 3) | 15 / 11 / 5% |
+| poke-trained copy | 75 / 85 / 89% (inside in 2 of 3) | 76 / 82 / 84% (inside in 2 of 3) | 97 / 76 / 82% |
+| another individual (lab only) | 91 / 93 / 97% | 90 / 108 / 95% | |
+
+Pools 0 / 1 / 2. In lab brains scored exactly as worms are, every watching copy reaches
+about half to four fifths of the individuals' agreement, and with strong drives the
+drift-removed stitched copy is level with the poke-trained copy (78 to 82% against 76 to 84%,
+both inside in 2 of 3 pools). On real worms the same copies reach 4% to 22% while the
+poke-trained copy reaches 76% to 97%. The gap between the poke-trained copy and the best watching
+copy is 0 to 20 points of the individuals' agreement in lab brains and 55 to 90 points in worms, with the same data design, copies
+and test. **So real worms are much harder to copy by watching than these artificial brains,
+and the reason is not the recording design, the amount of unpoked data or the scoring.**
+Even the old watching copy reaches about two thirds in lab brains, so this was already true
+before stitching; part D makes it the clearest open question. Untested candidates: optogenetic
+pokes drive neurons far beyond the range they visit at rest, waking links that are silent in
+ongoing activity; worm activity is dominated by a few global behavioural states rather than
+many weak couplings; worm neurons respond to inputs nonlinearly in ways tanh units do not.
+
 
 **Per-worm test of "record everything", written before running (2 Nov 2026,
 `scripts/run_own_worm_watch.py`).** The atlas names a median of 72 neurons per worm but
@@ -986,10 +1097,13 @@ Everything above that can be done with existing data has been tried at least onc
 left needs data that does not exist yet, as far as we know. In order of what it would
 unlock:
 
-1. **Complete, fully identified recordings.** The artificial lab says watching can be
-   rescued only when every neuron is recorded (part C), and the real-worm attempt fails as
-   predicted. The atlas identifies a median of 72 neurons per worm (of 123 tracked, in a
-   nervous system of 302). Needed: whole-brain
+1. **Complete, fully identified recordings.** The artificial lab once said watching can be
+   rescued only when every neuron is recorded (part C); part D (3 Nov) showed that was the
+   zero-filling watcher, not the data: a stitched watcher comes close to poking in the lab,
+   even scored through the worm pipeline, but stays far below it on real worms. So whether complete recordings would
+   rescue watching in worms is open, and this is the data that would settle it. The atlas
+   identifies a median of 72 neurons per worm (of 123 tracked, in a nervous system of 302).
+   Needed: whole-brain
    recordings with every neuron identified, ideally in the same worms that are then poked,
    so a copy fitted by watching can be checked against pokes in the same animals.
 2. **Repeated pokes of the same neurons in the same worm.** Worms have individual echoes,
@@ -1005,12 +1119,12 @@ unlock:
    neuropeptide release; what carries it (other neuromodulators, unrecorded neurons, the
    body's state) needs reporters for those sources.
 
-One further step is possible without new data and is not done: a watching copy with a
-latent-variable model trained properly over long windows (part A's memory tests used 5 to
-30 s). Part C bounds the part of its job that is inferring the drives: a linear watcher
-given the true drives reaches 0.48 under atlas-like recording, against 0.76 for poking. A
-latent model that also infers the unrecorded neurons themselves is not bounded by this,
-and has not been tried.
+One further step is possible without new data and is not done: a watching copy with
+latent variables fitted properly over long windows. Part C's bound on such a model (0.48
+under atlas-like recording) applied to the zero-filling watcher and no longer holds; part D
+shows the simpler stitched watcher already comes close to poking in the lab but not in worms. A
+latent state-space version (`fit_latent` in `scripts/run_ann_stitch.py`, fitted by EM with a
+steady-state Kalman smoother) is written but has not been run.
 
 ## Beyond the worm: the same test in human brains (pre-registered 2 Nov 2026)
 
