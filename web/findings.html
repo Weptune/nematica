@@ -49,6 +49,7 @@
         <li><a href="#mind">Signatures of a mind at rest</a></li>
         <li><a href="#mouse">Beyond the worm: mouse hippocampus</a></li>
         <li><a href="#wall">Where the data runs out</a></li>
+        <li><a href="#checks">Two checks on the headline</a></li>
         <li><a href="#trust">How much to trust each finding</a></li>
         <li><a href="#limits">What this does not show</a></li>
       </ol>
@@ -201,13 +202,17 @@
       <li>Reporters for whatever carries the slow shared signals.</li>
     </ol>
 
+    <h2 id="checks">Two checks on the headline.</h2>
+    <p><strong>It is about which neuron was poked.</strong> If most of what follows a poke were the same whichever neuron was poked, such as a startle or a side effect of the light, poke-trained copies could pass just by learning that one response. A copy that knows only that something was poked, not what, fails as badly as the watching copies (echo agreement 0.001 to 0.012, against 0.08 to 0.09 for the poke-trained copy and about 0.1 between real worms). The test measures which neuron causes what.</p>
+    <p><strong>It survives independent code.</strong> A standalone script using none of our pipeline, with its own simple definitions, gives the same order: watching does a fifth to a quarter as well as the average of other worms' pokes. How far watching falls short of a real worm depends on how noise is handled, so we quote that number with care.</p>
+
     <h2 id="trust">How much to trust each finding.</h2>
     <p>Every major result here was checked by an independent review, but those reviews were done by another instance of the same AI system, not by neuroscientists who know these data. Predictions are written down before data is opened, and changes made afterwards are listed. With that in mind:</p>
     <div class="table-wrap wide">
       <table class="data">
         <thead><tr><th>Finding</th><th>How sure</th><th>Main reason for doubt</th></tr></thead>
         <tbody>
-          <tr><td>In these worms, copies that never saw a poke fail and poke-trained copies pass</td><td>Strong</td><td>One dataset; watching had only about 3 minutes of unpoked activity per worm</td></tr>
+          <tr><td>In these worms, copies that never saw a poke fail and poke-trained copies pass</td><td>Strong</td><td>One dataset; watching had only about 3 minutes of unpoked activity per worm. Recomputed with independent code; not explained by a generic response to stimulation</td></tr>
           <tr><td>Each worm has its own causal fingerprint</td><td>Moderate to strong</td><td>Artefacts specific to one recording are not ruled out</td></tr>
           <tr><td>The test certifies copies within about 20% of an individual</td><td>Moderate</td><td>Checked only on our own artificial brains</td></tr>
           <tr><td>In artificial brains, much of the watching shortfall was our method</td><td>Strong, for that kind of network</td><td>One family of artificial networks</td></tr>

@@ -1,0 +1,16 @@
+Design for a graded-stimulation experiment (scripts/design_graded_stim.py, 3 Nov 2026; lab brains, 60 trials per strength)
+Strengths (kick per frame): 0.25 / 0.5 / 1 / 2 / 6; response = mean of the 10 strongest responders, signed
+baseline brain:
+  unit  31: response by strength -0.015 / -0.043 / +0.058 / +0.029 / +0.103; curvature -0.28; detected (p<0.05) with 5/10/20 trials per strength: 0.05 / 0.01 / 0.04
+  unit  73: response by strength +0.009 / +0.018 / +0.040 / +0.064 / +0.098; curvature +0.27; detected (p<0.05) with 5/10/20 trials per strength: 0.12 / 0.10 / 0.17
+  unit  59: response by strength -0.000 / +0.047 / +0.014 / +0.107 / +0.119; curvature +0.76; detected (p<0.05) with 5/10/20 trials per strength: 0.16 / 0.18 / 0.31
+  unit  36: response by strength -0.025 / +0.042 / +0.046 / +0.047 / +0.084; curvature -0.39; detected (p<0.05) with 5/10/20 trials per strength: 0.04 / 0.04 / 0.02
+  unit   4: response by strength +0.014 / +0.024 / +0.056 / +0.028 / +0.077; curvature -0.28; detected (p<0.05) with 5/10/20 trials per strength: 0.05 / 0.02 / 0.01
+  unit  97: response by strength +0.070 / +0.026 / +0.070 / +0.051 / +0.146; curvature +0.53; detected (p<0.05) with 5/10/20 trials per strength: 0.10 / 0.11 / 0.19
+silent-link brain:
+  unit  31: response by strength +0.003 / +0.016 / +0.062 / +0.070 / +0.123; curvature +0.01; detected (p<0.05) with 5/10/20 trials per strength: 0.09 / 0.07 / 0.05
+  unit  73: response by strength -0.016 / +0.016 / +0.018 / +0.041 / +0.084; curvature +0.36; detected (p<0.05) with 5/10/20 trials per strength: 0.11 / 0.12 / 0.19
+  unit  59: response by strength -0.035 / +0.028 / +0.054 / +0.133 / +0.169; curvature +0.15; detected (p<0.05) with 5/10/20 trials per strength: 0.13 / 0.13 / 0.18
+  unit  36: response by strength -0.026 / +0.010 / +0.034 / +0.059 / +0.180; curvature +0.47; detected (p<0.05) with 5/10/20 trials per strength: 0.20 / 0.21 / 0.27
+  unit   4: response by strength +0.020 / +0.002 / +0.013 / +0.022 / +0.093; curvature +0.93; detected (p<0.05) with 5/10/20 trials per strength: 0.16 / 0.24 / 0.35
+  unit  97: response by strength +0.053 / +0.024 / +0.022 / +0.111 / +0.223; curvature +1.04; detected (p<0.05) with 5/10/20 trials per strength: 0.43 / 0.59 / 0.80

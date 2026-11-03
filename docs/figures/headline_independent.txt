@@ -1,0 +1,5 @@
+Independent recomputation of the headline worm result (scripts/check_headline_independent.py, 3 Nov 2026)
+113 worms
+pool 0: worm-to-worm 0.115   poke average 0.231   watching 0.051   (watching / worm-to-worm 0.44, poke / worm-to-worm 2.01)
+pool 1: worm-to-worm 0.120   poke average 0.235   watching 0.043   (watching / worm-to-worm 0.36, poke / worm-to-worm 1.96)
+pool 2: worm-to-worm 0.132   poke average 0.227   watching 0.068   (watching / worm-to-worm 0.52, poke / worm-to-worm 1.73)

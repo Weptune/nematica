@@ -1142,6 +1142,48 @@ do. The small gain from recording more of the worm is in the direction the theor
 predicts, but far too small, on far too little data, to carry weight. This is the limit of
 what existing data can say.
 
+## Checks on the worm headline (3 Nov 2026)
+
+**Is the poke test measuring specific cause and effect, or a stereotyped response to any poke?
+(`scripts/run_generic_poke.py`, `docs/figures/generic_poke.csv`.)** If most of what follows a
+poke were the same whichever neuron was poked (a state change, a startle, a side effect of the
+light), copies trained on pokes could pass by learning that one response, and the gap between
+watching and poking would say little about causal structure. A "generic" copy, identical to the
+poke-trained copy except that every class answers every poke with its average response to pokes
+of all classes, was scored with the unchanged test. Echo agreement, pools 0 / 1 / 2:
+
+| Copy | Pool 0 | Pool 1 | Pool 2 |
+|---|---|---|---|
+| poke-trained (knows which class was poked) | 0.092 | 0.081 | 0.076 |
+| generic (knows only that something was poked) | 0.007 | 0.012 | 0.001 |
+| real worms with each other | 0.095 | 0.107 | 0.093 |
+
+The generic copy fails as badly as the watching copies. So the test measures which neuron causes
+what, and a stereotyped response to stimulation is not what the poke-trained copy learns. This
+also makes a generic side effect of stimulation an unlikely explanation of why worms resist
+watching (it remains possible for effects specific to each stimulated neuron).
+
+**Independent recomputation (`scripts/check_headline_independent.py`,
+`docs/figures/headline_independent.txt`).** A standalone script using only numpy and the raw
+atlas files, with its own simple definitions (classes by stripping L/R, responses over 0 to
+15 s in units of each neuron's unpoked SD, Pearson agreement over shared pairs, every third
+worm held out, a zero-filled ridge VAR(1) as the watching copy) gives, pools 0 / 1 / 2:
+worm-to-worm 0.115 / 0.120 / 0.132; the poke average of training worms 0.231 / 0.235 / 0.227;
+watching 0.051 / 0.043 / 0.068. The order holds: watching does a fifth to a quarter as well as
+the poke average. How far watching falls short of a real worm depends on how noise is handled:
+here noise-free predictions are compared (watching 36% to 52% of worm-to-worm, the poke average
+above it), while the ruler simulates single, noisy pokes (4% to 22%). "Watching is several
+times worse than poking" is robust to this; the exact share of a real worm is not.
+
+**Design for the experiment that could test the silent-pathway lead
+(`scripts/design_graded_stim.py`, `docs/figures/design_graded_stim.txt`).** Stimulating the same
+neuron at five strengths in lab brains: with silent links, downstream responses rise more
+steeply at the top strengths in 6 of 6 stimulated units; with ordinary links, in 3 of 6, because
+ordinary responses also saturate. Per neuron, 20 trials per strength detect it 5% to 80% of the
+time, with false alarms up to 31% in the ordinary brain. So a decisive experiment needs many
+stimulated neurons, 4 or 5 strengths and 20 or more trials each, judged on the pattern across
+neurons, not on single neurons.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
