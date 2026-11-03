@@ -1042,9 +1042,25 @@ better than the watching copy (pokes beat watching across individuals, as in wor
 the watching copy clearly beats distance far from the stimulated site, expectation (1) is
 wrong, and recording a small part of a brain is less limiting than the worm suggests.
 
-**Plan.** A pilot on the 10 smallest patients (about 17 GB), processed on the machine that
-holds the data into small per-patient summaries, before deciding on the rest (about
-289 GB in all).
+**Analysis details, fixed 3 Nov 2026 before any reduced human recording was looked at.**
+Response strength of an electrode to a stimulated pair: root mean square of the average
+response from 10 to 100 ms (sign-free, since a distance model cannot predict sign).
+Scores are Spearman rank correlations across (stimulated pair, electrode), computed per
+recording and averaged per patient; electrodes of the stimulated pair are excluded. Watching
+copy: VAR(5) at 512 Hz from the between-pulse statistics, ridge 0.001 x the mean diagonal,
+pulsed by setting the two stimulated electrodes to +1 and -1 for one sample and running
+100 ms forward (sensitivity check: both +1). Distance model: 1 / distance to the nearer
+stimulated electrode (MNI millimetres). Other patients: mean z-scored log response strength
+for the same pair of Destrieux regions (stimulated region taken from the first electrode
+of the pair), from all other patients, where at least 3 other patients cover that region
+pair. Ceiling: odd against even pulses, Spearman. Far set: electrodes more than 20 mm from
+both stimulated electrodes. Patient-level comparisons: paired differences with 95%
+bootstrap intervals over patients. Patients with fewer than 10 stimulated pairs or a
+ceiling below 0.2 are reported but left out of the comparisons.
+
+**Plan.** All 117 recordings (about 289 GB) are streamed one at a time on a local machine
+and reduced to small per-recording summaries (`scripts/ccep_stream.py`, `scripts/ccep_extract.py`),
+then scored by `scripts/run_ccep_test.py`.
 
 ## Running the benchmark
 
