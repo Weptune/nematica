@@ -1057,6 +1057,54 @@ pokes drive neurons far beyond the range they visit at rest, waking links that a
 ongoing activity; worm activity is dominated by a few global behavioural states rather than
 many weak couplings; worm neurons respond to inputs nonlinearly in ways tanh units do not.
 
+**E to G. Why do worms resist watching? (3 Nov 2026, exploratory, not pre-registered;
+`scripts/run_ann_calcium.py`, settings for every output in `docs/figures/ann_EFG_settings.md`;
+reviewed independently.)** Candidate explanations were built into the lab brains one at a time,
+each scored through the unchanged worm pipeline (as in part D's decisive check, 113
+individuals, atlas-format recordings). Shares are a copy's echo agreement divided by the
+individuals' agreement with each other; worms: watching copies 4% to 22%, poke-trained 76% to
+97%, individuals agree at 0.09 to 0.11.
+
+- **E. A slow calcium indicator** (dynamics integrated in 5 substeps per frame, seen through a
+  1.5 s indicator; pool 0 only): watching copies 60% to 75%, poke-trained 93%, the same as with
+  direct readout (old watching copy 0.60 both ways). A 1.5 s indicator does not explain the
+  gap here. Narrow: one indicator speed, one pool, individual agreement not recalibrated (0.15),
+  and the model neurons were not made faster than the frame, which is where an indicator
+  should matter most.
+- **F. Worm-like resting activity.** In the atlas's longest unpoked stretches, resting
+  activity is smoother and lower-dimensional than in the lab brains (lag-1 autocorrelation
+  0.90 against 0.64; participation ratio 0.11 of recorded units against 0.43). Two lab brains
+  were tuned toward the worm values, one with unrecorded slow drives at 75% of input and one
+  with the network's own rank-3 global modes, with 15 s pokes so that individuals agree at
+  0.07 to 0.10. Watching still works: the drift-removed stitched copy reaches 90% to 94%
+  (drives) and 85% to 107% (internal modes), all inside, beside poke-trained 90% to 121%; the old
+  watching copy falls to 49% to 64% with strong drives. Caveats from review: the comparison of
+  resting statistics was not like-for-like (worm segments have about 115 units and 121 frames,
+  lab segments about 45 units and 400 frames; at matched sizes the drives brain matches worm
+  dimensionality but not smoothness, the internal brain the reverse), and these brains used
+  longer pokes than the others.
+- **G. Links that are silent at rest.** A second, sparse set of connections that carries a
+  unit's signal only above 0.98 (resting activity crosses it in 0.3% to 1.4% of frames; a held
+  poke drives the unit to 0.99999), on the baseline brain, with 2 s pokes so that individuals
+  agree at 0.10 to 0.12. Watching copies fall to 19% to 28%; the poke-trained copy reaches 82%
+  to 86% (all 3 pools). With weaker silent links, watching is 48% to 52%. A control on the
+  baseline brain with the same 2 s pokes keeps watching at 59% to 63%, so the poke length is
+  not the cause.
+
+**What this does and does not show.** Among the mechanisms tested, only one brought watching
+copies near the worms' level: links that are silent at rest yet carry most of the response to a
+poke (in the strong setting, about 70% of the evoked pattern travels through them). This is a
+constructed demonstration of sufficiency in one species brain with fixed random seeds, not
+evidence that worms have threshold-gated links. Anything that a poke evokes but ongoing activity
+does not express would do the same: other silent pathways, outputs that a neuron's calcium
+signal does not reflect, state changes caused by the poke, or side effects of the stimulation
+itself (off-target activation, light artefacts). The lab brains also differ from the atlas in
+ways not tested here (perfect neuron identities, no naming errors or class pooling). An attempt
+to see a threshold fingerprint directly in worm data (`scripts/diag_gating_fingerprint.py`) was
+uninformative: it did not detect the gating in a lab brain known to have it. A control adding
+silent links to the worm-like brains of F is running. Telling these explanations apart needs
+new data, above all the same neuron stimulated at several strengths in the same worms.
+
 
 **Per-worm test of "record everything", written before running (2 Nov 2026,
 `scripts/run_own_worm_watch.py`).** The atlas names a median of 72 neurons per worm but

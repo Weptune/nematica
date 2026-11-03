@@ -1,0 +1,5 @@
+sigma,fold,copy,echo_agreement,real_agreement,verdict,equivalence,activity_inside,activity_levels,true_copy_vs_individuals,true_individuals_vs_each_other,mean_echo_copy_vs_individuals,mean_echo_individuals_vs_each_other,share,tau,act_L1.distribution,act_L2.correlation,act_L4.leadlag
+0.3,0,another_individual,0.0548,0.0587,inside,agrees,2,3,nan,nan,nan,nan,0.05,90.0,inside,too typical,inside
+0.3,0,var3_spontaneous,0.0201,0.0587,outside,not shown,0,3,,nan,nan,nan,0.05,90.0,outside,outside,outside
+0.3,0,stitch3_hp,0.0167,0.0587,outside,not shown,1,3,,nan,nan,nan,0.05,90.0,outside,outside,inside
+0.3,0,hybrid_kernels,0.0455,0.0587,inside,agrees,0,3,,nan,nan,nan,0.05,90.0,outside,outside,outside
