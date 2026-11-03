@@ -16,6 +16,8 @@ LOWRANK 0, KICK_FRAMES 8).
 | ann_silent_links.csv | 0,1,2 | 0.05 | GATED=1.5 KICK_FRAMES=4 |
 | ann_silent_links_g1.5_f2_fold0.csv | 0 | 0.05 | GATED=1.5 KICK_FRAMES=2 |
 | ann_control_shortpoke_fold0.csv | 0 | 0.05 | KICK_FRAMES=4 |
+| ann_silent_links_on_drives_fold0.csv | 0 | 0.75 | GATED=1.5 KICK_FRAMES=16 |
+| ann_silent_links_on_internal_fold0.csv | 0 | 0.05 | GATED=1.5 LOWRANK=1.7 KICK_FRAMES=16 |
 
 Calibration runs (individual agreement only, pool 0): drives brain with KICK_FRAMES 16 / 30 / 60
 gave 0.057 / 0.095 / 0.063; internal brain with KICK_FRAMES 30 gave 0.088.

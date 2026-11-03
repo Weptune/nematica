@@ -1101,8 +1101,11 @@ signal does not reflect, state changes caused by the poke, or side effects of th
 itself (off-target activation, light artefacts). The lab brains also differ from the atlas in
 ways not tested here (perfect neuron identities, no naming errors or class pooling). An attempt
 to see a threshold fingerprint directly in worm data (`scripts/diag_gating_fingerprint.py`) was
-uninformative: it did not detect the gating in a lab brain known to have it. A control adding
-silent links to the worm-like brains of F is running. Telling these explanations apart needs
+uninformative: it did not detect the gating in a lab brain known to have it. Control (pool 0):
+the same silent links added to the two worm-like brains of F (8 s pokes) give watching copies
+19% to 28% and the poke-trained copy 93% (drives brain) and 96% (internal modes), both inside,
+with individuals agreeing at 0.14 and 0.16 (somewhat more reliable than worms). So the effect
+does not depend on the baseline brain's resting activity. Telling these explanations apart needs
 new data, above all the same neuron stimulated at several strengths in the same worms.
 
 
