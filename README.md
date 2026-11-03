@@ -1086,7 +1086,7 @@ average), z-scored on the watching period. Response to one stimulation: mean ove
 frames (about 3 s) after the stimulation ends, minus the mean of the 17 frames before it.
 The stimulated ROI number is read as an index into all ROIs, into the curated cells, or
 through `old_cell_idx`; the reading under which that ROI responds most is used, and it must
-be in the top 5% of responders or the session is excluded. Scored cells: curated cells,
+be in the top 5% of responders or the session is excluded. Scored cells: curated cells (all ROIs when a session has no curation file),
 minus the stimulated ROI and any ROI within 10 pixels of it. Models: (a) watching copy,
 a VAR(1) fitted to the watching period (ridge 0.05 times the mean variance), the
 stimulated cell driven by +1 for the stimulation's length, read in the same window;

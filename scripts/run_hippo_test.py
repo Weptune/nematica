@@ -12,7 +12,7 @@ Per session (data/derived/hippo/<id>/, made by hippo_stream.py):
   check    the stimulated index is read as an index into all ROIs, into the curated-cell
            list, or through old_cell_idx; the reading giving the largest response is used,
            and that ROI must be in the top 5% of all ROIs, or the session is excluded
-  scored   curated cells (iscell), minus the stimulated ROI and any ROI within 10 px of it
+  scored   curated cells (iscell; all ROIs if a session has no iscell file), minus the stimulated ROI and any ROI within 10 px of it
   ceiling  Spearman between responses from odd and even stimulations
   models   watching   VAR(1) fitted to the watching period (ridge 0.05 x mean variance),
                       stimulated cell driven +1 for d frames, response read in the same window
@@ -176,7 +176,7 @@ def find_stim_roi(idx, resp_all, iscell, sdir):
 
 
 def load_session(sdir: Path):
-    need = ["Fc.npy", "pos.npy", "iscell.npy", "stim_frames_true.txt", "suite2p_stim.txt"]
+    need = ["Fc.npy", "pos.npy", "stim_frames_true.txt", "suite2p_stim.txt"]
     if not all((sdir / f).exists() for f in need):
         return None
     stim_ids = read_int(sdir / "suite2p_stim.txt")
@@ -184,8 +184,11 @@ def load_session(sdir: Path):
         return {"id": sdir.name, "status": f"{len(stim_ids)} stimulated ROIs listed (need 1)"}
     Fc = np.load(sdir / "Fc.npy").astype(np.float32)
     pos = np.load(sdir / "pos.npy")
-    iscell = np.load(sdir / "iscell.npy")
-    iscell = (iscell[:, 0] if iscell.ndim == 2 else iscell) > 0.5
+    if (sdir / "iscell.npy").exists():
+        iscell = np.load(sdir / "iscell.npy")
+        iscell = (iscell[:, 0] if iscell.ndim == 2 else iscell) > 0.5
+    else:  # some sessions ship without a curation file: every ROI counts as a cell
+        iscell = np.ones(len(pos), bool)
     stims = sorted(read_stims(sdir / "stim_frames_true.txt"))
     if Fc.shape[0] != len(pos) or Fc.shape[0] != len(iscell):
         return {"id": sdir.name, "status": "ROI counts disagree"}
