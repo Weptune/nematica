@@ -1269,6 +1269,25 @@ ceiling below 0.2 are reported but left out of the comparisons.
 and reduced to small per-recording summaries (`scripts/ccep_stream.py`, `scripts/ccep_extract.py`),
 then scored by `scripts/run_ccep_test.py`.
 
+**Interim result, 4 Nov 2026, on 100 of 117 recordings (63 of 74 patients; the download is
+still running; not yet independently reviewed; `docs/figures/interim_100rec_ccep_*`).** This is
+a look before the end: the pre-registered result is the one on all 117 recordings, produced
+automatically by `scripts/ccep_pipeline.py`, and it will be reported beside this one. All 63
+patients met the inclusion rules (at least 10 stimulated pairs, ceiling at least 0.2). Median
+Spearman across patients: ceiling 0.70; distance-only model 0.47; other patients' pokes by
+region pair 0.37; watching copy 0.28 (same-sign version 0.14). Beyond 20 mm: distance 0.30,
+other patients 0.23, watching 0.17. Against the expectations: (1) the watching copy does no
+better than distance; it does clearly worse (patient-level difference -0.165, 95% interval
+-0.183 to -0.147, positive in 1 of 63 patients), and also beyond 20 mm (-0.122, -0.144 to
+-0.100; 6 of 63), where only "no advantage" was predicted; confirmed. (2) Other patients' pokes
+predict better than the watching copy (+0.061, +0.040 to +0.082; 50 of 63); confirmed. Not
+pre-registered, to be checked in the final analysis: distance alone predicts better than other
+patients' region-matched pokes, so in human cortex the strongest generic predictor of a response
+is how close the electrode is to the stimulated site. Caveats: the watching copy here is a
+linear model of the between-pulse ECoG with common-average referencing, a much cruder copy than
+the worm copies; response strength is sign-free; and recordings of one patient are pooled per
+patient.
+
 ## Beyond the worm: mouse hippocampus (pre-registered 3 Nov 2026)
 
 **Data.** The all-optical CA1 recordings of Bocchio, Vorobyev et al. (Cossart lab; Zenodo
