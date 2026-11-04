@@ -1,7 +1,9 @@
 """The whole workflow in one command. Human test: stream and reduce every recording, then
 score them. Then the mouse hippocampus test: finish its one-pass download if needed, then
-score it. Then download the mouse touch-cortex sessions (about 12 GB, about 1 GB kept). Last, if
-the hippocampus download was cut short, read its archive once more and rescore. Safe to start while ccep_stream.py is already running in another window: it
+score it. Then download the mouse touch-cortex sessions (about 12 GB, about 1 GB kept). Then, if
+the hippocampus download was cut short, read its archive once more and rescore (with the
+exploratory controls). Last, run the queued artificial-lab checks (scripts/lab_queue.py). After
+each stage, docs/figures/AUTO_REPORT.txt gathers every result. Safe to start while ccep_stream.py is already running in another window: it
 waits until that run has gone quiet for 30 minutes before doing anything, so the two never
 download at the same time. Then it finishes whatever is missing (including recordings that
 failed earlier), and runs the pre-registered analysis.
@@ -52,7 +54,9 @@ def main() -> int:
         (OUT / "PIPELINE_DONE.txt").write_text(time.strftime("%Y-%m-%d %H:%M:%S") + "\n", encoding="utf-8")
         print("Human test done. Results in docs/figures/ccep_summary.txt", flush=True)
     human_rc = r.returncode
+    report(py)
     hippo_rc = hippo(py)
+    report(py)
     print("Touch cortex: downloading (scoring is added once its prediction is written) ...", flush=True)
     touch_rc = subprocess.run([py, str(ROOT / "scripts" / "touch_stream.py")], cwd=ROOT).returncode
     refetch_rc = 0
@@ -62,10 +66,21 @@ def main() -> int:
               "sessions the interrupted download never reached (about 2.5 hours) ...", flush=True)
         refetch_rc = subprocess.run([py, str(ROOT / "scripts" / "hippo_stream.py"), "--refetch"], cwd=ROOT).returncode
         if refetch_rc == 0:
-            for extra in ([], ["--multi"]):
+            # the pre-registered analysis, the follow-up, and the exploratory controls of 3 Nov
+            for extra in ([], ["--multi"], ["--reading", "all"], ["--sham", "130"], ["--sham", "130", "--reading", "all"]):
                 subprocess.run([py, str(ROOT / "scripts" / "run_hippo_test.py"), *extra], cwd=ROOT)
             print("Hippocampus rescored on every recovered session.", flush=True)
-    return max(human_rc, hippo_rc, touch_rc, refetch_rc)
+    report(py)
+    print("Artificial lab: running the queued checks (several hours, no downloads) ...", flush=True)
+    lab_rc = subprocess.run([py, str(ROOT / "scripts" / "lab_queue.py")], cwd=ROOT).returncode
+    report(py)
+    print("Everything finished. Summary: docs/figures/AUTO_REPORT.txt", flush=True)
+    return max(human_rc, hippo_rc, touch_rc, refetch_rc, lab_rc)
+
+
+def report(py: str) -> None:
+    subprocess.run([py, str(ROOT / "scripts" / "collect_report.py")], cwd=ROOT,
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 def hippo(py: str) -> int:

@@ -91,7 +91,7 @@ _make_brain = L.make_brain
 def make_brain(*a, **kw):
     br = _make_brain(*a, **kw)
     if LOWRANK:
-        rng = np.random.default_rng(11)
+        rng = np.random.default_rng(11 + 100 * int(os.environ.get("NEMATICA_BRAIN_SEED", "0")))
         U = np.linalg.qr(rng.standard_normal((br.n, 3)))[0]
         br.W = br.W + LOWRANK * (U @ U.T)
     return br
@@ -112,7 +112,7 @@ _individual = L.individual
 def make_brain_g(*a, **kw):
     br = _make_brain2(*a, **kw)
     if GATED:
-        rng = np.random.default_rng(12)
+        rng = np.random.default_rng(12 + 100 * int(os.environ.get("NEMATICA_BRAIN_SEED", "0")))
         Wg = GATED * rng.standard_normal((br.n, br.n)) * (rng.random((br.n, br.n)) < 0.05)
         np.fill_diagonal(Wg, 0.0)
         br.Wg = Wg

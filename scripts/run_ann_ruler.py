@@ -93,7 +93,8 @@ def main() -> int:
     import os
     L.KICK = float(os.environ.get("NEMATICA_KICK", "6.0"))           # overridable for calibration
     L.KICK_FRAMES = int(os.environ.get("NEMATICA_KICK_FRAMES", "8"))
-    br0 = L.make_brain(rho=1.3, share=args.share, tau=args.tau, seed=0, q=0.2)
+    seed = int(os.environ.get("NEMATICA_BRAIN_SEED", "0"))           # independent species brains
+    br0 = L.make_brain(rho=1.3, share=args.share, tau=args.tau, seed=seed, q=0.2)
     hidden = L.design(br0.n, np.random.default_rng(200))
     mask = ~np.eye(br0.n, dtype=bool) & ~hidden[:, None] & ~hidden[None, :]
     inds = [L.individual(br0, args.sigma, 1000 + i) for i in range(args.n)]
