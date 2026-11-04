@@ -1269,24 +1269,51 @@ ceiling below 0.2 are reported but left out of the comparisons.
 and reduced to small per-recording summaries (`scripts/ccep_stream.py`, `scripts/ccep_extract.py`),
 then scored by `scripts/run_ccep_test.py`.
 
-**Interim result, 4 Nov 2026, on 100 of 117 recordings (63 of 74 patients; the download is
-still running; not yet independently reviewed; `docs/figures/interim_100rec_ccep_*`).** This is
-a look before the end: the pre-registered result is the one on all 117 recordings, produced
-automatically by `scripts/ccep_pipeline.py`, and it will be reported beside this one. All 63
-patients met the inclusion rules (at least 10 stimulated pairs, ceiling at least 0.2). Median
-Spearman across patients: ceiling 0.70; distance-only model 0.47; other patients' pokes by
-region pair 0.37; watching copy 0.28 (same-sign version 0.14). Beyond 20 mm: distance 0.30,
-other patients 0.23, watching 0.17. Against the expectations: (1) the watching copy does no
-better than distance; it does clearly worse (patient-level difference -0.165, 95% interval
--0.183 to -0.147, positive in 1 of 63 patients), and also beyond 20 mm (-0.122, -0.144 to
--0.100; 6 of 63), where only "no advantage" was predicted; confirmed. (2) Other patients' pokes
-predict better than the watching copy (+0.061, +0.040 to +0.082; 50 of 63); confirmed. Not
-pre-registered, to be checked in the final analysis: distance alone predicts better than other
-patients' region-matched pokes, so in human cortex the strongest generic predictor of a response
-is how close the electrode is to the stimulated site. Caveats: the watching copy here is a
-linear model of the between-pulse ECoG with common-average referencing, a much cruder copy than
-the worm copies; response strength is sign-free; and recordings of one patient are pooled per
-patient.
+**Result, 4 Nov 2026 (116 of 117 recordings, 74 patients; one recording failed to download and
+its patient is covered by another; `docs/figures/ccep_*`; reviewed independently). An interim look
+on 100 recordings and 63 patients gave the same numbers (`docs/figures/interim_100rec_ccep_*`).
+The scoring code was last changed on 3 Nov, before either look, and was checked beforehand only
+on two of patient 01's recordings.** 73 patients included (UMCU67 has 8 stimulated pairs).
+Median Spearman across patients: ceiling 0.70; distance-only model 0.47; other patients' pokes by
+region pair 0.37; watching copy 0.29 (same-sign pulse 0.15). Beyond 20 mm: distance 0.30, other
+patients 0.23, watching 0.18.
+
+Against the expectations. (1) Not falsified: the watching copy did not beat the distance-only
+model, overall or beyond 20 mm. It did clearly worse: -0.162 (95% interval -0.179 to -0.145,
+positive in 1 of 73 patients) overall and -0.120 (-0.140 to -0.101; 6 of 73) beyond 20 mm, so
+the second clause as worded (an interval including zero) did not hold. A copy that does worse
+than a distance rule does not by itself show that unrecorded drivers are the limit; it may also
+reflect a crude linear copy (VAR(5) at 512 Hz is a 10 ms memory, linear, common-average
+referenced). The watching copy is not uninformative: in the recordings the review checked it
+reproduces the fall-off with distance (near/far amplitude ratio 4.2 against 4.9 measured) and
+adds a little beyond distance (partial Spearman given distance about 0.16, positive in 27 of 28).
+(2) Holds: other patients' region-matched pokes beat the watching copy, +0.061 (+0.041 to
++0.080; 56 of 73 patients); this predictor also encodes distance, since pairs in the same regions
+lie close together.
+
+**Caveat that limits every human number above.** The response strength (root mean square, 10 to
+100 ms) includes a stimulus-locked part that is not brain activity: the review found that the
+same measure 50 to 10 ms BEFORE the pulse falls with distance (median Spearman about 0.35 to
+0.39), predicts the measured response (0.40 to 0.47, better than the watching copy) and repeats
+from odd to even pulses, and that pulse-locked 50 Hz ringing at nearby electrodes decays like the
+notch filter. The extraction filters the continuous record (zero-phase low-pass and notches)
+before epoching, which spreads the stimulation artefact forward and backward in time, and volume
+conduction adds to it. So the distance model and the ceiling are partly scoring artefact spread,
+and the far-field comparison depends on how it is handled: scoring the response relative to the
+pre-pulse level (log of post over pre RMS) leaves distance 0.078 and watching 0.063 beyond 20 mm.
+Not pre-registered, exploratory: distance beat other patients' pokes (+0.101, +0.087 to +0.116;
+71 of 73), which must not be read as a fact about human cortex. A post-hoc re-extraction that
+blanks and interpolates a few milliseconds around each pulse before any filtering is needed
+before any claim about human brains; it requires the raw recordings again.
+
+Disclosed deviations from the analysis details: patient scores are weighted by the number of
+pairs (unweighted gives the same result); stimulated pairs with fewer than 4 pulses are dropped;
+the watching VAR is rescaled when its spectral radius exceeds 0.999 (in every recording, a tiny
+change); the watching copy's common average includes the stimulated channels, which it must
+pulse; "others" is scored where at least 3 other patients cover the region pair (median coverage
+96.5%; restricting all models to common pairs changes nothing material); coordinates are
+fsaverage (MNI305), not plain MNI; the window is about 9.8 to 97.7 ms (epoch offset of 1.2 ms);
+the ceiling is a 5-against-5 split without Spearman-Brown correction (about 0.82 corrected).
 
 ## Beyond the worm: mouse hippocampus (pre-registered 3 Nov 2026)
 
