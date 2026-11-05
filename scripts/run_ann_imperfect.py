@@ -35,10 +35,8 @@ R = RS.R
 POOL = os.environ.get("NEMATICA_POOL", "0") == "1"
 MISID = float(os.environ.get("NEMATICA_MISID", "0"))
 OFF = float(os.environ.get("NEMATICA_OFFTARGET", "0"))
-NEIGH = np.random.default_rng(4242).integers(0, 120, size=(120, 2))   # fixed "anatomy"
-for i in range(120):
-    while i in NEIGH[i]:
-        NEIGH[i] = np.random.default_rng(4242 + i).integers(0, 120, size=2)
+_g = np.random.default_rng(4242)
+NEIGH = np.array([_g.choice([u for u in range(120) if u != i], size=2, replace=False) for i in range(120)])  # fixed "anatomy"
 
 _record = L.record
 
