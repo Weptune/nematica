@@ -1721,38 +1721,48 @@ reported beside it.
 agreement as a share of worm-to-worm agreement, mean of 3 pools, 90% interval): sensory 0.73
 [0.53, 1.05], interneuron 0.70 [0.50, 1.00], motor 0.45 [0.17, 1.28], pharyngeal 0.43 [0.29,
 0.83]. The sensory share was below both others in 0 of 3 pools; sensory minus the mean of
-interneuron and motor: +0.16 [-0.32, +0.50]. With dual-role classes in their first-listed role:
-+0.28 [-0.20, +0.61], also 0 of 3. So there is no sign that watching fails most for sensory
-neurons; if anything they are among the easier ones, and the per-role shares are too noisy
-(worm-to-worm agreement within one role is 0.05 to 0.10) to rank roles. Not pre-registered and
-only a pointer: the pharyngeal system has the lowest point share in two of three pools, although
-its echoes are the most reproducible across worms (worm-to-worm 0.13 to 0.25). These shares use
+interneuron and motor: +0.16 [-0.36, +0.49] (paired resampling, corrected after the independent
+review; the first run resampled roles separately and gave [-0.32, +0.50]). With dual-role classes in
+their first-listed role: +0.28 [-0.22, +0.60], also 0 of 3. So there is no sign that watching fails
+most for sensory neurons, and the per-role shares are too noisy (worm-to-worm agreement within one
+role is 0.05 to 0.10) to rank roles at all. (An earlier version of this paragraph said the
+pharyngeal share was lowest in two of three pools; it is lowest in one, pool 0; motor is lowest in
+pools 1 and 2.) These shares use
 noise-free predictions (as in the independent recomputation), so they are higher than the
 ruler's 4 to 16%; only their order across roles is the question here.
 
-*B1, repeat pokes: habituation as pre-registered, but mostly in the stimulation, not in the
-spread.* 100 worms, 577 repeat pairs. The second echo is smaller than drift explains: D = -0.049
-[-0.084, -0.014] (about 5%). The stimulated neuron's own response falls far more: D = -0.42
-[-0.53, -0.31] (about 35%). Artificial networks recorded the same way (113 individuals, 2,319
-repeat pairs) give an echo D of +0.001 [-0.011, +0.014], so the pipeline does not create the
-echo effect; they also show a small dip in the target's own response, -0.08 [-0.13, -0.03], a
-measurement bias (a neuron poked recently can still be raised when it is poked again), far
-smaller than the worms' -0.42. Reading: a second pulse of light activates the same neuron about
-a third less, and its echo shrinks a little. This test cannot say whether the drop is the neuron
-or the light-gated channel used to activate it: both tire with use. So it is a measured
-difference from the artificial networks, which answer the same question the same way, but not yet
-a difference located in the worm's network. The test that would locate it: echo size per unit of
-the target's own activation, which needs repeat pokes of matched strength (none in the atlas).
+*B1, repeat pokes: habituation as pre-registered; the clear part is the stimulated neuron's own
+response.* 100 worms, 577 repeat pairs. The second echo is smaller than drift explains: D = -0.049
+[-0.084, -0.014]. The stimulated neuron's own response falls far more: D = -0.42 [-0.53, -0.31].
+Artificial networks recorded the same way (113 individuals, 2,319 repeat pairs, the silent-links
+lab configuration) give an echo D of +0.001 [-0.011, +0.014], so the pipeline does not create the
+echo effect; they also show a small dip in the target's own response, -0.08 [-0.13, -0.03], which
+is unexplained (the ingredient ladder's plain networks give -0.01 to -0.02).
 
-*B2, behavioural state: inconclusive, underpowered.* The correction for what the state does on
-its own needs stretches of 25 s with no stimulation, which exist mostly before the first poke, so
-27 of the 68 worms with AVA identified could be used and 23 stimulated classes scored. Median
-(S minus its shuffle null) -0.040 [-0.052, +0.046], sign-flip p = 0.26. Echo size in the high
-(reversal-prone) state relative to the low: median 1.20, 15 of 23 classes larger. Neither
-supports nor rules out state dependence. A test with more power would need recordings with long
-unstimulated stretches between pokes, or a state signal that does not depend on them.
+Corrections after the independent review (exploratory, `week1_b1.txt`): (1) the echo is a root
+mean square over mostly non-responding neurons, so about 60% of it is noise and the -0.049 is a
+diluted number (a lower bound on the drop, not "about 5%"); with the noise floor (measured at
+moments with no stimulation) subtracted, the echo D is -0.04 [-0.19, +0.12], too wide to say how
+much the echo itself falls. (2) Neurons poked again had larger first responses (median 2.04 against
+1.64 SD), so part of the -0.42 could be regression to the mean; corrected for the size of the first
+response, the target's own D is -0.28 [-0.40, -0.18]: a second pulse of light activates the same
+neuron about a quarter less. Reading: the worm's stimulated neurons tire with use, which the
+artificial networks do not; whether the neuron or the light-gated channel used to activate it is
+what tires, and how much the spread to other neurons falls, this atlas cannot say. Settling it needs
+repeat pokes of matched strength.
 
-## The strongest watcher we can build (pre-registered 6 Nov 2026)
+*B2, behavioural state: no detectable state dependence.* The first run deviated from the
+specification: its "pseudo-responses" required the whole window to lie outside the 30 s after any
+stimulation (about 55 s free of stimulation), where the specification asks only for no
+stimulation inside the 25 s window. That left 27 of the 68 worms with AVA and 23 stimulated classes
+(median S minus null -0.040 [-0.052, +0.046], p = 0.26, inconclusive; kept in
+`week1_b2_strict.txt`). Rerun as specified (`week1_b2.txt`): 65 worms, 52 stimulated classes,
+median -0.014 [-0.046, +0.012], sign-flip p = 0.17, echo size high/low median 1.00: **no
+detectable state dependence** by the pre-registered rule. Within this test's resolution, the same
+poke spreads the same way whether or not the worm is in a reversal-prone state. Caveat: AVA is one
+state signal of many, and the threshold for "refuted" (-0.05) is a modest effect, not zero.
+
+## A nonlinear watcher (pre-registered 6 Nov 2026 as "the strongest watcher we can build")
 
 The worm headline rests on watching copies that are linear (VAR) or linear with stitching. The
 obvious objection: watching failed because the watchers were too simple. The project already
@@ -1838,38 +1848,49 @@ is then run on the closest variant, to check that the cheap axis agrees with the
 | reliability | 0.094 | 0.076 / 0.075 | silent links +0.084 overshoot, drives -0.078 undershoot; together about right |
 
 Pre-registered predictions:
-1. *Drives lower the watching share most, silent links second.* **Wrong.** Silent links lower it
-   most in both brains, stimulation spread second; drives raise it slightly on this axis. Every
-   variant with silent links lands at 0.57 to 1.11, around the worm's 0.61; no variant without
-   them goes below 1.31.
+1. *Drives lower the watching share most, silent links second.* **Wrong as stated**, and the
+   independent review showed why. The share is watching agreement divided by individuals'
+   agreement. Silent links lower it in both brains (Shapley -1.32), but mainly by raising the
+   denominator: they make individuals' echoes agree with each other about twice as well (0.076 to
+   0.173). The numerator ranks the ingredients the other way round: the implied watching agreement
+   (share times individuals' agreement, an approximation; exploratory) falls most with drives
+   (Shapley -0.084) and only a little with silent links (-0.017), the order the prediction gave.
+   Worms' implied watching agreement is 0.057, below every round-1 variant (0.072 to 0.20).
 2. *No single ingredient brings a network to the worm; the closest has drives and silent links.*
    First half holds; second half **refuted as stated**: by the pre-registered distance the closest
    variant is spread plus tiring (SH, 3.85 against 4.49 for the base). But that distance turned out
    to be dominated by one axis no variant approaches (tiring: the worms sit ten lab SDs away), so
    it mostly ranks variants by whether they include tiring. Without that axis (exploratory), the
-   closest are modules plus spread (1.29) and all distances stay between 1.29 and 1.75: no
-   combination of these five ingredients comes near the worm on all axes. Counting axes within 25%
-   of the worm value (exploratory), no variant manages more than 3 of 6 in either brain.
-3. *Modules make echoes narrower.* **Supported in direction** (both brains), but tiny: -0.004
-   against a worm-to-lab gap of up to 0.06.
+   closest by mean of the two brains is modules plus spread (1.29), and single runs range from 1.23
+   to 2.26: no combination of these five ingredients comes near the worm on all axes. Counting axes
+   within 25% of the worm value (exploratory), no variant manages more than 3 of 6 in either brain.
+3. *Modules make echoes narrower.* **No detectable effect**: -0.004 in both brains, smaller than
+   the difference between the two base brains (0.005); the modular network is also a new random
+   draw, so modularity and the draw cannot be separated here (tiring gives the same -0.004).
 4. *Tiring is the only ingredient that moves axis 3.* **Supported**, but even a poke 35% weaker
    the second time lowers the lab target's measured response by only about 8%: a strongly driven
-   tanh unit saturates, so its response hides the weaker input. The worms' 35% drop is therefore
-   either a stronger tiring of the input or a response that does not saturate the same way.
+   tanh unit saturates, so its response hides the weaker input.
 
-Full ruler on the closest variant (SH, brain 0, pool 0; `docs/figures/ladder_ruler.csv`): the
-watching copy agrees with individuals at 0.040 against their 0.083 (48%), the stitched watcher
-0.031 (37%), the poke-trained copy 0.076 (inside). The cheap axis put SH well above the worms
-(1.62 against 0.61); the ruler agrees that it is far from the worms' 4 to 16%.
+Full ruler on three variants (brain 0, pool 0; `docs/figures/ladder_ruler.csv`; watching copy,
+then stitched watcher, against individuals' agreement): base 0.041 and 0.034 against 0.060 (69%
+and 57%); SH 0.040 and 0.031 against 0.083 (48%, 37%); DGSM (drives, silent links, spread, modules)
+0.021 and 0.020 against 0.107 (19%, 18%). The poke-trained copy is inside in all three. Worms:
+4 to 16%. So on the ruler the variant with drives and silent links comes near the worms, and it does
+so both ways: its watching agreement is half the base's and its individuals agree almost twice as
+well. One pool and one brain each: a check of the cheap axis's order, not a result in itself.
 
-**What this says.** No one ingredient makes an artificial network look like a worm, and the
-ingredients pull in different directions: silent links give a network the worm's resistance to
-watching and its individuality, and shared slow drives give it the worm's resting structure, but
-drives also erase individuality and widen echoes. The worm combines properties that these
-ingredients trade against each other; whatever reconciles them is not yet in the lab. Two worm
-properties no variant reaches: very narrow echoes (8.5% of neuron classes move by more than one
-resting SD) and stimulation that tires by a third. Caveats: two brains; the cheap watching axis
-uses noise-free predictions; ingredient strengths are single choices, not fitted.
+**What this says.** No one ingredient makes an artificial network look like a worm. Shared slow
+drives are what most degrade what watching can recover, and they give the worm's resting
+structure; silent links are what make individuals' echoes as reproducible and as individual as
+worms'. But drives also erase individuality and widen echoes, so the ingredients pull against
+each other, and no combination of these five sits at the worm's values on all axes at once. Two
+worm properties no variant reaches: very narrow echoes (8.5% of neuron classes move by more than one
+resting SD) and stimulation that tires by a quarter to a third. Caveats (several from the
+independent review): two brains, so no noise floor for the Shapley values (the drives' Shapley on
+distance even has opposite signs in the two); the cheap watching axis uses noise-free predictions
+and sits on a different scale from the ruler; ingredient strengths are single choices, not fitted;
+in variants with silent links the drives carry somewhat less than 25% of the input, because their
+size was set without them.
 
 **Round 2, one more ingredient (pre-registered 6 Nov 2026, after round 1).** Every variant's
 echoes are wider than the worm's, and an earlier diagnosis found that a third of a real worm's
@@ -1887,8 +1908,9 @@ echoes in 14 of 14 comparisons (for example base 0.100 to 0.022; DGSM 0.139 to 0
 DGSM 0.63 to 0.20, now below the worm's 0.61). (3) **Wrong**: at half the units they overshoot,
 making echoes narrower than the worm's and halving rest dimensionality (0.42 to 0.21), so the
 variants closest to the worm still have no quiet units (best: 3 of 6 axes within 25% in one
-brain). So the lab now has a lever for each axis but no single network where all of them sit at
-the worm's values at once. A smaller quiet fraction is the obvious next setting; the general
+brain). The watching share is a ratio (see prediction 1 above), so part of this drop may again be
+individuals agreeing more. So the lab now has a lever for each axis but no single network where all
+of them sit at the worm's values at once. A smaller quiet fraction is the obvious next setting; the general
 lesson is that the worm's properties are mutually constraining, and matching them jointly, not
 one at a time, is the test any model of a real brain has to pass.
 
@@ -1929,13 +1951,17 @@ neighbour's own excess (about 0.3 of the target's response), so an inconclusive 
 worms (sham: 629 onsets). Late window (5 to 15 s): neighbour-partners minus control partners
 -0.032 [-0.063, -0.002]; sham -0.021 [-0.056, +0.011]; real minus sham -0.011 [-0.055, +0.035].
 Early window: -0.002 [-0.028, +0.026]; real minus sham +0.016 [-0.028, +0.061]. **Inconclusive by
-the pre-registered rule** (the late interval lies just below 0 rather than spanning it), but
-there is no sign of the excess real activation predicts: the neighbours' partners respond no
-more than control partners, and the small deficit is matched in the sham, so it comes from how
-the groups are built, not from the poke. This leans toward the neighbour effect being a leak in
-the measurement rather than activation, without settling it. If it is a leak, the part of the
-worm gap that spread seemed to explain (about half, Lab I) is a measurement problem for the
-experiment, not a property of the worm.
+the pre-registered rule**, and, as the independent review showed, **the design cannot detect what it
+was built to detect**. Its positive control, run afterwards with the same machinery: the target's
+own synaptic partners, whose activation is expected, against control partners. With the
+pre-registered within-pair residuals, -0.006 [-0.027, +0.015]: nothing, because subtracting each
+(target, responder) pair's mean removes any effect that is consistent for a target. On raw
+responses the control is clearly seen, +0.067 [+0.036, +0.094]; but the neighbour test on raw
+responses gives +0.002 [-0.069, +0.059], against an expected effect of about 0.02 (a third of the
+control). So this test says nothing about whether the neighbour effect is real activation or a
+leak; an earlier version of this paragraph said it "leans toward a leak", which the numbers do not
+support. A test with power would need many more stimulations per target, or recordings in which
+the light's reach can be measured directly.
 
 ## A transformer through the same test (pre-registered 6 Nov 2026)
 

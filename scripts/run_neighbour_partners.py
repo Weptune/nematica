@@ -127,6 +127,32 @@ def diffs(ps, part, known, seed=0):
     return wm, n_used
 
 
+def diffs_target(ps, part, known, seed=0):
+    """Positive control added after the independent review: the TARGET's own partners against
+    control partners, by the same machinery. Activation of the target's partners is expected, so a
+    design that cannot see it here cannot see a smaller neighbour-partner effect either."""
+    rng = np.random.default_rng(seed)
+    per = defaultdict(list)
+    for w, ck, lst in ps:
+        if len(lst) < 15 or ck not in known:
+            continue
+        lst = sorted(lst, key=lambda t: t[3])
+        excl = {ck} | {c for c, _, _, rk in lst if rk <= 3}
+        tp = part[ck] - excl
+        NP = [(e, l) for c, e, l, rk in lst if c in tp and rk > 3]
+        cands = [c for c, _, _, rk in lst if rk >= 11 and c in known and c not in excl and c not in tp]
+        if not NP or not cands:
+            continue
+        cc = set()
+        for c in rng.choice(cands, min(N_CTRL, len(cands)), replace=False):
+            cc |= part[c]
+        cc -= excl | tp
+        CP = [(e, l) for c, e, l, rk in lst if c in cc and rk > 3]
+        if CP:
+            per[w].append(np.mean(NP, 0) - np.mean(CP, 0))
+    return {w: np.mean(v, 0) for w, v in per.items()}
+
+
 def boot(wm, seed=0):
     ids = sorted(wm)
     arr = np.array([wm[i] for i in ids])
@@ -162,6 +188,16 @@ def main():
     else:
         v = "inconclusive"
     lines.append(f"verdict: {v}")
+    # positive control and raw-response version (added after the independent review; not part of
+    # the pre-registered decision)
+    raw = pokes(recs)
+    for lab, ps in (("residualised", real), ("raw", raw)):
+        m, b = boot(diffs_target(ps, part, known))
+        lo, hi = np.percentile(b[:, 1], [2.5, 97.5])
+        lines.append(f"positive control, target's own partners minus control partners, late, {lab}: {m[1]:+.4f} [{lo:+.4f}, {hi:+.4f}]")
+    m, b = boot(diffs(raw, part, known)[0])
+    lo, hi = np.percentile(b[:, 1], [2.5, 97.5])
+    lines.append(f"neighbour-partners minus control partners, late, raw responses: {m[1]:+.4f} [{lo:+.4f}, {hi:+.4f}]")
     (ROOT / "docs" / "figures" / "neighbour_partners.txt").write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
 

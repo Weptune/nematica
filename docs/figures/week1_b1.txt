@@ -6,3 +6,6 @@ lab brains (ordinary links, fixed poke strength): worms 113, repeat pairs 2319
   echo: mean L repeats +0.013, mean L controls +0.012
   D (echo) +0.001 [90%: -0.011, +0.014]  -> no detectable change
   D (target's own response) -0.081 [90%: -0.131, -0.027]
+exploratory, after the independent review:
+(1) echo with the noise floor removed: D -0.039 [90%: -0.193, +0.122] (73 worms)
+(2) target's own response, corrected for the size of the first response (control slope -0.872): D -0.283 [90%: -0.397, -0.177] (96 worms)

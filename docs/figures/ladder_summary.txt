@@ -43,41 +43,55 @@ closest variants: brain 1 GSH 3.45; brain 1 GH 3.62; brain 1 DSHM 3.74; brain 1 
 closest by mean of both brains: SH 3.85; GSH 3.87; DSHM 3.88; H 3.91; GH 3.92
 
 Exploratory (not pre-registered): distance without the tiring axis, which no variant approaches
-closest by mean of both brains: SM 1.29 (1.35/1.23); SHM 1.44 (1.51/1.37); S 1.47 (1.47/1.48); GHM 1.49 (1.62/1.36); GH 1.57 (1.50/1.63); G 1.60 (1.57/1.63); M 1.61 (1.61/1.60); GM 1.64 (1.76/1.51)
-base: 1.75
-Shapley on distance without tiring: D +0.202 (+0.173, +0.230); G -0.041 (-0.034, -0.049); S -0.068 (-0.053, -0.083); H +0.031 (+0.031, +0.031); M -0.087 (-0.032, -0.143)
-Shapley on rest_dim: D +0.165; G +0.004; S +0.000; H +0.000; M -0.018
-Shapley on individuality: D -0.037; G +0.034; S +0.004; H -0.016; M +0.014
-Shapley on reliability: D -0.078; G +0.084; S +0.028; H -0.013; M +0.014
+closest by mean of both brains: SM 1.29; SHM 1.44; S 1.47; GHM 1.49; GH 1.57; G 1.60; range 1.23 to 2.26
+Exploratory: implied watching agreement (watching share x reliability); worms 0.057
+  base   0.187 / 0.179
+  D      0.101 / 0.087
+  G      0.163 / 0.163
+  H      0.178 / 0.172
+  M      0.202 / 0.181
+  S      0.182 / 0.176
+  DG     0.089 / 0.080
+  DH     0.099 / 0.081
+  DM     0.091 / 0.086
+  DS     0.101 / 0.092
+  GH     0.161 / 0.157
+  GM     0.160 / 0.155
+  GS     0.159 / 0.156
+  HM     0.193 / 0.175
+  SH     0.173 / 0.169
+  SM     0.197 / 0.172
+  DGH    0.086 / 0.076
+  DGM    0.076 / 0.080
+  DGS    0.083 / 0.079
+  DHM    0.087 / 0.083
+  DSH    0.101 / 0.087
+  DSM    0.092 / 0.086
+  GHM    0.157 / 0.150
+  GSH    0.157 / 0.155
+  GSM    0.156 / 0.152
+  SHM    0.189 / 0.167
+  DGHM   0.073 / 0.076
+  DGSH   0.082 / 0.076
+  DGSM   0.076 / 0.077
+  DSHM   0.089 / 0.082
+  GSHM   0.154 / 0.149
+  DGSHM  0.072 / 0.076
+Shapley on implied watching agreement: D -0.084 (-0.085, -0.083); G -0.017 (-0.022, -0.013); S -0.002 (-0.003, -0.002); H -0.005 (-0.005, -0.004); M -0.001 (-0.001, -0.001)
 
-Exploratory: axes within 25% of the worm value (brain 0, brain 1), and axes within 25% in both brains
-DGSHM  3/2  watch_share, rest_dim
-DGSH   2/3  rest_dim, reliability
-DGS    2/3  rest_dim, reliability
-DGHM   2/3  rest_dim, reliability
-base   2/2  echo_breadth, reliability
-SHM    2/2  echo_breadth, reliability
-SH     2/2  echo_breadth, reliability
-M      2/2  echo_breadth, reliability
-HM     2/2  echo_breadth, reliability
-GSM    2/2  watch_share, individuality
-
-Round 2 (quiet units). Pairs without Q -> with Q, brain 0 / brain 1:
-base ->Q      breadth 0.100->0.022 / 0.095->0.022; watch 2.46->1.14 / 2.38->1.12; rest_dim 0.27->0.14; indiv 0.028->0.033
-D    ->DQ     breadth 0.116->0.044 / 0.114->0.043; watch 3.01->0.97 / 2.72->1.01; rest_dim 0.42->0.22; indiv 0.002->0.012
-G    ->GQ     breadth 0.125->0.026 / 0.122->0.025; watch 0.94->0.52 / 0.83->0.45; rest_dim 0.27->0.14; indiv 0.083->0.088
-DG   ->DGQ    breadth 0.130->0.056 / 0.135->0.051; watch 1.01->0.45 / 0.82->0.36; rest_dim 0.43->0.23; indiv 0.025->0.030
-DGS  ->DGSQ   breadth 0.135->0.062 / 0.139->0.054; watch 0.80->0.30 / 0.68->0.30; rest_dim 0.43->0.23; indiv 0.026->0.031
-GSM  ->GSMQ   breadth 0.132->0.026 / 0.122->0.026; watch 0.62->0.40 / 0.62->0.34; rest_dim 0.24->0.14; indiv 0.101->0.067
-DGSM ->DGSMQ  breadth 0.139->0.050 / 0.143->0.057; watch 0.63->0.20 / 0.57->0.27; rest_dim 0.42->0.21; indiv 0.034->0.035
-prediction 1 (Q narrows echoes): 14 of 14 pair-brains
-prediction 2 (Q raises watching share by no more than 0.1): 14 of 14
-axes within 25% of the worm (brain 0/1; axes within 25% in both), top 8 of 39 variants:
+Round 2 (quiet units), without -> with Q, brain 0 / brain 1: echo breadth; watching share; rest dimensionality
+  base -> Q      0.100->0.022 / 0.095->0.022; 2.463->1.135 / 2.378->1.123; 0.270->0.136 / 0.253->0.139
+  D    -> DQ     0.116->0.044 / 0.114->0.043; 3.009->0.966 / 2.720->1.015; 0.422->0.217 / 0.427->0.221
+  G    -> GQ     0.125->0.026 / 0.122->0.025; 0.940->0.521 / 0.833->0.453; 0.271->0.140 / 0.254->0.139
+  DG   -> DGQ    0.130->0.056 / 0.135->0.051; 1.008->0.447 / 0.820->0.364; 0.426->0.228 / 0.428->0.222
+  DGS  -> DGSQ   0.135->0.062 / 0.139->0.054; 0.798->0.296 / 0.682->0.295; 0.426->0.228 / 0.428->0.222
+  GSM  -> GSMQ   0.132->0.026 / 0.122->0.026; 0.618->0.396 / 0.618->0.344; 0.236->0.137 / 0.256->0.140
+  DGSM -> DGSMQ  0.139->0.050 / 0.143->0.057; 0.631->0.199 / 0.566->0.266; 0.417->0.211 / 0.409->0.232
+prediction 1 (Q narrows echoes): 14 of 14; prediction 2 (Q raises watching share by at most 0.1): 14 of 14
+axes within 25% of the worm value (brain 0/1; axes in both), top 6 of 39 variants:
   DGHM   2/3  rest_dim, reliability
   DGS    2/3  rest_dim, reliability
   DGSH   2/3  rest_dim, reliability
   DGSHM  3/2  watch_share, rest_dim
   DG     2/2  rest_dim, reliability
   DGH    2/2  rest_dim, reliability
-  DGM    2/2  rest_dim
-  DGSM   2/2  watch_share, rest_dim

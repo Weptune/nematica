@@ -107,8 +107,8 @@ def fingerprint(worms):
         wat = [W1.agree(pred, R[i]) for i in pool]
         shares.append(np.nanmedian(wat) / np.nanmedian(w2w))
         w2w_all += w2w
-    lines, _ = W1.b1_stats(worms, all_valid=not hasattr(worms[0], "is_worm"))
-    tiring = float(lines[3].split("D (target's own response)")[1].split()[0])
+    lines, per = W1.b1_stats(worms, all_valid=not hasattr(worms[0], "is_worm"))
+    tiring = float(np.nanmean(per[:, 1]))
     return {"watch_share": float(np.mean(shares)), "echo_breadth": echo_breadth(worms), "tiring": tiring,
             "rest_dim": rest_dim(worms), "individuality": individuality(worms),
             "reliability": float(np.nanmedian(w2w_all))}
@@ -234,7 +234,9 @@ def run_summary():
     labs = {}
     for seed in (0, 1):
         p = FIG / f"ladder_lab_seed{seed}.csv"
-        labs[seed] = {r["variant"]: {k: float(r[k]) for k in AXES} for r in csv.DictReader(p.open())}
+        # the pre-registered summary uses the 32 round-1 variants only (round 2 rows are summarised separately)
+        labs[seed] = {r["variant"]: {k: float(r[k]) for k in AXES} for r in csv.DictReader(p.open())
+                      if "Q" not in r["variant"]}
     allv = np.array([[v[a] for a in AXES] for s in labs for v in labs[s].values()])
     scale = allv.std(0)
     out = ["worms: " + ", ".join(f"{a} {worm[a]:.3f}" for a in AXES),
@@ -268,8 +270,59 @@ def run_summary():
         mean_d[n].append(d)
     bestm = sorted((np.mean(v), n) for n, v in mean_d.items())[:5]
     out.append("closest by mean of both brains: " + "; ".join(f"{n} {d:.2f}" for d, n in bestm))
+    out += [""] + extras(worm, labs, scale, key)
     (FIG / "ladder_summary.txt").write_text("\n".join(out) + "\n")
     print("\n".join(out))
+
+
+def extras(worm, labs, scale, key):
+    """Exploratory additions (labelled as such in the README): distance without the tiring axis,
+    implied watching agreement (share x reliability), and round 2 (quiet units)."""
+    out = ["Exploratory (not pre-registered): distance without the tiring axis, which no variant approaches"]
+    use = [a for a in AXES if a != "tiring"]
+    d = {(s, n): float(np.sqrt(np.mean([((v[a] - worm[a]) / scale[AXES.index(a)]) ** 2 for a in use])))
+         for s in labs for n, v in labs[s].items()}
+    m = {n: np.mean([d[(0, n)], d[(1, n)]]) for n in labs[0]}
+    srt = sorted(m.items(), key=lambda t: t[1])
+    out.append("closest by mean of both brains: " + "; ".join(f"{n} {v:.2f}" for n, v in srt[:6])
+               + f"; range {min(d.values()):.2f} to {max(d.values()):.2f}")
+    out.append("Exploratory: implied watching agreement (watching share x reliability); worms "
+               f"{worm['watch_share'] * worm['reliability']:.3f}")
+    for n in sorted(labs[0], key=lambda n: (len(n) if n != "base" else 0, n)):
+        out.append(f"  {n:6s} " + " / ".join(f"{labs[s][n]['watch_share'] * labs[s][n]['reliability']:.3f}" for s in (0, 1)))
+    cells = []
+    for i in ING:
+        vals = [shapley({key(n): labs[s][n]["watch_share"] * labs[s][n]["reliability"] for n in labs[s]}, i) for s in (0, 1)]
+        cells.append(f"{i} {np.mean(vals):+.3f} ({vals[0]:+.3f}, {vals[1]:+.3f})")
+    out.append("Shapley on implied watching agreement: " + "; ".join(cells))
+    # round 2
+    r2 = {}
+    for seed in (0, 1):
+        p = FIG / f"ladder_lab_seed{seed}.csv"
+        r2[seed] = {r["variant"]: {k: float(r[k]) for k in AXES} for r in csv.DictReader(p.open())}
+    pairs = [("base", "Q"), ("D", "DQ"), ("G", "GQ"), ("DG", "DGQ"), ("DGS", "DGSQ"), ("GSM", "GSMQ"), ("DGSM", "DGSMQ")]
+    if all(b in r2[0] and b in r2[1] for _, b in pairs):
+        out.append("")
+        out.append("Round 2 (quiet units), without -> with Q, brain 0 / brain 1: echo breadth; watching share; rest dimensionality")
+        nb = nw = 0
+        for a, b in pairs:
+            for s in (0, 1):
+                nb += r2[s][b]["echo_breadth"] < r2[s][a]["echo_breadth"]
+                nw += r2[s][b]["watch_share"] - r2[s][a]["watch_share"] <= 0.1
+            out.append(f"  {a:5s}-> {b:6s} " + "; ".join(
+                " / ".join(f"{r2[s][a][x]:.3f}->{r2[s][b][x]:.3f}" for s in (0, 1)) for x in ("echo_breadth", "watch_share", "rest_dim")))
+        out.append(f"prediction 1 (Q narrows echoes): {nb} of 14; prediction 2 (Q raises watching share by at most 0.1): {nw} of 14")
+        res = []
+        for n in r2[0]:
+            if n not in r2[1]:
+                continue
+            c = [sum(abs(r2[s][n][a] - worm[a]) <= 0.25 * abs(worm[a]) for a in AXES) for s in (0, 1)]
+            both = [a for a in AXES if all(abs(r2[s][n][a] - worm[a]) <= 0.25 * abs(worm[a]) for s in (0, 1))]
+            res.append((sum(c) / 2, n, c, both))
+        res.sort(key=lambda t: (-t[0], t[1]))
+        out.append(f"axes within 25% of the worm value (brain 0/1; axes in both), top 6 of {len(res)} variants:")
+        out += [f"  {n:6s} {c[0]}/{c[1]}  {', '.join(a)}" for _, n, c, a in res[:6]]
+    return out
 
 
 if __name__ == "__main__":

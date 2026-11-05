@@ -161,8 +161,9 @@ def run_a2(mixed_as_first=False):
             point[(fold, ro)] = dict(w2w=m_w2w, watch=np.nanmedian(wa), poke=np.nanmedian(pa),
                                      n_pairs=int(np.isfinite(W[iu]).sum()), n_watch=int(np.isfinite(wa).sum()))
             bs = np.empty(BOOT)
+            draws = np.random.default_rng(600 + fold)       # the same resamples for every role (paired)
             for b in range(BOOT):
-                s = rng.integers(0, n, n)
+                s = draws.integers(0, n, n)
                 sub = W[np.ix_(s, s)]
                 same = s[:, None] == s[None, :]
                 vals = sub[np.triu_indices(n, 1)][~same[np.triu_indices(n, 1)]]
@@ -284,6 +285,88 @@ def run_b1():
     print("\n".join(lines))
 
 
+def run_b1_extra():
+    """Added after the independent review (exploratory, not pre-registered).
+    (1) Noise floor: e^2 at no-stimulation onsets (no stimulation in the 25 s window) is
+        subtracted from each echo's e^2 before the log ratio, per worm.
+    (2) Selection: neurons poked again had larger first responses; the target's own L is
+        corrected by the regression of control L on log(first response) within the controls."""
+    worms = load_worms()
+    out = []
+    Dc, Dt = [], []
+    for w in worms:
+        cl = w.r.classes
+        floor = []
+        for t in range(PRE, w.T - POST, 5):
+            if any(t - PRE <= f < t + POST for f in w.r.all_stim_frames):
+                continue
+            v = w.change(t)
+            m = w.valid.copy()
+            vv = v[m]
+            vv = vv[np.isfinite(vv)]
+            if len(vv) >= 10:
+                floor.append(np.mean(vv ** 2))
+        if len(floor) < 5:
+            continue
+        n2 = float(np.mean(floor))
+        by = defaultdict(list)
+        for k, f, v in w.stims:
+            by[k].append((f, v))
+        first = sorted((s_[0][0], k, s_[0][1]) for k, s_ in by.items())
+
+        def e2(k, v):
+            m = w.valid.copy()
+            m[k] = False
+            m &= np.array([c != cl[k] for c in cl])
+            vv = v[m]
+            vv = vv[np.isfinite(vv)]
+            return np.mean(vv ** 2) - n2 if len(vv) >= 10 else np.nan
+
+        def lc(k1, v1, k2, v2):
+            a, b = e2(k1, v1), e2(k2, v2)
+            return 0.5 * np.log(b / a) if (a > 0 and b > 0) else np.nan
+
+        reps, ctl, tr, tc = [], [], [], []
+        for k, s_ in by.items():
+            if len(s_) < 2:
+                continue
+            s_ = sorted(s_, key=lambda t: t[0])
+            (f1, v1), (f2, v2) = s_[0], s_[1]
+            gap, tol = f2 - f1, max(0.2 * (f2 - f1), 60)
+            cand = sorted((abs(fx - f1), kx, vx, ky, vy) for a_ in range(len(first)) for b_ in range(a_ + 1, len(first))
+                          for (fx, kx, vx), (fy, ky, vy) in [(first[a_], first[b_])]
+                          if kx != ky and abs((fy - fx) - gap) <= tol)[:5]
+            r = lc(k, v1, k, v2)
+            cs = [lc(kx, vx, ky, vy) for _, kx, vx, ky, vy in cand]
+            if np.isfinite(r) and np.isfinite(cs).any():
+                reps.append(r)
+                ctl += [c for c in cs if np.isfinite(c)]
+            a1, a2 = v1[k], v2[k]
+            if np.isfinite(a1) and np.isfinite(a2) and a1 > 0 and a2 > 0:
+                tr.append((np.log(a1), np.log(a2 / a1)))
+            for _, kx, vx, ky, vy in cand:
+                if np.isfinite(vx[kx]) and np.isfinite(vy[ky]) and vx[kx] > 0 and vy[ky] > 0:
+                    tc.append((np.log(vx[kx]), np.log(vy[ky] / vx[kx])))
+        if reps and ctl:
+            Dc.append(np.mean(reps) - np.mean(ctl))
+        if tr and len(tc) >= 3:
+            Dt.append((np.array(tr), np.array(tc)))
+    Dc = np.array(Dc)
+    rng = np.random.default_rng(63)
+    bs = [np.mean(Dc[rng.integers(0, len(Dc), len(Dc))]) for _ in range(BOOT)]
+    out.append(f"(1) echo with the noise floor removed: D {Dc.mean():+.3f} [90%: {np.percentile(bs, 5):+.3f}, {np.percentile(bs, 95):+.3f}] ({len(Dc)} worms)")
+    allc = np.vstack([c for _, c in Dt])
+    beta, alpha = np.polyfit(allc[:, 0], allc[:, 1], 1)
+    per = [np.mean(r[:, 1] - (alpha + beta * r[:, 0])) - np.mean(c[:, 1] - (alpha + beta * c[:, 0])) for r, c in Dt]
+    per = np.array(per)
+    bs = [np.mean(per[rng.integers(0, len(per), len(per))]) for _ in range(BOOT)]
+    out.append(f"(2) target's own response, corrected for the size of the first response (control slope {beta:+.3f}): "
+               f"D {per.mean():+.3f} [90%: {np.percentile(bs, 5):+.3f}, {np.percentile(bs, 95):+.3f}] ({len(per)} worms)")
+    with (FIG / "week1_b1.txt").open("a") as fh:
+        fh.write("exploratory, after the independent review:\n" + "\n".join(out) + "\n")
+    print("\n".join(out))
+
+
 def run_b1_lab():
     import run_silent_links_test as S
     recs = S.lab_recs(False, 0, 1.0)
@@ -295,7 +378,10 @@ def run_b1_lab():
 
 
 # ---------------------------------------------------------------- B2
-def run_b2():
+def run_b2(spec=True):
+    """spec=True follows the pre-registration (pseudo-onsets need no stimulation inside their own
+    25 s window); spec=False is the first run's stricter rule (the window also had to be outside
+    the 30 s after any stimulation, so about 55 s free), kept for the record."""
     worms = load_worms()
     pokes = defaultdict(list)              # stimulated class -> list of (state, {resp class: value})
     n_worms = 0
@@ -325,7 +411,10 @@ def run_b2():
         # pseudo-responses at onsets with no stimulation in the whole window
         pseudo = {"high": [], "low": []}
         for t in range(PRE, T - POST, 5):
-            if not w.unpoked[t - PRE:t + POST].all() or not np.isfinite(s10[t]):
+            if spec:
+                if any(t - PRE <= f < t + POST for f in w.r.all_stim_frames) or not np.isfinite(s10[t]):
+                    continue
+            elif not w.unpoked[t - PRE:t + POST].all() or not np.isfinite(s10[t]):
                 continue
             st = state(s10[t])
             if st:
@@ -403,10 +492,12 @@ def run_b2():
     lines += [f"median S minus null: {med:+.3f} [90%: {lo:+.3f}, {hi:+.3f}], sign-flip p (one-sided) = {p:.4f}",
               f"echo size high/low: median {np.median(sizes):.2f}",
               f"verdict: {verdict}"]
-    (FIG / "week1_b2.txt").write_text("\n".join(lines) + "\n")
+    name = "week1_b2.txt" if spec else "week1_b2_strict.txt"
+    (FIG / name).write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
 
 
 if __name__ == "__main__":
     cmd = sys.argv[1]
-    {"a2": run_a2, "a2-mixed": lambda: run_a2(True), "b1": run_b1, "b1-lab": run_b1_lab, "b2": run_b2}[cmd]()
+    {"a2": run_a2, "a2-mixed": lambda: run_a2(True), "b1": run_b1, "b1-lab": run_b1_lab, "b2": run_b2, "b2-strict": lambda: run_b2(False),
+     "b1-extra": lambda: run_b1_extra()}[cmd]()

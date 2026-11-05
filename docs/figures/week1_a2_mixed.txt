@@ -11,10 +11,10 @@ pool role worm-to-worm watching poke-average watch-share poke-share pairs worms
 2 inter    0.107 0.065 0.179 0.61 1.67 408 34
 2 motor    0.102 0.022 0.181 0.21 1.77 400 33
 2 pharynx  0.132 0.082 0.362 0.62 2.75 203 26
-mean watching share, sensory: 0.80 [0.62, 1.09]
-mean watching share, inter: 0.73 [0.49, 1.06]
-mean watching share, motor: 0.33 [0.02, 1.08]
-mean watching share, pharynx: 0.43 [0.29, 0.83]
+mean watching share, sensory: 0.80 [0.61, 1.09]
+mean watching share, inter: 0.73 [0.51, 1.08]
+mean watching share, motor: 0.33 [0.03, 1.04]
+mean watching share, pharynx: 0.43 [0.29, 0.81]
 pools with sensory share below both inter and motor: 0 of 3
-sensory share minus mean(inter, motor): +0.275 [90%: -0.200, +0.613]
+sensory share minus mean(inter, motor): +0.275 [90%: -0.218, +0.604]
 verdict: inconclusive

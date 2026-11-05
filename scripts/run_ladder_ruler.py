@@ -28,7 +28,12 @@ OUT = ROOT / "docs" / "figures" / "ladder_ruler.csv"
 
 
 def make(name):
-    return StitchedVAR(True, True) if name == "stitch3_hp" else R.make_model(name)
+    if name == "stitch3_hp":
+        return StitchedVAR(True, True)
+    if name == "gru64_watch":            # positive control for the nonlinear watcher (independent review)
+        from run_strong_watcher import GRUWatch
+        return GRUWatch(hidden=64, steps=1500)
+    return R.make_model(name)
 
 
 def main():
