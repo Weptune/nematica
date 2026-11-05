@@ -1971,10 +1971,19 @@ individuals that erases it. The individuality measure is a recording's agreement
 its agreement with others, and in these networks slow drives lower the first term: they make one
 individual's echoes inconsistent from poke to poke, whoever's drives they are. Worms combine a
 strongly structured resting state with echoes that stay consistent within an animal (same-worm
-agreement 0.146 against 0.083 between worms); something in the worm keeps slow background activity
-out of its responses to pokes. That is a concrete, testable property for the next round (for
-example, drives that act on excitability rather than adding to activity), and the clearest
-statement so far of something real brains do that our artificial ones do not.
+agreement 0.146 against 0.083 between worms). One reading, to be tested: something in the worm keeps
+slow background activity out of its responses to pokes (another: part of the worm's individuality is
+measurement, such as neuron identities assigned once per worm, which the 1 Nov test could not rule
+out). The first reading gives the next round: drives that change how excitable neurons are, instead
+of adding to their activity.
+
+**Round 5, drives that change excitability (pre-registered 6 Nov 2026, after round 4).** Ingredient
+**K**: the slow drives multiply each unit's recurrent input by (1 + k x its drive), with the drive
+normalised to unit variance, instead of adding to it; no additive drives. Settings: round 3's best
+setting without its additive drives (silent links 0.75, spread 0.15, quiet 0.2) with k = 0, 0.3
+and 0.6, both brains (`run_ladder.py fit --gain`). *Prediction:* compared with k = 0, rest
+dimensionality rises and individuality does not fall (by more than 0.005) at k = 0.6, in both brains.
+*Decision:* supported if both hold in both brains; the run with the most axes within 25% is reported.
 
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 

@@ -130,14 +130,20 @@ def modular_W(n, rho, rng, k=4, inside=0.9, density=0.1):
 
 def record(br, rng, obs, kicks, scale, spread):
     n = br.n
-    k = 0 if br.D is None else br.D.shape[1]
+    Dm = getattr(br, "Dm", None)            # round 5: drives that scale the recurrent input
+    k = (0 if br.D is None else br.D.shape[1]) or (0 if Dm is None else Dm.shape[1])
     x, s = np.zeros(n), np.zeros(k)
     y = np.full((L.FRAMES, n), np.nan)
     active = {f + d: (j, scale[f]) for f, j in kicks.items() for d in range(KICK_FRAMES)}
     Wg = getattr(br, "Wg", None)
     for t in range(-400, L.FRAMES):
-        s = br.drive_step(s, rng)
-        inp = br.W @ np.tanh(x) + br.b + (br.D @ s if k else 0.0)
+        if k:
+            a_ = np.exp(-0.5 / br.tau)
+            s = a_ * s + np.sqrt(1 - a_ * a_) * rng.standard_normal(k)
+        rec = br.W @ np.tanh(x)
+        if Dm is not None:
+            rec = rec * (1.0 + br.gain * (Dm @ s))
+        inp = rec + br.b + (br.D @ s if br.D is not None else 0.0)
         if Wg is not None:
             inp = inp + Wg @ (np.maximum(np.tanh(x) - GATE_TH, 0.0) / (1 - GATE_TH))
         x = (1 - L.LEAK) * x + L.LEAK * inp + br.q * rng.standard_normal(n)
@@ -204,6 +210,9 @@ def param_recs(pr, seed, n_ind=113, sigma=0.3):
     recs = []
     for i in range(n_ind):
         ind = L.individual(br0, sigma, 1000 + i)
+        if pr.get("gain"):
+            ind.Dm = np.random.default_rng(seed + 4000).standard_normal((br0.n, 3)) / np.sqrt(3)
+            ind.gain = pr["gain"]
         if pr.get("private") and br0.D is not None:     # round 4: each individual its own drive loadings
             gd = np.random.default_rng(5000 + i)
             ind.D = gd.standard_normal(br0.D.shape) * br0.D.std()
@@ -229,6 +238,24 @@ def run_private(seed):
     for base in ({"share": 0.25, "g": 0.75, "spread": 0.15, "quiet": 0.2, "mod": 0},
                  {"share": 0.4, "g": 1.5, "spread": 0.0, "quiet": 0.1, "mod": 0}):
         pr = {**base, "private": 1}
+        fp = fingerprint([W1.Worm(r, valid_fn=lambda c: True) for r in param_recs(pr, seed)])
+        rel = [abs(fp[a] - worm[a]) / abs(worm[a]) for a in FIT_AXES]
+        rows.append({"seed": seed, **pr, **{a: round(fp[a], 4) for a in AXES},
+                     "rel_err": round(float(np.sqrt(np.mean(np.square(rel)))), 4),
+                     "within25": int(sum(r <= 0.25 for r in rel))})
+        print(rows[-1], flush=True)
+        with out.open("w", newline="") as fh:
+            w = csv.DictWriter(fh, fieldnames=list(rows[0]))
+            w.writeheader()
+            w.writerows(rows)
+
+
+def run_gain(seed):
+    worm = {k: float(v) for k, v in next(csv.DictReader((FIG / "ladder_worms.csv").open())).items()}
+    out = FIG / "ladder_gain.csv"
+    rows = list(csv.DictReader(out.open())) if out.exists() else []
+    for gval in (0.0, 0.3, 0.6):
+        pr = {"share": 0.0, "g": 0.75, "spread": 0.15, "quiet": 0.2, "mod": 0, "gain": gval}
         fp = fingerprint([W1.Worm(r, valid_fn=lambda c: True) for r in param_recs(pr, seed)])
         rel = [abs(fp[a] - worm[a]) / abs(worm[a]) for a in FIT_AXES]
         rows.append({"seed": seed, **pr, **{a: round(fp[a], 4) for a in AXES},
@@ -415,11 +442,14 @@ if __name__ == "__main__":
     ap.add_argument("cmd", choices=["worms", "lab", "summary", "fit"])
     ap.add_argument("--top", type=int, default=None)
     ap.add_argument("--private", action="store_true")
+    ap.add_argument("--gain", action="store_true")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--codes", default=None)
     a = ap.parse_args()
     if a.cmd == "worms":
         run_worms()
+    elif a.cmd == "fit" and a.gain:
+        run_gain(a.seed)
     elif a.cmd == "fit" and a.private:
         run_private(a.seed)
     elif a.cmd == "fit":
