@@ -1627,7 +1627,7 @@ its statistic is not the comparable one.
 **Reading.** At the worms' measured strength, stimulation that spreads through the network to two
 neighbours roughly halves what watching can recover (from 63% to 72% without it, to 27% to 49%),
 so if the worms' neighbour excess is real activation it accounts for a large part of the gap, but
-in these brains not all of it: watching stays above the worms' 4% to 22% in 8 of 9 pool runs, and
+in these brains not all of it: watching stays above the worms' 4% to 22% in every run (lowest 27%), and
 the spread makes individuals agree more than worms do (0.14 to 0.22). A pure measurement leak at the
 top of the worm range costs watching much less (50% to 58%). So what the worms' neighbour excess
 is matters: if it is light reaching neighbours or mis-targeting, a substantial part of the
