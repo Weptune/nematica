@@ -2103,6 +2103,24 @@ each one is, than the lab's individuals (connection strengths varying by 30%).
 and 16 frames, both brains (`run_ladder.py fit --sigma-sweep`). *Prediction:* for at least one
 combination, individuality and reliability are both within 25% of the worm in both brains.
 
+**Round 8 result (`docs/figures/ladder_sigma_seed0.csv`, `ladder_sigma_seed1.csv`).** At sigma 0.8 and
+hold 8, reliability reaches the worm's band (0.075, 0.070) but individuality is twice the worm's
+(0.166, 0.175); at sigma 0.5, individuality 0.12 to 0.24 and reliability 0.16 to 0.30. **Refuted**: no
+combination has both within 25% in both brains. But the two knobs move the pair differently
+(individual variation lowers reliability, stronger pokes raise both), so the pair can be bracketed,
+while stronger pokes widen echoes (0.18 to 0.27 against the worm's 0.085), which quiet units narrow.
+
+**Round 9, the full joint search (pre-registered 6 Nov 2026).** Rather than tuning knobs one at a
+time: 60 settings drawn at random (seed 909) over drive share {0, 0.1, 0.25, 0.4}, silent-link
+strength {0, 0.75, 1.5}, spread {0, 0.15}, quiet fraction {0, 0.1, 0.2, 0.3}, individual variation
+sigma {0.3, 0.5, 0.65, 0.8}, poke hold {4, 6, 8, 10} frames, no modules; measured on brain 0; the 5
+with the lowest relative error over the five axes re-measured on brain 1 (`run_ladder.py fit9`).
+*Prediction:* the best setting reaches 4 of 5 axes within 25% in both brains, but not 5, because
+stronger pokes widen echoes while raising individuality. *Decision:* "matched" if any of the 5 has all
+five within 25% in both brains (then this family of networks can look like a worm on every axis we
+measure, and the remaining question is which of its ingredients the worm actually has); otherwise
+the axis that fails most often across the 10 runs is reported as the open mismatch.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected

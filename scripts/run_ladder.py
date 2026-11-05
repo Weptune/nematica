@@ -291,6 +291,50 @@ def evoked_share(worms):
     return float((np.mean(ev) - np.mean(fl)) / np.mean(ev))
 
 
+GRID9 = {"share": [0.0, 0.1, 0.25, 0.4], "g": [0.0, 0.75, 1.5], "spread": [0.0, 0.15],
+         "quiet": [0.0, 0.1, 0.2, 0.3], "sigma": [0.3, 0.5, 0.65, 0.8], "hold": [4, 6, 8, 10]}
+
+
+def run_fit9(seed, part=None, top=None):
+    """Round 9. part = (i, k): this process measures draws i, i+k, i+2k, ... (two processes share
+    the work on brain 0; each writes its own file)."""
+    worm = {k: float(v) for k, v in next(csv.DictReader((FIG / "ladder_worms.csv").open())).items()}
+    if top:
+        rows0 = []
+        for f in sorted(FIG.glob("ladder_fit9_seed0_part*.csv")):
+            rows0 += list(csv.DictReader(f.open()))
+        rows0.sort(key=lambda r: float(r["rel_err"]))
+        settings = [{k: (int(r[k]) if k == "hold" else float(r[k])) for k in GRID9} for r in rows0[:top]]
+        out = FIG / f"ladder_fit9_seed{seed}.csv"
+    else:
+        g = np.random.default_rng(909)
+        settings = [{k: v[g.integers(len(v))] for k, v in GRID9.items()} for _ in range(60)]
+        i, k = part
+        settings = settings[i::k]
+        out = FIG / f"ladder_fit9_seed{seed}_part{i}.csv"
+    rows = list(csv.DictReader(out.open())) if out.exists() else []
+    done = {tuple(str(r[x]) for x in GRID9) for r in rows}
+    for pr in settings:
+        key = tuple(str(pr[x]) for x in GRID9)
+        if key in done:
+            continue
+        done.add(key)
+        KICK_HOLD["frames"] = int(pr["hold"])
+        full = {"share": pr["share"], "g": pr["g"], "spread": pr["spread"], "quiet": pr["quiet"], "mod": 0}
+        ws = [W1.Worm(r, valid_fn=lambda c: True) for r in param_recs(full, seed, sigma=pr["sigma"])]
+        fp = fingerprint(ws)
+        rel = [abs(fp[a] - worm[a]) / abs(worm[a]) for a in FIT_AXES]
+        rows.append({**pr, **{a: round(fp[a], 4) for a in AXES},
+                     "rel_err": round(float(np.sqrt(np.mean(np.square(rel)))), 4),
+                     "within25": int(sum(r <= 0.25 for r in rel))})
+        print(seed, rows[-1], flush=True)
+        with out.open("w", newline="") as fh:
+            w = csv.DictWriter(fh, fieldnames=list(rows[0]))
+            w.writeheader()
+            w.writerows(rows)
+    KICK_HOLD["frames"] = KICK_FRAMES
+
+
 def run_sigma(seed):
     worm = {k: float(v) for k, v in next(csv.DictReader((FIG / "ladder_worms.csv").open())).items()}
     out = FIG / f"ladder_sigma_seed{seed}.csv"
@@ -507,7 +551,8 @@ def extras(worm, labs, scale, key):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["worms", "lab", "summary", "fit"])
+    ap.add_argument("cmd", choices=["worms", "lab", "summary", "fit", "fit9"])
+    ap.add_argument("--part", default=None)
     ap.add_argument("--top", type=int, default=None)
     ap.add_argument("--private", action="store_true")
     ap.add_argument("--gain", action="store_true")
@@ -519,6 +564,8 @@ if __name__ == "__main__":
     a = ap.parse_args()
     if a.cmd == "worms":
         run_worms()
+    elif a.cmd == "fit9":
+        run_fit9(a.seed, part=tuple(int(x) for x in a.part.split("/")) if a.part else None, top=a.top)
     elif a.cmd == "fit" and a.sigma_sweep:
         run_sigma(a.seed)
     elif a.cmd == "fit" and a.hold_sweep:
