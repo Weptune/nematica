@@ -1881,6 +1881,17 @@ their range and move only with strong input. Q is added to base, D, G, DG, DGS, 
 not raise the watching share by more than 0.1 in any pair; (3) the variant with the most axes
 within 25% of the worm (exploratory count, now pre-registered as the summary) includes Q.
 
+**Round 2 result (`docs/figures/ladder_summary.txt`).** (1) **Supported**: quiet units narrow
+echoes in 14 of 14 comparisons (for example base 0.100 to 0.022; DGSM 0.139 to 0.050; the worm
+0.085). (2) **Supported**, and more: they lower the watching share every time (base 2.46 to 1.14;
+DGSM 0.63 to 0.20, now below the worm's 0.61). (3) **Wrong**: at half the units they overshoot,
+making echoes narrower than the worm's and halving rest dimensionality (0.42 to 0.21), so the
+variants closest to the worm still have no quiet units (best: 3 of 6 axes within 25% in one
+brain). So the lab now has a lever for each axis but no single network where all of them sit at
+the worm's values at once. A smaller quiet fraction is the obvious next setting; the general
+lesson is that the worm's properties are mutually constraining, and matching them jointly, not
+one at a time, is the test any model of a real brain has to pass.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected
