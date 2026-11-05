@@ -1645,6 +1645,75 @@ neurons and their calcium readout; effects of stimulation on the whole animal's 
 covered. A test the worm data allow: if neighbours are truly activated, their own synaptic partners
 should show an excess too; a pure measurement leak predicts none.
 
+## Three new tests on the worm atlas: neuron role, repeat pokes, behavioural state (pre-registered 6 Nov 2026)
+
+Written before any of the three was run. Code: `scripts/run_week1.py` (roles in
+`nematica/roles.py`, fixed before running). Data: the 113 wild-type atlas worms. Common
+definitions, shared with the independent recomputation (`scripts/check_headline_independent.py`)
+except that classes use NEMATICA's class names (`neuron_class`) and only labels with a role in
+`nematica/roles.py` count as neurons:
+
+- *unpoked frames*: frames not within 30 s after any stimulation;
+- *response* of neuron j to a stimulation at frame f: mean over 0 to 15 s after f minus mean over
+  the 10 s before, in units of j's SD over unpoked frames;
+- *pools*: worms sorted by file name, every third worm held out (pools 0, 1, 2), the rest train.
+
+**Test A2. Does watching fail more for some kinds of neuron?** For each role (sensory,
+interneuron, motor; pharyngeal reported separately; dual-role classes left out), keep only the
+response pairs whose *stimulated* class has that role. Per pool and role: worm-to-worm agreement
+(median Pearson correlation over pairs of held-out worms, at least 20 shared pairs), watching
+agreement (a ridge VAR(1) fitted on the training worms' unpoked frames, poked by holding the
+stimulated class at +1 for 15 s, against each held-out worm), poke-average agreement (the
+training worms' mean response, against each held-out worm). Score per role: watching share =
+watching / worm-to-worm. Interval: 2,000 bootstrap resamples of held-out worms within each pool,
+shares averaged over the three pools.
+*Prediction:* the watching share is lowest for sensory neurons. At rest a sensory neuron mostly
+reports the outside world, so its resting fluctuations say little about what it drives.
+*Decision:* supported if the sensory share is below both the interneuron and the motor share in
+at least 2 of 3 pools and the 90% interval of [sensory share minus the mean of the interneuron
+and motor shares] lies below 0. Refuted if that interval lies above 0. Otherwise inconclusive.
+Sensitivity (reported, not decisive): dual-role classes put in their first-listed role.
+
+**Test B1. Does a worm give the same answer twice?** For each worm and each *neuron* (not class)
+stimulated two or more times, take its first two stimulations. Echo size e = root mean square
+response over the worm's other neurons with a role (excluding the stimulated class). Statistic
+L = log(e2 / e1). The same quantity for the target's own response (a, restricted to stimulations
+with a > 0) shows whether the stimulation itself took less well. Control for slow drift
+(bleaching, changing state): pairs of *first* stimulations of two different neurons in the same
+worm, matched to each repeat pair on order and on the gap between them (within 20% or 30 s,
+whichever is larger), up to 5 control pairs per repeat pair. D = mean L(repeats) minus mean
+L(controls), weighting worms equally; 90% interval by resampling worms (2,000). The same
+analysis on artificial networks recorded like the worms (lab brains, `lab_recs` of the
+silent-links test, ordinary links, fixed poke strength) shows what a network that does not
+change gives through the same pipeline.
+*Prediction:* D below 0: the second answer is smaller than drift alone explains (habituation).
+*Decision:* habituation if the 90% interval of D lies below 0; sensitisation if above 0; no
+detectable change if it straddles 0 and lies within plus or minus 0.10 (about 10%); otherwise
+inconclusive. The target's own L is reported beside it: a drop in echo with no drop in the
+target's own response points to the network, not the stimulation.
+
+**Test B2. Does the same poke spread differently in different behavioural states?** State =
+activity of AVA (command interneuron for reversals; mean of its identified neurons, z-scored over
+unpoked frames) averaged over the 10 s before a stimulation; worms where AVA is identified.
+High state: above that worm's 67th percentile of the same 10 s average over unpoked frames; low:
+below its 33rd. To remove what the state does on its own (activity that was high falls back,
+ongoing reversals), every response is corrected by subtracting the mean "pseudo-response" of the
+same neuron in the same worm: the same post-minus-pre change at onsets with no stimulation in
+the whole window (onsets every 5 frames), taken from the same state (high or low). For each
+stimulated class poked in both states (pooled over worms, at least 3 stimulations in each
+state): S = correlation between the mean corrected echo in the high state and in the low state,
+over responding classes measured at least twice in each state (at least 15). Null: the same
+with the high or low labels shuffled among that class's stimulations (500 shuffles). Statistic:
+median over stimulated classes of S minus the mean of its null. Interval and p-value: by
+resampling stimulated classes (2,000) and by flipping the sign of each class's difference
+(10,000), respectively. AVA itself is left out of the responders.
+*Prediction:* below 0. The same poke spreads differently depending on what the worm was doing,
+which a fixed set of connections cannot do.
+*Decision:* supported if the sign-flip p is below 0.05 with the median below 0; refuted (no
+detectable state dependence) if the 90% interval includes 0 and its lower end is above -0.05;
+otherwise inconclusive. Echo size in the two states (mean absolute corrected response) is
+reported beside it.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
