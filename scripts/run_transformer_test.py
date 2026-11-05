@@ -27,7 +27,10 @@ import run_week1 as W1  # noqa: E402
 OUT = ROOT / "docs" / "figures" / "transformer_test.csv"
 V, S_HID, STAY = 32, 8, 0.98
 LAYERS, D, HEADS, HID, BAND = 4, 64, 4, 128, 64
-N_IND, FRAMES, LEAD, EVERY, KICK_SD, KICK_FR = 113, 4440, 230, 60, 3.0, 4
+N_IND, FRAMES, LEAD, EVERY = 113, 4440, 230, 60
+import os
+KICK_SD = float(os.environ.get("NEMATICA_TF_KICK", "3.0"))      # amended run: 10
+KICK_FR = int(os.environ.get("NEMATICA_TF_FRAMES", "4"))        # amended run: 30
 torch.set_num_threads(1)
 
 
@@ -169,6 +172,8 @@ def main():
             print(f"individual {i} ({(time.time() - t0) / 60:.1f} min)", flush=True)
     worms = [W1.Worm(r, valid_fn=lambda c: True) for r in recs]
     fp = LD.fingerprint(worms)
+    if KICK_FR != 4:
+        cond = f"{cond}_kick{KICK_SD:g}x{KICK_FR}"
     row = {"condition": cond, **{k: round(v, 4) for k, v in fp.items()},
            "base_loss": round(loss, 3), "individual_loss": round(float(np.mean(losses)), 3) if losses else "",
            "minutes": round((time.time() - t0) / 60, 1)}

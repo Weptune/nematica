@@ -2011,6 +2011,22 @@ shows how much of the result comes from training.
 113 individuals at 200 steps each would take about 2.5 hours; each individual is trained for 50
 steps instead (learning rate unchanged). Nothing else changes.
 
+**Result (6 Nov 2026; `docs/figures/transformer_test.csv`): unusable as designed.** The trained
+transformer learned the language (loss 2.69 against 3.47 for guessing), but its individuals' echoes
+do not agree with each other (reliability 0.001; untrained: -0.0001), and neither do two halves of
+one individual's pokes (individuality 0.001), so the watching share (1.57) is a ratio over nothing
+and neither hypothesis can be judged. A diagnostic (exploratory, noise-free twin runs on one trained
+network, 12 units, 25 contexts each) shows why: the exact echo of a poke is fairly consistent across
+contexts (mean correlation 0.41 at 3 SD, 0.43 at 10 SD), but tiny when averaged over the 15-token
+window, 0.005 of a unit's SD at 3 SD and 0.019 at 10 SD, far below the 0.1 SD measurement noise and
+the token-driven fluctuations. A single hidden unit held for 4 tokens barely moves a transformer.
+This says the design was too weak, not that transformers resist watching.
+
+*Amendment (pre-registered before the second run):* the same test with each poke held for the whole
+30-token window at 10 SD (KICK_FR 30, KICK_SD 10), everything else unchanged. If individuals'
+agreement is still below 0.05, the test is declared unusable for this architecture at this scale,
+and no reading is made.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
