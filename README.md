@@ -1556,6 +1556,34 @@ is added: no change to the brain, but each poke adds 0.3 times the target's meas
 its two neighbours' measured traces for the 15 s after the poke (`NEMATICA_LEAK=0.3`), pools 0 to 2,
 unchanged scoring.
 
+**Lab I result (5 Nov 2026; `docs/figures/ann_imperfect_summary.txt`, `scripts/summarize_lab_i.py`).**
+Best watching copy and poke-trained copy as shares of the individuals' agreement, pools 0 / 1 / 2:
+
+| Condition | Individuals agree | Best watching | Poke-trained | Verdict |
+|---|---|---|---|---|
+| lab D, no imperfection (reference) | 0.08 to 0.13 | 63 / 66 / 72% | 75 / 85 / 89% | lab-like |
+| class pooling, hold 8 | 0.057 / 0.043 / 0.037 | 70 / 81 / 110% | 66 / 74 / 113% | lab-like / unusable / unusable |
+| class pooling, hold 16 (chosen by the rule: 0.115) | 0.09 to 0.12 | 81 / 91 / 101% | 79 / 83 / 99% | lab-like 3 of 3 |
+| misidentification 15% | 0.071 / 0.048 / 0.062 | 67 / 78 / 68% | 80 / 92 / 84% | lab-like / unusable / lab-like |
+| off-target, half-strength kicks | 0.25 to 0.27 | 25 / 21 / 25% | 85 / 89 / 97% | worm-like 3 of 3 |
+| all three (half-strength off-target) | 0.070 to 0.080 | 25 / 27 / 23% | 90 / 96 / 99% | worm-like 3 of 3 |
+| off-target 0.03 (matched to the worms, amendment 1) | 0.09 to 0.13 | 61 / 62 / 70% | 77 / 86 / 90% | lab-like 3 of 3 |
+| off-target 0.015 (amendment 1) | 0.09 to 0.12 | 62 / 65 / 71% | 77 / 84 / 89% | lab-like 3 of 3 |
+| measured leak 0.3 into neighbours (amendment 2) | 0.09 to 0.13 | 59 / 61 / 67% | 76 / 85 / 88% | lab-like 3 of 3 |
+
+**Reading.** Of the worm experiment's imperfections tried, only off-target stimulation reproduces
+the worm pattern, and only at a strength far above what the atlas shows: half-strength kicks to two
+neighbours make the neighbours respond about twice as much as the target, against 0.3 in worms.
+At the level measured in the worms, whether built in as extra stimulation of the neighbours or as a
+copy of the target's response in their measured traces for the whole 15 s, every brain stays easy
+to copy by watching in every pool, as do brains with pooled classes or 15% misidentified neurons.
+So these imperfections, at the levels measured or assumed, do not explain why worms resist
+watching. That strengthens, but does not prove, an explanation in the worms themselves. Limits:
+the misidentification rate is assumed, not measured; the pooled units are wired independently;
+neighbour effects beyond the nearest three, and imperfections not modelled here (for example the
+nonlinearity of real neurons and their calcium readout, or effects of stimulation on the whole
+animal's state), are not covered; the combination at measured levels is being run (exploratory).
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is

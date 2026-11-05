@@ -1,0 +1,42 @@
+Lab I: the worm experiment's imperfections in lab brains (shares of the individuals' agreement)
+
+pool
+  pool 0: individuals agree 0.057; another individual 89%; watching (VAR3) 62%; stitched 70%; poke-trained 66%; verdict lab-like
+  pool 1: individuals agree 0.043; another individual 93%; watching (VAR3) 67%; stitched 81%; poke-trained 74%; verdict unusable
+  pool 2: individuals agree 0.037; another individual 118%; watching (VAR3) 110%; stitched 103%; poke-trained 113%; verdict unusable
+
+pool_hold16
+  pool 0: individuals agree 0.115; another individual 95%; watching (VAR3) 66%; stitched 81%; poke-trained 79%; verdict lab-like
+  pool 1: individuals agree 0.091; another individual 93%; watching (VAR3) 73%; stitched 91%; poke-trained 83%; verdict lab-like
+  pool 2: individuals agree 0.090; another individual 99%; watching (VAR3) 93%; stitched 101%; poke-trained 99%; verdict lab-like
+
+misid
+  pool 0: individuals agree 0.071; another individual 95%; watching (VAR3) 67%; stitched 52%; poke-trained 80%; verdict lab-like
+  pool 1: individuals agree 0.048; another individual 94%; watching (VAR3) 78%; stitched 69%; poke-trained 92%; verdict unusable
+  pool 2: individuals agree 0.062; another individual 93%; watching (VAR3) 68%; stitched 61%; poke-trained 84%; verdict lab-like
+
+offtarget
+  pool 0: individuals agree 0.267; another individual 96%; watching (VAR3) 25%; stitched 22%; poke-trained 85%; verdict worm-like
+  pool 1: individuals agree 0.249; another individual 95%; watching (VAR3) 18%; stitched 21%; poke-trained 89%; verdict worm-like
+  pool 2: individuals agree 0.249; another individual 101%; watching (VAR3) 25%; stitched 25%; poke-trained 97%; verdict worm-like
+
+all
+  pool 0: individuals agree 0.080; another individual 101%; watching (VAR3) 20%; stitched 25%; poke-trained 90%; verdict worm-like
+  pool 1: individuals agree 0.070; another individual 93%; watching (VAR3) 27%; stitched 26%; poke-trained 96%; verdict worm-like
+  pool 2: individuals agree 0.072; another individual 108%; watching (VAR3) 23%; stitched 18%; poke-trained 99%; verdict worm-like
+
+offmatched
+  pool 0: individuals agree 0.127; another individual 92%; watching (VAR3) 61%; stitched 59%; poke-trained 77%; verdict lab-like
+  pool 1: individuals agree 0.094; another individual 93%; watching (VAR3) 59%; stitched 62%; poke-trained 86%; verdict lab-like
+  pool 2: individuals agree 0.101; another individual 99%; watching (VAR3) 70%; stitched 69%; poke-trained 90%; verdict lab-like
+
+offhalf
+  pool 0: individuals agree 0.123; another individual 92%; watching (VAR3) 62%; stitched 61%; poke-trained 77%; verdict lab-like
+  pool 1: individuals agree 0.090; another individual 93%; watching (VAR3) 62%; stitched 65%; poke-trained 84%; verdict lab-like
+  pool 2: individuals agree 0.099; another individual 97%; watching (VAR3) 71%; stitched 71%; poke-trained 89%; verdict lab-like
+
+leak
+  pool 0: individuals agree 0.128; another individual 91%; watching (VAR3) 59%; stitched 58%; poke-trained 76%; verdict lab-like
+  pool 1: individuals agree 0.093; another individual 93%; watching (VAR3) 60%; stitched 61%; poke-trained 85%; verdict lab-like
+  pool 2: individuals agree 0.103; another individual 97%; watching (VAR3) 67%; stitched 67%; poke-trained 88%; verdict lab-like
+
