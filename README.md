@@ -1938,6 +1938,20 @@ individuality is the likely blocker. *Decision:* a setting with all five within 
 means this family of networks can match the worm on these axes jointly; otherwise it cannot at this
 resolution, and the axis that fails most often is reported.
 
+**Round 3 result (`docs/figures/ladder_fit_seed0.csv`, `ladder_fit_seed1.csv`,
+`ladder_fit_summary.txt`).** 44 distinct settings on brain 0 (four of the 48 draws repeated); the 5
+best re-measured on brain 1. **No setting has all five axes within 25% in both brains (0 of 5), as
+predicted, and individuality is the blocker: it is outside in all 10 runs** (at most 0.057 against
+the worm's 0.089; the best settings give 0.013 to 0.018). Rest dimensionality is next (outside in 6
+of 10). The best setting (drives 0.25, silent links 0.75, spread 0.15, quiet 0.2, no modules) has
+the same relative error on the brain it was chosen on and on the held-out brain (0.40 and 0.40) and
+puts three axes within 25% in both: watching share (0.55, 0.59; worm 0.61), echo breadth (0.073,
+0.087; worm 0.085) and reliability (0.093, 0.103; worm 0.094). So an artificial network of this
+family can match how hard a worm is to copy by watching, how narrow its echoes are and how
+reproducible they are, all at once and on a brain it was not fitted to; it then has a fifth of the
+worm's individuality and too little resting structure. In these networks the slow drives that
+give resting structure erase individual differences; the worm has both.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected

@@ -1,0 +1,7 @@
+share 0.25, silent 0.75, spread 0.15, quiet 0.2, modules 0: rel. error 0.4041 / 0.4018; within 25% in both brains: watch_share, echo_breadth, reliability
+share 0.1, silent 0.75, spread 0.3, quiet 0.0, modules 0: rel. error 0.4484 / 0.5051; within 25% in both brains: rest_dim
+share 0.4, silent 1.5, spread 0.0, quiet 0.1, modules 0: rel. error 0.4509 / 0.4456; within 25% in both brains: watch_share, rest_dim
+share 0.1, silent 1.5, spread 0.0, quiet 0.1, modules 0: rel. error 0.4594 / 0.5568; within 25% in both brains: echo_breadth
+share 0.25, silent 0.75, spread 0.15, quiet 0.2, modules 1: rel. error 0.4738 / 0.3848; within 25% in both brains: echo_breadth, reliability
+settings with all five axes within 25% in both brains: 0 of 5
+axis outside 25% (of 10 runs): watch_share 4, echo_breadth 4, rest_dim 6, individuality 10, reliability 5
