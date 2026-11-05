@@ -2019,7 +2019,7 @@ So the ladder ends on a sharp contrast. Worms have strongly structured resting a
 variance in three patterns) and echoes that are individual, specific to the poked neuron, and
 consistent within an animal. In every artificial network we built, the ingredients that produce
 that resting structure (slow drives, added or multiplied, shared or private) make echoes
-inconsistent within an individual and erase its individuality. Real brains keep their slow
+inconsistent within an individual and erase its individuality. Worms keep their slow
 background activity and their individual cause and effect apart; ours do not.
 
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
