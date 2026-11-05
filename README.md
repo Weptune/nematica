@@ -1952,6 +1952,16 @@ reproducible they are, all at once and on a brain it was not fitted to; it then 
 worm's individuality and too little resting structure. In these networks the slow drives that
 give resting structure erase individual differences; the worm has both.
 
+**Round 4, private drives (pre-registered 6 Nov 2026, after round 3).** In every network so far the
+slow drives' loadings are the same in all individuals (one species-wide set of background signals),
+which may be exactly what erases individuality. Ingredient **P, private drives**: each individual
+gets its own drive loadings (same number, timescale and share, drawn independently per individual).
+P is added to round 3's two best settings (drives 0.25 and 0.4; `run_ladder.py fit --private`),
+measured on both brains. *Prediction:* individuality rises (in all 4 runs) while rest
+dimensionality stays within 0.05 of its value without P. *Decision:* supported if both hold in all
+four runs; the run with the most axes within 25% is reported, and if any has all five within 25%,
+that setting is the first network in this project to match the worm on every axis we can measure.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected
