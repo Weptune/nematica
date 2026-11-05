@@ -1323,6 +1323,50 @@ why watching fails. What would decide it: neuron positions (to test neighbours o
 the atlas's own per-trial flags for whether the target responded, and graded stimulation of
 single neurons.
 
+## Trained networks through the worm pipeline (pre-registered 5 Nov 2026)
+
+Every artificial brain so far was an untrained random network, and those can be copied by
+watching (lab D), unlike worms. The networks people usually mean by "artificial neural
+networks" are trained. If training alone makes a network hide its cause and effect from its
+ongoing activity, the worm/artificial difference found above is really a trained/untrained
+difference. Written before any ruler run; `scripts/run_ann_trained.py`.
+
+**Networks.** The lab's own dynamics (x <- 0.5 x + 0.5 (W tanh x + b + B u) + 0.2 noise, 120
+units, sparse random wiring with 10% of connections, spectral radius 1.3 at the start), trained
+with the wiring mask kept fixed on one of two classic tasks for trained recurrent networks:
+a 3-bit flip-flop (Sussillo and Barak 2013: three lines of brief +1/-1 pulses, three outputs
+that hold the last sign; memory) and context-dependent integration (Mante et al. 2013: two noisy
+evidence lines, two context lines, report the sign of the evidence the context names after 20 s
+of evidence; integration). 3000 steps of Adam, 64 sequences of 200 frames each. The control for
+each task is the identical network before training (same mask, starting weights, input weights
+and inputs). While recorded, every network performs its task without pause, so the task inputs
+are its unrecorded drives.
+
+**Individuals.** Every connection and input weight scaled by (1 + sigma N(0, 1)); sigma is the
+largest of 0.3, 0.2 and 0.1 at which 10 trained individuals keep on average at least 80% of the
+trained species network's above-chance accuracy; the control uses the same sigma.
+
+**Pipeline.** Lab D's decisive check unchanged: 113 individuals recorded like atlas worms (37
+min, half the units seen, 30% never seen, first poke at frame 230, a poke every 30 s, kick 6 held
+8 frames), copies fitted on the training individuals and scored by the unchanged ruler. Copies:
+another individual, the watching copy (VAR(3), zero-filled), the stitched watching copy with
+slow drift removed, the poke-trained copy. Pool 0 first for all four networks; pools 1 and 2 if
+time allows, and every pool run is reported.
+
+**Scoring.** Share = a copy's echo agreement divided by the individuals' agreement with each
+other; best watching = the larger of the two watching copies. Per network:
+worm-like if best watching < 30% and poke-trained >= 60%; lab-like if best watching >= 50% and
+poke-trained >= 60%; intermediate otherwise; unusable if poke-trained < 60% or the individuals
+agree at less than 0.05 (the test then cannot tell copies apart). Worms: watching 4% to 22%,
+poke-trained 76% to 97%.
+
+**Reading.** Training hides cause and effect, for a task, if the trained network is worm-like
+while its untrained control is lab-like. If both are lab-like, training alone does not produce
+the worm difference in these networks. Any other combination is reported as it is. No
+expectation about the direction: training could create attractors that pokes push between in
+ways small fluctuations never show (worm-like), or could make activity follow a few strong
+internal patterns that watching recovers easily (lab-like).
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
