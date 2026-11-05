@@ -1452,26 +1452,29 @@ ceiling below 0.2 are reported but left out of the comparisons.
 and reduced to small per-recording summaries (`scripts/ccep_stream.py`, `scripts/ccep_extract.py`),
 then scored by `scripts/run_ccep_test.py`.
 
-**Result, 4 Nov 2026 (116 of 117 recordings, 74 patients; one recording failed to download and
-its patient is covered by another; `docs/figures/ccep_*`; reviewed independently). An interim look
-on 100 recordings and 63 patients gave the same numbers (`docs/figures/interim_100rec_ccep_*`).
-The scoring code was last changed on 3 Nov, before either look, and was checked beforehand only
-on two of patient 01's recordings.** 73 patients included (UMCU67 has 8 stimulated pairs).
-Median Spearman across patients: ceiling 0.70; distance-only model 0.47; other patients' pokes by
+**Result, 4 Nov 2026, updated 5 Nov with the last recording (all 117 recordings, 74 patients;
+`docs/figures/ccep_*`; reviewed independently on 116 recordings). The recording that failed to
+download on 4 Nov (UMCU67, run 021704) downloaded on 5 Nov; with it, UMCU67 has 140 stimulated
+pairs and is included, and the numbers barely move. Earlier looks: 100 recordings and 63
+patients (`docs/figures/interim_100rec_ccep_*`), then 116 recordings and 73 patients. The scoring
+code was last changed on 3 Nov, before any look, and was checked beforehand only on two of
+patient 01's recordings. UMCU56's two recordings give identical numbers (probably the same data
+stored twice); this does not change any patient-level score.** All 74 patients included.
+Median Spearman across patients: ceiling 0.70; distance-only model 0.46; other patients' pokes by
 region pair 0.37; watching copy 0.29 (same-sign pulse 0.15). Beyond 20 mm: distance 0.30, other
-patients 0.23, watching 0.18.
+patients 0.23, watching 0.17.
 
 Against the expectations. (1) Not falsified: the watching copy did not beat the distance-only
-model, overall or beyond 20 mm. It did clearly worse: -0.162 (95% interval -0.179 to -0.145,
-positive in 1 of 73 patients) overall and -0.120 (-0.140 to -0.101; 6 of 73) beyond 20 mm, so
+model, overall or beyond 20 mm. It did clearly worse: -0.161 (95% interval -0.177 to -0.144,
+positive in 1 of 74 patients) overall and -0.119 (-0.138 to -0.099; 6 of 74) beyond 20 mm, so
 the second clause as worded (an interval including zero) did not hold. A copy that does worse
 than a distance rule does not by itself show that unrecorded drivers are the limit; it may also
 reflect a crude linear copy (VAR(5) at 512 Hz is a 10 ms memory, linear, common-average
 referenced). The watching copy is not uninformative: in the recordings the review checked it
 reproduces the fall-off with distance (near/far amplitude ratio 4.2 against 4.9 measured) and
 adds a little beyond distance (partial Spearman given distance about 0.16, positive in 27 of 28).
-(2) Holds: other patients' region-matched pokes beat the watching copy, +0.061 (+0.041 to
-+0.080; 56 of 73 patients); this predictor also encodes distance, since pairs in the same regions
+(2) Holds: other patients' region-matched pokes beat the watching copy, +0.059 (+0.040 to
++0.079; 56 of 74 patients); this predictor also encodes distance, since pairs in the same regions
 lie close together.
 
 **Caveat that limits every human number above.** The response strength (root mean square, 10 to
@@ -1484,8 +1487,8 @@ before epoching, which spreads the stimulation artefact forward and backward in 
 conduction adds to it. So the distance model and the ceiling are partly scoring artefact spread,
 and the far-field comparison depends on how it is handled: scoring the response relative to the
 pre-pulse level (log of post over pre RMS) leaves distance 0.078 and watching 0.063 beyond 20 mm.
-Not pre-registered, exploratory: distance beat other patients' pokes (+0.101, +0.087 to +0.116;
-71 of 73), which must not be read as a fact about human cortex. A post-hoc re-extraction that
+Not pre-registered, exploratory (on the 116 recordings reviewed): distance beat other
+patients' pokes (+0.101, +0.087 to +0.116; 71 of 73), which must not be read as a fact about human cortex. A post-hoc re-extraction that
 blanks and interpolates a few milliseconds around each pulse before any filtering is needed
 before any claim about human brains; it requires the raw recordings again.
 

@@ -1,13 +1,13 @@
-116 recordings, 74 patients, 73 included (at least 10 stimulated pairs and ceiling >= 0.2)
-  ceiling              median +0.702   (n=73)
-  watching             median +0.288   (n=73)
-  watching_same_sign   median +0.150   (n=73)
-  distance             median +0.466   (n=73)
-  others               median +0.367   (n=73)
-  watching_far         median +0.176   (n=73)
-  distance_far         median +0.297   (n=73)
-  others_far           median +0.229   (n=73)
+117 recordings, 74 patients, 74 included (at least 10 stimulated pairs and ceiling >= 0.2)
+  ceiling              median +0.701   (n=74)
+  watching             median +0.286   (n=74)
+  watching_same_sign   median +0.152   (n=74)
+  distance             median +0.464   (n=74)
+  others               median +0.366   (n=74)
+  watching_far         median +0.174   (n=74)
+  distance_far         median +0.296   (n=74)
+  others_far           median +0.229   (n=74)
 Pre-registered comparisons (patient level):
-  (1) watching minus distance, all electrodes: mean -0.162, 95% interval -0.179 to -0.145, positive in 1 of 73 patients
-  (1) watching minus distance, beyond 20 mm: mean -0.120, 95% interval -0.140 to -0.101, positive in 6 of 73 patients
-  (2) other patients minus watching: mean +0.061, 95% interval +0.041 to +0.080, positive in 56 of 73 patients
+  (1) watching minus distance, all electrodes: mean -0.161, 95% interval -0.177 to -0.144, positive in 1 of 74 patients
+  (1) watching minus distance, beyond 20 mm: mean -0.119, 95% interval -0.138 to -0.099, positive in 6 of 74 patients
+  (2) other patients minus watching: mean +0.059, 95% interval +0.040 to +0.079, positive in 56 of 74 patients
