@@ -1,0 +1,39 @@
+/* Inner pages, brought into the home page's look (assets/home.css): a light mineral page, a light
+   header, quiet mastheads. Dark fields are kept only where a recording or simulation is shown. */
+:root {
+  --page: #edf1ef; --rule: #c9d3cf; --rule-soft: #d8dfdb; --ink: #13212a; --ink-2: #46565e; --ink-3: #6f7f86;
+  --live: #0a7a5a; --live-tint: #cfe8dc; --live-wash: #e3efe9; --copy: #b8357f; --copy-tint: #f3dcea;
+}
+body { background: var(--page); }
+.bar, .bar.on-field {
+  background: color-mix(in srgb, #edf1ef 88%, transparent) !important; color: var(--ink) !important;
+  border-bottom: 1px solid rgba(201, 211, 207, .6) !important;
+}
+.bar nav a::before { content: none !important; display: none !important; }
+.bar nav a { opacity: 1 !important; color: var(--ink-2) !important; font-weight: 500 !important; }
+.bar nav a:hover, .bar nav a[aria-current="page"] { color: var(--ink) !important; }
+.bar nav a[aria-current="page"]::after { background: var(--live) !important; }
+.bar .menu-toggle, .bar.on-field .menu-toggle { border-color: var(--rule) !important; color: var(--ink) !important; }
+.wordmark { letter-spacing: .06em !important; font-weight: 750 !important; }
+.wordmark circle { fill: var(--live); }
+
+.masthead {
+  background: #e2e8e5 !important; color: var(--ink) !important;
+  margin-top: 0 !important; padding: clamp(56px, 8vw, 112px) var(--gutter) clamp(48px, 6vw, 88px) !important;
+}
+.masthead::before, .masthead::after, .masthead.grain::before, .masthead.grain::after { display: none !important; }
+.masthead .folio, .masthead .mast-strip { display: none !important; }
+.masthead .in { display: block !important; min-height: 0 !important; max-width: 76rem !important; }
+.masthead h1.title {
+  color: var(--ink) !important; font-size: clamp(2.8rem, 5.6vw, 5rem) !important; font-weight: 360 !important;
+  letter-spacing: -.025em !important; line-height: 1 !important; max-width: 17ch !important;
+}
+.masthead .standfirst { color: var(--ink-2) !important; border-left-color: var(--live) !important; font-size: clamp(1.2rem, 1.6vw, 1.42rem) !important; }
+.mast-jump {
+  color: var(--ink) !important; border-bottom: 2px solid var(--live) !important; text-transform: none !important;
+  letter-spacing: 0 !important; font: 650 .98rem var(--sans) !important; gap: 10px !important;
+}
+
+footer.foot { background: transparent !important; color: var(--ink-3) !important; border-top: 1px solid var(--rule) !important; margin-top: clamp(64px, 8vw, 112px) !important; padding: 36px var(--gutter) 48px !important; }
+footer.foot .big { display: none !important; }
+footer.foot a { color: var(--ink) !important; }
