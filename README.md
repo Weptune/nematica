@@ -1378,6 +1378,34 @@ smallest hold of 16, 30 or 60 frames at which the individuals' agreement in pool
 with that hold. If no hold reaches 0.07 the network is reported as unusable. The unusable runs
 are kept (`docs/figures/ann_trained_*_fold0.csv`).
 
+**Result (5 Nov 2026; `docs/figures/ann_trained_summary.txt`, `scripts/summarize_lab_h.py`;
+training logs: flip-flop accuracy 1.00 trained, 0.51 untrained; context-dependent integration
+0.86 trained, 0.49 untrained; sigma 0.3 kept for both tasks by the rule).** The calibration
+chose a hold of 30 frames for both trained networks (individuals agree 0.082 and 0.089 in pool
+0; 16 frames gave 0.050 and 0.049) and 16 frames for both untrained ones (0.097 and 0.177).
+Shares of the individuals' agreement, pools 0 / 1 / 2:
+
+| Network | Individuals agree | Watching (VAR(3)) | Stitched, drift removed | Poke-trained | Verdict |
+|---|---|---|---|---|---|
+| flip-flop, untrained | 0.18 | 66 / 68 / 71% | 63 / 68 / 68% | 95 / 103 / 98% | lab-like in 3 of 3 |
+| flip-flop, trained | 0.08 to 0.09 | 77 / 91 / 82% | 64 / 79 / 76% | 98 / 103 / 106% | lab-like in 3 of 3 |
+| integration, untrained | 0.09 to 0.10 | 55 / 44 / 54% | 52 / 52 / 58% | 73 / 72 / 67% | lab-like in 3 of 3 |
+| integration, trained | 0.07 to 0.08 | 75 / 75 / 79% | 69 / 88 / 83% | 83 / 98 / 87% | lab-like in 3 of 3 |
+| real worms (for reference) | 0.09 to 0.12 | 4 to 16% | 5 to 15% | 76 to 97% | |
+
+**Reading, as pre-registered: training alone does not produce the worm difference in these
+networks.** Every trained and untrained network is lab-like in every pool; watching copies of the
+trained networks reach 75% to 91% of the individuals' agreement, against 4% to 22% for any
+watching copy of worms. If anything the trained networks were easier to copy by watching than
+the same networks before training (by 9 to 23 points per pool for the best watching copy), but
+that comparison is confounded: the trained networks needed longer pokes to make their
+individuals agree, and longer pokes change what the test measures. Limits: two tasks, one
+network size and wiring density, one training seed per task, tanh rate units; the trained
+integration network's own individuals agree less than worms do in pool 1 (0.073), and in pool 0
+its watching copy scores above another individual (75% against 63%), so its ceiling is noisy.
+The poke-length amendment was made after the first runs, before any copy was scored at the new
+lengths.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is

@@ -1,0 +1,5 @@
+cdi species accuracy 0.859 (chance 0.5)
+sigma 0.3: individuals' accuracy mean 0.810 (min 0.727)
+sigma 0.2: individuals' accuracy mean 0.833 (min 0.788)
+sigma 0.1: individuals' accuracy mean 0.844 (min 0.788)
+chosen sigma: 0.3

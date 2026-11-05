@@ -1,0 +1,27 @@
+Lab H: trained networks through the worm pipeline (shares of the individuals' agreement)
+
+Pre-registered poke (hold 8), pool 0, unusable runs: individuals agree
+  ann_trained_cdi_init_fold0.csv: 0.0414
+  ann_trained_cdi_trained_fold0.csv: 0.0258
+  ann_trained_flipflop_trained_fold0.csv: 0.0187
+
+flipflop init (hold 16 frames)
+  pool 0: individuals agree 0.177; another individual 105%; watching (VAR3) 66%; stitched 63%; poke-trained 95%; verdict lab-like
+  pool 1: individuals agree 0.179; another individual 105%; watching (VAR3) 68%; stitched 68%; poke-trained 103%; verdict lab-like
+  pool 2: individuals agree 0.181; another individual 99%; watching (VAR3) 71%; stitched 68%; poke-trained 98%; verdict lab-like
+
+flipflop trained (hold 30 frames)
+  pool 0: individuals agree 0.089; another individual 93%; watching (VAR3) 77%; stitched 64%; poke-trained 98%; verdict lab-like
+  pool 1: individuals agree 0.081; another individual 87%; watching (VAR3) 91%; stitched 79%; poke-trained 103%; verdict lab-like
+  pool 2: individuals agree 0.080; another individual 102%; watching (VAR3) 82%; stitched 76%; poke-trained 106%; verdict lab-like
+
+cdi init (hold 16 frames)
+  pool 0: individuals agree 0.097; another individual 80%; watching (VAR3) 55%; stitched 52%; poke-trained 73%; verdict lab-like
+  pool 1: individuals agree 0.094; another individual 89%; watching (VAR3) 44%; stitched 52%; poke-trained 72%; verdict lab-like
+  pool 2: individuals agree 0.097; another individual 84%; watching (VAR3) 54%; stitched 58%; poke-trained 67%; verdict lab-like
+
+cdi trained (hold 30 frames)
+  pool 0: individuals agree 0.082; another individual 63%; watching (VAR3) 75%; stitched 69%; poke-trained 83%; verdict lab-like
+  pool 1: individuals agree 0.073; another individual 90%; watching (VAR3) 75%; stitched 88%; poke-trained 98%; verdict lab-like
+  pool 2: individuals agree 0.081; another individual 84%; watching (VAR3) 79%; stitched 83%; poke-trained 87%; verdict lab-like
+
