@@ -39,14 +39,20 @@ def make(name):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--variant", required=True)
+    ap.add_argument("--params", default=None, help="round 9 setting as share,g,spread,quiet,sigma,hold")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--folds", default="0,1,2")
     ap.add_argument("--copies", default="var3_spontaneous,stitch3_hp,hybrid_kernels")
     a = ap.parse_args()
     warnings.filterwarnings("ignore", category=RuntimeWarning)
     set_norm("fluct")
-    code = "" if a.variant == "base" else a.variant
-    recs = {r.uid: r for r in LD.variant_recs(code, a.seed)}
+    if a.params:
+        sh, g, sp, q, sig, hold = [float(x) for x in a.params.split(",")]
+        LD.KICK_HOLD["frames"] = int(hold)
+        recs = {r.uid: r for r in LD.param_recs({"share": sh, "g": g, "spread": sp, "quiet": q, "mod": 0}, a.seed, sigma=sig)}
+    else:
+        code = "" if a.variant == "base" else a.variant
+        recs = {r.uid: r for r in LD.variant_recs(code, a.seed)}
     uids = sorted(recs)
     perm = np.random.default_rng(1).permutation(uids)
     folds = [sorted(perm[i::3]) for i in range(3)]

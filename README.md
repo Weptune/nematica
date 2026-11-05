@@ -2121,6 +2121,21 @@ five within 25% in both brains (then this family of networks can look like a wor
 measure, and the remaining question is which of its ingredients the worm actually has); otherwise
 the axis that fails most often across the 10 runs is reported as the open mismatch.
 
+**Round 9 result (`docs/figures/ladder_fit9_*.csv`, `ladder_fit9_summary.txt`).** 58 distinct settings
+on brain 0; the best five re-measured on brain 1. **Not matched**: no setting has all five axes within
+25% in both brains, and none has four (the prediction's "4 of 5" is refuted; "not 5" holds). But the
+search came much closer than any earlier round: the most stable setting (drives 0.4, silent links
+0.75, spread 0.15, quiet 0.3, sigma 0.8, hold 6) has a relative error of 0.21 on the brain it was
+chosen on and 0.22 on the held-out brain (round 3's best: 0.40), with watching share and
+individuality within 25% in both. Every axis fails somewhere (echo breadth and reliability most
+often, 6 of 10 runs each), and two random networks with the same setting differ about as much as the
+remaining error. Reading: at this resolution, networks with these ingredients can be brought to
+within about a fifth of the worm on every axis we measure at once, but not reliably inside a 25% band,
+and only with strong slow drives, individuals that differ by up to 80%, a large share of quiet units
+and longer pokes. Which of these the worm actually has is not answered by fitting; the tiring of
+stimulation is still unmatched. Full-ruler check of the most stable setting, written before running:
+its watching copy should fall in or near the worms' 4% to 16% of individuals' agreement.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected

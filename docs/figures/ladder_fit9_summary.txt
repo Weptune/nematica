@@ -1,0 +1,7 @@
+brain 0: 58 distinct settings measured (2 of the 60 draws repeated)
+drives 0.4 silent 0.75 spread 0.0 quiet 0.2 sigma 0.5 hold 10: rel. error 0.1707 / 0.2744; within 25% in both brains: watch_share, rest_dim
+drives 0.4 silent 0.75 spread 0.15 quiet 0.3 sigma 0.8 hold 6: rel. error 0.2096 / 0.2166; within 25% in both brains: watch_share, individuality
+drives 0.25 silent 0.75 spread 0.15 quiet 0.2 sigma 0.5 hold 6: rel. error 0.2817 / 0.2658; within 25% in both brains: echo_breadth, individuality
+drives 0.4 silent 0.0 spread 0.15 quiet 0.1 sigma 0.5 hold 8: rel. error 0.3031 / 0.3354; within 25% in both brains: rest_dim, reliability
+drives 0.4 silent 0.75 spread 0.0 quiet 0.3 sigma 0.8 hold 10: rel. error 0.3204 / 0.2658; within 25% in both brains: watch_share
+axis outside 25% (of 10 runs): watch_share 2, echo_breadth 6, rest_dim 4, individuality 5, reliability 6
