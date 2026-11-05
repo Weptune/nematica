@@ -1937,6 +1937,39 @@ the measurement rather than activation, without settling it. If it is a leak, th
 worm gap that spread seemed to explain (about half, Lab I) is a measurement problem for the
 experiment, not a property of the worm.
 
+## A transformer through the same test (pre-registered 6 Nov 2026)
+
+Every artificial network tested so far is recurrent: units feed back on each other over time.
+The networks behind today's language models are transformers: information flows forward through
+layers, and sideways in time only through attention to earlier tokens. This pilot puts a small
+transformer through the exact measurements of the ingredient ladder (`scripts/run_transformer_test.py`).
+
+- *Task:* next-token prediction on a synthetic language: a hidden Markov chain with 8 sticky hidden
+  states (stay probability 0.98) emitting 32 tokens, so a good model must keep track of a slow
+  hidden state from context.
+- *Network:* 4 layers, width 64, 4 heads, 128 hidden units per layer (GELU), causal attention over
+  the last 64 tokens, no position embedding. Base model trained 3,000 steps.
+- *Individuals:* 113 copies of the base model, each with 10% multiplicative weight noise and then
+  200 steps of training on its own data, so units stay aligned across individuals (like neuron
+  classes across worms) while each individual differs.
+- *Neurons and time:* the 512 hidden units are the neurons; one token is one frame. Each individual
+  reads its own 4,440-token stream (the atlas's 37 minutes at 2 Hz); recorded activity is each
+  unit's value plus measurement noise of 0.1 of its SD; half the units are seen in each recording
+  and 30% never, as in the lab.
+- *Pokes:* from token 230, every 60 tokens, a random seen unit has 3 of its own SDs added for 4
+  tokens (activation patching), all in the same pass, as in the lab.
+- *Control:* the same with untrained weights (the base model before training, individuals by
+  weight noise only).
+- *Measures:* the ladder's six axes, computed by the same code.
+
+*Two hypotheses, stated before running:* (H1) the transformer is like the other artificial
+networks: watching share at least 1.3 (the lowest ladder variant without silent links or quiet
+units). (H2) it is worm-like: watching share at most 0.8, because its activity is driven by the
+token stream (a shared input no copy sees) and its causal flow is one-way across layers, which a
+model fitted to how units follow each other in time cannot represent. *Decision:* H1 or H2 by
+those thresholds for the trained transformer; between them, intermediate. The untrained control
+shows how much of the result comes from training.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
