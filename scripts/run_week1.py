@@ -367,6 +367,52 @@ def run_b1_extra():
     print("\n".join(out))
 
 
+def pc1_loadings(w):
+    act = w.class_activity()
+    names = list(act)
+    Z = np.array([act[c] for c in names])
+    U = np.nan_to_num(Z[:, w.unpoked])
+    U = U - U.mean(1, keepdims=True)
+    u, _, _ = np.linalg.svd(U, full_matrices=False)
+    return dict(zip(names, u[:, 0]))
+
+
+def aligned_state_fn(ws):
+    """Sign convention added after the second review: each recording's PC1 sign is set so that its
+    loadings correlate positively with the consensus loading over recordings (five rounds of
+    re-estimating the consensus with the aligned signs)."""
+    Ls = [pc1_loadings(w) for w in ws]
+    names = sorted({c for l in Ls for c in l})
+    M = np.array([[l.get(c, np.nan) for c in names] for l in Ls])
+    ref = np.nanmean(M, 0)
+    sg = [1.0] * len(ws)
+    for _ in range(5):
+        sg = []
+        for row in M:
+            ok = np.isfinite(row) & np.isfinite(ref)
+            c = np.corrcoef(row[ok], ref[ok])[0, 1] if ok.sum() > 2 else 1.0
+            sg.append(1.0 if not np.isfinite(c) or c >= 0 else -1.0)
+        ref = np.nanmean(M * np.array(sg)[:, None], 0)
+    sign = {id(w): sgn for w, sgn in zip(ws, sg)}
+
+    def fn(w):
+        z = pc1_state(w)
+        return None if z is None else sign[id(w)] * z
+    return fn
+
+
+def run_b2_pc1_aligned():
+    import run_ladder as LD
+    ws = [w for w in load_worms() if pc1_state(w) is not None]
+    run_b2(worms=ws, state_fn=aligned_state_fn(ws), fname="b2_pc1_aligned_worms.txt", exclude=None)
+    sets = {"base": LD.variant_recs("", 0), "D": LD.variant_recs("D", 0),
+            "gain0.6": LD.param_recs({"share": 0.0, "g": 0.75, "spread": 0.15, "quiet": 0.2, "mod": 0, "gain": 0.6}, 0)}
+    for name, recs in sets.items():
+        lw = [Worm(r, valid_fn=lambda c: True) for r in recs]
+        lw = [w for w in lw if pc1_state(w) is not None]
+        run_b2(worms=lw, state_fn=aligned_state_fn(lw), fname=f"b2_pc1_aligned_lab_{name}.txt", exclude=None)
+
+
 def run_b2_pc1():
     import run_ladder as LD
     run_b2(state_fn=pc1_state, fname="b2_pc1_worms.txt", exclude=None)
@@ -528,4 +574,5 @@ def run_b2(spec=True, worms=None, state_fn=None, fname=None, exclude="AVA"):
 if __name__ == "__main__":
     cmd = sys.argv[1]
     {"a2": run_a2, "a2-mixed": lambda: run_a2(True), "b1": run_b1, "b1-lab": run_b1_lab, "b2": run_b2, "b2-strict": lambda: run_b2(False),
-     "b1-extra": lambda: run_b1_extra(), "b2-pc1": lambda: run_b2_pc1()}[cmd]()
+     "b1-extra": lambda: run_b1_extra(), "b2-pc1": lambda: run_b2_pc1(),
+     "b2-pc1-aligned": lambda: run_b2_pc1_aligned()}[cmd]()

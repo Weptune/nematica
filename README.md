@@ -2047,6 +2047,17 @@ noise to echoes. Whether the worm's resting structure is slower than its respons
 from the network's own dynamics rather than outside drives, or is simply smaller next to its
 responses than in our networks, is the next question.
 
+**Correction after the second independent review: this test was flawed.** The sign of a principal
+component is arbitrary, and `pc1_state` took it as the SVD returned it, so "high" and "low" were
+swapped in about a quarter to a third of recordings (28% of worms, 34% of the base network's, 22% of
+the drives network's), diluting any effect. The reviewer's exploratory rerun with signs aligned to the
+consensus loading gave worms -0.049 [-0.084, -0.020], p = 0.002, the drives network -0.018 (p = 0.13)
+and the base network 0.000 (p = 0.52): the opposite of the reading above, which is withdrawn. *Amended
+test (written after seeing the reviewer's rerun, so not blind):* the same test with each recording's
+sign set so its loadings correlate positively with the consensus (`run_week1.py b2-pc1-aligned`), on
+the worms, the base and drives networks, and a positive control that should show state dependence:
+round 5's excitability-drive network (k = 0.6). Decision rule as in B2.
+
 **How much of an echo is the poke? (exploratory, 6 Nov; `docs/figures/echo_noise_share.txt`.)** The
 mean square post-minus-pre change over a recording's neurons, after stimulations against at moments
 with no stimulation: worms 0.617 against 0.446, so 28% of the change after a poke is evoked by it;
