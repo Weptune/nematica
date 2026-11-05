@@ -2020,7 +2020,8 @@ variance in three patterns) and echoes that are individual, specific to the poke
 consistent within an animal. In every artificial network we built, the ingredients that produce
 that resting structure (slow drives, added or multiplied, shared or private) make echoes
 inconsistent within an individual and erase its individuality. Worms keep their slow
-background activity and their individual cause and effect apart; ours do not.
+background activity and their individual cause and effect apart; ours do not. (Narrowed by the
+next test: in the networks this works as added noise, not as state-dependent routing.)
 
 **Does slow background activity change where a poke goes, in worms and in the lab? (pre-registered
 6 Nov 2026.)** Test B2's method, unchanged except for the state signal: instead of AVA, each
@@ -2031,6 +2032,19 @@ network (round 1, brain 0) (`run_week1.py b2-pc1`). *Prediction:* the drives net
 dependence (sign-flip p < 0.05, median below 0); the worms do not (as with AVA); the base network does
 not. If so, worms differ from the networks in exactly this: their slow background state leaves the
 pattern of a poke's spread alone.
+
+**Result (`docs/figures/b2_pc1_worms.txt`, `b2_pc1_lab_base.txt`, `b2_pc1_lab_D.txt`).** Median S
+minus null: worms (83 recordings, 59 stimulated classes) -0.020 [-0.051, +0.005], p = 0.10; lab base
+-0.020 [-0.029, -0.003], p = 0.055; lab drives -0.007 [-0.027, +0.015], p = 0.41. **Prediction
+refuted**: the drives network shows no state dependence by this measure, and none of the three is
+clearly different from the others. So the drives do not lower within-individual consistency by
+routing pokes differently in different states; the simpler reading is that they add slow
+fluctuations inside each 15 s response window, which act as noise on every echo. The contrast
+stated above therefore narrows: worms combine strong resting structure with echoes that stay
+consistent within an animal, and in our networks the drives that give resting structure also add
+noise to echoes. Whether the worm's resting structure is slower than its response window, comes
+from the network's own dynamics rather than outside drives, or is simply smaller next to its
+responses than in our networks, is the next question.
 
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
