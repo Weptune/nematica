@@ -1866,6 +1866,21 @@ pre-registered window (starting one frame after the stimulation ends) can miss f
 so some of these may be timing rather than failed stimulation; the multi-cell follow-up adds no
 sessions (27 of 29 fail the check). No session overflowed the reduced-precision storage.
 
+## Next test bed: mouse touch cortex (data in hand, 5 Nov 2026; not yet analysed)
+
+Dalgleish et al. 2020 (figshare 13128950, MIT): all-optical experiments in mouse barrel cortex,
+groups of 5 to 200 identified neurons photostimulated while about 3,700 neurons per session are
+imaged, in 11 sessions. Downloaded unattended on 5 Nov by `scripts/touch_stream.py` (2.7 GB kept,
+local only). Structure, as read so far: `Fc.npy` (ROIs x frames, neuropil-corrected, all planes;
+for example 3,699 x 24,099 in 20191009_L542, three acquisitions of 8,033 frames), `rois.npz`
+(ROI centres and planes), `*_paqanalysis.mat` (MATLAB v7.3: frame times, licks, rewards, and
+eight stimulation channels Stim1 to Stim8 with their onset frames), `targets/*_NAPARM_*_Points.mat`
+(200 points per pattern with X, Y, Z and group), `cellPose/*Centroids.mat`. The same watching
+versus poking test needs trials mapped to their target patterns and targets mapped to ROIs by
+position; the analysis will be pre-registered before any response is computed, scoring only trials
+without licks (the animals were trained to lick when they felt the stimulation, and licking moves
+the whole cortex).
+
 ## Running the benchmark
 
 ```powershell
