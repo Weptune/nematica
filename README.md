@@ -1787,6 +1787,19 @@ real-worm agreement in all 3 pools; it closes if either copy's echo pattern is j
 (the ruler's verdict) in at least 2 of 3 pools; otherwise it partly closes, and we report by how
 much.
 
+**Result (6 Nov 2026; `docs/figures/strong_watcher.csv`).** Echo agreement, pools 0 / 1 / 2 (real
+worms 0.095 / 0.107 / 0.093): `gru64_watch` 0.005 / 0.004 / 0.008; `gru128ss_watch` 0.005 / 0.009 /
+0.011. All six are outside and below half the real-worm agreement: **the watching gap survives the
+nonlinear watcher**, as predicted. Two caveats from the independent review: the recurrent watcher
+does a little worse than the linear ones (0.004 to 0.024), and it never saw a clamped input in
+training, so its failure could be a failure to cope with the clamp rather than a limit of watching.
+Positive control (added after the review; `docs/figures/ladder_ruler.csv`, the ingredient ladder's
+base network, brain 0, pool 0): the same `gru64_watch` recovers 0.031 against individuals' 0.060
+(52%; the linear watcher 69%, the stitched 57%), against 4% to 12% on worms. So the recurrent
+watcher does work where watching can work, and its failure on worms is not a failure to handle the
+clamp. The title's claim, "the strongest watcher we can build", was too strong: two sizes, fixed
+training, no tuning.
+
 ## The ingredient ladder: what does an artificial network need to look like a worm? (pre-registered 6 Nov 2026)
 
 So far each candidate explanation of the worm gap was tested on its own. Here five ingredients are

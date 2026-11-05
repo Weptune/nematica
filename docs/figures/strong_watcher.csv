@@ -3,3 +3,5 @@ fold,copy,echo_agreement,real_agreement,verdict,equivalence,val_nll,minutes
 1,gru64_watch,0.0042,0.1072,outside,not shown,0.5688,2.2
 2,gru64_watch,0.0075,0.0933,outside,not shown,0.3744,2.0
 0,gru128ss_watch,0.0045,0.0949,outside,not shown,1.4753,8.1
+1,gru128ss_watch,0.009,0.1072,outside,not shown,0.9039,25.3
+2,gru128ss_watch,0.0112,0.0933,outside,not shown,0.1055,43.3
