@@ -1483,6 +1483,52 @@ same signature; either way it is a part of a "response" that a copy cannot learn
 Positions are medians in pixels; neurons move little in these immobilised worms but tracking
 errors add noise, which biases S toward zero.
 
+**Result (5 Nov 2026; `docs/figures/offtarget_worms.txt`; positions for all 113 worms).** By its
+pre-registered rule the signature is **absent**: S (early) = -0.005 (95% interval -0.012 to
++0.002) at s_z = 4, -0.006 and -0.001 at s_z = 2 and 8, real minus sham never excluding zero.
+But the rank correlation pools about 247,000 neuron-stimulation entries, of which about 223,000
+are beyond the 10th-nearest neuron, so a local effect is diluted to nothing; the pre-registered
+summary by distance rank shows one plainly (s_z = 4; sham in brackets):
+
+| Distance rank from the target | Mean within-pair residual early response |
+|---|---|
+| nearest | +0.191 (sham +0.010) |
+| 2nd and 3rd | +0.142 (+0.008) |
+| 4th to 10th | +0.053 (+0.002) |
+| beyond | -0.009 (-0.000) |
+
+The same pattern holds at s_z = 2 and 8 (nearest +0.204 and +0.168). The nearest neighbour's
+residual early response is 0.31 of the target's own early response. The rule chose a statistic
+that could not see a local effect; we report the verdict as written and the table beside it.
+
+**Exploratory follow-up: poke-specific or present at rest?
+(`scripts/diag_offtarget_crosstalk.py`, `docs/figures/offtarget_crosstalk.txt`, written after the
+result above.)** If neighbours rose because of optical crosstalk between adjacent cells or local
+coupling, they would also rise when a neuron rises on its own. Per event, the neighbours' early
+change beyond that of neurons past the 10th rank, divided by the source neuron's early change
+(events with a source change between 1 and 4 resting SD; bootstrap over worms):
+
+| Event | Events (worms) | Nearest neighbour | 2nd and 3rd |
+|---|---|---|---|
+| stimulation | 1220 (106) | 0.31 (0.28 to 0.34) | 0.21 (0.19 to 0.24) |
+| spontaneous rise | 1873 (102) | 0.06 (0.03 to 0.08) | 0.04 (0.02 to 0.05) |
+
+**So in the atlas, a stimulation also raises the target's physical neighbours, about five times
+more than the same neurons' spontaneous rises do.** This is what light reaching neighbouring
+cells would do; an imaging artefact near the stimulation spot would look the same. Either way it
+is part of the measured "response" that no copy can learn by watching. Caveats: positions are
+medians in pixels with an assumed z scale; the source change is larger for spontaneous events
+(2.45 against 1.67), which a ratio corrects only if the relation is proportional; the atlas
+paper's own controls for off-target activation (Randi et al. 2023, Extended Data Fig. 2) were not
+re-analysed here.
+
+**Lab I amendment (written after the result above and lab I's first pool, before these runs).**
+Lab I's off-target setting (neighbours kicked at half strength) is far stronger than this: measured
+the same way in lab brains, it gives a neighbour excess of 2.0 times the target's change. Kicks of
+0.03 and 0.015 of the target's give 0.30 and 0.15 (`scripts/calib_offtarget_lab.py`, 30
+individuals). Two more lab I conditions are run with the unchanged scoring: off-target 0.03
+(matched to the worms' nearest neighbour) and 0.015 (half that), pools 0 to 2.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is

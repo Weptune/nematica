@@ -1,0 +1,2 @@
+stim: events 1220 in 106 worms; source early change 1.67; nearest-neighbour excess / source +0.314 [+0.284, +0.344]; 2nd-3rd +0.214 [+0.193, +0.235]
+spont: events 1873 in 102 worms; source early change 2.45; nearest-neighbour excess / source +0.058 [+0.033, +0.082]; 2nd-3rd +0.035 [+0.018, +0.052]

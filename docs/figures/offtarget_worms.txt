@@ -1,0 +1,9 @@
+worms with positions: 113 of 113
+s_z 2: entries 247091 (worms 108); S early -0.0062 [-0.0131, +0.0001]; sham S +0.0010 [-0.0106, +0.0131]; real minus sham -0.0072 [-0.0211, +0.0066]; S late +0.0113 [-0.0060, +0.0276]
+   mean residual early response by distance rank: rank 1-1: +0.204 (n 2380; sham -0.021); rank 2-3: +0.165 (n 4736; sham +0.006); rank 4-10: +0.054 (n 16240; sham -0.002); rank 11-end: -0.010 (n 223735; sham +0.000)
+s_z 4: entries 247091 (worms 108); S early -0.0048 [-0.0117, +0.0015]; sham S +0.0005 [-0.0116, +0.0130]; real minus sham -0.0053 [-0.0193, +0.0089]; S late +0.0123 [-0.0049, +0.0284]
+   mean residual early response by distance rank: rank 1-1: +0.191 (n 2407; sham +0.010); rank 2-3: +0.142 (n 4730; sham +0.008); rank 4-10: +0.053 (n 16401; sham +0.002); rank 11-end: -0.009 (n 223553; sham -0.000)
+   nearest neighbour residual early response +0.191 against the target's own early response +0.617 (ratio +0.310)
+s_z 8: entries 247091 (worms 108); S early -0.0010 [-0.0076, +0.0054]; sham S -0.0011 [-0.0148, +0.0120]; real minus sham +0.0001 [-0.0147, +0.0157]; S late +0.0149 [-0.0015, +0.0306]
+   mean residual early response by distance rank: rank 1-1: +0.168 (n 2426; sham +0.017); rank 2-3: +0.123 (n 4719; sham +0.005); rank 4-10: +0.039 (n 16402; sham -0.004); rank 11-end: -0.007 (n 223544; sham -0.000)
+verdict: off-target signature absent
