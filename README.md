@@ -1445,6 +1445,44 @@ worm data (for off-target stimulation: responses of the target's physical neighb
 needs neuron positions). If only the combination is, the gap could be a joint effect of the
 experiment.
 
+## Does stimulation in worms reach neighbouring neurons? (pre-registered 5 Nov 2026)
+
+Lab I's first pool suggests that off-target stimulation (a poke that also activates two
+neighbours) can make an artificial brain resist watching the way worms do. Whether it happens in
+the atlas can be checked directly: the original archive (`exported_data_full.tar.gz`, OSF e2syt)
+holds every tracked neuron's position in every volume (`brains.json`, `matches.txt`). Written
+after extracting the positions (median position of each tracked neuron over the recording, in
+pixels; `scripts/extract_positions.py`) and before computing anything from them;
+`scripts/run_offtarget_worms.py`.
+
+**Measures.** For each stimulation (onset f, target k, wild type, the 113 atlas worms) and every
+other tracked neuron i: the early response (mean over frames f to f + 3, 0 to 2 s, minus the mean
+over the 20 frames before, in units of i's SD over unpoked frames) and the late response (frames
+f + 10 to f + 29). Distance between i and k: Euclidean in pixels with z (slice index) scaled by
+s_z; s_z is unknown, so three values are run, 2, 4 and 8 pixels per slice, with 4 primary.
+Responses of named neurons are compared within their (stimulated class, responding class) pair:
+the within-pair residual is the response minus that pair's mean over every worm and stimulation
+(pairs seen in at least 2 worms).
+
+**Statistic.** S = Spearman correlation between the within-pair residual early response and the
+log distance, pooled over all entries, with a 95% interval from 2000 bootstrap resamples of
+worms. Because a neuron's identity is held fixed, synaptic effects cancel; only effects that
+change with where the neuron happens to sit relative to the target remain. Sham: the same at
+random unpoked onsets (windows entirely outside [f, f + 60) of every stimulation), with a random
+named neuron as the "target". Also reported: S for the late response, and the mean residual early
+response by distance rank (nearest neuron, 2nd and 3rd, 4th to 10th, the rest).
+
+**Decision.** Off-target signature present if S < 0 with its interval excluding 0 for all three
+s_z and the real-minus-sham difference excluding 0. Absent if the interval of S includes 0 and
+its lower end is above -0.02 for s_z = 4. Otherwise inconclusive. If present, its size is
+estimated as the nearest neighbour's mean residual early response relative to the target's own
+early response, to compare with lab I's assumption (half the target's kick).
+
+**Caveats stated in advance.** An imaging artefact near the stimulation spot would produce the
+same signature; either way it is a part of a "response" that a copy cannot learn by watching.
+Positions are medians in pixels; neurons move little in these immobilised worms but tracking
+errors add noise, which biases S toward zero.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
