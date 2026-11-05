@@ -291,12 +291,12 @@ def evoked_share(worms):
     return float((np.mean(ev) - np.mean(fl)) / np.mean(ev))
 
 
-def run_long(seed):
+def run_long(seed, holds=(4, 16), out_name="ladder_long.csv"):
     worm = {k: float(v) for k, v in next(csv.DictReader((FIG / "ladder_worms.csv").open())).items()}
-    out = FIG / "ladder_long.csv"
+    out = FIG / out_name
     rows = list(csv.DictReader(out.open())) if out.exists() else []
     best = {"share": 0.25, "g": 0.75, "spread": 0.15, "quiet": 0.0 + 0.2, "mod": 0}
-    for hold in (4, 16):
+    for hold in holds:
         KICK_HOLD["frames"] = hold
         for name in ("best", "DGSM"):
             recs = param_recs(best, seed) if name == "best" else variant_recs("DGSM", seed)
@@ -491,11 +491,14 @@ if __name__ == "__main__":
     ap.add_argument("--private", action="store_true")
     ap.add_argument("--gain", action="store_true")
     ap.add_argument("--long", action="store_true")
+    ap.add_argument("--hold-sweep", action="store_true")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--codes", default=None)
     a = ap.parse_args()
     if a.cmd == "worms":
         run_worms()
+    elif a.cmd == "fit" and a.hold_sweep:
+        run_long(a.seed, holds=(6, 8, 10), out_name="ladder_holds.csv")
     elif a.cmd == "fit" and a.long:
         run_long(a.seed)
     elif a.cmd == "fit" and a.gain:

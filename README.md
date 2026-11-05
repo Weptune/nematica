@@ -2021,7 +2021,8 @@ consistent within an animal. In every artificial network we built, the ingredien
 that resting structure (slow drives, added or multiplied, shared or private) make echoes
 inconsistent within an individual and erase its individuality. Worms keep their slow
 background activity and their individual cause and effect apart; ours do not. (Narrowed by the
-next test: in the networks this works as added noise, not as state-dependent routing.)
+next test: in the networks this works as added noise, not as state-dependent routing. Withdrawn in
+this form by round 6: with stronger pokes the networks keep both.)
 
 **Does slow background activity change where a poke goes, in worms and in the lab? (pre-registered
 6 Nov 2026.)** Test B2's method, unchanged except for the state signal: instead of AVA, each
@@ -2060,6 +2061,33 @@ instead of 4, so its downstream effect grows (the target itself already saturate
 3's best setting and DGSM (round 1), both brains (`run_ladder.py fit --long`). *Prediction:* the
 evoked share rises toward the worms' 28% and individuality rises, in all four runs. *Decision:*
 supported if both rise in all four; the run with the most of the five axes within 25% is reported.
+
+**Round 6 result (`docs/figures/ladder_long.csv`).** Holding pokes 16 frames instead of 4: individuality
+rises in all four runs, from 0.014 to 0.045 to 0.106 to 0.148 (worm 0.089), and reliability with it
+(0.093 to 0.136 to 0.42 to 0.47; worm 0.094); rest dimensionality is unchanged (DGSM 0.41 to 0.42,
+worm-like). The evoked share fell instead of rising, to between -0.87 and -0.01: the measure breaks
+with long holds (its no-stimulation reference comes only from the minutes before the first poke,
+and long-held pokes keep the network in driven states, so post-minus-pre changes shrink). **Not
+supported as stated** (the evoked-share half fails), but the individuality half holds in all four
+runs, and it changes the reading of rounds 3 to 5: **drives erase individuality only at the lab's
+original poke strength**. With stronger pokes, a network with worm-like resting structure (drives)
+is as individual as a worm or more. The individuality gap was, at least in large part, a property of
+how the lab's pokes were calibrated (to match reliability), not a principle about slow background
+activity. The contrast stated after round 5 is withdrawn in that form. What remains is a joint
+constraint: with the poke strength that matches worm individuality, these networks' echoes are far
+more reproducible across individuals than worms' are.
+
+**Round 7, a sweep of poke strength (pre-registered 6 Nov 2026).** Holds of 6, 8 and 10 frames for
+the same two settings, both brains (`run_ladder.py fit --hold-sweep`). *Prediction:* for at least
+one setting and hold, individuality and reliability are both within 25% of the worm in both brains.
+The run with the most of the five axes within 25% is reported; if any setting has all five within 25%
+in both brains, it is the first network here to match the worm on every axis we can measure.
+
+**Transformer, amended run (`docs/figures/transformer_test.csv`, `trained_kick10x30`): unusable.**
+Individuals' agreement 0.011, below the 0.05 floor set in the amendment, so no reading is made: a
+transformer of this size, poked one hidden unit at a time, does not give echoes reproducible enough
+to judge with this ruler. A fair test needs a different unit of poking (for example a direction in
+the residual stream) and is left for a separate, pre-registered design.
 
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
