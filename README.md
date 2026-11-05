@@ -1970,6 +1970,10 @@ model fitted to how units follow each other in time cannot represent. *Decision:
 those thresholds for the trained transformer; between them, intermediate. The untrained control
 shows how much of the result comes from training.
 
+*Amendment before running (6 Nov):* timing showed 0.4 s per training step on this machine, so
+113 individuals at 200 steps each would take about 2.5 hours; each individual is trained for 50
+steps instead (learning rate unchanged). Nothing else changes.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
