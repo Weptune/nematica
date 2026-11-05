@@ -1048,7 +1048,7 @@ about half to four fifths of the individuals' agreement, and with strong drives 
 drift-removed stitched copy is level with the poke-trained copy (78 to 82% against 76 to 84%,
 both inside in 2 of 3 pools). On real worms the same copies reach 4% to 22% while the
 poke-trained copy reaches 76% to 97%. The gap between the poke-trained copy and the best watching
-copy is 0 to 20 points of the individuals' agreement in lab brains and 55 to 90 points in worms, with the same data design, copies
+copy is about 0 to 20 points of the individuals' agreement in lab brains and 54 to 82 points in worms, with the same data design, copies
 and test. **So real worms are much harder to copy by watching than these artificial brains,
 and the reason is not the recording design, the amount of unpoked data or the scoring.**
 Even the old watching copy reaches about two thirds in lab brains, so this was already true
