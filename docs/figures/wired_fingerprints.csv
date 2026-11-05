@@ -1,0 +1,6 @@
+network,wiring,drives,units,classes,watch_share,echo_breadth,tiring,rest_dim,individuality,reliability
+worm-wired,real,0.0,279,170,6.2912,0.0256,-0.0041,0.1068,-0.001,0.0043
+worm-wired,real,0.25,279,170,-1.0819,0.0476,0.0148,0.2846,-0.0067,0.0025
+worm-wired,shuffled,0.0,279,170,3.7845,0.0238,0.0132,0.1029,0.0002,0.0119
+worm-wired,shuffled,0.25,279,170,1.6954,0.0476,-0.0073,0.3134,-0.0096,0.005
+fly-wired,real,0.0,1203,65,-1.8644,0.0,-0.0377,0.153,0.002,0.0007

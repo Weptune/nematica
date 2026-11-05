@@ -2226,6 +2226,20 @@ least 1.3 for both, without drives; (2) real and shuffled wiring differ by less 
 share. *Decision:* each prediction judged separately; a real-wired network at or below 0.8 without
 drives would mean the wiring itself carries part of the worm's resistance to watching.
 
+**Result (`docs/figures/wired_fingerprints.csv`): unusable as designed, stopped after five of the
+eight runs.** Individuals' echoes do not agree with each other in any real-wired run (reliability:
+worm-wired 0.004 without drives and 0.003 with; fly-wired 0.0007; shuffled worm-wired 0.012 and
+0.005), so the watching shares (6.3, -1.1, 3.8, 1.7, -1.9) are ratios over nothing and no prediction
+can be judged. Diagnosis: scaled to spectral radius 1.3, the worm wiring's mean total input per
+neuron is 0.74 against 3.4 in the lab's random networks, because 98% of its signed links are
+excitatory (the diagram marks only GABAergic synapses as inhibitory), so one coherent excitatory mode
+sets the radius and every other link ends up tiny; pokes barely spread (echo breadth 0.026). The
+fly patch is better balanced (a third inhibitory; mean input 1.44), but a poke to one of 1,203 cells
+pooled into 65 types moves no type measurably (echo breadth 0.0). Putting a real wiring diagram into
+these dynamics is a modelling problem of its own (signs, scaling, which units count as a class); the
+project's existing Kunert et al. model (wiring plus textbook physiology) is the better starting
+point and is left for a separate design. The ruler runs were stopped before finishing.
+
 **Replication of the worm state dependence (pre-registered 6 Nov 2026, before looking).** The
 sign-aligned PC1 test found state-dependent spread in the wild-type worms after the reviewer had seen
 it. Replication sample: the 18 unc-31 worms of the atlas (reduced neuropeptide release, recorded the
