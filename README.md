@@ -1397,7 +1397,7 @@ Shares of the individuals' agreement, pools 0 / 1 / 2:
 networks.** Every trained and untrained network is lab-like in every pool; watching copies of the
 trained networks reach 75% to 91% of the individuals' agreement, against 4% to 22% for any
 watching copy of worms. If anything the trained networks were easier to copy by watching than
-the same networks before training (by 9 to 23 points per pool for the best watching copy), but
+the same networks before training (by 11 to 36 points per pool for the best watching copy), but
 that comparison is confounded: the trained networks needed longer pokes to make their
 individuals agree, and longer pokes change what the test measures. Limits: two tasks, one
 network size and wiring density, one training seed per task, tanh rate units; the trained
