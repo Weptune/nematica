@@ -128,13 +128,16 @@ def modular_W(n, rho, rng, k=4, inside=0.9, density=0.1):
     return Wm * rho / np.abs(np.linalg.eigvals(Wm)).max()
 
 
+KICK_HOLD = {"frames": KICK_FRAMES}      # round 6 sets this to 16
+
+
 def record(br, rng, obs, kicks, scale, spread):
     n = br.n
     Dm = getattr(br, "Dm", None)            # round 5: drives that scale the recurrent input
     k = (0 if br.D is None else br.D.shape[1]) or (0 if Dm is None else Dm.shape[1])
     x, s = np.zeros(n), np.zeros(k)
     y = np.full((L.FRAMES, n), np.nan)
-    active = {f + d: (j, scale[f]) for f, j in kicks.items() for d in range(KICK_FRAMES)}
+    active = {f + d: (j, scale[f]) for f, j in kicks.items() for d in range(KICK_HOLD["frames"])}
     Wg = getattr(br, "Wg", None)
     for t in range(-400, L.FRAMES):
         if k:
@@ -266,6 +269,50 @@ def run_gain(seed):
             w = csv.DictWriter(fh, fieldnames=list(rows[0]))
             w.writeheader()
             w.writerows(rows)
+
+
+def evoked_share(worms):
+    fl, ev = [], []
+    for w in worms:
+        for t in range(W1.PRE, w.T - W1.POST, 5):
+            if any(t - W1.PRE <= f < t + W1.POST for f in w.r.all_stim_frames):
+                continue
+            v = w.change(t)[w.valid]
+            v = v[np.isfinite(v)]
+            if len(v) >= 10:
+                fl.append(np.mean(v ** 2))
+        for k, f, v in w.stims:
+            m = w.valid.copy()
+            m[k] = False
+            vv = v[m]
+            vv = vv[np.isfinite(vv)]
+            if len(vv) >= 10:
+                ev.append(np.mean(vv ** 2))
+    return float((np.mean(ev) - np.mean(fl)) / np.mean(ev))
+
+
+def run_long(seed):
+    worm = {k: float(v) for k, v in next(csv.DictReader((FIG / "ladder_worms.csv").open())).items()}
+    out = FIG / "ladder_long.csv"
+    rows = list(csv.DictReader(out.open())) if out.exists() else []
+    best = {"share": 0.25, "g": 0.75, "spread": 0.15, "quiet": 0.0 + 0.2, "mod": 0}
+    for hold in (4, 16):
+        KICK_HOLD["frames"] = hold
+        for name in ("best", "DGSM"):
+            recs = param_recs(best, seed) if name == "best" else variant_recs("DGSM", seed)
+            ws = [W1.Worm(r, valid_fn=lambda c: True) for r in recs]
+            fp = fingerprint(ws)
+            rel = [abs(fp[a] - worm[a]) / abs(worm[a]) for a in FIT_AXES]
+            rows.append({"seed": seed, "setting": name, "hold": hold, "evoked_share": round(evoked_share(ws), 4),
+                         **{a: round(fp[a], 4) for a in AXES},
+                         "rel_err": round(float(np.sqrt(np.mean(np.square(rel)))), 4),
+                         "within25": int(sum(r <= 0.25 for r in rel))})
+            print(rows[-1], flush=True)
+            with out.open("w", newline="") as fh:
+                w = csv.DictWriter(fh, fieldnames=list(rows[0]))
+                w.writeheader()
+                w.writerows(rows)
+    KICK_HOLD["frames"] = KICK_FRAMES
 
 
 def run_fit(seed, n=48, top=None):
@@ -443,11 +490,14 @@ if __name__ == "__main__":
     ap.add_argument("--top", type=int, default=None)
     ap.add_argument("--private", action="store_true")
     ap.add_argument("--gain", action="store_true")
+    ap.add_argument("--long", action="store_true")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--codes", default=None)
     a = ap.parse_args()
     if a.cmd == "worms":
         run_worms()
+    elif a.cmd == "fit" and a.long:
+        run_long(a.seed)
     elif a.cmd == "fit" and a.gain:
         run_gain(a.seed)
     elif a.cmd == "fit" and a.private:

@@ -2046,6 +2046,21 @@ noise to echoes. Whether the worm's resting structure is slower than its respons
 from the network's own dynamics rather than outside drives, or is simply smaller next to its
 responses than in our networks, is the next question.
 
+**How much of an echo is the poke? (exploratory, 6 Nov; `docs/figures/echo_noise_share.txt`.)** The
+mean square post-minus-pre change over a recording's neurons, after stimulations against at moments
+with no stimulation: worms 0.617 against 0.446, so 28% of the change after a poke is evoked by it;
+lab networks 2% (base), 4% (silent links), 6% (drives), 8% (both) and 12% (DGSM). Worm pokes stand
+out from the background several times more than the lab's do. The lab's poke strength was calibrated
+so that individuals' echoes agree about as well as worms' (reliability), not on how much they stand
+out, so this is a mismatch in the lab's design, and a plausible cause of both the individuality
+gap and the difficulty of matching narrow echoes.
+
+**Round 6, stronger pokes (pre-registered 6 Nov 2026).** Each poke is held for 16 frames (8 s)
+instead of 4, so its downstream effect grows (the target itself already saturates). Settings: round
+3's best setting and DGSM (round 1), both brains (`run_ladder.py fit --long`). *Prediction:* the
+evoked share rises toward the worms' 28% and individuality rises, in all four runs. *Decision:*
+supported if both rise in all four; the run with the most of the five axes within 25% is reported.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected
