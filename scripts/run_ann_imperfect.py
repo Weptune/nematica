@@ -10,6 +10,8 @@ with imperfections of the real experiment added one at a time and all together:
   NEMATICA_MISID=f      misidentification: in every recording, a random fraction f of the seen
                         units have their class labels shuffled among themselves (a stimulated
                         unit can be among them)
+  NEMATICA_LEAK=c       (second amendment) a measured copy of the target's response, c times its size,
+                        in the two neighbours' traces for 15 s after each poke
   NEMATICA_OFFTARGET=a  off-target stimulation: every unit has two fixed neighbours (the same in
                         every individual, like anatomy); a poke also kicks them at a times the
                         kick; copies are told only the intended target
@@ -38,12 +40,28 @@ OFF = float(os.environ.get("NEMATICA_OFFTARGET", "0"))
 _g = np.random.default_rng(4242)
 NEIGH = np.array([_g.choice([u for u in range(120) if u != i], size=2, replace=False) for i in range(120)])  # fixed "anatomy"
 
+LEAK = float(os.environ.get("NEMATICA_LEAK", "0"))
 _record = L.record
+
+
+def leak(y, obs, kicks):
+    """Second amendment (after the independent review): the two neighbours' MEASURED traces carry
+    LEAK times the target's measured response over the 15 s after a poke (contingent on the target,
+    as in the atlas); nothing changes in the brain itself."""
+    for f, j in kicks.items():
+        if not obs[j] or f < 20:
+            continue
+        seg = y[f:f + L.WIN, j] - np.nanmean(y[f - 20:f, j])
+        for nb in NEIGH[j]:
+            if obs[nb]:
+                y[f:f + len(seg), nb] += LEAK * seg
+    return y
 
 
 def record(br, rng, obs, kicks=None, frames=L.FRAMES, burn=400):
     if not OFF or not kicks:
-        return _record(br, rng, obs, kicks, frames=frames, burn=burn)
+        y = _record(br, rng, obs, kicks, frames=frames, burn=burn)
+        return leak(y, obs, kicks) if LEAK and kicks else y
     n = br.n
     k = 0 if br.D is None else br.D.shape[1]
     x, s = np.zeros(n), np.zeros(k)

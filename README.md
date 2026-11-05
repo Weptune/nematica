@@ -1483,7 +1483,7 @@ same signature; either way it is a part of a "response" that a copy cannot learn
 Positions are medians in pixels; neurons move little in these immobilised worms but tracking
 errors add noise, which biases S toward zero.
 
-**Result (5 Nov 2026; `docs/figures/offtarget_worms.txt`; positions for all 113 worms).** By its
+**Result (5 Nov 2026; `docs/figures/offtarget_worms.txt`; positions extracted for all 113 worms, but in 3 the position file and the traces have different neuron counts, so 108 contribute; reviewed independently).** By its
 pre-registered rule the signature is **absent**: S (early) = -0.005 (95% interval -0.012 to
 +0.002) at s_z = 4, -0.006 and -0.001 at s_z = 2 and 8, real minus sham never excluding zero.
 But the rank correlation pools about 247,000 neuron-stimulation entries, of which about 223,000
@@ -1513,21 +1513,48 @@ change beyond that of neurons past the 10th rank, divided by the source neuron's
 | stimulation | 1220 (106) | 0.31 (0.28 to 0.34) | 0.21 (0.19 to 0.24) |
 | spontaneous rise | 1873 (102) | 0.06 (0.03 to 0.08) | 0.04 (0.02 to 0.05) |
 
-**So in the atlas, a stimulation also raises the target's physical neighbours, about five times
-more than the same neurons' spontaneous rises do.** This is what light reaching neighbouring
-cells would do; an imaging artefact near the stimulation spot would look the same. Either way it
-is part of the measured "response" that no copy can learn by watching. Caveats: positions are
-medians in pixels with an assumed z scale; the source change is larger for spontaneous events
-(2.45 against 1.67), which a ratio corrects only if the relation is proportional; the atlas
-paper's own controls for off-target activation (Randi et al. 2023, Extended Data Fig. 2) were not
-re-analysed here.
+**What the independent review found (it reproduced every number above).**
 
-**Lab I amendment (written after the result above and lab I's first pool, before these runs).**
+- *The effect is robust and stimulation-specific.* Matched in size, spontaneous rises give 0.05 to
+  0.08 at every source size (stimulation 0.26 to 0.34); the same neurons in the same worms give
+  0.30 against 0.05; it is a broad shift (74% of stimulation events positive against 54%), present
+  for unnamed neighbours (0.28), for neighbours that are not wired to the target (0.31) and not its
+  homolog (0.30).
+- *It is not an early effect.* The nearest neighbour's within-pair residual is +0.19 at 0 to 2 s,
+  +0.34 at 2 to 5 s, +0.74 at 5 to 10 s and +0.94 at 10 to 15 s (sham about 0), about 0.3 of the
+  target's own response throughout: the neighbour carries a scaled copy of the target's response.
+- *It appears only when the target itself responds.* When the target's 15 s change is at or below
+  zero, the nearest neighbour's residual is at or below zero in every window; it then grows with
+  the target. So it is not light reaching neighbours independently of the target.
+- *Distance means distance in the image plane.* The z coordinate spans about 10 slices and adds
+  nothing; the excess is flat (0.32 to 0.35) for nearest neighbours within 12 pixels and falls to
+  0.07 beyond.
+
+**So in the atlas, the stimulated neuron's nearest neighbours in the image carry about 0.3 of the
+target's response, over the whole 15 s, beyond what their identity predicts and only when the target
+responds; spontaneous rises of the same neurons spread about a sixth as much.** Its cause is not
+identified. Light reaching neighbours with delivery shared with the target, a measurement effect of
+stimulation tied to the target (the stimulation photobleaches the red tracking fluorophore in the
+target, which could disturb tracking or segmentation next to it), and occasional mis-targeting all
+fit; an artefact limited to the light pulse is excluded and plain optical bleed-through is unlikely.
+Whatever it is, it is part of the measured echo, it is consistent across worms where anatomy is, and
+no copy can learn it by watching.
+
+**Lab I amendment (written after the pre-registered result and the exploratory follow-up, and lab
+I's first pool, before these runs; the review's findings came later).**
 Lab I's off-target setting (neighbours kicked at half strength) is far stronger than this: measured
 the same way in lab brains, it gives a neighbour excess of 2.0 times the target's change. Kicks of
 0.03 and 0.015 of the target's give 0.30 and 0.15 (`scripts/calib_offtarget_lab.py`, 30
 individuals). Two more lab I conditions are run with the unchanged scoring: off-target 0.03
 (matched to the worms' nearest neighbour) and 0.015 (half that), pools 0 to 2.
+
+**Second lab I amendment (written after the independent review, before these runs).** The review
+showed that the worms' neighbour excess is a scaled copy of the target's response over the whole
+15 s and appears only when the target responds, while lab I's off-target kick acts on the
+neighbours' dynamics whether or not the target responds. A condition closer to what the atlas shows
+is added: no change to the brain, but each poke adds 0.3 times the target's measured response to
+its two neighbours' measured traces for the 15 s after the poke (`NEMATICA_LEAK=0.3`), pools 0 to 2,
+unchanged scoring.
 
 ## Where the data runs out (2 Nov 2026)
 
