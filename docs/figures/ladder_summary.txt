@@ -49,3 +49,15 @@ Shapley on distance without tiring: D +0.202 (+0.173, +0.230); G -0.041 (-0.034,
 Shapley on rest_dim: D +0.165; G +0.004; S +0.000; H +0.000; M -0.018
 Shapley on individuality: D -0.037; G +0.034; S +0.004; H -0.016; M +0.014
 Shapley on reliability: D -0.078; G +0.084; S +0.028; H -0.013; M +0.014
+
+Exploratory: axes within 25% of the worm value (brain 0, brain 1), and axes within 25% in both brains
+DGSHM  3/2  watch_share, rest_dim
+DGSH   2/3  rest_dim, reliability
+DGS    2/3  rest_dim, reliability
+DGHM   2/3  rest_dim, reliability
+base   2/2  echo_breadth, reliability
+SHM    2/2  echo_breadth, reliability
+SH     2/2  echo_breadth, reliability
+M      2/2  echo_breadth, reliability
+HM     2/2  echo_breadth, reliability
+GSM    2/2  watch_share, individuality

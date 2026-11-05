@@ -1823,6 +1823,54 @@ worm; the closest variant has at least drives and silent links. (3) Modules make
 sign and order as stated; predictions (1) and (3) need the effect in both brains. The full ruler
 is then run on the closest variant, to check that the cheap axis agrees with the expensive one.
 
+**Results (6 Nov 2026; `docs/figures/ladder_worms.csv`, `ladder_lab_seed0.csv`,
+`ladder_lab_seed1.csv`, `ladder_summary.txt`).** The worms: watching share 0.61, echo breadth
+0.085, stimulation tiring -0.42, rest dimensionality 0.43, individuality 0.089, reliability
+0.094 (the last three agree with earlier, separate measurements: 40%, 0.10 and 0.09 to 0.11).
+
+| Axis | Worms | Lab base (brain 0 / 1) | What moves a network toward the worm (Shapley, mean of the two brains) |
+|---|---|---|---|
+| watching share | 0.61 | 2.46 / 2.38 | silent links -1.32, spread -0.55, modules -0.15; drives +0.18 and tiring +0.10 move it away |
+| echo breadth | 0.085 | 0.100 / 0.095 | modules -0.004 (only); drives +0.017 and silent links +0.022 widen echoes |
+| stimulation tiring | -0.42 | -0.02 / -0.01 | tiring -0.06 (only); no variant goes below -0.13 |
+| rest dimensionality | 0.43 | 0.27 / 0.25 | drives +0.17 (only); every variant with drives is at 0.40 to 0.43 |
+| individuality | 0.089 | 0.028 / 0.016 | silent links +0.034; drives -0.037 erase it |
+| reliability | 0.094 | 0.076 / 0.075 | silent links +0.084 overshoot, drives -0.078 undershoot; together about right |
+
+Pre-registered predictions:
+1. *Drives lower the watching share most, silent links second.* **Wrong.** Silent links lower it
+   most in both brains, stimulation spread second; drives raise it slightly on this axis. Every
+   variant with silent links lands at 0.57 to 1.11, around the worm's 0.61; no variant without
+   them goes below 1.31.
+2. *No single ingredient brings a network to the worm; the closest has drives and silent links.*
+   First half holds; second half **refuted as stated**: by the pre-registered distance the closest
+   variant is spread plus tiring (SH, 3.85 against 4.49 for the base). But that distance turned out
+   to be dominated by one axis no variant approaches (tiring: the worms sit ten lab SDs away), so
+   it mostly ranks variants by whether they include tiring. Without that axis (exploratory), the
+   closest are modules plus spread (1.29) and all distances stay between 1.29 and 1.75: no
+   combination of these five ingredients comes near the worm on all axes. Counting axes within 25%
+   of the worm value (exploratory), no variant manages more than 3 of 6 in either brain.
+3. *Modules make echoes narrower.* **Supported in direction** (both brains), but tiny: -0.004
+   against a worm-to-lab gap of up to 0.06.
+4. *Tiring is the only ingredient that moves axis 3.* **Supported**, but even a poke 35% weaker
+   the second time lowers the lab target's measured response by only about 8%: a strongly driven
+   tanh unit saturates, so its response hides the weaker input. The worms' 35% drop is therefore
+   either a stronger tiring of the input or a response that does not saturate the same way.
+
+Full ruler on the closest variant (SH, brain 0, pool 0; `docs/figures/ladder_ruler.csv`): the
+watching copy agrees with individuals at 0.040 against their 0.083 (48%), the stitched watcher
+0.031 (37%), the poke-trained copy 0.076 (inside). The cheap axis put SH well above the worms
+(1.62 against 0.61); the ruler agrees that it is far from the worms' 4 to 16%.
+
+**What this says.** No one ingredient makes an artificial network look like a worm, and the
+ingredients pull in different directions: silent links give a network the worm's resistance to
+watching and its individuality, and shared slow drives give it the worm's resting structure, but
+drives also erase individuality and widen echoes. The worm combines properties that these
+ingredients trade against each other; whatever reconciles them is not yet in the lab. Two worm
+properties no variant reaches: very narrow echoes (8.5% of neuron classes move by more than one
+resting SD) and stimulation that tires by a third. Caveats: two brains; the cheap watching axis
+uses noise-free predictions; ingredient strengths are single choices, not fitted.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected
@@ -1855,6 +1903,18 @@ late interval includes 0 and its upper end is below +0.02 resting SD; otherwise 
 The early window is reported beside it (a real downstream effect should be later than the
 neighbour's own). Power caveat, stated before running: the expected effect is a fraction of the
 neighbour's own excess (about 0.3 of the target's response), so an inconclusive result is likely.
+
+**Result (6 Nov 2026; `docs/figures/neighbour_partners.txt`).** 2,251 stimulations in 106
+worms (sham: 629 onsets). Late window (5 to 15 s): neighbour-partners minus control partners
+-0.032 [-0.063, -0.002]; sham -0.021 [-0.056, +0.011]; real minus sham -0.011 [-0.055, +0.035].
+Early window: -0.002 [-0.028, +0.026]; real minus sham +0.016 [-0.028, +0.061]. **Inconclusive by
+the pre-registered rule** (the late interval lies just below 0 rather than spanning it), but
+there is no sign of the excess real activation predicts: the neighbours' partners respond no
+more than control partners, and the small deficit is matched in the sham, so it comes from how
+the groups are built, not from the poke. This leans toward the neighbour effect being a leak in
+the measurement rather than activation, without settling it. If it is a leak, the part of the
+worm gap that spread seemed to explain (about half, Lab I) is a measurement problem for the
+experiment, not a property of the worm.
 
 ## Where the data runs out (2 Nov 2026)
 
