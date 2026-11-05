@@ -1367,6 +1367,17 @@ expectation about the direction: training could create attractors that pokes pus
 ways small fluctuations never show (worm-like), or could make activity follow a few strong
 internal patterns that watching recovers easily (lab-like).
 
+**Amendment (5 Nov 2026, written after the first pool-0 runs and before any calibration).**
+With the pre-registered poke (kick 6 held 8 frames) the individuals' echoes barely agree (0.019
+to 0.041 in the first three networks run), so by the rule above those runs are unusable: the
+networks are driven so strongly by their unrecorded task inputs that a single poke's echo is
+mostly noise, and every copy, good or bad, comes out inside. As was done for labs F and G, the
+poke is lengthened until individuals agree like worms: for each of the four networks, the
+smallest hold of 16, 30 or 60 frames at which the individuals' agreement in pool 0 is at least
+0.07 (judged on the individuals alone, with no copy scored), then the full set of copies is run
+with that hold. If no hold reaches 0.07 the network is reported as unusable. The unusable runs
+are kept (`docs/figures/ann_trained_*_fold0.csv`).
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
