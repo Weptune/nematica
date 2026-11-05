@@ -35,8 +35,28 @@ offhalf
   pool 1: individuals agree 0.090; another individual 93%; watching (VAR3) 62%; stitched 65%; poke-trained 84%; verdict lab-like
   pool 2: individuals agree 0.099; another individual 97%; watching (VAR3) 71%; stitched 71%; poke-trained 89%; verdict lab-like
 
+off0.1
+  pool 0: individuals agree 0.163; another individual 95%; watching (VAR3) 47%; stitched 44%; poke-trained 80%; verdict intermediate
+  pool 1: individuals agree 0.138; another individual 94%; watching (VAR3) 40%; stitched 42%; poke-trained 86%; verdict intermediate
+  pool 2: individuals agree 0.140; another individual 103%; watching (VAR3) 49%; stitched 49%; poke-trained 94%; verdict intermediate
+
+off0.2
+  pool 0: individuals agree 0.217; another individual 97%; watching (VAR3) 33%; stitched 30%; poke-trained 84%; verdict intermediate
+  pool 1: individuals agree 0.199; another individual 95%; watching (VAR3) 26%; stitched 27%; poke-trained 86%; verdict worm-like
+  pool 2: individuals agree 0.199; another individual 101%; watching (VAR3) 32%; stitched 33%; poke-trained 95%; verdict intermediate
+
 leak
   pool 0: individuals agree 0.128; another individual 91%; watching (VAR3) 59%; stitched 58%; poke-trained 76%; verdict lab-like
   pool 1: individuals agree 0.093; another individual 93%; watching (VAR3) 60%; stitched 61%; poke-trained 85%; verdict lab-like
   pool 2: individuals agree 0.103; another individual 97%; watching (VAR3) 67%; stitched 67%; poke-trained 88%; verdict lab-like
+
+leak0.6
+  pool 0: individuals agree 0.148; another individual 92%; watching (VAR3) 50%; stitched 50%; poke-trained 79%; verdict lab-like
+  pool 1: individuals agree 0.111; another individual 94%; watching (VAR3) 51%; stitched 52%; poke-trained 87%; verdict lab-like
+  pool 2: individuals agree 0.119; another individual 97%; watching (VAR3) 57%; stitched 58%; poke-trained 93%; verdict lab-like
+
+allmeasured
+  pool 0: individuals agree 0.074; another individual 93%; watching (VAR3) 63%; stitched 76%; poke-trained 80%; verdict lab-like
+  pool 1: individuals agree 0.057; another individual 90%; watching (VAR3) 77%; stitched 88%; poke-trained 88%; verdict lab-like
+  pool 2: individuals agree 0.057; another individual 107%; watching (VAR3) 89%; stitched 85%; poke-trained 105%; verdict lab-like
 

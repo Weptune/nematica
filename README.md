@@ -1614,6 +1614,28 @@ and 0.2 (bracketing the worms' level measured in the scoring window) and a leak 
 the worm range), pools 0 to 2, unchanged scoring. `scripts/calib_offtarget_lab.py` is kept as run;
 its statistic is not the comparable one.
 
+**Third amendment result (5 Nov 2026).** Shares of the individuals' agreement, pools 0 / 1 / 2
+(neighbour excess over the 15 s window, from the review, in brackets):
+
+| Condition | Individuals agree | Best watching | Poke-trained | Verdict |
+|---|---|---|---|---|
+| off-target 0.1 (0.39) | 0.14 to 0.16 | 47 / 42 / 49% | 80 / 86 / 94% | intermediate 3 of 3 |
+| off-target 0.2 (0.66) | 0.20 to 0.22 | 33 / 27 / 33% | 84 / 86 / 95% | intermediate, worm-like, intermediate |
+| leak 0.6 (0.55) | 0.11 to 0.15 | 50 / 52 / 58% | 79 / 87 / 93% | lab-like 3 of 3 |
+| worms (reference; excess 0.3 to 0.57) | 0.09 to 0.12 | 4 to 22% | 76 to 97% | |
+
+**Reading.** At the worms' measured strength, stimulation that spreads through the network to two
+neighbours roughly halves what watching can recover (from 63% to 72% without it, to 27% to 49%),
+so if the worms' neighbour excess is real activation it accounts for a large part of the gap, but
+in these brains not all of it: watching stays above the worms' 4% to 22% in 8 of 9 pool runs, and
+the spread makes individuals agree more than worms do (0.14 to 0.22). A pure measurement leak at the
+top of the worm range costs watching much less (50% to 58%). So what the worms' neighbour excess
+is matters: if it is light reaching neighbours or mis-targeting, a substantial part of the
+watching-versus-poking gap in the atlas is an experimental effect; if it is a tracking or
+measurement effect, little of it is. Either way a gap remains that these imperfections, as
+modelled, do not produce. The test proposed below (an excess in the neighbours' own synaptic
+partners would mean real activation) is the next step.
+
 Other limits: the misidentification rate is assumed, not measured; the pooled units are wired
 independently; neighbour effects beyond the nearest two, neighbours that differ between
 individuals, and imperfections not modelled here (stimulation efficacy and time course, which in
