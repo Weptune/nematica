@@ -2022,6 +2022,16 @@ that resting structure (slow drives, added or multiplied, shared or private) mak
 inconsistent within an individual and erase its individuality. Worms keep their slow
 background activity and their individual cause and effect apart; ours do not.
 
+**Does slow background activity change where a poke goes, in worms and in the lab? (pre-registered
+6 Nov 2026.)** Test B2's method, unchanged except for the state signal: instead of AVA, each
+recording's state is its activity projected on the first principal component of its own unpoked
+activity (z-scored seen units or classes), the most neutral "slow background" signal available in
+both worms and networks. Run on the 113 worms, the ladder's base network and the drives-only
+network (round 1, brain 0) (`run_week1.py b2-pc1`). *Prediction:* the drives network shows state
+dependence (sign-flip p < 0.05, median below 0); the worms do not (as with AVA); the base network does
+not. If so, worms differ from the networks in exactly this: their slow background state leaves the
+pattern of a poke's spread alone.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected

@@ -367,6 +367,15 @@ def run_b1_extra():
     print("\n".join(out))
 
 
+def run_b2_pc1():
+    import run_ladder as LD
+    run_b2(state_fn=pc1_state, fname="b2_pc1_worms.txt", exclude=None)
+    for code in ("", "D"):
+        recs = LD.variant_recs(code, 0)
+        ws = [Worm(r, valid_fn=lambda c: True) for r in recs]
+        run_b2(worms=ws, state_fn=pc1_state, fname=f"b2_pc1_lab_{code or 'base'}.txt", exclude=None)
+
+
 def run_b1_lab():
     import run_silent_links_test as S
     recs = S.lab_recs(False, 0, 1.0)
@@ -378,21 +387,40 @@ def run_b1_lab():
 
 
 # ---------------------------------------------------------------- B2
-def run_b2(spec=True):
+def pc1_state(w):
+    """First principal component of the recording's own unpoked activity (valid units/classes)."""
+    act = w.class_activity()
+    if len(act) < 10:
+        return None
+    Z = np.array(list(act.values()))                      # (C, T), z-scored over the recording
+    U = np.nan_to_num(Z[:, w.unpoked])
+    if U.shape[1] < 60:
+        return None
+    U = U - U.mean(1, keepdims=True)
+    u, _, _ = np.linalg.svd(U, full_matrices=False)
+    return u[:, 0] @ np.nan_to_num(Z)
+
+
+def run_b2(spec=True, worms=None, state_fn=None, fname=None, exclude="AVA"):
     """spec=True follows the pre-registration (pseudo-onsets need no stimulation inside their own
     25 s window); spec=False is the first run's stricter rule (the window also had to be outside
     the 30 s after any stimulation, so about 55 s free), kept for the record."""
-    worms = load_worms()
+    worms = worms if worms is not None else load_worms()
     pokes = defaultdict(list)              # stimulated class -> list of (state, {resp class: value})
     n_worms = 0
     for w in worms:
         cl = w.r.classes
-        ava = [j for j, c in enumerate(cl) if c == "AVA"]
-        if not ava:
-            continue
-        X = w.r.x
-        with np.errstate(all="ignore"):
-            z = np.nanmean((X[ava] - w.mu_u[ava, None]) / w.sd[ava, None], axis=0)
+        if state_fn is not None:
+            z = state_fn(w)
+            if z is None:
+                continue
+        else:
+            ava = [j for j, c in enumerate(cl) if c == "AVA"]
+            if not ava:
+                continue
+            X = w.r.x
+            with np.errstate(all="ignore"):
+                z = np.nanmean((X[ava] - w.mu_u[ava, None]) / w.sd[ava, None], axis=0)
         if not np.isfinite(z).any():
             continue
         T = w.T
@@ -433,7 +461,7 @@ def run_b2(spec=True):
             corr = v - pm[st]
             acc = defaultdict(list)
             for j in range(w.N):
-                if j != k and w.valid[j] and cl[j] not in (cl[k], "AVA") and np.isfinite(corr[j]):
+                if j != k and w.valid[j] and cl[j] not in (cl[k], exclude) and np.isfinite(corr[j]):
                     acc[cl[j]].append(corr[j])
             pokes[cl[k]].append((st, {c: float(np.mean(vals)) for c, vals in acc.items()}))
             used = True
@@ -492,7 +520,7 @@ def run_b2(spec=True):
     lines += [f"median S minus null: {med:+.3f} [90%: {lo:+.3f}, {hi:+.3f}], sign-flip p (one-sided) = {p:.4f}",
               f"echo size high/low: median {np.median(sizes):.2f}",
               f"verdict: {verdict}"]
-    name = "week1_b2.txt" if spec else "week1_b2_strict.txt"
+    name = fname or ("week1_b2.txt" if spec else "week1_b2_strict.txt")
     (FIG / name).write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
 
@@ -500,4 +528,4 @@ def run_b2(spec=True):
 if __name__ == "__main__":
     cmd = sys.argv[1]
     {"a2": run_a2, "a2-mixed": lambda: run_a2(True), "b1": run_b1, "b1-lab": run_b1_lab, "b2": run_b2, "b2-strict": lambda: run_b2(False),
-     "b1-extra": lambda: run_b1_extra()}[cmd]()
+     "b1-extra": lambda: run_b1_extra(), "b2-pc1": lambda: run_b2_pc1()}[cmd]()
