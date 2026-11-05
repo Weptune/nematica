@@ -2266,6 +2266,12 @@ built to do this shows it (the plain and drives-only networks give 0.000 and -0.
 significant), and less strongly than the worms. The ladder's best-fitting networks have not yet been
 put through this test.
 
+**The ladder's best network through the state test (pre-registered 6 Nov 2026).** Round 9's most
+stable setting (drives 0.4, silent links 0.75, spread 0.15, quiet 0.3, sigma 0.8, hold 6), brains 0
+and 1, through the same sign-aligned state test (`run_week1.py b2-pc1-fit9`). *Prediction:* no state
+dependence (p > 0.05 in both brains), because its drives only add to activity. If so, state-dependent
+spread is a worm property that even the closest network here lacks.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected

@@ -422,6 +422,16 @@ def run_b2_pc1_unc31():
     run_b2(worms=ws, state_fn=aligned_state_fn(ws), fname="b2_pc1_aligned_unc31.txt", exclude=None)
 
 
+def run_b2_pc1_fit9():
+    import run_ladder as LD
+    LD.KICK_HOLD["frames"] = 6
+    for seed in (0, 1):
+        recs = LD.param_recs({"share": 0.4, "g": 0.75, "spread": 0.15, "quiet": 0.3, "mod": 0}, seed, sigma=0.8)
+        lw = [w for w in (Worm(r, valid_fn=lambda c: True) for r in recs) if pc1_state(w) is not None]
+        run_b2(worms=lw, state_fn=aligned_state_fn(lw), fname=f"b2_pc1_aligned_lab_fit9_seed{seed}.txt", exclude=None)
+    LD.KICK_HOLD["frames"] = LD.KICK_FRAMES
+
+
 def run_b2_pc1():
     import run_ladder as LD
     run_b2(state_fn=pc1_state, fname="b2_pc1_worms.txt", exclude=None)
@@ -584,4 +594,5 @@ if __name__ == "__main__":
     cmd = sys.argv[1]
     {"a2": run_a2, "a2-mixed": lambda: run_a2(True), "b1": run_b1, "b1-lab": run_b1_lab, "b2": run_b2, "b2-strict": lambda: run_b2(False),
      "b1-extra": lambda: run_b1_extra(), "b2-pc1": lambda: run_b2_pc1(),
-     "b2-pc1-aligned": lambda: run_b2_pc1_aligned(), "b2-pc1-unc31": lambda: run_b2_pc1_unc31()}[cmd]()
+     "b2-pc1-aligned": lambda: run_b2_pc1_aligned(), "b2-pc1-unc31": lambda: run_b2_pc1_unc31(),
+     "b2-pc1-fit9": lambda: run_b2_pc1_fit9()}[cmd]()
