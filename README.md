@@ -1939,7 +1939,7 @@ means this family of networks can match the worm on these axes jointly; otherwis
 resolution, and the axis that fails most often is reported.
 
 **Round 3 result (`docs/figures/ladder_fit_seed0.csv`, `ladder_fit_seed1.csv`,
-`ladder_fit_summary.txt`).** 44 distinct settings on brain 0 (four of the 48 draws repeated); the 5
+`ladder_fit_summary.txt`).** 43 distinct settings on brain 0 (five of the 48 draws repeated; "44" in an earlier version); the 5
 best re-measured on brain 1. **No setting has all five axes within 25% in both brains (0 of 5), as
 predicted, and individuality is the blocker: it is outside in all 10 runs** (at most 0.057 against
 the worm's 0.089; the best settings give 0.013 to 0.018). Rest dimensionality is next (outside in 6
@@ -1950,7 +1950,9 @@ puts three axes within 25% in both: watching share (0.55, 0.59; worm 0.61), echo
 family can match how hard a worm is to copy by watching, how narrow its echoes are and how
 reproducible they are, all at once and on a brain it was not fitted to; it then has a fifth of the
 worm's individuality and too little resting structure. In these networks the slow drives that
-give resting structure erase individual differences; the worm has both.
+give resting structure erase individual differences; the worm has both. (Qualified by rounds 7 and 8
+and the second review: this holds at the lab's original individual variation; with individuals that
+differ more, drives and individuality coexist.)
 
 **Round 4, private drives (pre-registered 6 Nov 2026, after round 3).** In every network so far the
 slow drives' loadings are the same in all individuals (one species-wide set of background signals),
@@ -1965,7 +1967,7 @@ that setting is the first network in this project to match the worm on every axi
 **Round 4 result (`docs/figures/ladder_private.csv`).** Individuality with private drives against
 the same setting with shared drives (round 3), brains 0 / 1: drives 0.25 setting 0.026 / 0.016
 (shared 0.017 / 0.014); drives 0.4 setting 0.012 / 0.006 (shared 0.013 / 0.014). It rises in 2 of 4
-runs and falls in 2; rest dimensionality stays within 0.01 in all four. **Prediction refuted**:
+runs and falls in 2; rest dimensionality stays within 0.019 in all four ("0.01" in an earlier version). **Prediction refuted**:
 private drives do not restore individuality, so it is not the sharing of the drives across
 individuals that erases it. The individuality measure is a recording's agreement with itself minus
 its agreement with others, and in these networks slow drives lower the first term: they make one
@@ -2008,12 +2010,15 @@ like through this measure.
 
 **Result (`docs/figures/individuality_check.txt`).** Worms (107): excess +0.090; (a) with each half's
 generic profile removed +0.098 (109% kept); (b) with targets shuffled +0.009 (10% kept). Lab base
-network: 86% and 15% kept; with silent links: 88% and 16%. **Prediction refuted; verdict "mostly
-causal"**: the worm's individuality is specific to which neuron is poked, as it is in networks whose
-individuals differ by construction in their connections. (Deviation: (b) used 30 permutations, not
+network: 86% and 15% kept; with silent links: 88% and 16%. **Prediction refuted.** By the
+pre-registered rule the verdict is "mostly causal", but that label says more than the check can (second
+review): it shows that the worm's individuality is specific to which neuron is poked, **mostly
+target-specific**, as it is in networks whose individuals differ by construction in their connections,
+not that it is cause and effect. (Deviation: (b) used 30 permutations, not
 the 100 specified; the mean over permutations is stable to about 0.001.) One alternative remains
 that this check cannot remove: target-specific measurement, such as a neuron misidentified in one
-worm's recording, is also individual and target-specific.
+worm's recording, is also individual and target-specific; so is the 5 Nov neighbour effect if it is a
+leak, since which neurons neighbour a target differs from worm to worm.
 
 So the ladder ends on a sharp contrast. Worms have strongly structured resting activity (43% of
 variance in three patterns) and echoes that are individual, specific to the poked neuron, and
@@ -2021,8 +2026,9 @@ consistent within an animal. In every artificial network we built, the ingredien
 that resting structure (slow drives, added or multiplied, shared or private) make echoes
 inconsistent within an individual and erase its individuality. Worms keep their slow
 background activity and their individual cause and effect apart; ours do not. (Narrowed by the
-next test: in the networks this works as added noise, not as state-dependent routing. Withdrawn in
-this form by round 6: with stronger pokes the networks keep both.)
+next test: in the networks this works as added noise, not as state-dependent routing. Both this
+paragraph and that narrowing are withdrawn: the next test was flawed, and rounds 7 and 8 show that
+with individuals that differ more the networks keep resting structure and individuality together.)
 
 **Does slow background activity change where a poke goes, in worms and in the lab? (pre-registered
 6 Nov 2026.)** Test B2's method, unchanged except for the state signal: instead of AVA, each
@@ -2058,6 +2064,18 @@ sign set so its loadings correlate positively with the consensus (`run_week1.py 
 the worms, the base and drives networks, and a positive control that should show state dependence:
 round 5's excitability-drive network (k = 0.6). Decision rule as in B2.
 
+*Amended result (`docs/figures/b2_pc1_aligned_*.txt`).* Worms (83 recordings, 63 stimulated classes):
+-0.049 [-0.084, -0.020], sign-flip p = 0.002, **supported**: the pattern of a poke's spread depends on
+where the worm sits along its main resting pattern (echo size high/low 0.92). Lab base 0.000 (p = 0.52),
+drives -0.018 (p = 0.13), and the **positive control fails**: the excitability-drive network, built so
+that the drives change how units respond, gives -0.003 (p = 0.46). So this test cannot detect state
+dependence in these networks even where it exists by construction, and nothing follows about whether
+the networks lack it. For the worms, two cautions: the amended test was written after the reviewer's
+rerun had shown this result, so it is not an independent confirmation; and with AVA as the state signal
+(test B2) no dependence was detected, so the worm's main resting pattern is not simply its reversal
+state. As an observation on worms it stands, and it is the first sign in this project that the same
+poke spreads differently depending on the worm's slow background state.
+
 **How much of an echo is the poke? (exploratory, 6 Nov; `docs/figures/echo_noise_share.txt`.)** The
 mean square post-minus-pre change over a recording's neurons, after stimulations against at moments
 with no stimulation: worms 0.617 against 0.446, so 28% of the change after a poke is evoked by it;
@@ -2066,6 +2084,15 @@ out from the background several times more than the lab's do. The lab's poke str
 so that individuals' echoes agree about as well as worms' (reliability), not on how much they stand
 out, so this is a mismatch in the lab's design, and a plausible cause of both the individuality
 gap and the difficulty of matching narrow echoes.
+
+**Correction after the second review: these numbers were wrong.** The reference windows excluded only
+the frames where pokes start, not the 30 s after them, so in the lab most reference windows began 25 to
+35 frames after a poke and in worms 98.5% sat in the tail of the previous echo. Recomputed with
+reference windows entirely outside the 30 s after any poke (`run_ladder.py evoked`; in worms and in the
+lab this leaves the rest before the first poke; `docs/figures/echo_noise_share.txt`): worms 0.42; lab
+base 0.14, silent links 0.24, drives 0.28, both 0.32, DGSM 0.43, DGSM with 16-frame holds 0.70, round
+9's setting 0.50. **Worm pokes do not stand out more than the lab's** once the networks have drives and
+silent links; the motivation given for round 6 was mistaken.
 
 **Round 6, stronger pokes (pre-registered 6 Nov 2026).** Each poke is held for 16 frames (8 s)
 instead of 4, so its downstream effect grows (the target itself already saturates). Settings: round
@@ -2076,17 +2103,16 @@ supported if both rise in all four; the run with the most of the five axes withi
 **Round 6 result (`docs/figures/ladder_long.csv`).** Holding pokes 16 frames instead of 4: individuality
 rises in all four runs, from 0.014 to 0.045 to 0.106 to 0.148 (worm 0.089), and reliability with it
 (0.093 to 0.136 to 0.42 to 0.47; worm 0.094); rest dimensionality is unchanged (DGSM 0.41 to 0.42,
-worm-like). The evoked share fell instead of rising, to between -0.87 and -0.01: the measure breaks
-with long holds (its no-stimulation reference comes only from the minutes before the first poke,
-and long-held pokes keep the network in driven states, so post-minus-pre changes shrink). **Not
-supported as stated** (the evoked-share half fails), but the individuality half holds in all four
-runs, and it changes the reading of rounds 3 to 5: **drives erase individuality only at the lab's
-original poke strength**. With stronger pokes, a network with worm-like resting structure (drives)
-is as individual as a worm or more. The individuality gap was, at least in large part, a property of
-how the lab's pokes were calibrated (to match reliability), not a principle about slow background
-activity. The contrast stated after round 5 is withdrawn in that form. What remains is a joint
-constraint: with the poke strength that matches worm individuality, these networks' echoes are far
-more reproducible across individuals than worms' are.
+worm-like; unchanged by construction, since in the lab "unpoked" frames are only those before the
+first poke). The evoked share fell instead of rising, to between -0.87 and -0.01, because the measure
+itself was broken (see the correction above; recomputed properly, DGSM goes from 0.43 at a 4-frame hold
+to 0.70 at 16). **Not supported as stated.** The individuality half holds in all four runs, but the
+reading first given here, that the individuality gap was "in large part" the lab's poke calibration, is
+withdrawn (second review): individuality and reliability rise together with the hold, and their ratio,
+which is 0.95 in worms (0.089 against 0.094), stays at 0.13 to 0.37 at every hold length with the lab's
+original individual variation. Only larger individual differences move it (0.71 to 0.89 at sigma 0.5,
+1.9 to 2.5 at 0.8; round 8). So what the networks lacked was not poke strength but individuals that
+differ from each other as much, relative to how reproducible each is, as worms do.
 
 **Round 7, a sweep of poke strength (pre-registered 6 Nov 2026).** Holds of 6, 8 and 10 frames for
 the same two settings, both brains (`run_ladder.py fit --hold-sweep`). *Prediction:* for at least
@@ -2094,20 +2120,16 @@ one setting and hold, individuality and reliability are both within 25% of the w
 The run with the most of the five axes within 25% is reported; if any setting has all five within 25%
 in both brains, it is the first network here to match the worm on every axis we can measure.
 
-**Transformer, amended run (`docs/figures/transformer_test.csv`, `trained_kick10x30`): unusable.**
-Individuals' agreement 0.011, below the 0.05 floor set in the amendment, so no reading is made: a
-transformer of this size, poked one hidden unit at a time, does not give echoes reproducible enough
-to judge with this ruler. A fair test needs a different unit of poking (for example a direction in
-the residual stream) and is left for a separate, pre-registered design.
-
 **Round 7 result (`docs/figures/ladder_holds_seed0.csv`, `ladder_holds_seed1.csv`).** At holds of 6, 8
 and 10 frames, reliability is 0.16 to 0.33 in every run (worm 0.094; 25% band 0.071 to 0.118), while
-individuality reaches the worm's band only at the longer holds (DGSM, hold 10: 0.093 and 0.120).
+individuality (band 0.067 to 0.112) reaches it for DGSM at hold 10 on brain 0 (0.093) and at holds 6
+and 8 on brain 1 (0.078, 0.100); brain 1's hold 10 (0.120) is just outside.
 **Refuted**: no setting and hold has both within 25% in both brains. Stronger pokes raise
-individuality and reliability together. Worms combine the two differently: a worm agrees with itself
-1.8 times as well as with other worms (0.146 against 0.083), while the networks at worm-like
-individuality manage about 1.3. Worms differ from each other more, relative to how reproducible
-each one is, than the lab's individuals (connection strengths varying by 30%).
+individuality and reliability together. Worms combine the two differently: their ratio of
+individuality to reliability is 0.95, while these networks stay at 0.16 to 0.37 at every hold
+(corrected after the second review; an earlier version compared "1.8" for worms with "about 1.3" for
+the networks, a figure in no output file). Worms differ from each other more, relative to how
+reproducible each one is, than the lab's individuals (connection strengths varying with an SD of 30%).
 
 **Round 8, more different individuals (pre-registered 6 Nov 2026).** The individual variation sigma
 (each connection scaled by 1 + sigma x N(0, 1)) raised from 0.3 to 0.5 and 0.8, DGSM with holds of 8
@@ -2115,7 +2137,7 @@ and 16 frames, both brains (`run_ladder.py fit --sigma-sweep`). *Prediction:* fo
 combination, individuality and reliability are both within 25% of the worm in both brains.
 
 **Round 8 result (`docs/figures/ladder_sigma_seed0.csv`, `ladder_sigma_seed1.csv`).** At sigma 0.8 and
-hold 8, reliability reaches the worm's band (0.075, 0.070) but individuality is twice the worm's
+hold 8, reliability reaches the worm's band (0.075; 0.070 is at its lower edge, 0.0704) but individuality is twice the worm's
 (0.166, 0.175); at sigma 0.5, individuality 0.12 to 0.24 and reliability 0.16 to 0.30. **Refuted**: no
 combination has both within 25% in both brains. But the two knobs move the pair differently
 (individual variation lowers reliability, stronger pokes raise both), so the pair can be bracketed,
@@ -2132,7 +2154,7 @@ five within 25% in both brains (then this family of networks can look like a wor
 measure, and the remaining question is which of its ingredients the worm actually has); otherwise
 the axis that fails most often across the 10 runs is reported as the open mismatch.
 
-**Round 9 result (`docs/figures/ladder_fit9_*.csv`, `ladder_fit9_summary.txt`).** 58 distinct settings
+**Round 9 result (`docs/figures/ladder_fit9_*.csv`, `ladder_fit9_summary.txt`).** 57 distinct settings ("58" in an earlier version)
 on brain 0; the best five re-measured on brain 1. **Not matched**: no setting has all five axes within
 25% in both brains, and none has four (the prediction's "4 of 5" is refuted; "not 5" holds). But the
 search came much closer than any earlier round: the most stable setting (drives 0.4, silent links
@@ -2140,9 +2162,15 @@ search came much closer than any earlier round: the most stable setting (drives 
 chosen on and 0.22 on the held-out brain (round 3's best: 0.40), with watching share and
 individuality within 25% in both. Every axis fails somewhere (echo breadth and reliability most
 often, 6 of 10 runs each), and two random networks with the same setting differ about as much as the
-remaining error. Reading: at this resolution, networks with these ingredients can be brought to
-within about a fifth of the worm on every axis we measure at once, but not reliably inside a 25% band,
-and only with strong slow drives, individuals that differ by up to 80%, a large share of quiet units
+remaining error. Corrections and limits from the second review: the relative error is a root mean
+square over the five fitted axes, and single axes are off by up to 36% (reliability); only two axes are
+within 25% in both brains; tiring, left out of the fit, is a tenth of the worm's on brain 0 and of the
+wrong sign on brain 1 (with it, the error is 0.42 and 0.51); the "most stable" setting ranks second on
+brain 0 and was picked after seeing brain 1, so for that choice brain 1 is not held out (the brain-0
+winner went from 0.17 to 0.27), and brain 1 also shaped rounds 4 to 8; and sigma 0.8 means connection
+strengths vary with an SD of 80%, which flips the sign of about 11% of connections. Reading: networks
+with these ingredients come within roughly a fifth of the worm on average over five axes, not inside a
+25% band on all of them, and only with strong slow drives, very different individuals, many quiet units
 and longer pokes. Which of these the worm actually has is not answered by fitting; the tiring of
 stimulation is still unmatched. Full-ruler check of the most stable setting, written before running:
 its watching copy should fall in or near the worms' 4% to 16% of individuals' agreement.
@@ -2150,22 +2178,29 @@ its watching copy should fall in or near the worms' 4% to 16% of individuals' ag
 **Full-ruler check (`docs/figures/ladder_ruler.csv`, `fit9best`, pool 0, both brains).** Watching copy
 0.0085 and 0.0102 against individuals' 0.055 and 0.062 (15.5% and 16.4%); stitched watcher 16.6% and
 15.6%; poke-trained copy inside in both (95% and 86%). Worms: watching 4% to 16% (absolute 0.004 to
-0.014), poke-trained 76% to 97%. **As expected: on the full worm test this network is as hard to
-copy by watching as a worm**, at the top edge of the worm range, while a copy that learns from pokes
-passes, as in worms. It is the first artificial network in the project that does this while also
-lying within about a fifth of the worm on the other measured axes. Its individuals agree with each
-other less well than worms do (0.055 to 0.062 against 0.087 to 0.121). One pool per brain, so this is a
-check, not a full three-pool result.
+0.014), poke-trained 76% to 97%. All three pools of brain 0 (added after the second review): watching
+15.5%, 28.8% and 11.4% (absolute 0.0085, 0.0147, 0.0070), stitched 16.6%, 13.5% and 18.8%, poke-trained
+inside in all three. **Roughly as expected**: on the full worm test this network sits at or just above
+the top of the worm range for watching (4 of 8 values above the worms' 16%, one well above), its
+absolute watching agreement is mostly inside the worms' range, and a copy that learns from pokes
+passes, as in worms. The share is not inflated by the network's lower individuals' agreement (0.051 to
+0.062, against 0.087 to 0.121 in worms): the absolute values tell the same story. An earlier version
+called this "the first artificial network in the project" to do this; DGSM (round 1) gave 19% and 18%,
+so that claim rests on a few points and is withdrawn.
 
-**What the ladder says, in one paragraph.** The worm's resistance to being copied by watching is not
-mysterious in principle: artificial networks with strong slow background drives that no recording
-sees, some links that are silent at rest, a sizeable share of units that sit quiet unless strongly
-driven, large differences between individuals, and pokes that stand out from the background show
-it, on the full test, alongside resting structure, individuality and echo width close to the worm's.
-No single one of these is enough, several of them trade off against each other, and what the worm
-actually has among them is a question for experiments rather than fitting: recordings of the drive
-sources, repeated pokes at matched strength, and stimulation at several strengths. The one worm
-property no network here reproduces is the tiring of a neuron's response to repeated stimulation.
+**What the ladder says, in one paragraph (rewritten after the second review).** Artificial networks can
+be made roughly as hard to copy by watching as a worm on the full test, and at the same time brought to
+within about a fifth of the worm on average over five measured properties, but only by combining
+strong slow background drives that no recording sees, some links silent at rest, many units that sit
+quiet unless strongly driven, individuals that differ far more than in our default lab, and longer
+pokes; no single ingredient does it, and several trade off against each other. The search that found
+this setting was run the same night, round after round, with each round designed after seeing the
+last, so the setting is a description of what is sufficient in this family, not an estimate of what the
+worm has. Two worm properties remain unmatched: the tiring of a neuron's response to repeated
+stimulation, and (an exploratory observation on worms) a spread that depends on the worm's main
+resting pattern. What the worm actually has among these ingredients is a question for experiments:
+recordings of the drive sources, repeated pokes at matched strength, and stimulation at several
+strengths.
 
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
@@ -2268,6 +2303,12 @@ This says the design was too weak, not that transformers resist watching.
 30-token window at 10 SD (KICK_FR 30, KICK_SD 10), everything else unchanged. If individuals'
 agreement is still below 0.05, the test is declared unusable for this architecture at this scale,
 and no reading is made.
+
+**Transformer, amended run (`docs/figures/transformer_test.csv`, `trained_kick10x30`): unusable.**
+Individuals' agreement 0.011, below the 0.05 floor set in the amendment, so no reading is made: a
+transformer of this size, poked one hidden unit at a time, does not give echoes reproducible enough
+to judge with this ruler. A fair test needs a different unit of poking (for example a direction in
+the residual stream) and is left for a separate, pre-registered design.
 
 ## Where the data runs out (2 Nov 2026)
 

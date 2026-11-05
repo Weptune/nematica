@@ -15,3 +15,9 @@ fit9best,0,0,hybrid_kernels,0.0522,0.0549,inside
 fit9best,1,0,var3_spontaneous,0.0102,0.0621,outside
 fit9best,1,0,stitch3_hp,0.0097,0.0621,outside
 fit9best,1,0,hybrid_kernels,0.0533,0.0621,inside
+fit9best,0,1,var3_spontaneous,0.0147,0.051,outside
+fit9best,0,1,stitch3_hp,0.0069,0.051,outside
+fit9best,0,1,hybrid_kernels,0.0571,0.051,inside
+fit9best,0,2,var3_spontaneous,0.007,0.0613,outside
+fit9best,0,2,stitch3_hp,0.0115,0.0613,outside
+fit9best,0,2,hybrid_kernels,0.0531,0.0613,inside

@@ -1,7 +1,9 @@
-Exploratory (6 Nov): share of the post-minus-pre change that is evoked
-worms: mean square change at no-stimulation onsets 0.446, after stimulations 0.617, evoked share 28%
-lab base: 0.418, 0.428, evoked share 2%
-lab D: 0.499, 0.532, evoked share 6%
-lab G: 0.475, 0.495, evoked share 4%
-lab DG: 0.534, 0.583, evoked share 8%
-lab DGSM: 0.577, 0.657, evoked share 12%
+Evoked share of the post-minus-pre change (reference windows entirely outside the 30 s after any poke)
+worms: 0.415
+lab base (brain 0, hold 4): 0.142
+lab D (brain 0, hold 4): 0.284
+lab G (brain 0, hold 4): 0.239
+lab DG (brain 0, hold 4): 0.315
+lab DGSM (brain 0, hold 4): 0.431
+lab DGSM (brain 0, hold 16): 0.701
+lab round 9 setting (brain 0, hold 6, sigma 0.8): 0.499
