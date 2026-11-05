@@ -2136,6 +2136,26 @@ and longer pokes. Which of these the worm actually has is not answered by fittin
 stimulation is still unmatched. Full-ruler check of the most stable setting, written before running:
 its watching copy should fall in or near the worms' 4% to 16% of individuals' agreement.
 
+**Full-ruler check (`docs/figures/ladder_ruler.csv`, `fit9best`, pool 0, both brains).** Watching copy
+0.0085 and 0.0102 against individuals' 0.055 and 0.062 (15.5% and 16.4%); stitched watcher 16.6% and
+15.6%; poke-trained copy inside in both (95% and 86%). Worms: watching 4% to 16% (absolute 0.004 to
+0.014), poke-trained 76% to 97%. **As expected: on the full worm test this network is as hard to
+copy by watching as a worm**, at the top edge of the worm range, while a copy that learns from pokes
+passes, as in worms. It is the first artificial network in the project that does this while also
+lying within about a fifth of the worm on the other measured axes. Its individuals agree with each
+other less well than worms do (0.055 to 0.062 against 0.087 to 0.121). One pool per brain, so this is a
+check, not a full three-pool result.
+
+**What the ladder says, in one paragraph.** The worm's resistance to being copied by watching is not
+mysterious in principle: artificial networks with strong slow background drives that no recording
+sees, some links that are silent at rest, a sizeable share of units that sit quiet unless strongly
+driven, large differences between individuals, and pokes that stand out from the background show
+it, on the full test, alongside resting structure, individuality and echo width close to the worm's.
+No single one of these is enough, several of them trade off against each other, and what the worm
+actually has among them is a question for experiments rather than fitting: recordings of the drive
+sources, repeated pokes at matched strength, and stimulation at several strengths. The one worm
+property no network here reproduces is the tiring of a neuron's response to repeated stimulation.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected

@@ -9,3 +9,9 @@ DGSM,0,0,var3_spontaneous,0.0205,0.1074,outside
 DGSM,0,0,stitch3_hp,0.0198,0.1074,outside
 DGSM,0,0,hybrid_kernels,0.0968,0.1074,inside
 base,0,0,gru64_watch,0.0311,0.0596,outside
+fit9best,0,0,var3_spontaneous,0.0085,0.0549,outside
+fit9best,0,0,stitch3_hp,0.0091,0.0549,outside
+fit9best,0,0,hybrid_kernels,0.0522,0.0549,inside
+fit9best,1,0,var3_spontaneous,0.0102,0.0621,outside
+fit9best,1,0,stitch3_hp,0.0097,0.0621,outside
+fit9best,1,0,hybrid_kernels,0.0533,0.0621,inside
