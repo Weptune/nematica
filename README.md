@@ -1184,6 +1184,73 @@ time, with false alarms up to 31% in the ordinary brain. So a decisive experimen
 stimulated neurons, 4 or 5 strengths and 20 or more trials each, judged on the pattern across
 neurons, not on single neurons.
 
+## Do worms have links that are silent at rest? (pre-registered 5 Nov 2026)
+
+The artificial lab found one mechanism, among those tried, that makes lab brains resist
+watching the way worms do: links that carry a neuron's signal only when it is driven beyond the
+range it visits at rest (part G). That shows such links are sufficient, not that worms have
+them. An earlier attempt to see them in worm data (`scripts/diag_gating_fingerprint.py`) failed
+its check on a lab brain known to have them, for a reason we now understand: in that brain every
+poke drove the target far beyond its resting range, so comparing weak with strong pokes never
+compared below-threshold with above-threshold drive. This test anchors drive strength to each
+neuron's own resting range instead. Written before computing anything below on worm data;
+`scripts/run_silent_links_test.py`.
+
+**Hypothesis H.** In worms, a neuron's downstream effects are carried mostly when it is driven
+beyond the range of activity it visits at rest.
+
+**Definitions (atlas, wild type, 113 worms).** Unpoked frames: frames outside [f, f + 60) for
+every stimulation f (any target). Worms with fewer than 100 unpoked frames are excluded. For
+each neuron, its resting mean and SD are taken over the worm's unpoked frames, and its
+resting range is the distribution of its 4-frame (2 s) running mean over runs of 4 consecutive
+unpoked frames, in resting-SD units. For each stimulation of a named target j: evoked level
+E = the largest 4-frame running mean of j over frames 0 to 29 after onset, in the same units;
+drive D = j's mean over frames 0 to 29 minus its mean over the 20 frames before, in resting-SD
+units; for every other named neuron i, response R = the same change for i in i's resting-SD
+units. A stimulation is "beyond" if E exceeds the target's resting 99th percentile and
+"within" if E is at or below its resting 95th percentile (stimulations in between are not
+used in T2).
+
+**T1, a necessary condition.** H needs pokes to push targets beyond their resting range.
+Reported: the fraction of stimulations that are beyond, and the median of E minus the resting
+99th percentile (worm-weighted, bootstrap over worms). H's necessary condition fails if the
+median E lies at or below the resting 95th percentile. Caveat stated in advance: calcium
+fluorescence is a slow, saturating readout of activity, so a poke within the fluorescence
+range could still be beyond it in voltage.
+
+**T2, a gain jump.** If links open only beyond the resting range, a unit of drive should move
+downstream neurons more in beyond stimulations than in within stimulations; with ordinary
+saturating links it should move them less or equally. Pairs (stimulated class, responding
+class) are chosen and signed on one half of the worms (alternate worms by file order; at least
+6 stimulations and |t| > 3 for the mean response over all of them) and scored on the other
+half, then the halves swap. In the scoring half each response is multiplied by the pair's sign
+and divided by the pair's mean |R| from the choosing half. Gain in a category = summed
+normalised response over summed D, over all scored trials in it. Statistic Q = log(gain beyond
+/ gain within), with a 95% interval from 2000 bootstrap resamples of worms. If either gain's
+summed drive is not positive, or a gain is not positive, Q is undefined and reported as such.
+
+**Check on lab brains first (positive and negative control).** The same code runs on lab
+brains recorded like atlas worms (113 individuals, sigma 0.3, half the units seen, 30% never,
+first poke at frame 230, a poke every 30 s held for 4 frames) with the silent links of part G
+(GATED 1.5, threshold 0.98) and without (baseline). Because the lab pokes all drive targets far
+beyond rest, each poke's strength is scaled by a factor drawn log-uniformly from [a, 1] with a
+chosen from 0.02, 0.05, 0.1, 0.2, 0.3 as the value whose share of beyond stimulations is
+closest to the worms' share in T1 (judged on the baseline brain, brain seed 0). The test is
+valid only if Q(silent links) minus Q(baseline) has a 95% interval above zero for brain seeds
+0 and 1. If it is not valid, T2 is reported as uninformative and the worm Q is still shown,
+marked as such. If valid, the decision line is fixed from the lab before T2 is run on worms:
+the midpoint between the baseline and silent-link Q, averaged over the two seeds. Worms support
+H if their Q interval lies above the line, count against H if it lies below the baseline Q of
+both seeds, and are inconclusive otherwise.
+
+**What would and would not follow.** Support would make silent-at-rest links the leading
+explanation of why worms resist watching, and predicts that graded stimulation of single
+neurons shows a threshold at the edge of their resting range. A result against H, with T1
+passing, would point to the alternatives already named in part G: pathways a poke opens that do
+not depend on the target's own activity level (outputs that calcium does not reflect, state
+changes, side effects of the light). A T1 failure would rule out threshold gating on the
+target's measured activity as the explanation.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
