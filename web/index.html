@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NEMATICA: how would you know an artificial brain is a faithful copy?</title>
-<meta name="description" content="An open attempt to answer one question: how would anyone check that an artificial brain is a faithful copy of a real one? Tested on the 302-neuron brain of C. elegans and on artificial brains whose truth is known.">
+<title>NEMATICA: what makes real neural networks different from artificial ones?</title>
+<meta name="description" content="An open attempt to measure what makes real nervous systems different from artificial neural networks, with the same tests on both: the worm C. elegans, mouse and human recordings, and artificial networks whose truth is known, untrained and trained.">
 <link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
@@ -38,8 +38,8 @@
   <div class="x-steps">
     <div class="x-step"><div class="x-stage x-first" data-i="0">
       <p class="x-kicker">NEMATICA / ONE QUESTION, ASKED OPENLY</p>
-      <h1>How would you know a brain copy is faithful? <em>Will it answer like the real one?</em></h1>
-      <p>One day someone will say an artificial brain is a copy of a real one. Nobody agrees how to check. NEMATICA is building that check, on the one brain small enough to compare completely, the 302 neurons of the worm <i>C.&nbsp;elegans</i>, and on artificial brains whose truth we know.</p>
+      <h1>What makes a real brain different from an artificial one? <em>We measure it, the same way on both.</em></h1>
+      <p>Real nervous systems and artificial neural networks are compared all the time, mostly by analogy. NEMATICA puts both through the same tests, with the same pass mark: how different two real animals are from each other. The first test bed is the one brain small enough to compare completely, the 302 neurons of the worm <i>C.&nbsp;elegans</i>. Scroll for the first difference we found.</p>
       <p class="x-hint">Scroll to run the experiment</p>
     </div></div>
     <div class="x-step"><div class="x-stage" data-i="1">
@@ -70,10 +70,10 @@
 <section class="q-section" id="question" aria-labelledby="question-title">
   <div class="q-inner">
     <p class="q-kicker">THE QUESTION</p>
-    <h2 id="question-title" class="q-title">If someone hands you an artificial brain and says <em>this is a copy of a real one</em>, how would you check?</h2>
+    <h2 id="question-title" class="q-title">What makes biological neural networks different from artificial ones, <em>measurably</em>?</h2>
     <div class="q-why">
-      <p>People are building digital nervous systems: brain models fitted to recordings, simulations built from wiring diagrams, AI networks trained to behave like animals. Sooner or later one of them will be called a faithful copy. Today the usual evidence is that the model reproduces recorded activity. We think that is not enough, and the work on this site is about finding out what is.</p>
-      <p>Underneath sits a second question, about artificial and real networks in general: <strong>what can you learn about a brain by watching it, and what only by intervening?</strong></p>
+      <p>Artificial neural networks were inspired by brains, and are now compared with them constantly. But most comparisons are analogies, or tests that only one side can take. We want differences that are measured the same way on both: real animals and artificial networks recorded alike, analysed by the same pipeline, and judged against the same yardstick.</p>
+      <p>Our main tool is a test of copies: build a model of a brain, then ask whether it answers interventions like the real thing. Run on real brains and on artificial networks whose truth we know, the same test shows where they part ways. The first place we found: <strong>what you can learn about a network by watching it, and what only by intervening.</strong></p>
     </div>
 
     <div class="pillars">
@@ -89,16 +89,34 @@
       </article>
       <article class="pillar">
         <svg viewBox="0 0 120 64" aria-hidden="true"><path d="M8 44c14 0 16-26 32-26 15 0 15 25 28 25 9 0 12-9 15-17-1 15-8 25-17 25-17 0-14-25-27-25-11 0-15 26-31 26z" fill="currentColor"/><circle cx="96" cy="20" r="3" fill="var(--live)"/><circle cx="106" cy="30" r="3" fill="var(--live)"/><circle cx="94" cy="38" r="3" fill="var(--live)"/></svg>
-        <h3>Brains small enough to check completely</h3>
-        <p>The worm <i>C.&nbsp;elegans</i>: 302 neurons, every connection mapped, 113 worms recorded while single neurons were poked. And artificial brains built so that their true cause and effect is known, so the test itself can be checked.</p>
+        <h3>Real and artificial, side by side</h3>
+        <p>Real: the worm <i>C.&nbsp;elegans</i> (302 neurons, 113 worms recorded while single neurons were poked), mouse hippocampus and human cortex. Artificial: networks whose cause and effect is known by construction, untrained and trained on tasks, recorded exactly like the animals.</p>
       </article>
     </div>
 
     <h3 class="q-subhead">Where the question stands</h3>
     <ol class="qmap">
       <li class="q-done">
+        <span class="st">Found, in the worm</span>
+        <h4>Do real and artificial networks reveal their workings to an observer equally?</h4>
+        <p>No. Artificial networks recorded like worms can be copied just by watching them: random networks reach 51% to 82% of the real standard, networks trained on memory and decision tasks 75% to 91%. Worms reach 4% to 22%. Their cause and effect stays hidden until you intervene.</p>
+        <a href="#law">The difference</a>
+      </li>
+      <li class="q-open">
+        <span class="st">Testing now</span>
+        <h4>Is that difference biology, or the worm experiment?</h4>
+        <p>Not training: trained networks stay easy to watch. Probably not slow calcium imaging or short recordings (tested more weakly). Now testing the experiment's own flaws, built into artificial networks: mislabelled neurons, pooled left/right neurons, light reaching neighbouring cells. Our lead on the biology: pathways silent at rest.</p>
+        <a href="log.html">Research log</a>
+      </li>
+      <li class="q-open">
+        <span class="st">Open</span>
+        <h4>Does it hold beyond the worm?</h4>
+        <p>Mouse hippocampus: inconclusive, a control with no stimulation shows much of the same effect. Human cortex (74 patients): watching does worse than simple distance, but the measurement is contaminated by the stimulation pulse and must be redone before it counts.</p>
+        <a href="findings.html#trust">How sure we are</a>
+      </li>
+      <li class="q-done">
         <span class="st">Answered</span>
-        <h4>Can a copy's faithfulness be measured at all?</h4>
+        <h4>Can the comparison be measured at all?</h4>
         <p>Yes, within limits we know. The test always catches a copy with half its cause and effect wrong, and lets through errors under about 20 to 25%. Checked on real worms with planted errors, and on artificial brains where the truth is known.</p>
         <a href="findings.html#lab">How the test was checked</a>
       </li>
@@ -113,12 +131,6 @@
         <h4>Which copies pass?</h4>
         <p>Only copies that learned from pokes. Every kind of network that skipped them fails: fitted to recordings, built from the wiring diagram, randomly wired, trained on a worm's task, or published.</p>
         <a href="findings.html#gallery">Every network family</a>
-      </li>
-      <li class="q-open">
-        <span class="st">Reopened</span>
-        <h4>Why does watching fail?</h4>
-        <p>Not only for the reason we thought. Built better, watching comes close to poking in artificial brains, even scored exactly as worms are, but not in real worms. Why is open. Our lead, from artificial brains: pathways that ongoing activity never uses, so only a poke reveals them.</p>
-        <a href="#law">The gap</a>
       </li>
       <li class="q-blocked">
         <span class="st">Needs new data</span>
@@ -138,13 +150,14 @@
 
 <section class="q-section q-law" id="law" aria-labelledby="law-title">
   <div class="q-inner">
-    <p class="q-kicker">THE GAP WE FOUND</p>
-    <h2 id="law-title" class="q-title">Artificial brains can nearly be copied by watching. Real worms cannot.</h2>
+    <p class="q-kicker">THE FIRST MEASURED DIFFERENCE</p>
+    <h2 id="law-title" class="q-title">Artificial networks give their workings away to an observer. Real worms do not.</h2>
     <div class="law-grid">
       <div class="law-text">
         <p>To test this where the answer is known, we built artificial brains: nonlinear networks tuned so their responses are as noisy as real worms', with cause and effect known by construction. Then we tried to learn that cause and effect, by watching (with copies that are themselves neural networks) and by poking.</p>
         <p>Our first watching copies fell short whenever slow hidden signals were present or recordings missed neurons, levelling off within hours while poking kept climbing (the chart). We took this as a law. Much of it was our method: those copies filled every neuron a recording missed with zeros.</p>
         <p>A copy that learns each pair of neurons only from the recordings where both were seen, with slow drift removed, climbs from 0.34 to 0.79, close to drift-corrected poking at 0.85. Scored exactly as worms are, with worm-sized data, it reaches 62% to 82% of how well individuals agree, beside 75% to 89% for a copy trained on pokes. On real worms the same copy reaches 5% to 22%, the poke-trained copy 76% to 97%. Worms are far harder to copy by watching than these artificial brains, and not because of how they are recorded or scored.</p>
+        <p>Networks trained on classic tasks (holding three bits in memory, integrating evidence by context) behave like the untrained ones: watching copies reach 75% to 91%. So this is not simply a difference between trained and untrained networks. Whether it reflects worm biology or flaws of the worm experiment is what we are testing next.</p>
       </div>
       <figure class="plate law-plate">
         <div data-chart="law"></div>
@@ -223,9 +236,9 @@
     </div>
     <div class="roadmap">
       <div class="stage done"><span class="when">Now</span><h4>The worm</h4><p>A test with known resolution, the watching-versus-poking result, and its explanation.</p></div>
-      <div class="stage done"><span class="when">Now</span><h4>Artificial brains</h4><p>Where truth is known, watching comes close to poking once built right; the test checked against the truth. No data needed.</p></div>
-      <div class="stage"><span class="when">Next</span><h4>The decisive recording</h4><p>Long, complete recordings followed by pokes, to test the prediction above.</p></div>
-      <div class="stage"><span class="when">Later</span><h4>Bigger brains</h4><p>Any brain with repeated individuals and interventions: fly, fish, mouse, and people with implanted electrodes.</p></div>
+      <div class="stage done"><span class="when">Now</span><h4>Artificial networks</h4><p>Untrained and task-trained networks whose truth is known: watching comes close to poking; the test checked against the truth.</p></div>
+      <div class="stage"><span class="when">Next</span><h4>Biology or experiment?</h4><p>The worm experiment's flaws built into artificial networks; then long, complete recordings followed by pokes.</p></div>
+      <div class="stage"><span class="when">Later</span><h4>Bigger brains</h4><p>Mouse and human recordings already tried, inconclusive so far; any brain with repeated individuals and interventions: fly, fish, mouse, people with implanted electrodes.</p></div>
     </div>
     <p class="next-links"><a href="log.html">Follow the research log</a><a href="findings.html">Read every finding</a><a href="https://github.com/Weptune/nematica">Code and full record</a></p>
   </div>
