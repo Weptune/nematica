@@ -1584,19 +1584,44 @@ Best watching copy and poke-trained copy as shares of the individuals' agreement
 | off-target 0.03 (matched to the worms, amendment 1) | 0.09 to 0.13 | 61 / 62 / 70% | 77 / 86 / 90% | lab-like 3 of 3 |
 | off-target 0.015 (amendment 1) | 0.09 to 0.12 | 62 / 65 / 71% | 77 / 84 / 89% | lab-like 3 of 3 |
 | measured leak 0.3 into neighbours (amendment 2) | 0.09 to 0.13 | 59 / 61 / 67% | 76 / 85 / 88% | lab-like 3 of 3 |
+| pooling + misidentification + leak 0.3, hold 16 (exploratory) | 0.057 to 0.074 | 76 / 88 / 89% | 80 / 88 / 105% | lab-like 3 of 3 |
 
-**Reading.** Of the worm experiment's imperfections tried, only off-target stimulation reproduces
-the worm pattern, and only at a strength far above what the atlas shows: half-strength kicks to two
-neighbours make the neighbours respond about twice as much as the target, against 0.3 in worms.
-At the level measured in the worms, whether built in as extra stimulation of the neighbours or as a
-copy of the target's response in their measured traces for the whole 15 s, every brain stays easy
-to copy by watching in every pool, as do brains with pooled classes or 15% misidentified neurons.
-So these imperfections, at the levels measured or assumed, do not explain why worms resist
-watching. That strengthens, but does not prove, an explanation in the worms themselves. Limits:
-the misidentification rate is assumed, not measured; the pooled units are wired independently;
-neighbour effects beyond the nearest three, and imperfections not modelled here (for example the
-nonlinearity of real neurons and their calcium readout, or effects of stimulation on the whole
-animal's state), are not covered; the combination at measured levels is being run (exploratory).
+**Reading, corrected after an independent review (the first version is in the git history).** By
+the pre-registered rule, off-target stimulation is now the leading experimental explanation: at
+half-strength kicks, alone and combined with the other two imperfections, the lab brains were
+worm-like in every pool, and the combination matches worms on every number (individuals agree
+0.070 to 0.080, best watching 23% to 27%, poke-trained 90% to 99%; worms 0.09 to 0.12, 4% to 22%,
+76% to 97%), while off-target alone makes individuals agree far more than worms do (0.25 to 0.27).
+The first version of this reading said that the off-target strength measured in worms was far too
+weak to matter. That rested on amendment 1's calibration, which was not comparable: it used the
+first 2 s and only pokes whose target changed by 1 to 4 resting SD, which in lab brains keeps
+unusually weak pokes of strongly saturating targets. Measured over the ruler's own 15 s window
+(the review's numbers; neighbour excess over the target's change, pokes whose target responds):
+worms 0.57 raw and about 0.3 identity-controlled; lab off-target 0.5 gives 0.86, 0.2 gives 0.66,
+0.1 gives 0.39, 0.03 gives 0.11 and 0.015 gives 0.05; leak 0.3 gives 0.27. So the "matched" runs
+were 3 to 10 times too weak, the worm-like run is only about 1.5 to 3 times the worms' level, and
+the worms sit between 0.1 and 0.2, which were not run. The leak runs are at the bottom of the worm
+range and spread nothing through the network. **Whether off-target activation at the worms' level
+makes these lab brains worm-like is open.** Pooled classes and misidentified neurons (about 13%
+effectively, since a shuffle leaves some labels in place) do not, in any run. Scope: these are
+random tanh rate networks with two fixed neighbours per unit, identical in every individual, which
+makes the artefact a consistent kernel the poke-trained copy can learn; in worms the effect survives
+identity control, so it partly depends on where neurons happen to sit. Pooling at hold 16 has no
+unpooled hold-16 reference.
+
+**Third lab I amendment (written after the review, before these runs).** Off-target kicks of 0.1
+and 0.2 (bracketing the worms' level measured in the scoring window) and a leak of 0.6 (the top of
+the worm range), pools 0 to 2, unchanged scoring. `scripts/calib_offtarget_lab.py` is kept as run;
+its statistic is not the comparable one.
+
+Other limits: the misidentification rate is assumed, not measured; the pooled units are wired
+independently; neighbour effects beyond the nearest two, neighbours that differ between
+individuals, and imperfections not modelled here (stimulation efficacy and time course, which in
+worms is weak and variable but in the lab deterministic and saturating; tracking that swaps between
+adjacent neurons over time; adaptation across about 70 pokes per worm; the nonlinearity of real
+neurons and their calcium readout; effects of stimulation on the whole animal's state) are not
+covered. A test the worm data allow: if neighbours are truly activated, their own synaptic partners
+should show an excess too; a pure measurement leak predicts none.
 
 ## Where the data runs out (2 Nov 2026)
 

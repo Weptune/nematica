@@ -5,7 +5,7 @@ from pathlib import Path
 
 FIG = Path(__file__).resolve().parents[1] / "docs" / "figures"
 lines = ["Lab I: the worm experiment's imperfections in lab brains (shares of the individuals' agreement)", ""]
-for name in ("pool", "pool_hold16", "pool_hold30", "pool_hold60", "misid", "offtarget", "all", "offmatched", "offhalf", "leak", "allmeasured"):
+for name in ("pool", "pool_hold16", "pool_hold30", "pool_hold60", "misid", "offtarget", "all", "offmatched", "offhalf", "off0.1", "off0.2", "leak", "leak0.6", "allmeasured"):
     rows = []
     for f in sorted(glob.glob(str(FIG / f"ann_imperfect_{name}_folds*.csv"))):
         rows += list(csv.DictReader(open(f)))

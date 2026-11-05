@@ -77,7 +77,7 @@ def record(br, rng, obs, kicks=None, frames=L.FRAMES, burn=400):
         if t >= 0:
             v = np.tanh(x) + br.r * rng.standard_normal(n)
             y[t, obs] = v[obs]
-    return y
+    return leak(y, obs, kicks) if LEAK else y
 
 
 L.record = record
