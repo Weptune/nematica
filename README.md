@@ -2261,8 +2261,10 @@ of worms never used in any state test, the pattern of a poke's spread differs de
 worm sits along its main resting pattern, by more than in the network built to show it. Caveats: 15
 worms and 13 classes; a different strain (reduced neuropeptide release); and with AVA as the state
 signal no dependence was detected in wild type, so the worm's main resting pattern is not simply its
-reversal state. This is now the clearest measured difference of the night between worms and the
-networks we build: the worm's slow background state changes where its pokes go.
+reversal state. The worm's slow background state changes where its pokes go; among our networks, only the one
+built to do this shows it (the plain and drives-only networks give 0.000 and -0.018, not
+significant), and less strongly than the worms. The ladder's best-fitting networks have not yet been
+put through this test.
 
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
