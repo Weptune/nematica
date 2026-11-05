@@ -81,8 +81,8 @@ class Worm:
             return {c: np.nanmean(v, axis=0) for c, v in act.items()}
 
 
-def load_worms():
-    rs = sorted(load_pumpprobe_dir(ATLAS), key=lambda r: r.uid)
+def load_worms(folder=None):
+    rs = sorted(load_pumpprobe_dir(folder or ATLAS), key=lambda r: r.uid)
     return [Worm(r) for r in rs]
 
 
@@ -413,6 +413,15 @@ def run_b2_pc1_aligned():
         run_b2(worms=lw, state_fn=aligned_state_fn(lw), fname=f"b2_pc1_aligned_lab_{name}.txt", exclude=None)
 
 
+def run_b2_pc1_unc31():
+    import run_ladder as LD
+    ctl = LD.param_recs({"share": 0.25, "g": 0.0, "spread": 0.0, "quiet": 0.0, "mod": 0, "gain": 1.0}, 0)
+    lw = [w for w in (Worm(r, valid_fn=lambda c: True) for r in ctl) if pc1_state(w) is not None]
+    run_b2(worms=lw, state_fn=aligned_state_fn(lw), fname="b2_pc1_aligned_lab_control.txt", exclude=None)
+    ws = [w for w in load_worms(ROOT / "data" / "raw" / "randi2023_unc31_npz") if pc1_state(w) is not None]
+    run_b2(worms=ws, state_fn=aligned_state_fn(ws), fname="b2_pc1_aligned_unc31.txt", exclude=None)
+
+
 def run_b2_pc1():
     import run_ladder as LD
     run_b2(state_fn=pc1_state, fname="b2_pc1_worms.txt", exclude=None)
@@ -575,4 +584,4 @@ if __name__ == "__main__":
     cmd = sys.argv[1]
     {"a2": run_a2, "a2-mixed": lambda: run_a2(True), "b1": run_b1, "b1-lab": run_b1_lab, "b2": run_b2, "b2-strict": lambda: run_b2(False),
      "b1-extra": lambda: run_b1_extra(), "b2-pc1": lambda: run_b2_pc1(),
-     "b2-pc1-aligned": lambda: run_b2_pc1_aligned()}[cmd]()
+     "b2-pc1-aligned": lambda: run_b2_pc1_aligned(), "b2-pc1-unc31": lambda: run_b2_pc1_unc31()}[cmd]()

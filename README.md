@@ -2226,6 +2226,19 @@ least 1.3 for both, without drives; (2) real and shuffled wiring differ by less 
 share. *Decision:* each prediction judged separately; a real-wired network at or below 0.8 without
 drives would mean the wiring itself carries part of the worm's resistance to watching.
 
+**Replication of the worm state dependence (pre-registered 6 Nov 2026, before looking).** The
+sign-aligned PC1 test found state-dependent spread in the wild-type worms after the reviewer had seen
+it. Replication sample: the 18 unc-31 worms of the atlas (reduced neuropeptide release, recorded the
+same way), never used in any state test. Same code and sign rule (`run_week1.py b2-pc1-unc31`).
+Positive control that the first one lacked: a network whose slow drives both add to activity (share
+0.25, so the first component tracks them) and scale each unit's recurrent input by (1 + 1.0 x drive),
+so the same poke must spread differently in different states (round 1 base wiring, brain 0).
+*Predictions:* the control shows state dependence (sign-flip p < 0.05); the unc-31 worms show it too
+(median below 0, p < 0.05). *Decision:* if the control fails, the test is declared unable to detect
+state dependence in these networks and the worm result stays unreplicated whatever unc-31 shows; if the
+control passes, unc-31 p < 0.05 is a replication, p > 0.05 a failure to replicate (with 18 worms, a
+weak test, stated now).
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected
