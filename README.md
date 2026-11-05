@@ -1985,6 +1985,27 @@ and 0.6, both brains (`run_ladder.py fit --gain`). *Prediction:* compared with k
 dimensionality rises and individuality does not fall (by more than 0.005) at k = 0.6, in both brains.
 *Decision:* supported if both hold in both brains; the run with the most axes within 25% is reported.
 
+**Round 5 result (`docs/figures/ladder_gain.csv`).** k = 0 / 0.3 / 0.6, brain 0: rest dimensionality
+0.155 / 0.220 / 0.320, individuality 0.040 / 0.008 / -0.011; brain 1: 0.164 / 0.227 / 0.331 and
+0.038 / 0.026 / -0.003. **Refuted**: excitability drives give resting structure but erase
+individuality just as additive drives do. In these networks any slow drive, however it enters, makes
+an individual's echoes inconsistent from poke to poke.
+
+**Is the worm's individuality about cause and effect? (pre-registered 6 Nov 2026, after round 5.)**
+Before building more machinery to reproduce worm individuality, check what it is. If each worm has
+a response profile shared by all its pokes whatever the target (a state, or a recording property
+such as how its neurons were identified or imaged), two halves of one worm agree for that reason
+alone. Two checks with the ladder's individuality measure (`scripts/run_individuality_check.py`):
+(a) *generic profile removed*: in each half, subtract from every (target, responder) response that
+responder's mean over all targets in that half, then recompute the excess; (b) *targets shuffled*:
+same-worm agreement when the second half's target labels are permuted among its targets (100
+permutations), minus the same for different worms. *Prediction:* the excess shrinks by more than
+half under (a), and (b) keeps more than half of it: worm individuality is mostly a worm-wide
+profile, not individual cause and effect. *Decision:* "mostly generic" if both hold; "mostly causal"
+if (a) keeps more than three quarters of the excess and (b) less than a quarter; otherwise mixed.
+The same checks on lab networks (round 1 base and G, brain 0) show what causal individuality looks
+like through this measure.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected
