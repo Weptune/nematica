@@ -1777,6 +1777,52 @@ real-worm agreement in all 3 pools; it closes if either copy's echo pattern is j
 (the ruler's verdict) in at least 2 of 3 pools; otherwise it partly closes, and we report by how
 much.
 
+## The ingredient ladder: what does an artificial network need to look like a worm? (pre-registered 6 Nov 2026)
+
+So far each candidate explanation of the worm gap was tested on its own. Here five ingredients are
+added to the lab's tanh networks in every combination (2^5 = 32 variants, two independent brains
+each), every variant is recorded like the atlas (113 individuals, sigma 0.3, half the units seen
+per recording, 30% never seen, a poke every 30 s at fixed strength), and every variant and the
+113 real worms are measured on the same six axes by the same code (`scripts/run_ladder.py`).
+
+Ingredients (off / on):
+- **D, shared slow drives**: none / three unrecorded drives with a 90 s timescale carrying 25% of
+  each unit's input variance;
+- **G, silent links**: none / the silent-links test's thresholded links (density 5%, strength 1.5,
+  active only above tanh 0.98);
+- **S, stimulation spread**: none / each poke also kicks two fixed neighbours at 0.15 of its size
+  (between the two strengths that bracketed the worm's measured neighbour excess);
+- **H, stimulation that tires**: none / the k-th poke of the same unit in a recording is scaled by
+  0.65^(k-1) (the worms' second activation is about 35% weaker, test B1);
+- **M, modules**: random wiring / four modules of 30 units, 90% of connections inside a module
+  (same overall density and spectral radius).
+
+Axes (definitions as in the three tests above; worms use classes with a role, lab units are
+their own classes):
+1. *watching share*: noise-free ridge VAR(1) watching agreement over worm-to-worm agreement, mean
+   of three pools (test A2's method, all stimulated classes);
+2. *echo breadth*: share of the other seen units or classes whose response to a poke exceeds 1
+   resting SD in size, median over pokes;
+3. *stimulation tiring*: D of the target's own response (test B1);
+4. *rest dimensionality*: share of variance in the top three principal components of unpoked
+   activity (z-scored seen units or classes), median over recordings;
+5. *individuality*: same-recording agreement between alternate pokes minus agreement with other
+   recordings' halves, median over recordings (at least 20 shared pairs);
+6. *echo reliability*: worm-to-worm agreement (median over pairs, all three pools).
+
+Distance from the worms: for each axis, (variant minus worm) divided by that axis's standard
+deviation across the 64 lab runs; distance = root mean square over the six axes. Contribution
+of each ingredient: its Shapley value (the change it makes, averaged over every order of adding
+the five), on the watching share and on the distance.
+
+*Predictions:* (1) shared drives lower the watching share most, silent links second; spread
+helps less; tiring and modules hardly change it. (2) No single ingredient brings a network to the
+worm; the closest variant has at least drives and silent links. (3) Modules make echoes narrower
+(lower echo breadth), toward the worm. (4) Tiring is the only ingredient that moves axis 3.
+*Decision:* each prediction is judged on the Shapley values (mean of the two brains), with the
+sign and order as stated; predictions (1) and (3) need the effect in both brains. The full ruler
+is then run on the closest variant, to check that the cheap axis agrees with the expensive one.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
