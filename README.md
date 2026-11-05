@@ -1406,6 +1406,45 @@ its watching copy scores above another individual (75% against 63%), so its ceil
 The poke-length amendment was made after the first runs, before any copy was scored at the new
 lengths.
 
+## Lab I: the worm experiment's imperfections (pre-registered 5 Nov 2026)
+
+Artificial networks recorded like atlas worms can be copied by watching, trained or not (labs D
+and H); worms cannot. Before calling that a difference between biological and artificial
+networks, the worm experiment's own imperfections must be ruled out as its cause. Here they are
+built into the lab D brains one at a time and all together. Written before any run;
+`scripts/run_ann_imperfect.py`.
+
+**Imperfections (levels chosen to be generous, not measured):**
+
+- *Class pooling*: units 2k and 2k + 1 form one class, as left and right neurons are pooled in
+  the atlas. The pooled units are wired independently, which is harsher than real left/right
+  pairs.
+- *Misidentification*: in every recording, 15% of the seen units have their class labels
+  shuffled among themselves (a stimulated unit can be among them).
+- *Off-target stimulation*: every unit has two fixed neighbours, the same in every individual,
+  and a poke also kicks them at half strength; copies are told only the intended target.
+- *All three together.*
+
+The slow calcium indicator (lab E) and the short unpoked stretches (lab D, about 2 minutes) are
+already covered. Everything else is lab D's decisive check unchanged (113 individuals, sigma
+0.3, drives 5%, kick 6 held 8 frames); the reference is lab D itself (watching 51% to 72%,
+poke-trained 75% to 89%, pools 0 / 1 / 2).
+
+**Scoring, as in lab H.** Share = echo agreement over the individuals' agreement; best watching =
+the better of the watching copy and the stitched drift-removed copy. Worm-like: best watching
+< 30% and poke-trained >= 60%. Lab-like: best watching >= 50% and poke-trained >= 60%.
+Intermediate otherwise. Unusable if poke-trained < 60% or individuals agree < 0.05; in the
+second case the hold is lengthened to 16, 30 or 60 frames as in lab H's amendment, judged on the
+individuals alone. Pool 0 for all four conditions; pools 1 and 2 for every condition, time
+allowing.
+
+**Reading.** If no condition is worm-like, these imperfections at these levels do not explain the
+worm gap, which strengthens (but does not prove) a biological explanation. If one is worm-like,
+it becomes the leading artefact explanation, and its signature should then be looked for in the
+worm data (for off-target stimulation: responses of the target's physical neighbours, which
+needs neuron positions). If only the combination is, the gap could be a joint effect of the
+experiment.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
