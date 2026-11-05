@@ -37,3 +37,19 @@ body { background: var(--page); }
 footer.foot { background: transparent !important; color: var(--ink-3) !important; border-top: 1px solid var(--rule) !important; margin-top: clamp(64px, 8vw, 112px) !important; padding: 36px var(--gutter) 48px !important; }
 footer.foot .big { display: none !important; }
 footer.foot a { color: var(--ink) !important; }
+
+/* labels in sentence case, readable size; a light open menu on small screens */
+.sec-name, .plate-title .fn, .log .when, table.data th, .summary-measures .measure .v small, .swarm-section-label, .arrival-top, .arrival-bottom, .arrival-motion-toggle {
+  text-transform: none !important; letter-spacing: 0 !important;
+}
+.sec-name { font-size: .85rem !important; font-weight: 650 !important; }
+.plate-title .fn, .log .when { font-size: .85rem !important; }
+table.data th { font-size: .8rem !important; font-weight: 650 !important; }
+.summary-measures .measure .v small { font-size: .75rem !important; }
+.swarm-section-label, .arrival-top, .arrival-bottom { font-size: .78rem !important; }
+figure.plate { background: #e7ece9 !important; }
+figure.plate::before, figure.plate::after { display: none !important; }
+.bar.menu-open nav { background: #edf1ef !important; color: var(--ink) !important; }
+.bar.menu-open nav a { color: var(--ink) !important; }
+.bar.menu-open nav a[aria-current="page"] { color: var(--live) !important; }
+.bar.menu-open nav a { border-color: var(--rule) !important; }

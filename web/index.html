@@ -26,6 +26,8 @@
     <a href="#approach">Approach</a>
     <a href="#found">What we found</a>
     <a href="findings.html">Evidence</a>
+    <a href="method.html">Method</a>
+    <a href="sim.html">Simulations</a>
     <a href="log.html">Research log</a>
   </nav>
 </header>
@@ -35,16 +37,16 @@
   <div class="hero-text">
     <h1 id="hero-title">What makes a real brain different from an artificial one?</h1>
     <p class="lede">Not by analogy. NEMATICA puts real nervous systems and artificial neural networks through the same tests, and judges both against one yardstick: how much real animals differ from each other.</p>
-    <p class="hero-links"><a class="go" href="#approach">See how we test it</a><a class="quiet-link" href="#found">Jump to what we found</a></p>
+    <p class="hero-links"><a class="go" href="#approach">See how we test it</a></p>
   </div>
   <figure class="hero-fov">
     <div class="scope">
-      <canvas id="hero-fov" aria-label="Sixteen model neurons flickering in a circular field of view. Select a neuron, or use the button below, to switch it on and see where its signal goes."></canvas>
+      <canvas id="hero-fov" role="img" aria-label="Sixteen model neurons flickering in a circular field of view. Select a neuron, or use the button below, to switch it on and see where its signal goes."></canvas>
       <span class="scale" aria-hidden="true"><i></i>16 model neurons</span>
     </div>
     <figcaption>
-      <button class="poke" id="hero-poke" type="button">Switch on a neuron</button>
-      <span>or click any neuron. This network is simulated in your browser; switching on one neuron and recording where the signal goes is how brains are probed.</span>
+      <p>Switch on one neuron and watch where its signal goes. That is one way real brains are probed, with light or electrodes. This small network is simulated in your browser; you can also click a neuron.</p>
+      <div class="controls"><button class="poke" id="hero-poke" type="button">Switch on a neuron</button><button class="motion" type="button" aria-pressed="false">Pause motion</button></div>
       <span class="sr" id="hero-live" aria-live="polite"></span>
     </figcaption>
   </figure>
@@ -55,11 +57,22 @@
     <h2 id="question-title">The question</h2>
     <p class="big">Artificial neural networks began as a sketch of the brain, and the two are now compared constantly. But most comparisons are analogies, or tests only one side can take.</p>
     <p>We want differences that are measured, the same way, on both. That takes three things most comparisons lack: recordings of a real brain complete enough to model neuron by neuron, artificial networks recorded and analysed exactly like the animal, and a fair pass mark.</p>
+    <figure class="pair" aria-label="A worm, whose head holds most of its 302 neurons, and a grid of artificial units, joined by one shared test.">
+      <svg viewBox="0 0 520 190" aria-hidden="true">
+        <path class="worm" d="M18 104 C40 70 92 66 132 84 C170 101 196 120 236 112 C262 106 278 92 300 92 C318 92 326 104 318 114 C308 126 282 128 262 132 C222 140 186 128 150 110 C112 92 70 96 40 120 C30 128 16 124 18 104 Z"/>
+        <g class="cells"></g>
+        <g class="units"></g>
+        <path class="link" d="M170 150 C170 174 432 174 432 158"/>
+        <text x="300" y="188" class="t mid">the same tests, the same yardstick</text>
+        <text x="170" y="44" class="t mid worm-l">a worm, 302 neurons</text>
+        <text x="432" y="22" class="t mid art-l">an artificial network</text>
+      </svg>
+    </figure>
   </div>
   <dl class="needs">
     <div><dt>A brain small enough to see whole</dt><dd>The worm <i>C.&nbsp;elegans</i>: 302 neurons and a mapped wiring diagram. In a public atlas, 113 worms were recorded neuron by neuron while single neurons were switched on with light.</dd></div>
     <div><dt>One pipeline for both</dt><dd>Artificial networks are recorded the way the worms were: same length, same missing neurons, same stimulation schedule, then analysed by the same code.</dd></div>
-    <div><dt>A pass mark made of individuals</dt><dd>No two worms are alike. A model passes a test when it is as close to real worms as real worms are to each other: no closer, no further.</dd></div>
+    <div><dt>A pass mark made of individuals</dt><dd>No two worms are alike. A copy passes a test when it is as close to real worms as real worms are to each other: no closer, no further.</dd></div>
   </dl>
 </section>
 
@@ -86,23 +99,29 @@
       <p>Watching means learning only from what a network does on its own. Poking means switching one neuron on and recording its echo, the response it spreads to the others. A faithful copy should predict the echo. Below, a model built only by watching each network predicts its echoes. Both networks have the same visible wiring; the one on the right also has links that stay silent at rest and carry signal only when a neuron is driven hard.</p>
       <div class="compare">
         <figure>
-          <div class="scope"><canvas id="fov-plain" aria-label="A network whose links are all active at rest."></canvas></div>
+          <div class="scope"><canvas id="fov-plain" role="img" aria-label="A network whose links are all active at rest."></canvas></div>
           <figcaption>
             <b>Every link active at rest</b>
-            <span class="score" id="score-plain" aria-live="polite">Watching predicted the echo: <span class="now">poke to measure</span><span class="meter"><i></i></span><span class="avg"></span></span>
+            <svg class="echo" viewBox="0 0 300 76" aria-hidden="true"><line x1="0" x2="300" y1="38" y2="38" class="base"/><text x="150" y="28" class="hint">each neuron's echo will appear here</text></svg>
+            <span class="score" id="score-plain">How well watching predicted the echo <span class="now idle">not poked yet</span><span class="meter"><i></i></span><span class="avg"></span></span>
           </figcaption>
         </figure>
         <figure>
-          <div class="scope"><canvas id="fov-quiet" aria-label="The same network with extra links that are silent at rest; they light up amber when they carry signal."></canvas></div>
+          <div class="scope"><canvas id="fov-quiet" role="img" aria-label="The same network with extra links that are silent at rest; they light up amber when they carry signal."></canvas></div>
           <figcaption>
             <b>Some links silent at rest</b>
-            <span class="score" id="score-quiet" aria-live="polite">Watching predicted the echo: <span class="now">poke to measure</span><span class="meter"><i></i></span><span class="avg"></span></span>
+            <svg class="echo" viewBox="0 0 300 76" aria-hidden="true"><line x1="0" x2="300" y1="38" y2="38" class="base"/><text x="150" y="28" class="hint">each neuron's echo will appear here</text></svg>
+            <span class="score" id="score-quiet">How well watching predicted the echo <span class="now idle">not poked yet</span><span class="meter"><i></i></span><span class="avg"></span></span>
           </figcaption>
         </figure>
       </div>
       <div class="compare-foot">
-        <button class="poke" id="compare-poke" type="button">Poke the same neuron in both</button>
-        <p class="key"><span class="k-m"></span>measured echo <span class="k-p"></span>predicted by watching <span class="k-q"></span>a silent link carrying signal. The score is the correlation between them, 1 for a perfect prediction.</p>
+        <div class="controls"><button class="poke" id="compare-poke" type="button">Poke the same neuron in both</button><button class="motion" type="button" aria-pressed="false">Pause motion</button></div>
+        <div class="keys">
+          <p class="key"><span class="k-m"></span>each other neuron's measured echo<span class="k-p"></span>the echo predicted by watching<span class="k-q"></span>a silent link carrying signal</p>
+          <p class="key">The score is the correlation between predicted and measured echoes: 1 is a perfect prediction, 0 is none.</p>
+        </div>
+        <span class="sr" id="compare-live" aria-live="polite"></span>
       </div>
     </li>
 
@@ -131,8 +150,8 @@
         <svg viewBox="0 0 360 150" aria-hidden="true">
           <text x="0" y="30" class="lbl real">worm</text>
           <text x="0" y="96" class="lbl copy">artificial network</text>
-          <g class="row" transform="translate(0,42)"><rect class="rest" x="0" y="0" width="70" height="16" rx="2"/><g class="ticks real"></g></g>
-          <g class="row" transform="translate(0,108)"><rect class="rest" x="0" y="0" width="70" height="16" rx="2"/><g class="ticks copy"></g></g>
+          <g class="row" transform="translate(0,42)"><rect class="rest" x="0" y="0" width="18" height="16" rx="2"/><g class="ticks real"></g></g>
+          <g class="row" transform="translate(0,108)"><rect class="rest" x="0" y="0" width="18" height="16" rx="2"/><g class="ticks copy"></g></g>
           <text x="0" y="146" class="t">2 min at rest, then a poke every 30 s, 37 min in all</text>
         </svg>
       </figure>
@@ -182,11 +201,11 @@
   <ul class="ledger">
     <li class="s-found">
       <span class="status">Found</span>
-      <p><b>In worms, watching misses what poking finds.</b> Copies built only by watching agree with real worms' echoes at 4% to 16% of the agreement between worms; copies that also learned from pokes reach the real-worm level.</p>
+      <p><b>In worms, watching misses what poking finds.</b> Copies built only by watching agree with real worms' echoes at 4% to 16% of the agreement between worms (0.004 to 0.014, against 0.087 to 0.121); copies that also learned from pokes reach the real-worm level. Part of this gap comes from the experiment itself (below).</p>
     </li>
     <li class="s-found">
       <span class="status">Found</span>
-      <p><b>Artificial networks give their workings away to an observer.</b> Recorded and scored like worms, random networks are copied by watching at 51% to 82%, and networks trained on memory and decision tasks at 75% to 91%.</p>
+      <p><b>The artificial networks we tested can largely be copied by watching.</b> Recorded and scored like worms, random networks reach 51% to 82% of the agreement between their individuals, and networks trained on memory and decision tasks 75% to 91%.</p>
     </li>
     <li class="s-part">
       <span class="status">Partly explained</span>
@@ -194,7 +213,7 @@
     </li>
     <li class="s-open">
       <span class="status">Open</span>
-      <p><b>What explains the rest.</b> Our lead: links that stay silent at rest, like the network on the right above. It is sufficient in artificial networks; whether worms have them is untested.</p>
+      <p><b>What explains the rest.</b> Our lead: links that stay silent at rest, like the second network in step 2. It is sufficient in artificial networks; whether worms have them is untested.</p>
     </li>
     <li class="s-open">
       <span class="status">Open</span>
@@ -215,6 +234,7 @@
 </main>
 
 <footer class="foot">
+  <nav aria-label="Footer"><a href="#question">Question</a><a href="#approach">Approach</a><a href="#found">What we found</a><a href="findings.html">Evidence</a><a href="method.html">Method</a><a href="sim.html">Simulations</a><a href="log.html">Research log</a><a href="https://github.com/Weptune/nematica">GitHub</a></nav>
   <p>NEMATICA is an open project. Predictions are written down before experiments run, independent reviews are reported with the results, and results that went against us are kept.</p>
   <p class="credits">Worm data: Randi et al. 2023 (OSF e2syt). Mouse data: Bocchio, Vorobyev et al. (Zenodo 11500028); Dalgleish et al. 2020. Human data: van Blooijs et al. 2023 (OpenNeuro ds004080). Code: MIT licence.</p>
 </footer>
