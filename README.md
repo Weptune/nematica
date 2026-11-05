@@ -2202,6 +2202,30 @@ resting pattern. What the worm actually has among these ingredients is a questio
 recordings of the drive sources, repeated pokes at matched strength, and stimulation at several
 strengths.
 
+## Real wiring diagrams through the worm measurements (pre-registered 6 Nov 2026)
+
+Every artificial network so far had random wiring. Here the lab's tanh dynamics run on two real
+connectomes (`scripts/run_wired.py`):
+
+- **worm-wired**: the worm's own wiring (Kunert et al. 2014: 279 neurons, chemical synapse counts
+  signed by each presynaptic neuron's reversal potential, plus gap junctions as symmetric excitatory
+  links), each neuron's class from its name (left/right pooled), as in the atlas;
+- **fly-wired**: the fly visual system connectome bundled with flyvis (Lappalainen et al. 2024;
+  fib25/fib19, 65 cell types, signed synapse counts with their column offsets), expanded over a patch
+  of 19 columns (hexagonal radius 2), each cell type a class. (The trained flyvis models could not be
+  used: their download from Google Drive is blocked from both the sandbox and the laptop.)
+- **controls**: the same networks with their weights reassigned to random pairs (same number of
+  links and same weights; "shuffled").
+
+Each network is scaled to spectral radius 1.3, recorded like the atlas (113 individuals, sigma 0.3,
+half the units seen, 30% never, a poke every 30 s from frame 230, held 4 frames), with and without
+shared slow drives (25%), and measured on the ladder's six axes at class level; the full ruler is
+run on pool 0 for the worm-wired and fly-wired networks without drives.
+*Predictions:* (1) real wiring alone does not make a network worm-like on watching: watching share at
+least 1.3 for both, without drives; (2) real and shuffled wiring differ by less than 0.3 in watching
+share. *Decision:* each prediction judged separately; a real-wired network at or below 0.8 without
+drives would mean the wiring itself carries part of the worm's resistance to watching.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected
