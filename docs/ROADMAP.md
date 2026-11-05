@@ -33,7 +33,7 @@ copy). Run today, each pre-registered:
 - **B2, behavioural state:** by AVA, no detectable state dependence. By each worm's main resting
   pattern, the spread does depend on state: found after the second review (p = 0.002), then
   replicated as pre-registered in 15 unseen unc-31 worms (p = 0.033) with a positive control that
-  passed. Of the networks tested, only one built to have it shows it.
+  passed. The ladder's best network shows it in one of two brains, more weakly.
 - **A1, nonlinear watcher:** a GRU trained only by watching fails like the linear watchers (0.004 to
   0.011 against 0.09 to 0.11); on a network where watching works it recovers about half, so the
   failure on worms is real.
@@ -56,7 +56,7 @@ copy). Run today, each pre-registered:
   too weak to measure. Needs a different design (residual-stream directions).
 - **Independent reviews:** two, both done; every correction they asked for is in the README.
 
-Next: put the ladder's best-fitting networks through the state test; repeat pokes at matched strength and
+Next: repeat pokes at matched strength and
 stimulation at several strengths (experiments that would say which ingredients the worm has);
 the human data with the pulse removed; the Kunert model as a wired network.
 

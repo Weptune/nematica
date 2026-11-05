@@ -2272,6 +2272,14 @@ and 1, through the same sign-aligned state test (`run_week1.py b2-pc1-fit9`). *P
 dependence (p > 0.05 in both brains), because its drives only add to activity. If so, state-dependent
 spread is a worm property that even the closest network here lacks.
 
+**Result (`docs/figures/b2_pc1_aligned_lab_fit9_seed0.txt`, `..._seed1.txt`).** Brain 0: -0.031
+[-0.048, -0.010], p = 0.0008; brain 1: -0.011 [-0.031, +0.004], p = 0.12. **Prediction refuted**: the
+best-fitting network shows state-dependent spread in one of its two brains, without anything built in
+for it (its strong additive drives, with saturating and quiet units, can change how a poke travels).
+So state dependence is not a worm property beyond the reach of these networks; the worms show it more
+strongly (-0.049 and -0.080) and more consistently. The earlier sentence that only the network built to
+have it shows it holds only for the networks tested before this one.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected
