@@ -156,6 +156,10 @@ def variant_recs(code, seed, n_ind=113, sigma=0.3):
     on = set(code)
     W = modular_W(120, 1.3, np.random.default_rng(seed + 500)) if "M" in on else None
     br0 = L.make_brain(rho=1.3, share=0.25 if "D" in on else 0.0, tau=90.0, seed=seed, q=0.2, W=W)
+    if "Q" in on:          # round 2: half the units sit near the flat bottom of their range
+        quiet = np.random.default_rng(seed + 900).random(br0.n) < 0.5
+        br0.b = br0.b.copy()
+        br0.b[quiet] = -2.5
     if "G" in on:
         g = np.random.default_rng(12 + 100 * seed)
         Wg = GATED * g.standard_normal((br0.n, br0.n)) * (g.random((br0.n, br0.n)) < 0.05)

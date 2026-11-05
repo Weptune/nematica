@@ -1871,6 +1871,16 @@ properties no variant reaches: very narrow echoes (8.5% of neuron classes move b
 resting SD) and stimulation that tires by a third. Caveats: two brains; the cheap watching axis
 uses noise-free predictions; ingredient strengths are single choices, not fitted.
 
+**Round 2, one more ingredient (pre-registered 6 Nov 2026, after round 1).** Every variant's
+echoes are wider than the worm's, and an earlier diagnosis found that a third of a real worm's
+neuron classes never respond in the 30 s after a poke. Ingredient **Q, quiet units**: half the
+units (the same in every individual) get a bias of -2.5, so they sit near the flat bottom of
+their range and move only with strong input. Q is added to base, D, G, DG, DGS, GSM and DGSM
+(both brains; same code, `--codes`).
+*Predictions:* (1) Q lowers echo breadth in every one of the 7 pairs, in both brains; (2) Q does
+not raise the watching share by more than 0.1 in any pair; (3) the variant with the most axes
+within 25% of the worm (exploratory count, now pre-registered as the summary) includes Q.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected
