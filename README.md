@@ -2253,6 +2253,17 @@ state dependence in these networks and the worm result stays unreplicated whatev
 control passes, unc-31 p < 0.05 is a replication, p > 0.05 a failure to replicate (with 18 worms, a
 weak test, stated now).
 
+**Replication result (`docs/figures/b2_pc1_aligned_lab_control.txt`, `b2_pc1_aligned_unc31.txt`).**
+Positive control: -0.019 [-0.049, -0.000], p = 0.046, **passes** (barely: the test is not very
+sensitive in these networks). unc-31 worms (15 of 18 usable, 13 stimulated classes): -0.080 [-0.106,
++0.001], p = 0.033, echo size high/low 0.84. **Replicated by the pre-registered rule**: in a second set
+of worms never used in any state test, the pattern of a poke's spread differs depending on where the
+worm sits along its main resting pattern, by more than in the network built to show it. Caveats: 15
+worms and 13 classes; a different strain (reduced neuropeptide release); and with AVA as the state
+signal no dependence was detected in wild type, so the worm's main resting pattern is not simply its
+reversal state. This is now the clearest measured difference of the night between worms and the
+networks we build: the worm's slow background state changes where its pokes go.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected

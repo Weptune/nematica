@@ -1,0 +1,18 @@
+worms with AVA used: 15; stimulated classes scored: 13
+class S(high,low) mean-null S-minus-null size(high/low) n_high n_low responders
+ADA     -0.068 +0.012 -0.080 0.71 7 3 48
+AFD     +0.539 +0.625 -0.086 0.88 6 5 52
+AVD     +0.139 +0.137 +0.001 1.23 12 9 63
+AVE     +0.318 +0.424 -0.106 0.92 7 4 46
+AWB     +0.376 +0.556 -0.179 1.23 4 4 49
+CEP     +0.445 +0.288 +0.157 0.35 7 4 31
+IL1     -0.019 +0.242 -0.261 1.50 14 6 49
+IL2     -0.089 +0.171 -0.260 0.61 19 3 46
+M3      +0.327 +0.354 -0.027 0.79 7 3 38
+RID     +0.453 +0.374 +0.080 0.84 6 7 64
+RMD     +0.492 +0.545 -0.053 0.66 23 18 72
+RME     +0.201 +0.188 +0.012 0.52 9 5 48
+SAA     +0.070 +0.162 -0.092 0.89 5 3 36
+median S minus null: -0.080 [90%: -0.106, +0.001], sign-flip p (one-sided) = 0.0332
+echo size high/low: median 0.84
+verdict: supported
