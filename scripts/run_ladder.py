@@ -291,6 +291,27 @@ def evoked_share(worms):
     return float((np.mean(ev) - np.mean(fl)) / np.mean(ev))
 
 
+def run_sigma(seed):
+    worm = {k: float(v) for k, v in next(csv.DictReader((FIG / "ladder_worms.csv").open())).items()}
+    out = FIG / f"ladder_sigma_seed{seed}.csv"
+    rows = list(csv.DictReader(out.open())) if out.exists() else []
+    for sig in (0.5, 0.8):
+        for hold in (8, 16):
+            KICK_HOLD["frames"] = hold
+            ws = [W1.Worm(r, valid_fn=lambda c: True) for r in variant_recs("DGSM", seed, sigma=sig)]
+            fp = fingerprint(ws)
+            rel = [abs(fp[a] - worm[a]) / abs(worm[a]) for a in FIT_AXES]
+            rows.append({"seed": seed, "sigma": sig, "hold": hold, **{a: round(fp[a], 4) for a in AXES},
+                         "rel_err": round(float(np.sqrt(np.mean(np.square(rel)))), 4),
+                         "within25": int(sum(r <= 0.25 for r in rel))})
+            print(rows[-1], flush=True)
+            with out.open("w", newline="") as fh:
+                w = csv.DictWriter(fh, fieldnames=list(rows[0]))
+                w.writeheader()
+                w.writerows(rows)
+    KICK_HOLD["frames"] = KICK_FRAMES
+
+
 def run_long(seed, holds=(4, 16), out_name="ladder_long.csv"):
     worm = {k: float(v) for k, v in next(csv.DictReader((FIG / "ladder_worms.csv").open())).items()}
     out = FIG / out_name
@@ -492,13 +513,16 @@ if __name__ == "__main__":
     ap.add_argument("--gain", action="store_true")
     ap.add_argument("--long", action="store_true")
     ap.add_argument("--hold-sweep", action="store_true")
+    ap.add_argument("--sigma-sweep", action="store_true")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--codes", default=None)
     a = ap.parse_args()
     if a.cmd == "worms":
         run_worms()
+    elif a.cmd == "fit" and a.sigma_sweep:
+        run_sigma(a.seed)
     elif a.cmd == "fit" and a.hold_sweep:
-        run_long(a.seed, holds=(6, 8, 10), out_name="ladder_holds.csv")
+        run_long(a.seed, holds=(6, 8, 10), out_name=f"ladder_holds_seed{a.seed}.csv")
     elif a.cmd == "fit" and a.long:
         run_long(a.seed)
     elif a.cmd == "fit" and a.gain:

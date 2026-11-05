@@ -2089,6 +2089,20 @@ transformer of this size, poked one hidden unit at a time, does not give echoes 
 to judge with this ruler. A fair test needs a different unit of poking (for example a direction in
 the residual stream) and is left for a separate, pre-registered design.
 
+**Round 7 result (`docs/figures/ladder_holds_seed0.csv`, `ladder_holds_seed1.csv`).** At holds of 6, 8
+and 10 frames, reliability is 0.16 to 0.33 in every run (worm 0.094; 25% band 0.071 to 0.118), while
+individuality reaches the worm's band only at the longer holds (DGSM, hold 10: 0.093 and 0.120).
+**Refuted**: no setting and hold has both within 25% in both brains. Stronger pokes raise
+individuality and reliability together. Worms combine the two differently: a worm agrees with itself
+1.8 times as well as with other worms (0.146 against 0.083), while the networks at worm-like
+individuality manage about 1.3. Worms differ from each other more, relative to how reproducible
+each one is, than the lab's individuals (connection strengths varying by 30%).
+
+**Round 8, more different individuals (pre-registered 6 Nov 2026).** The individual variation sigma
+(each connection scaled by 1 + sigma x N(0, 1)) raised from 0.3 to 0.5 and 0.8, DGSM with holds of 8
+and 16 frames, both brains (`run_ladder.py fit --sigma-sweep`). *Prediction:* for at least one
+combination, individuality and reliability are both within 25% of the worm in both brains.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected
