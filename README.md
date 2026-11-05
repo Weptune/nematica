@@ -1752,6 +1752,31 @@ its own needs stretches of 25 s with no stimulation, which exist mostly before t
 supports nor rules out state dependence. A test with more power would need recordings with long
 unstimulated stretches between pokes, or a state signal that does not depend on them.
 
+## The strongest watcher we can build (pre-registered 6 Nov 2026)
+
+The worm headline rests on watching copies that are linear (VAR) or linear with stitching. The
+obvious objection: watching failed because the watchers were too simple. The project already
+has a nonlinear model trained only by watching, `AtlasGRU` (a recurrent network pooled over
+all training worms' stimulation-free stretches, predicting the next frame's mean and spread,
+so it learns calm and active states and carries a hidden state that can stand for unrecorded
+neurons and slow drives). So far it was used only as the background of a copy that also
+learned from pokes. Here it is scored alone, as a watcher, through the unchanged ruler
+(`scripts/run_strong_watcher.py`, split cv3, all three pools, the clamp protocol every copy
+uses: at each stimulation the stimulated class is held at its pre-pulse model value plus the
+neuron's measured response for 30 s, and the network's own dynamics carry the rest).
+
+Copies: `gru64_watch` (the existing settings: 64 hidden units, 1,500 training steps) and
+`gru128ss_watch` (128 hidden units, 4,000 steps, trained partly on its own samples so that it
+stays realistic when running alone). Both choose nothing on poke data.
+
+*Prediction:* both stay far below poking: echo agreement below half of the real worms' agreement
+with each other in every pool (real worms 0.093 to 0.107; the existing watching copies 0.004 to
+0.024; the poke-trained copy 0.076 to 0.092).
+*Decision:* the watching gap survives the strongest watcher if both copies are below half the
+real-worm agreement in all 3 pools; it closes if either copy's echo pattern is judged inside
+(the ruler's verdict) in at least 2 of 3 pools; otherwise it partly closes, and we report by how
+much.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
