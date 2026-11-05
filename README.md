@@ -1714,6 +1714,44 @@ detectable state dependence) if the 90% interval includes 0 and its lower end is
 otherwise inconclusive. Echo size in the two states (mean absolute corrected response) is
 reported beside it.
 
+**Results (6 Nov 2026; `docs/figures/week1_a2.txt`, `week1_a2_mixed.txt`, `week1_b1.txt`,
+`week1_b2.txt`).**
+
+*A2, neuron role: inconclusive, and the prediction looks wrong.* Watching share (watching
+agreement as a share of worm-to-worm agreement, mean of 3 pools, 90% interval): sensory 0.73
+[0.53, 1.05], interneuron 0.70 [0.50, 1.00], motor 0.45 [0.17, 1.28], pharyngeal 0.43 [0.29,
+0.83]. The sensory share was below both others in 0 of 3 pools; sensory minus the mean of
+interneuron and motor: +0.16 [-0.32, +0.50]. With dual-role classes in their first-listed role:
++0.28 [-0.20, +0.61], also 0 of 3. So there is no sign that watching fails most for sensory
+neurons; if anything they are among the easier ones, and the per-role shares are too noisy
+(worm-to-worm agreement within one role is 0.05 to 0.10) to rank roles. Not pre-registered and
+only a pointer: the pharyngeal system has the lowest point share in two of three pools, although
+its echoes are the most reproducible across worms (worm-to-worm 0.13 to 0.25). These shares use
+noise-free predictions (as in the independent recomputation), so they are higher than the
+ruler's 4 to 16%; only their order across roles is the question here.
+
+*B1, repeat pokes: habituation as pre-registered, but mostly in the stimulation, not in the
+spread.* 100 worms, 577 repeat pairs. The second echo is smaller than drift explains: D = -0.049
+[-0.084, -0.014] (about 5%). The stimulated neuron's own response falls far more: D = -0.42
+[-0.53, -0.31] (about 35%). Artificial networks recorded the same way (113 individuals, 2,319
+repeat pairs) give an echo D of +0.001 [-0.011, +0.014], so the pipeline does not create the
+echo effect; they also show a small dip in the target's own response, -0.08 [-0.13, -0.03], a
+measurement bias (a neuron poked recently can still be raised when it is poked again), far
+smaller than the worms' -0.42. Reading: a second pulse of light activates the same neuron about
+a third less, and its echo shrinks a little. This test cannot say whether the drop is the neuron
+or the light-gated channel used to activate it: both tire with use. So it is a measured
+difference from the artificial networks, which answer the same question the same way, but not yet
+a difference located in the worm's network. The test that would locate it: echo size per unit of
+the target's own activation, which needs repeat pokes of matched strength (none in the atlas).
+
+*B2, behavioural state: inconclusive, underpowered.* The correction for what the state does on
+its own needs stretches of 25 s with no stimulation, which exist mostly before the first poke, so
+27 of the 68 worms with AVA identified could be used and 23 stimulated classes scored. Median
+(S minus its shuffle null) -0.040 [-0.052, +0.046], sign-flip p = 0.26. Echo size in the high
+(reversal-prone) state relative to the low: median 1.20, 15 of 23 classes larger. Neither
+supports nor rules out state dependence. A test with more power would need recordings with long
+unstimulated stretches between pokes, or a state signal that does not depend on them.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is

@@ -1,0 +1,8 @@
+worms: worms 100, repeat pairs 577
+  echo: mean L repeats -0.017, mean L controls +0.032
+  D (echo) -0.049 [90%: -0.084, -0.014]  -> habituation
+  D (target's own response) -0.423 [90%: -0.533, -0.314]
+lab brains (ordinary links, fixed poke strength): worms 113, repeat pairs 2319
+  echo: mean L repeats +0.013, mean L controls +0.012
+  D (echo) +0.001 [90%: -0.011, +0.014]  -> no detectable change
+  D (target's own response) -0.081 [90%: -0.131, -0.027]
