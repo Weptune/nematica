@@ -1108,6 +1108,20 @@ with individuals agreeing at 0.14 and 0.16 (somewhat more reliable than worms). 
 does not depend on the baseline brain's resting activity. Telling these explanations apart needs
 new data, above all the same neuron stimulated at several strengths in the same worms.
 
+**Robustness checks, run unattended on 5 Nov 2026 (`scripts/lab_queue.py`, settings in
+`docs/figures/ann_queue_settings.md`, outputs `docs/figures/ann_queue_*.csv`; pool 0 unless
+stated; shares of the individuals' agreement).**
+
+- *Silent links in two new species brains* (brain seeds 1 and 2, GATED 1.5, 2 s pokes): best
+  watching copy 18% and 34%, poke-trained 81% and 87% (individuals agree 0.127 and 0.094). The
+  effect replicates, weaker in seed 2 (34% is above the 30% line used later in labs H and I).
+- *Their baselines without silent links* (same seeds and pokes): individuals agree only 0.041 and
+  0.042, below the 0.05 at which the test can tell copies apart (labs H and I), so these controls
+  are uninformative; every copy is inside.
+- *Slow calcium indicator, more pools and a slower indicator*: 1.5 s in pools 1 and 2, best
+  watching 72% and 80%, poke-trained 85% and 98%; 3.0 s in pool 0, best watching 70%,
+  poke-trained 101%. Calcium smearing still does not make the lab brains resist watching.
+
 
 **Per-worm test of "record everything", written before running (2 Nov 2026,
 `scripts/run_own_worm_watch.py`).** The atlas names a median of 72 neurons per worm but
