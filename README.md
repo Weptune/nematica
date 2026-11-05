@@ -1823,6 +1823,39 @@ worm; the closest variant has at least drives and silent links. (3) Modules make
 sign and order as stated; predictions (1) and (3) need the effect in both brains. The full ruler
 is then run on the closest variant, to check that the cheap axis agrees with the expensive one.
 
+## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
+
+The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected
+(about a third of the target's own response), contingent on the target; a measurement leak and
+true activation of the neighbours both fit. They differ downstream: a truly activated neighbour
+drives its own synaptic partners; a leak in the recording drives nothing. Specification
+(`scripts/run_neighbour_partners.py`; positions, scaling s_z = 4, early 0 to 2 s and late 5 to
+15 s windows, and within-pair residuals exactly as in the 5 Nov test; wiring at class level from
+Kunert et al. 2014, a class's partners being the classes it makes a chemical synapse onto or
+shares a gap junction with):
+
+- for each stimulation with a positioned target, the nearest positioned, named neuron is the
+  *neighbour*;
+- excluded from everything below: the target's class, its partners, the neighbour's class, and
+  any neuron among the three nearest to the target;
+- *neighbour-partners*: the remaining neurons whose class is a partner of the neighbour's class;
+- *control partners*: the same for up to three control neurons chosen at random among neurons
+  ranked 11th or further from the target (not excluded, in the wiring diagram), minus any
+  neighbour-partner;
+- per stimulation: mean residual late response of neighbour-partners minus that of control
+  partners; averaged within each worm, then over worms; 95% interval by resampling worms (2,000);
+- *sham*: the same at onsets with no stimulation (10 per worm, a random named neuron as the
+  "target"), as in the 5 Nov test.
+
+*Prediction:* if the neighbour effect is real activation, neighbour-partners respond more than
+control partners in the late window, more than in the sham.
+*Decision:* real activation supported if the 95% interval of the late difference lies above 0
+and that of (real minus sham) lies above 0; downstream silence (consistent with a leak) if the
+late interval includes 0 and its upper end is below +0.02 resting SD; otherwise inconclusive.
+The early window is reported beside it (a real downstream effect should be later than the
+neighbour's own). Power caveat, stated before running: the expected effect is a fraction of the
+neighbour's own excess (about 0.3 of the target's response), so an inconclusive result is likely.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is

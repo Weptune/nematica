@@ -1,0 +1,282 @@
+"""The ingredient ladder (pre-registered 6 Nov 2026; README "The ingredient ladder: what does an
+artificial network need to look like a worm?"). Five ingredients in every combination, two
+brains, six axes measured identically on lab networks and on the 113 atlas worms.
+
+Usage:
+  python scripts/run_ladder.py worms                 # the worms' fingerprint
+  python scripts/run_ladder.py lab --seed 0          # all 32 variants of brain 0
+  python scripts/run_ladder.py summary               # distances and Shapley values
+Outputs: docs/figures/ladder_worms.csv, ladder_lab_seed<k>.csv, ladder_summary.txt
+"""
+from __future__ import annotations
+
+import argparse
+import csv
+import itertools
+import math
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+import numpy as np
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "scripts"))
+from nematica import annlab as L  # noqa: E402
+import run_week1 as W1  # noqa: E402
+
+FIG = ROOT / "docs" / "figures"
+ING = "DGSHM"
+AXES = ["watch_share", "echo_breadth", "tiring", "rest_dim", "individuality", "reliability"]
+KICK, KICK_FRAMES, LEAD = 6.0, 4, 230
+GATE_TH, GATED = 0.98, 1.5
+_g = np.random.default_rng(4242)
+NEIGH = np.array([_g.choice([u for u in range(120) if u != i], size=2, replace=False) for i in range(120)])
+
+
+# ---------------------------------------------------------------- the six axes
+def class_resp_subset(w, stims):
+    acc = defaultdict(list)
+    cl = w.r.classes
+    for k, f, v in stims:
+        for j in range(w.N):
+            if j != k and w.valid[j] and cl[j] != cl[k] and np.isfinite(v[j]):
+                acc[(cl[k], cl[j])].append(v[j])
+    return {p: float(np.mean(v)) for p, v in acc.items()}
+
+
+def echo_breadth(worms):
+    vals = []
+    for w in worms:
+        cl = w.r.classes
+        for k, f, v in w.stims:
+            per = defaultdict(list)
+            for j in range(w.N):
+                if j != k and w.valid[j] and cl[j] != cl[k] and np.isfinite(v[j]):
+                    per[cl[j]].append(v[j])
+            if len(per) >= 10:
+                m = np.array([np.mean(x) for x in per.values()])
+                vals.append(float(np.mean(np.abs(m) > 1.0)))
+    return float(np.median(vals))
+
+
+def rest_dim(worms):
+    vals = []
+    for w in worms:
+        act = w.class_activity()
+        if len(act) < 10:
+            continue
+        Z = np.array([a[w.unpoked] for a in act.values()])
+        Z = Z[:, np.isfinite(Z).mean(0) > 0.5] if Z.shape[1] else Z
+        if Z.shape[1] < 60:
+            continue
+        with np.errstate(all="ignore"):
+            Z = (Z - np.nanmean(Z, 1, keepdims=True)) / np.nanstd(Z, 1, keepdims=True)
+        Z = np.nan_to_num(Z)
+        ev = np.linalg.svd(Z - Z.mean(1, keepdims=True), compute_uv=False) ** 2
+        vals.append(float(ev[:3].sum() / ev.sum()))
+    return float(np.median(vals))
+
+
+def individuality(worms):
+    halves = []
+    for w in worms:
+        st = sorted(w.stims, key=lambda s: s[1])
+        halves.append((class_resp_subset(w, st[0::2]), class_resp_subset(w, st[1::2])))
+    ex = []
+    for i, (a, b) in enumerate(halves):
+        same = W1.agree(a, b)
+        if not np.isfinite(same):
+            continue
+        other = [W1.agree(a, halves[j][1]) for j in range(len(halves)) if j != i]
+        other = [o for o in other if np.isfinite(o)]
+        if other:
+            ex.append(same - float(np.median(other)))
+    return float(np.median(ex))
+
+
+def fingerprint(worms):
+    R = [w.class_resp() for w in worms]
+    shares, w2w_all = [], []
+    for fold in range(3):
+        pool = [i for i in range(len(worms)) if i % 3 == fold]
+        train = [worms[i] for i in range(len(worms)) if i % 3 != fold]
+        pred = W1.fit_watching(train)
+        w2w = [W1.agree(R[a], R[b]) for x, a in enumerate(pool) for b in pool[x + 1:]]
+        wat = [W1.agree(pred, R[i]) for i in pool]
+        shares.append(np.nanmedian(wat) / np.nanmedian(w2w))
+        w2w_all += w2w
+    lines, _ = W1.b1_stats(worms, all_valid=not hasattr(worms[0], "is_worm"))
+    tiring = float(lines[3].split("D (target's own response)")[1].split()[0])
+    return {"watch_share": float(np.mean(shares)), "echo_breadth": echo_breadth(worms), "tiring": tiring,
+            "rest_dim": rest_dim(worms), "individuality": individuality(worms),
+            "reliability": float(np.nanmedian(w2w_all))}
+
+
+# ---------------------------------------------------------------- lab variants
+def modular_W(n, rho, rng, k=4, inside=0.9, density=0.1):
+    mod = np.arange(n) * k // n
+    same = mod[:, None] == mod[None, :]
+    np.fill_diagonal(same, False)
+    n_in, n_out = same.sum(), (~same).sum() - n
+    edges = density * n * (n - 1)
+    p_in, p_out = inside * edges / n_in, (1 - inside) * edges / n_out
+    P = np.where(same, p_in, p_out)
+    np.fill_diagonal(P, 0.0)
+    Wm = rng.standard_normal((n, n)) * (rng.random((n, n)) < P)
+    return Wm * rho / np.abs(np.linalg.eigvals(Wm)).max()
+
+
+def record(br, rng, obs, kicks, scale, spread):
+    n = br.n
+    k = 0 if br.D is None else br.D.shape[1]
+    x, s = np.zeros(n), np.zeros(k)
+    y = np.full((L.FRAMES, n), np.nan)
+    active = {f + d: (j, scale[f]) for f, j in kicks.items() for d in range(KICK_FRAMES)}
+    Wg = getattr(br, "Wg", None)
+    for t in range(-400, L.FRAMES):
+        s = br.drive_step(s, rng)
+        inp = br.W @ np.tanh(x) + br.b + (br.D @ s if k else 0.0)
+        if Wg is not None:
+            inp = inp + Wg @ (np.maximum(np.tanh(x) - GATE_TH, 0.0) / (1 - GATE_TH))
+        x = (1 - L.LEAK) * x + L.LEAK * inp + br.q * rng.standard_normal(n)
+        if t in active:
+            j, a = active[t]
+            x[j] += KICK * a
+            if spread:
+                x[NEIGH[j]] += spread * KICK * a
+        if t >= 0:
+            v = np.tanh(x) + br.r * rng.standard_normal(n)
+            y[t, obs] = v[obs]
+    return y
+
+
+def variant_recs(code, seed, n_ind=113, sigma=0.3):
+    on = set(code)
+    W = modular_W(120, 1.3, np.random.default_rng(seed + 500)) if "M" in on else None
+    br0 = L.make_brain(rho=1.3, share=0.25 if "D" in on else 0.0, tau=90.0, seed=seed, q=0.2, W=W)
+    if "G" in on:
+        g = np.random.default_rng(12 + 100 * seed)
+        Wg = GATED * g.standard_normal((br0.n, br0.n)) * (g.random((br0.n, br0.n)) < 0.05)
+        np.fill_diagonal(Wg, 0.0)
+        br0.Wg = Wg
+    hidden = L.design(br0.n, np.random.default_rng(200))
+    rng = np.random.default_rng(7)
+    recs = []
+    for i in range(n_ind):
+        ind = L.individual(br0, sigma, 1000 + i)
+        if "G" in on:
+            ind.Wg = br0.Wg * (1 + sigma * np.random.default_rng(1000 + i + 777).standard_normal(br0.Wg.shape))
+        obs = (rng.random(br0.n) < 0.5) & ~hidden
+        targets = np.flatnonzero(obs)
+        kicks = {f: int(rng.choice(targets)) for f in range(LEAD, L.FRAMES - L.WIN, L.EVERY)}
+        count = defaultdict(int)
+        scale = {}
+        for f in sorted(kicks):
+            count[kicks[f]] += 1
+            scale[f] = 0.65 ** (count[kicks[f]] - 1) if "H" in on else 1.0
+        y = record(ind, rng, obs, kicks, scale, 0.15 if "S" in on else 0.0)
+        recs.append(L.as_pumpprobe(y, obs, kicks, f"ind{i:03d}"))
+    return recs
+
+
+def run_lab(seed, codes=None):
+    out = FIG / f"ladder_lab_seed{seed}.csv"
+    rows = list(csv.DictReader(out.open())) if out.exists() else []
+    done = {r["variant"] for r in rows}
+    codes = codes or ["".join(c for c, b in zip(ING, bits) if b) for bits in itertools.product([0, 1], repeat=5)]
+    for code in codes:
+        name = code or "base"
+        if name in done:
+            continue
+        recs = variant_recs(code, seed)
+        worms = [W1.Worm(r, valid_fn=lambda c: True) for r in recs]
+        fp = fingerprint(worms)
+        rows.append({"variant": name, **{k: round(v, 4) for k, v in fp.items()}})
+        print(seed, rows[-1], flush=True)
+        with out.open("w", newline="") as fh:
+            w = csv.DictWriter(fh, fieldnames=["variant"] + AXES)
+            w.writeheader()
+            w.writerows(rows)
+
+
+def run_worms():
+    worms = W1.load_worms()
+    for w in worms:
+        w.is_worm = True
+    fp = fingerprint(worms)
+    with (FIG / "ladder_worms.csv").open("w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=AXES)
+        w.writeheader()
+        w.writerow({k: round(v, 4) for k, v in fp.items()})
+    print(fp)
+
+
+def shapley(f, i):
+    """f: dict frozenset(ingredients) -> value; Shapley value of ingredient i."""
+    others = [c for c in ING if c != i]
+    n = len(ING)
+    tot = 0.0
+    for r in range(len(others) + 1):
+        for S in itertools.combinations(others, r):
+            wgt = math.factorial(r) * math.factorial(n - r - 1) / math.factorial(n)
+            tot += wgt * (f[frozenset(S) | {i}] - f[frozenset(S)])
+    return tot
+
+
+def run_summary():
+    worm = {k: float(v) for k, v in next(csv.DictReader((FIG / "ladder_worms.csv").open())).items()}
+    labs = {}
+    for seed in (0, 1):
+        p = FIG / f"ladder_lab_seed{seed}.csv"
+        labs[seed] = {r["variant"]: {k: float(r[k]) for k in AXES} for r in csv.DictReader(p.open())}
+    allv = np.array([[v[a] for a in AXES] for s in labs for v in labs[s].values()])
+    scale = allv.std(0)
+    out = ["worms: " + ", ".join(f"{a} {worm[a]:.3f}" for a in AXES),
+           "axis scales (SD over lab runs): " + ", ".join(f"{a} {s:.3f}" for a, s in zip(AXES, scale)), ""]
+    key = lambda name: frozenset("" if name == "base" else name)  # noqa: E731
+    dist = {}
+    for seed, vs in labs.items():
+        for name, v in vs.items():
+            z = np.array([(v[a] - worm[a]) / s for a, s in zip(AXES, scale)])
+            dist[(seed, name)] = float(np.sqrt(np.mean(z ** 2)))
+    names = sorted(labs[0], key=lambda n: (len(n) if n != "base" else 0, n))
+    out.append("variant  " + "  ".join(f"{a[:12]:>12s}" for a in AXES) + "   distance (brain 0 / 1)")
+    for nme in names:
+        v0, v1 = labs[0][nme], labs[1].get(nme)
+        cells = "  ".join(f"{v0[a]:6.3f}/{v1[a]:6.3f}" if v1 else f"{v0[a]:6.3f}" for a in AXES)
+        out.append(f"{nme:7s}  {cells}   {dist[(0, nme)]:.2f} / {dist.get((1, nme), float('nan')):.2f}")
+    out.append("")
+    for target in ["watch_share", "echo_breadth", "tiring", "distance"]:
+        cells = []
+        for i in ING:
+            vals = []
+            for seed in (0, 1):
+                f = {key(n): (dist[(seed, n)] if target == "distance" else labs[seed][n][target]) for n in labs[seed]}
+                vals.append(shapley(f, i))
+            cells.append(f"{i} {np.mean(vals):+.3f} ({vals[0]:+.3f}, {vals[1]:+.3f})")
+        out.append(f"Shapley on {target}: " + "; ".join(cells))
+    best = sorted(((d, s, n) for (s, n), d in dist.items()))[:6]
+    out.append("closest variants: " + "; ".join(f"brain {s} {n} {d:.2f}" for d, s, n in best))
+    mean_d = defaultdict(list)
+    for (s, n), d in dist.items():
+        mean_d[n].append(d)
+    bestm = sorted((np.mean(v), n) for n, v in mean_d.items())[:5]
+    out.append("closest by mean of both brains: " + "; ".join(f"{n} {d:.2f}" for d, n in bestm))
+    (FIG / "ladder_summary.txt").write_text("\n".join(out) + "\n")
+    print("\n".join(out))
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("cmd", choices=["worms", "lab", "summary"])
+    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--codes", default=None)
+    a = ap.parse_args()
+    if a.cmd == "worms":
+        run_worms()
+    elif a.cmd == "lab":
+        run_lab(a.seed, a.codes.split(",") if a.codes else None)
+    else:
+        run_summary()

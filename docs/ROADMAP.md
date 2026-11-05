@@ -17,6 +17,24 @@ One difference is a finding, not an answer. An answer has three parts:
 The work below is grouped by which of these it serves. Every test is pre-registered in the README
 before it runs, as now. "In hand" means the data is already on the laptop or in the sandbox.
 
+## Status (6 Nov 2026, evening)
+
+Checked against the README before running anything, several items turned out to be partly done
+already: B3 (peptide-reduced worms, 2 Nov, prediction failed), B5 for worms (a worm agrees with
+itself about twice as well as with other worms, 1 Nov), C1 in linear form (a connectome-constrained
+synthetic worm is copyable by watching unless unrecorded shared drives are present, 1 Nov), and
+strong watchers (stitched and latent-ready linear watchers; a GRU used only inside a poke-trained
+copy). Run today, each pre-registered:
+
+- **A2, neuron role:** inconclusive; sensory neurons are not the hardest to copy by watching.
+- **B1, repeat pokes:** habituation as predicted, but mostly in the stimulated neuron's own
+  response (about 35% weaker the second time, against 5% for the echo).
+- **B2, behavioural state:** inconclusive, too few long unstimulated stretches.
+- **A1, strongest watcher:** a nonlinear recurrent watcher (GRU, 64 units) fails like the linear
+  ones (echo agreement 0.004 to 0.008 against 0.09 to 0.11 between worms); a larger one is
+  running.
+- **C2/C3, ingredient ladder:** 32 variants by 2 brains, running.
+
 ---
 
 ## A. Close the holes a reviewer will find first
@@ -53,12 +71,13 @@ whether the worm is reversing, is identified in 68 worms. Split echoes by the wo
 moment of the poke. If the same poke has different consequences in different states, the worm's
 wiring is effectively rewired by state. Measure the same thing in artificial networks.
 
-**B3. Wireless signalling.** (In hand.) Worms also signal with neuropeptides, outside the wiring
-diagram; that network has been mapped (Ripoll-Sánchez et al., Neuron 2023) and is far denser than
-the synaptic one. We have 18 worms with peptide release reduced. Pre-registered prediction: they are
-easier to copy by watching than normal worms. An early, unregistered look pointed the other way (a watching copy
-agreed 0.009 in mutants against 0.017 in normal worms, before scaling by individuals), so this is a
-genuine test.
+**B3. Wireless signalling.** (Done 2 Nov.) Worms also signal with neuropeptides, outside the
+wiring diagram; that network has been mapped (Ripoll-Sánchez et al., Neuron 2023) and is far
+denser than the synaptic one. The 2 Nov test (README "Four tests on the data we have", test 1)
+predicted that worms with peptide release reduced would be easier to copy by watching. The
+prediction failed: watching was no better (unc-31 minus wild type -0.008, 90% interval -0.027 to
++0.011), and the slow shared activity that defeats watching is present in both strains. What
+remains: a slow wireless layer as an ingredient in artificial networks (C2).
 
 **B4. Areas and modules.** (In hand.) Your question. Do echoes stay inside anatomical groups
 (ganglia, functional circuits) more than chance? Do modules found from rest activity match modules

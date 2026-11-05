@@ -1,0 +1,4 @@
+variant,seed,fold,copy,echo_agreement,real_agreement,verdict
+SH,0,0,var3_spontaneous,0.04,0.0827,outside
+SH,0,0,stitch3_hp,0.0309,0.0827,outside
+SH,0,0,hybrid_kernels,0.0757,0.0827,inside
