@@ -1,0 +1,4 @@
+worms: recordings 107; excess +0.0895; (a) generic profile removed +0.0979 (109% kept); (b) targets shuffled +0.0089 (10% kept)
+verdict (worms): mostly causal
+lab base (brain 0): recordings 113; excess +0.0280; (a) generic profile removed +0.0239 (86% kept); (b) targets shuffled +0.0043 (15% kept)
+lab G (brain 0): recordings 113; excess +0.0826; (a) generic profile removed +0.0726 (88% kept); (b) targets shuffled +0.0133 (16% kept)

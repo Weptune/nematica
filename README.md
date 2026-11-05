@@ -2006,6 +2006,22 @@ if (a) keeps more than three quarters of the excess and (b) less than a quarter;
 The same checks on lab networks (round 1 base and G, brain 0) show what causal individuality looks
 like through this measure.
 
+**Result (`docs/figures/individuality_check.txt`).** Worms (107): excess +0.090; (a) with each half's
+generic profile removed +0.098 (109% kept); (b) with targets shuffled +0.009 (10% kept). Lab base
+network: 86% and 15% kept; with silent links: 88% and 16%. **Prediction refuted; verdict "mostly
+causal"**: the worm's individuality is specific to which neuron is poked, as it is in networks whose
+individuals differ by construction in their connections. (Deviation: (b) used 30 permutations, not
+the 100 specified; the mean over permutations is stable to about 0.001.) One alternative remains
+that this check cannot remove: target-specific measurement, such as a neuron misidentified in one
+worm's recording, is also individual and target-specific.
+
+So the ladder ends on a sharp contrast. Worms have strongly structured resting activity (43% of
+variance in three patterns) and echoes that are individual, specific to the poked neuron, and
+consistent within an animal. In every artificial network we built, the ingredients that produce
+that resting structure (slow drives, added or multiplied, shared or private) make echoes
+inconsistent within an individual and erase its individuality. Real brains keep their slow
+background activity and their individual cause and effect apart; ours do not.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected
