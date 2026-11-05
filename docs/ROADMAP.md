@@ -27,13 +27,24 @@ strong watchers (stitched and latent-ready linear watchers; a GRU used only insi
 copy). Run today, each pre-registered:
 
 - **A2, neuron role:** inconclusive; sensory neurons are not the hardest to copy by watching.
-- **B1, repeat pokes:** habituation as predicted, but mostly in the stimulated neuron's own
-  response (about 35% weaker the second time, against 5% for the echo).
-- **B2, behavioural state:** inconclusive, too few long unstimulated stretches.
-- **A1, strongest watcher:** a nonlinear recurrent watcher (GRU, 64 units) fails like the linear
-  ones (echo agreement 0.004 to 0.008 against 0.09 to 0.11 between worms); a larger one is
-  running.
-- **C2/C3, ingredient ladder:** 32 variants by 2 brains, running.
+- **B1, repeat pokes:** a stimulated neuron responds about a quarter less the second time (after
+  correcting for selection); artificial networks do not change. Neuron or light-gated channel: not
+  separable here. The change in the spread is lost in noise.
+- **B2, behavioural state:** rerun to spec after the review: no detectable state dependence.
+- **A1, nonlinear watcher:** a GRU trained only by watching fails like the linear watchers (0.004 to
+  0.009 against 0.09 to 0.11); a positive control on a network where watching works is pending.
+- **C2/C3, ingredient ladder (39 variants, 2 brains):** drives do most to lower what watching
+  recovers and give the worm's resting structure; silent links make echoes reproducible and
+  individual; together they reach 19% on the full ruler (worms 4 to 16%), but no combination matches
+  the worm on more than 3 of 6 properties. Quiet units narrow echoes but overshoot.
+- **A3, neighbour partners:** no power (its positive control is invisible to the pre-registered
+  design); open.
+- **D1, transformer:** running.
+- **Independent review:** done; every correction it asked for is in the README.
+
+Next: the smaller quiet fraction and a joint fit of ingredient strengths to all six worm axes at
+once (the ladder's open question); D2 (flyvis model) needs installing a package from PyPI, which
+the sandbox refused without the user's go-ahead.
 
 ---
 

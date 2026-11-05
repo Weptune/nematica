@@ -1914,6 +1914,17 @@ of them sit at the worm's values at once. A smaller quiet fraction is the obviou
 lesson is that the worm's properties are mutually constraining, and matching them jointly, not
 one at a time, is the test any model of a real brain has to pass.
 
+**Round 3, a joint fit (pre-registered 6 Nov 2026, after the independent review).** Rounds 1 and 2
+switched ingredients fully on or off. Here their strengths vary together: drive share {0, 0.1, 0.25,
+0.4}, silent-link strength {0, 0.75, 1.5, 3}, spread {0, 0.15, 0.3}, quiet fraction {0, 0.1, 0.2,
+0.3}, modules {off, on} (no tiring; its axis is left out). 48 settings drawn at random (seed 2026)
+are measured on brain 0; the 5 with the lowest root-mean-square relative error over the other five
+axes are re-measured on brain 1, which played no part in choosing them (`run_ladder.py fit`).
+*Prediction:* no setting has all five axes within 25% of the worm in both brains; drives' erasure of
+individuality is the likely blocker. *Decision:* a setting with all five within 25% in both brains
+means this family of networks can match the worm on these axes jointly; otherwise it cannot at this
+resolution, and the axis that fails most often is reported.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected

@@ -185,6 +185,69 @@ def variant_recs(code, seed, n_ind=113, sigma=0.3):
     return recs
 
 
+def param_recs(pr, seed, n_ind=113, sigma=0.3):
+    """Continuous ingredient strengths (joint fit, pre-registered 6 Nov): share (drives), g
+    (silent-link strength, 0 = none), spread, quiet (fraction of quiet units), mod (0/1)."""
+    W = modular_W(120, 1.3, np.random.default_rng(seed + 500)) if pr["mod"] else None
+    br0 = L.make_brain(rho=1.3, share=pr["share"], tau=90.0, seed=seed, q=0.2, W=W)
+    if pr["quiet"] > 0:
+        quiet = np.random.default_rng(seed + 900).random(br0.n) < pr["quiet"]
+        br0.b = br0.b.copy()
+        br0.b[quiet] = -2.5
+    if pr["g"] > 0:
+        g = np.random.default_rng(12 + 100 * seed)
+        Wg = pr["g"] * g.standard_normal((br0.n, br0.n)) * (g.random((br0.n, br0.n)) < 0.05)
+        np.fill_diagonal(Wg, 0.0)
+        br0.Wg = Wg
+    hidden = L.design(br0.n, np.random.default_rng(200))
+    rng = np.random.default_rng(7)
+    recs = []
+    for i in range(n_ind):
+        ind = L.individual(br0, sigma, 1000 + i)
+        if pr["g"] > 0:
+            ind.Wg = br0.Wg * (1 + sigma * np.random.default_rng(1000 + i + 777).standard_normal(br0.Wg.shape))
+        obs = (rng.random(br0.n) < 0.5) & ~hidden
+        targets = np.flatnonzero(obs)
+        kicks = {f: int(rng.choice(targets)) for f in range(LEAD, L.FRAMES - L.WIN, L.EVERY)}
+        y = record(ind, rng, obs, kicks, {f: 1.0 for f in kicks}, pr["spread"])
+        recs.append(L.as_pumpprobe(y, obs, kicks, f"ind{i:03d}"))
+    return recs
+
+
+GRID = {"share": [0.0, 0.1, 0.25, 0.4], "g": [0.0, 0.75, 1.5, 3.0], "spread": [0.0, 0.15, 0.3],
+        "quiet": [0.0, 0.1, 0.2, 0.3], "mod": [0, 1]}
+FIT_AXES = ["watch_share", "echo_breadth", "rest_dim", "individuality", "reliability"]
+
+
+def run_fit(seed, n=48, top=None):
+    worm = {k: float(v) for k, v in next(csv.DictReader((FIG / "ladder_worms.csv").open())).items()}
+    out = FIG / f"ladder_fit_seed{seed}.csv"
+    rows = list(csv.DictReader(out.open())) if out.exists() else []
+    if top is None:
+        g = np.random.default_rng(2026)
+        settings = [{k: v[g.integers(len(v))] for k, v in GRID.items()} for _ in range(n)]
+    else:          # the best settings found on brain 0, re-measured on another brain
+        b0 = list(csv.DictReader((FIG / "ladder_fit_seed0.csv").open()))
+        b0.sort(key=lambda r: float(r["rel_err"]))
+        settings = [{k: (int(r[k]) if k == "mod" else float(r[k])) for k in GRID} for r in b0[:top]]
+    done = {tuple(r[k] for k in GRID) for r in rows}
+    for pr in settings:
+        key = tuple(str(pr[k]) for k in GRID)
+        if key in done:
+            continue
+        done.add(key)
+        fp = fingerprint([W1.Worm(r, valid_fn=lambda c: True) for r in param_recs(pr, seed)])
+        rel = [abs(fp[a] - worm[a]) / abs(worm[a]) for a in FIT_AXES]
+        rows.append({**{k: pr[k] for k in GRID}, **{a: round(fp[a], 4) for a in AXES},
+                     "rel_err": round(float(np.sqrt(np.mean(np.square(rel)))), 4),
+                     "within25": int(sum(r <= 0.25 for r in rel))})
+        print(seed, rows[-1], flush=True)
+        with out.open("w", newline="") as fh:
+            w = csv.DictWriter(fh, fieldnames=list(rows[0]))
+            w.writeheader()
+            w.writerows(rows)
+
+
 def run_lab(seed, codes=None):
     out = FIG / f"ladder_lab_seed{seed}.csv"
     rows = list(csv.DictReader(out.open())) if out.exists() else []
@@ -327,12 +390,15 @@ def extras(worm, labs, scale, key):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["worms", "lab", "summary"])
+    ap.add_argument("cmd", choices=["worms", "lab", "summary", "fit"])
+    ap.add_argument("--top", type=int, default=None)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--codes", default=None)
     a = ap.parse_args()
     if a.cmd == "worms":
         run_worms()
+    elif a.cmd == "fit":
+        run_fit(a.seed, top=a.top)
     elif a.cmd == "lab":
         run_lab(a.seed, a.codes.split(",") if a.codes else None)
     else:
