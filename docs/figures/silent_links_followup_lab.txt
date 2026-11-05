@@ -1,0 +1,17 @@
+baseline seed 0 pool 0: within P -0.003 W 0.022 share -8.48 | beyond P 0.199 W 0.238 share 1.20 | asymmetry -9.68
+baseline seed 0 pool 1: within P 0.019 W -0.040 share -2.11 | beyond P 0.184 W 0.229 share 1.24 | asymmetry -3.35
+baseline seed 0 pool 2: within P 0.010 W -0.014 share -1.36 | beyond P 0.191 W 0.226 share 1.18 | asymmetry -2.54
+baseline seed 0: mean asymmetry -5.190
+silent links seed 0 pool 0: within P 0.003 W 0.015 share 4.58 | beyond P 0.285 W 0.206 share 0.72 | asymmetry +3.86
+silent links seed 0 pool 1: within P 0.021 W -0.033 share -1.56 | beyond P 0.277 W 0.222 share 0.80 | asymmetry -2.36
+silent links seed 0 pool 2: within P 0.034 W -0.020 share -0.59 | beyond P 0.286 W 0.210 share 0.73 | asymmetry -1.32
+silent links seed 0: mean asymmetry +0.058
+baseline seed 1 pool 0: within P -0.004 W -0.048 share 12.31 | beyond P 0.190 W 0.222 share 1.17 | asymmetry +11.14
+baseline seed 1 pool 1: within P -0.011 W -0.029 share 2.57 | beyond P 0.168 W 0.180 share 1.07 | asymmetry +1.50
+baseline seed 1 pool 2: within P 0.014 W 0.007 share 0.51 | beyond P 0.193 W 0.216 share 1.12 | asymmetry -0.61
+baseline seed 1: mean asymmetry +4.010
+silent links seed 1 pool 0: within P -0.023 W -0.039 share 1.66 | beyond P 0.279 W 0.215 share 0.77 | asymmetry +0.89
+silent links seed 1 pool 1: within P -0.020 W -0.037 share 1.80 | beyond P 0.257 W 0.168 share 0.66 | asymmetry +1.14
+silent links seed 1 pool 2: within P 0.001 W 0.013 share 9.05 | beyond P 0.273 W 0.191 share 0.70 | asymmetry +8.35
+silent links seed 1: mean asymmetry +3.461
+silent-link asymmetry above baseline in 4 of 6; usable: False; baseline mean asymmetry -0.590

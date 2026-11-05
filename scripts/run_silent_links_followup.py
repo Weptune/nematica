@@ -1,5 +1,7 @@
 """Follow-up to the pre-registered silent-links test (exploratory, 5 Nov 2026; written after T2
-was found uninformative on lab brains and before this follow-up was run on worms).
+was found uninformative on lab brains and after the worm T2 output already existed, but before
+this follow-up was run on worms). Review: it has the same near-zero-denominator problem as T2
+(W / P with P near zero for within-range pokes), so its worm number is uninformative.
 
 Why T2 failed: its statistic divides by the summed drive of within-range pokes, which is close
 to zero, so the gain swings wildly. This follow-up asks a question that does not divide by

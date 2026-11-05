@@ -1,0 +1,5 @@
+worms pool 0: within P 0.114 W 0.002 share 0.01 | beyond P 0.240 W 0.034 share 0.14 | asymmetry -0.13
+worms pool 1: within P 0.111 W 0.043 share 0.38 | beyond P 0.283 W 0.021 share 0.07 | asymmetry +0.31
+worms pool 2: within P 0.082 W 0.044 share 0.53 | beyond P 0.232 W 0.040 share 0.17 | asymmetry +0.36
+worms: mean asymmetry +0.182
+lab usable False, baseline mean asymmetry -0.590; verdict: follow-up not usable on lab brains: uninformative

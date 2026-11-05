@@ -1251,6 +1251,78 @@ not depend on the target's own activity level (outputs that calcium does not ref
 changes, side effects of the light). A T1 failure would rule out threshold gating on the
 target's measured activity as the explanation.
 
+**Result (5 Nov 2026; `docs/figures/silent_links_*`; reviewed independently).**
+
+- **T1 holds.** In 110 worms (3517 stimulations), pokes push the target beyond its resting
+  99th percentile in 63.5% of stimulations (95% interval 60.5 to 66.2%) and leave it within the
+  95th percentile in 24.5%; the median evoked level is 1.74 resting SD above the 95th percentile.
+  The review measured how often the same statistic calls a sham onset "beyond" when nothing was
+  poked: 6.0% (1070 sham onsets), so 63.5% is far above chance. H passes its necessary condition.
+- **T2 is uninformative, as the rule says.** The lab check failed in both seeds: Q(silent links)
+  minus Q(baseline) was +0.76 (interval -1.68 to +3.93) for seed 0 and undefined for seed 1,
+  because the gain of within-range pokes divides by a summed drive close to zero (weak pokes in
+  the lab barely move their target) and swings wildly. The calibrated pokes (a = 0.02, the edge
+  of the grid) give 69% beyond, against the worms' 64%. The worm Q (-1.34, interval -1.64 to
+  -1.06) is shown only for completeness and should not be read: the lab baseline is also
+  strongly negative (-2.61).
+- **Deviations found by the review (none can change the verdict, which is decided on lab
+  brains).** Responses are kept per responding class with the last tracked member of a class
+  overwriting the others (about 41% of named-neuron entries in worms dropped; lab units are
+  unique); neurons of the stimulated class itself are excluded from responses; bootstrap
+  resamples with an undefined Q are dropped, so lab intervals are conditional on the defined ones
+  (47% to 80% undefined); the two lab brains share bootstrap indices (paired, not independent
+  as first labelled); halves alternate over the 110 worms with trials, not all 113 files; T1
+  uses 500 resamples.
+
+**Exploratory, after the pre-registered test.** Two further analyses, written after seeing the
+above (`scripts/run_silent_links_followup.py`, saved after the worm T2 output existed;
+`scripts/run_target_decoupling.py`, written after a binned look at its curve).
+
+- *Does watching predict weak pokes better than strong ones?* Unusable: it has the same
+  near-zero-denominator problem (in lab brains, weak pokes evoke no reproducible pattern, so the
+  ratio swings from -8.5 to +12.3) and was declared not usable by its own rule (4 of 6 lab
+  comparisons, 5 needed).
+- *Does a poke's effect need the target's measured activity to change?* Per stimulation, the
+  target's change D and the mean signed downstream response r (pairs chosen and signed on the
+  other half of the worms). Linear errors-in-variables fit, with the noise in D measured at sham
+  times: intercept (response at zero target change) +0.22 (interval +0.12 to +0.31) in worms,
+  with no response at sham times (-0.05). Scored instead with every other target's pairs, the
+  intercept is +0.035, so under the linear model most of it is specific to the target (+0.18,
+  +0.10 to +0.27). Lab brains at the same settings give intercepts of -0.10 to +0.02.
+
+**What the review found, and what survives.** The review reproduced every number and then
+broke the strong reading:
+
+1. The response curve is not a straight line (mean r about 0.24 near zero drive, about 0.5
+   between 0.75 and 2.5 SD, 1.23 at 5.9 SD). Noise in D smears weak but real target activity
+   into the "zero" trials (after deconvolving with the sham noise, trials with |D| < 0.3 have a
+   mean true drive of +0.36). Fitting curves with one bend after deconvolution, the
+   target-specific part at zero drive is +0.00 to +0.06 with intervals from about -0.4 to +0.27,
+   while the total response stays about +0.12 to +0.21. Directly, trials with |D| < 0.3 show r
+   = +0.20 (+0.10 to +0.31), but only +0.10 (-0.13 to +0.32) more than when scored with other
+   targets' pairs. **So a target-specific effect without target activity is not established.**
+2. The lab is not a clean negative control: silent-link brains poked harder (a = 0.2) give
+   intercepts of +0.24 and +0.39, through brief transients in the target that the 15 s average
+   misses. Worm trials with D near zero have no such transient (median peak 0.36 resting SD,
+   the same as at sham times; mean over 0 to 5 s 0.02), while lab trials do (2.3 to 2.5 SD).
+3. The total response is robust (per worm: positive in 75% of 96 worms; across windows and
+   halves of the recordings); the target-specific part loses significance under several
+   reasonable choices (short 0 to 4.5 s window, dropping the first quarter of each recording,
+   sham noise measured on stimulated targets only, excluding classes with 4 to 6 members).
+4. Trials with D near zero cluster in multi-member and head classes (RMD alone gives 45; URA,
+   I1, RIA and AIN have 30 to 35% of their trials there), and 19% of them have another tracked
+   neuron rising above 3 SD early (10% at sham times): misidentification within a class or
+   light reaching neighbours is not excluded.
+
+**What this does and does not show.** Supported: in worms, stimulations after which the
+stimulated neuron's measured calcium shows nothing at all (no change over 15 s and no early
+transient) are still followed by downstream changes above sham, mostly not specific to the
+target. That is unlike the lab's silent links, which act through target activity the
+measurement can see. Not shown: that worms have pathways invisible to calcium, or that this is
+why watching fails. What would decide it: neuron positions (to test neighbours of the target),
+the atlas's own per-trial flags for whether the target responded, and graded stimulation of
+single neurons.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is

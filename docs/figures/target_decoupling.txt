@@ -1,0 +1,12 @@
+worms: intercept c +0.215 [+0.122, +0.308]; slope g 0.166 [0.122, 0.212]; c/g +1.30 [+0.59, +2.45] resting SD; sham response -0.054 [-0.117, +0.008]; noise SD of D 0.62; lambda 0.88; trials 2290; worms 110
+    scored with every other target's pairs (generic part): intercept +0.035 [+0.011, +0.059]; target-specific intercept (true minus others) +0.180 [+0.095, +0.265]
+worms (complete target traces): intercept c +0.215 [+0.122, +0.308]; slope g 0.166 [0.122, 0.212]; c/g +1.30 [+0.59, +2.45] resting SD; sham response -0.054 [-0.117, +0.008]; noise SD of D 0.62; lambda 0.88; trials 2290; worms 110
+    scored with every other target's pairs (generic part): intercept +0.035 [+0.011, +0.059]; target-specific intercept (true minus others) +0.180 [+0.095, +0.265]
+lab baseline seed 0: intercept c -0.099 [-0.201, +0.000]; slope g 0.504 [0.353, 0.660]; c/g -0.20 [-0.31, +0.00] resting SD; sham response -0.004 [-0.107, +0.105]; noise SD of D 0.61; lambda 0.53; trials 3148; worms 113
+    scored with every other target's pairs (generic part): intercept -0.023 [-0.042, -0.005]; target-specific intercept (true minus others) -0.076 [-0.171, +0.019]
+lab silent links seed 0: intercept c -0.054 [-0.133, +0.025]; slope g 0.509 [0.381, 0.657]; c/g -0.11 [-0.22, +0.06] resting SD; sham response -0.082 [-0.174, +0.011]; noise SD of D 0.63; lambda 0.45; trials 4079; worms 113
+    scored with every other target's pairs (generic part): intercept -0.010 [-0.021, +0.001]; target-specific intercept (true minus others) -0.045 [-0.121, +0.032]
+lab baseline seed 1: intercept c -0.019 [-0.122, +0.072]; slope g 0.297 [0.150, 0.466]; c/g -0.06 [-0.27, +0.45] resting SD; sham response +0.105 [-0.005, +0.215]; noise SD of D 0.59; lambda 0.44; trials 3048; worms 113
+    scored with every other target's pairs (generic part): intercept -0.019 [-0.037, -0.001]; target-specific intercept (true minus others) -0.001 [-0.103, +0.092]
+lab silent links seed 1: intercept c +0.022 [-0.065, +0.095]; slope g 0.355 [0.237, 0.502]; c/g +0.06 [-0.13, +0.38] resting SD; sham response +0.068 [-0.021, +0.158]; noise SD of D 0.60; lambda 0.43; trials 3840; worms 113
+    scored with every other target's pairs (generic part): intercept -0.020 [-0.035, -0.006]; target-specific intercept (true minus others) +0.042 [-0.044, +0.113]

@@ -86,7 +86,8 @@ def worm_trials(r):
             continue
         resp = {r.classes[i]: float(chg[i]) for i in range(len(chg))
                 if i != k and r.classes[i] and r.classes[i] != cj and np.isfinite(chg[i])}
-        trials.append(dict(cj=cj, E=E, p95=rest[k][0], p99=rest[k][1], D=D, R=resp))
+        trials.append(dict(cj=cj, E=E, p95=rest[k][0], p99=rest[k][1], D=D, R=resp,
+                           complete=bool(np.isfinite(X[k, f - PRE:f + POST]).all())))
     return trials
 
 
@@ -289,7 +290,7 @@ def main():
             d = Q[(seed, True)]["boot"] - Q[(seed, False)]["boot"]
             lo, hi = np.nanpercentile(d, [2.5, 97.5])
             lines.append(f"seed {seed}: Q(silent) - Q(baseline) {Q[(seed, True)]['Q'] - Q[(seed, False)]['Q']:+.3f} "
-                         f"[{lo:+.3f}, {hi:+.3f}] (independent bootstraps)")
+                         f"[{lo:+.3f}, {hi:+.3f}] (bootstraps paired by individual; undefined resamples dropped)")
             print(lines[-1], flush=True)
         valid = all(np.nanpercentile(Q[(s, True)]["boot"] - Q[(s, False)]["boot"], 2.5) > 0 for s in (0, 1))
         line = float(np.mean([(Q[(s, True)]["Q"] + Q[(s, False)]["Q"]) / 2 for s in (0, 1)]))
