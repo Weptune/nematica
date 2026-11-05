@@ -30,26 +30,29 @@ copy). Run today, each pre-registered:
 - **B1, repeat pokes:** a stimulated neuron responds about a quarter less the second time (after
   correcting for selection); artificial networks do not change. Neuron or light-gated channel: not
   separable here. The change in the spread is lost in noise.
-- **B2, behavioural state:** rerun to spec after the review: no detectable state dependence.
+- **B2, behavioural state:** by AVA, no detectable state dependence. By each worm's main resting
+  pattern (signs aligned, after the second review), the spread does depend on state (p = 0.002), but
+  that test was written after the result was seen and fails its positive control in networks.
 - **A1, nonlinear watcher:** a GRU trained only by watching fails like the linear watchers (0.004 to
   0.011 against 0.09 to 0.11); on a network where watching works it recovers about half, so the
   failure on worms is real.
 - **C2/C3, ingredient ladder, nine rounds:** no single ingredient makes an artificial network look
   like a worm. A joint search over ingredient strengths found a setting (strong slow drives, weak
-  silent links, spread, 30% quiet units, individuals differing by 80%, pokes held 3 s) that is
-  within about a fifth of the worm on five axes on a held-out brain and, on the full ruler, is as
-  hard to copy by watching as a worm (16%; worms 4 to 16%). Its individuals agree less than worms
-  do. Several dead ends on the way, all recorded: private drives and excitability drives did not
-  restore individuality; stronger pokes and larger individual differences did.
+  silent links, spread, 30% quiet units, connection strengths varying between individuals with an
+  SD of 80%, pokes held 3 s) that is within about a fifth of the worm on average over five axes
+  (not within 25% on all) and, on the full ruler, watching recovers 11% to 29% (worms 4 to 16%). It
+  was chosen after seeing both brains, so it shows what is sufficient, not what the worm has. Dead
+  ends, all recorded: private drives and excitability drives did not restore individuality; larger
+  individual differences did (poke strength alone did not).
 - **Worm individuality** is specific to the poked neuron (not a worm-wide profile).
 - **A3, neighbour partners:** no power (its positive control is invisible to the pre-registered
   design); open.
 - **D1, transformer:** unusable twice; poking one hidden unit of a small transformer gives echoes
   too weak to measure. Needs a different design (residual-stream directions).
-- **Independent reviews:** one done (every correction in the README); a second, on the ladder's
-  later rounds, running.
+- **Independent reviews:** two, both done; every correction they asked for is in the README.
 
-Next: the three-pool ruler on the joint-search network; repeat pokes at matched strength and
+Next: replicate the worm state dependence with a test written before looking, and a positive
+control that works in networks; repeat pokes at matched strength and
 stimulation at several strengths (experiments that would say which ingredients the worm has);
 the human data with the pulse removed; D2 (flyvis model) needs installing a package from PyPI,
 which the sandbox refused without the user's go-ahead.
