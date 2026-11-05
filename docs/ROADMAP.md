@@ -124,8 +124,9 @@ different wirings that look identical at rest. Turn this into a formula that pre
 on watching from measurable quantities, then check the prediction against worms and every artificial
 family. A law that predicts the measurements is much stronger than the measurements alone.
 
-**E2. An open benchmark.** Release artificial brains with hidden ingredients plus held-out worm
-pokes, and let anyone submit a watching model. This turns the project into a shared test bed.
+**E2. An open benchmark.** Release artificial brains with hidden ingredients, plus our held-out
+split of the public worm atlas (as a list of recordings and code, never the worm data itself), and
+let anyone submit a watching model. This turns the project into a shared test bed.
 (Nothing is published without you.)
 
 **E3. A prediction for a real experiment.** Name, in advance, the worm neurons whose echoes watching
