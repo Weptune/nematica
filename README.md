@@ -1962,6 +1962,20 @@ dimensionality stays within 0.05 of its value without P. *Decision:* supported i
 four runs; the run with the most axes within 25% is reported, and if any has all five within 25%,
 that setting is the first network in this project to match the worm on every axis we can measure.
 
+**Round 4 result (`docs/figures/ladder_private.csv`).** Individuality with private drives against
+the same setting with shared drives (round 3), brains 0 / 1: drives 0.25 setting 0.026 / 0.016
+(shared 0.017 / 0.014); drives 0.4 setting 0.012 / 0.006 (shared 0.013 / 0.014). It rises in 2 of 4
+runs and falls in 2; rest dimensionality stays within 0.01 in all four. **Prediction refuted**:
+private drives do not restore individuality, so it is not the sharing of the drives across
+individuals that erases it. The individuality measure is a recording's agreement with itself minus
+its agreement with others, and in these networks slow drives lower the first term: they make one
+individual's echoes inconsistent from poke to poke, whoever's drives they are. Worms combine a
+strongly structured resting state with echoes that stay consistent within an animal (same-worm
+agreement 0.146 against 0.083 between worms); something in the worm keeps slow background activity
+out of its responses to pokes. That is a concrete, testable property for the next round (for
+example, drives that act on excitability rather than adding to activity), and the clearest
+statement so far of something real brains do that our artificial ones do not.
+
 ## Is the neighbour effect real activation? (pre-registered 6 Nov 2026)
 
 The 5 Nov test found that a poked worm neuron's nearest neighbours respond more than expected
