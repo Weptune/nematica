@@ -201,19 +201,27 @@
   <ul class="ledger">
     <li class="s-found">
       <span class="status">Found</span>
-      <p><b>In worms, watching misses what poking finds.</b> Copies built only by watching agree with real worms' echoes at 4% to 16% of the agreement between worms (0.004 to 0.014, against 0.087 to 0.121); copies that also learned from pokes reach the real-worm level. Part of this gap comes from the experiment itself (below).</p>
+      <p><b>In worms, watching misses what poking finds.</b> Copies built only by watching agree with real worms' echoes at 4% to 16% of the agreement between worms (0.004 to 0.014, against 0.087 to 0.121); copies that also learned from pokes reach the real-worm level. A nonlinear watcher, one that learns the worm's calm and active stretches, fails the same way. Part of this gap comes from the experiment itself (below).</p>
     </li>
     <li class="s-found">
       <span class="status">Found</span>
       <p><b>The artificial networks we tested can largely be copied by watching.</b> Recorded and scored like worms, random networks reach 51% to 82% of the agreement between their individuals, and networks trained on memory and decision tasks 75% to 91%.</p>
     </li>
+    <li class="s-found">
+      <span class="status">Found</span>
+      <p><b>Worm neurons answer less when asked twice.</b> Stimulated a second time, the same neuron responds about a quarter less than slow drift explains; artificial networks answer the same way every time. Whether the neuron or the light-activated channel is what tires, the atlas cannot say.</p>
+    </li>
     <li class="s-part">
       <span class="status">Partly explained</span>
-      <p><b>Part of the worm gap is the experiment.</b> Stimulating one worm neuron also raises its nearest neighbours, by about a third of its own response. Built into artificial networks at that strength, it roughly halves what watching recovers. A gap remains.</p>
+      <p><b>Part of the worm gap is the experiment.</b> Stimulating one worm neuron also raises its nearest neighbours, by about a third of its own response. Built into artificial networks at that strength, it roughly halves what watching recovers. A gap remains. Whether the neighbours are really activated or the light leaks into their recordings, our test could not tell.</p>
     </li>
     <li class="s-open">
       <span class="status">Open</span>
-      <p><b>What explains the rest.</b> Our lead: links that stay silent at rest, like the second network in step 2. It is sufficient in artificial networks; whether worms have them is untested.</p>
+      <p><b>What explains the rest.</b> We added five biological ingredients to artificial networks in every combination and measured six properties beside the worms. Slow background signals that no recording sees do most to defeat watching; links that stay silent at rest, like the second network in step 2, make individuals' echoes as reproducible as worms'. Together they bring artificial networks close to the worm on the full test (watching recovers 19%, worms 4% to 16%), but no combination matches the worm on all six properties: the ingredients pull against each other.</p>
+    </li>
+    <li class="s-none">
+      <span class="status">Not detected</span>
+      <p><b>The worm's state does not visibly change where a poke goes.</b> In 65 worms, the same poke spread the same way whether or not the worm was in a state that leads to reversing. Sensory neurons are also not harder to copy by watching than others.</p>
     </li>
     <li class="s-open">
       <span class="status">Open</span>
@@ -227,7 +235,7 @@
   <ol class="settle">
     <li><b>Long, complete recordings, then pokes.</b> Thirty minutes or more of a worm's whole brain at rest, every neuron identified, then stimulation of the same worm.</li>
     <li><b>The same neuron at several strengths.</b> Silent links predict a threshold at the edge of a neuron's resting range.</li>
-    <li><b>The cause of the neighbour effect.</b> Neighbours that are truly activated should pass the signal on to their own partners; a recording artefact would not.</li>
+    <li><b>The cause of the neighbour effect, and of tiring.</b> Measure how far the light reaches, and poke the same neuron repeatedly at matched strength. The atlas has too few repeats to tell a tiring neuron from a tiring light-activated channel, or real activation from a leak.</li>
   </ol>
   <p class="more"><a href="findings.html">The evidence</a><a href="method.html">The method in detail</a><a href="sim.html">Simulations</a><a href="log.html">Research log</a><a href="https://github.com/Weptune/nematica">Code and full record on GitHub</a></p>
 </section>
