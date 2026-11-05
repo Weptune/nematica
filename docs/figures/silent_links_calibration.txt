@@ -1,0 +1,7 @@
+worm share beyond: 0.635
+baseline seed 0, a=0.02: share beyond resting p99 0.689 [0.677, 0.701]; share within p95 0.196 [0.185, 0.207]; median E - p95 +0.77 [+0.73, +0.80]; median E - p99 +0.44 [+0.41, +0.46] (resting-SD units, worm-weighted)
+baseline seed 0, a=0.05: share beyond resting p99 0.815 [0.806, 0.824]; share within p95 0.097 [0.090, 0.104]; median E - p95 +1.05 [+1.01, +1.09]; median E - p99 +0.71 [+0.67, +0.74] (resting-SD units, worm-weighted)
+baseline seed 0, a=0.1: share beyond resting p99 0.914 [0.906, 0.921]; share within p95 0.038 [0.033, 0.044]; median E - p95 +1.32 [+1.27, +1.37]; median E - p99 +0.94 [+0.90, +0.97] (resting-SD units, worm-weighted)
+baseline seed 0, a=0.2: share beyond resting p99 0.962 [0.957, 0.968]; share within p95 0.013 [0.010, 0.016]; median E - p95 +1.52 [+1.46, +1.56]; median E - p99 +1.12 [+1.07, +1.16] (resting-SD units, worm-weighted)
+baseline seed 0, a=0.3: share beyond resting p99 0.968 [0.962, 0.973]; share within p95 0.011 [0.008, 0.014]; median E - p95 +1.55 [+1.51, +1.60]; median E - p99 +1.16 [+1.11, +1.21] (resting-SD units, worm-weighted)
+chosen a = 0.02

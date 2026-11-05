@@ -1,0 +1,11 @@
+baseline seed 0: share beyond resting p99 0.689 [0.677, 0.701]; share within p95 0.196 [0.185, 0.207]; median E - p95 +0.77 [+0.73, +0.80]; median E - p99 +0.44 [+0.41, +0.46] (resting-SD units, worm-weighted)
+baseline seed 0: Q -2.614 [-5.019, -1.380]; gain beyond 0.315, within 4.299; pairs chosen [107, 96]; worms scored 113; bootstrap undefined 0.077
+silent links seed 0: share beyond resting p99 0.683 [0.672, 0.696]; share within p95 0.201 [0.191, 0.211]; median E - p95 +0.73 [+0.70, +0.77]; median E - p99 +0.42 [+0.39, +0.44] (resting-SD units, worm-weighted)
+silent links seed 0: Q -1.850 [-4.311, +1.186]; gain beyond 0.385, within 2.449; pairs chosen [147, 127]; worms scored 113; bootstrap undefined 0.474
+seed 0: Q(silent) - Q(baseline) +0.764 [-1.682, +3.932] (independent bootstraps)
+baseline seed 1: share beyond resting p99 0.712 [0.702, 0.722]; share within p95 0.175 [0.165, 0.183]; median E - p95 +0.85 [+0.81, +0.90]; median E - p99 +0.50 [+0.46, +0.54] (resting-SD units, worm-weighted)
+baseline seed 1: Q +nan [-1.659, +3.123]; gain beyond 0.334, within -0.404; pairs chosen [100, 95]; worms scored 113; bootstrap undefined 0.726
+silent links seed 1: share beyond resting p99 0.710 [0.700, 0.720]; share within p95 0.179 [0.170, 0.187]; median E - p95 +0.84 [+0.79, +0.88]; median E - p99 +0.48 [+0.45, +0.52] (resting-SD units, worm-weighted)
+silent links seed 1: Q +nan [-0.979, +3.272]; gain beyond 0.466, within -0.460; pairs chosen [120, 139]; worms scored 113; bootstrap undefined 0.799
+seed 1: Q(silent) - Q(baseline) +nan [-1.991, +3.603] (independent bootstraps)
+valid: False; decision line +nan; baseline Q -2.614, +nan; a = 0.02
