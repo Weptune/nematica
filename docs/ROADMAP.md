@@ -31,8 +31,9 @@ copy). Run today, each pre-registered:
   correcting for selection); artificial networks do not change. Neuron or light-gated channel: not
   separable here. The change in the spread is lost in noise.
 - **B2, behavioural state:** by AVA, no detectable state dependence. By each worm's main resting
-  pattern (signs aligned, after the second review), the spread does depend on state (p = 0.002), but
-  that test was written after the result was seen and fails its positive control in networks.
+  pattern, the spread does depend on state: found after the second review (p = 0.002), then
+  replicated as pre-registered in 15 unseen unc-31 worms (p = 0.033) with a positive control that
+  passed. Of the networks tested, only one built to have it shows it.
 - **A1, nonlinear watcher:** a GRU trained only by watching fails like the linear watchers (0.004 to
   0.011 against 0.09 to 0.11); on a network where watching works it recovers about half, so the
   failure on worms is real.
@@ -47,15 +48,17 @@ copy). Run today, each pre-registered:
 - **Worm individuality** is specific to the poked neuron (not a worm-wide profile).
 - **A3, neighbour partners:** no power (its positive control is invisible to the pre-registered
   design); open.
+- **D2 and C1, real wiring diagrams (fly, via flyvis; worm, Kunert):** the trained fly models could
+  not be downloaded (Google Drive blocked on both machines); the wiring diagrams in the lab's
+  dynamics were unusable (pokes do not spread). Needs a proper modelling design, starting from the
+  existing Kunert model.
 - **D1, transformer:** unusable twice; poking one hidden unit of a small transformer gives echoes
   too weak to measure. Needs a different design (residual-stream directions).
 - **Independent reviews:** two, both done; every correction they asked for is in the README.
 
-Next: replicate the worm state dependence with a test written before looking, and a positive
-control that works in networks; repeat pokes at matched strength and
+Next: put the ladder's best-fitting networks through the state test; repeat pokes at matched strength and
 stimulation at several strengths (experiments that would say which ingredients the worm has);
-the human data with the pulse removed; D2 (flyvis model) needs installing a package from PyPI,
-which the sandbox refused without the user's go-ahead.
+the human data with the pulse removed; the Kunert model as a wired network.
 
 ---
 
