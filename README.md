@@ -2458,6 +2458,50 @@ in the MLP basis (median over seeds); (2) attribution patching above watching by
 residual basis; (3) over training, watching in the residual basis is lower at the final checkpoint than
 at step 0; (4) Pythia-70m's watching (residual) is lower than Pythia-14m's.
 
+*Results, phases 3, 5, 6, 8 and 9 (`docs/figures/tlab_depth.csv`, `tlab_more.csv`, `tlab_pythia.csv`;
+the size sweep, 10,000 training steps and Pythia-70m are still running).*
+
+Phase 3, training (small network, watching with all seen, residual / MLP): 0 steps 0.675 / 0.091; 300
+steps 0.576 / 0.075; 1,000 steps 0.518 / 0.069; 3,000 steps 0.453 / 0.053. **Supported so far**: lower at
+every later checkpoint, and the MLP basis stays below 0.15 throughout.
+
+Phase 5, state dependence with a known state (dissimilarity of effect matrices between hidden states,
+against the noise floor): trained 0.045 against 0.0016 (residual) and 0.32 against 0.014 (MLP), about
+25 times the floor; untrained 0.004 against 0.0003 and 0.066 against 0.005. **Supported**: what a unit
+does depends strongly on the language's hidden state, and training makes it ten times stronger in the
+residual basis. This is the transformer counterpart of the worms' state-dependent spread, and it is
+much stronger here.
+
+Phase 6, silent links (share of each true effect lying in the lower half of natural principal
+components, against the share of natural variance there): trained 0.089 against 0.002 (residual) and
+0.132 against 0.018 (MLP); untrained 0.041 against 0.0001 and 0.125 against 0.0009. **Supported** (MLP
+barely): effects reach directions that natural activity hardly uses, 7 to 400 times more than their
+share of natural variance, and training increases it in the residual basis.
+
+Phase 9, attribution patching (correlation with the truth, beside watching): trained 0.999 against
+0.467 (residual) and 0.991 against 0.055 (MLP); untrained 0.9997 against 0.676 and 0.996 against 0.093.
+**Supported** in these small networks: the gradient recovers the truth almost perfectly where
+correlations fail.
+
+Phase 8, real language models. Pythia-14m, 10 seeds (median and range): watching, all seen, residual
+0.69 (0.63 to 0.75) and MLP 0.47 (0.43 to 0.50); half seen 0.60 and 0.41; residual without the
+skip-connection entries 0.59; attribution patching residual 0.33 (0.14 to 0.88) and MLP 0.69 (0.39 to
+0.88); by rank, residual 0.51 and MLP 0.76. Training checkpoints (seed 0, residual / MLP watching): step 0
+0.94 / 0.74; 1,000 0.86 / 0.70; 8,000 0.79 / 0.62; 33,000 0.74 / 0.48; final 0.71 / 0.45 (attribution
+0.99 falling to 0.88). Verdicts: (1) **refuted**: a real language model is more readable from its
+correlations than predicted (0.69 and 0.47, not below 0.6 and 0.2), and far more than the small
+trained transformers (0.45 and 0.05); (2) **refuted**: attribution patching is not 0.3 above watching;
+in the residual basis it is unreliable from seed to seed and below watching in most seeds; (3)
+**supported**: watching falls steadily through training, from near-perfect at initialisation (0.94) to
+0.71, and in the MLP basis from 0.74 to 0.45; (4) pending.
+
+Reading so far. Training is what makes these networks hard to read from correlations: at
+initialisation a transformer's correlations reflect its cause and effect almost perfectly, and every
+stage of training erodes that, in small networks and in a real language model alike. Training also
+makes effects depend on context and reach directions that natural activity hardly uses, two properties
+the worms share. The cheap gradient shortcut that interpretability relies on works in small networks
+but is unreliable in the real model's residual stream.
+
 **Phase 1: the worm test in token time (pre-registered 6 Nov 2026).** The trained base model (HMM
 language); units are the residual-stream dimensions after each of the 4 blocks (256 units, each its own
 class); individuals are 113 copies with 10% multiplicative weight noise and 50 steps of training on
