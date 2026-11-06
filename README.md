@@ -2925,6 +2925,14 @@ erase most of the individuality and halve the watching share. **Reading:** each 
 can be produced on its own, but no network here has echoes that are at once narrow, lasting and
 individual. The worm's echo stays a candidate difference, as a combination.
 
+**Slow units in only some places (pre-registered 6 Nov 2026, after the trade-off above).** Real nervous
+systems mix fast and slow cells. Round 9's setting with a time constant of 5 s (leak 0.1) on 30% of units
+only, either (a) the quiet units or (b) a random 30%, the rest unchanged (leak 0.5); brains 0 and 1;
+measured on the six ladder axes and on the matched-readout echo (decay 1.5 s, paired units, 30
+individuals) (`scripts/run_slow_mixed.py`). *Prediction:* in at least one of (a) and (b), in both brains,
+the mean run is at least 5 frames while the five-axis error stays at or below 0.30. *Decision:* as
+stated; otherwise the trade-off stands.
+
 ## Does the brain's state change where a pulse spreads in human cortex? (pre-registered 6 Nov 2026)
 
 The worm's state-dependent spread replicated; mouse touch cortex leaned the same way but was
