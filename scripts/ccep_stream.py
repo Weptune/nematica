@@ -64,6 +64,7 @@ def main() -> int:
     ap.add_argument("--only", action="append", default=[], help="patient folder(s) to do, e.g. sub-ccepAgeUMCU68")
     ap.add_argument("--base", default=BASE)
     ap.add_argument("--min-free-gb", type=float, default=5.0)
+    ap.add_argument("--extractor", default="ccep_extract", help="ccep_extract or ccep_extract_v2")
     args = ap.parse_args()
     try:
         import scipy  # noqa: F401
@@ -71,7 +72,8 @@ def main() -> int:
     except ImportError:
         print("Needs numpy and scipy: python -m pip install numpy scipy")
         return 1
-    import ccep_extract as E
+    import importlib
+    E = importlib.import_module(args.extractor)
 
     meta, out, work = Path(args.meta), Path(args.out), Path(args.work)
     out.mkdir(parents=True, exist_ok=True)
@@ -114,6 +116,7 @@ def main() -> int:
             msg = (f"{i + 1}/{len(runs)} {stem}: {len(res['names'])} channels, {len(res['sites'])} sites, "
                    f"{int(res['n_odd'].sum() + res['n_even'].sum())} pulses, {res['seg_seconds']:.0f} s between pulses, "
                    f"{time.time() - t0:.0f} s")
+            del res
         except KeyboardInterrupt:
             shutil.rmtree(work, ignore_errors=True)
             print("Stopped. Run the same command again to continue.")

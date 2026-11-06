@@ -2714,6 +2714,41 @@ direct. So the strongest of the two surviving differences between worms and arti
 belong to the tool. The decisive test is a species poked without a light-gated channel: the human
 recordings (repeated electrical pulses) are next in `docs/DIFFERENCES.md`.
 
+## Do human cortical responses tire? (pre-registered 6 Nov 2026)
+
+The worm tiring may belong to the light-gated channel (section above). The human recordings were poked
+electrically, with no channel, and in blocks: each stimulated pair (an ordered pair of electrodes, so
+the two polarities are separate) gets about 10 single pulses, one every 5 s, in a row (read from the
+events files only). If cortical responses fall across a block, use-dependence is a property of real
+brains that the artificial networks lack; if not, the worm result is likely the tool.
+
+**Re-extraction** (`scripts/ccep_extract_v2.py`, streamed one recording at a time in the cloud
+workspace with `scripts/ccep_stream.py --extractor ccep_extract_v2`): the stimulation artefact is
+replaced by a straight line from 2 ms before to 9 ms after each pulse in the raw signal, before any
+filtering (the fix the human section's caveat asked for); per-pulse response strengths are kept
+(root mean square from 10 to 100 ms after the same referencing and baseline as before; pre-pulse
+strength from -50 to -10 ms). Written before any recording was re-extracted.
+
+**Test.** Units: (recording, block, responding channel). A block is a run of consecutive pulses at the
+same ordered pair, at least 4 valid pulses. Responding channel: not one of the pair, more than 10 mm
+from both stimulated electrodes, and mean over the block of log(response / pre-pulse strength) at least
+log 2 (selection on the block mean, which does not favour any order). Per unit: the least-squares slope
+of log response strength on pulse number (0, 1, 2, ...), and, as the worm's analogue, log response of
+pulse 2 minus pulse 1. Controls, the same slopes for log pre-pulse strength (slow change in ongoing
+activity) and for log response in non-responding channels (more than 10 mm away, block-mean ratio
+below log 1.2). Per patient: median over units; across patients: median, 95% interval by resampling
+patients (2,000), and a sign test.
+*Prediction:* none favoured.
+*Decision:* **human responses tire** if the 95% interval of the patients' median slope lies below 0
+and that of (slope minus the pre-pulse slope, per unit, then the same aggregation) also lies below 0;
+**no detectable tiring** if the slope's interval includes 0 and its lower end is above -0.01 per pulse
+(about 9% over a block of 10); otherwise inconclusive. Pulse 2 minus pulse 1 is reported beside it.
+Caveats stated before running: the gap here is 5 s (minutes in the worm), and electrical pulses
+activate axons as well as cell bodies.
+
+**Also rerun:** the original human test (`scripts/run_ccep_test.py`, unchanged) on the clean extraction;
+its numbers will be reported beside the first ones, which they supersede where they differ.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
