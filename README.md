@@ -2892,6 +2892,19 @@ at least 5; (2) longer pokes lengthen runs less than slower units do; (3) strong
 runs but also widens echoes (ever respond up). *Decision:* as the numbers fall, each judged on its stated
 comparison with the unchanged network (`scripts/run_echo_persist.py`, `docs/figures/echo_persist.csv`).
 
+*Result (`docs/figures/echo_persist.csv`; mean run in frames, share ever responding, 95% intervals by
+individuals).* Base network 2.5 / 0.76; pokes held 8 frames 2.5, 16 frames 2.7; leak 0.25 3.7 / 0.85;
+leak 0.1 5.6 / 0.91; spectral radius 1.6 3.4 / 0.77. Round 9's setting 3.0 / 0.56; held 16 frames 3.3;
+leak 0.25 4.4 / 0.61; **leak 0.1 6.8 [6.7, 7.1] / 0.62** (worm 6.5 [6.2, 6.8] / 0.65 [0.64, 0.68]; set
+changes 0.91 against 0.87). (1) **Supported**: slower units lengthen responses toward the worm's, and at
+a 5 s unit time constant the base network reaches 5.6 and round 9's setting the worm's own value. (2)
+**Supported**: longer pokes barely lengthen them. (3) **Supported weakly**: stronger recurrence lengthens
+them (3.4) and widens echoes only within the interval (0.77 against 0.76). **Reading:** the worm's
+lasting echo is what slow units produce. The lab's default units settle in about a second, worm neurons
+are graded and slow; give artificial units a time constant of a few seconds and, together with drives,
+silent links and quiet units, a network's echo is as sparse and as lasting as a worm's. So this
+candidate difference dissolves too: it is a property of slow units, not of biology as such.
+
 **Slow units in the closest network (pre-registered 6 Nov 2026, after "What could make responses last?").**
 If slower units are what the closest network lacks, adding them should not break the five properties it
 already matches. Round 9's setting (drives 0.4, silent links 0.75, spread 0.15, 30% quiet units,
