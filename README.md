@@ -2388,6 +2388,36 @@ transformer of this size, poked one hidden unit at a time, does not give echoes 
 to judge with this ruler. A fair test needs a different unit of poking (for example a direction in
 the residual stream) and is left for a separate, pre-registered design.
 
+## Transformers, a programme (6 Nov 2026; plan in `docs/TRANSFORMER_PLAN.md`)
+
+The two transformer pilots above were unusable. This programme fixes the design and asks the
+project's questions of transformers in eleven phases (diagnostics, the worm test in token time, the
+test in depth with known truth, training, scale, state dependence, silent links, tiring, real
+language models if they can be downloaded, the interpretability bridge, review). Small transformers
+are built and patched with `nematica/tlab.py`.
+
+**Phase 0 (diagnostic, exploratory): which kind of poke gives a measurable echo?**
+(`scripts/run_tlab_phase0.py`, `docs/figures/tlab_phase0.txt`.) Exact echoes from paired runs, for
+pokes to one MLP unit, one residual-stream dimension, a random residual direction, a principal
+residual direction, and one attention head's gain, at two strengths and durations; reported: echo
+size, consistency across contexts, evoked share (worms about 0.4). Chooses the design for phase 1.
+
+**Phase 2: the test in depth, with known truth (pre-registered 6 Nov 2026).** In a transformer, most
+cause and effect runs through depth within one forward pass, where exact intervention effects are
+known. True effect matrix: the change in each later-layer unit when a first-block unit is pushed by
+one natural SD (paired runs, averaged over 12 contexts x 24 positions). Watching estimate: ridge
+regression of later-layer units on first-block units across natural activations. Score: correlation
+of the two over all pairs, with every first-block unit seen or a random half seen (unseen units are
+then unknown confounders, as unrecorded neurons are in worms); reference: two individuals' true
+matrices against each other. Two bases: residual-stream dimensions, and MLP hidden units. Trained
+(HMM language, 3,000 steps; individuals: 10% weight noise then 50 steps of training) and untrained;
+6 individuals each (`scripts/run_tlab_depth.py`). For comparison, the lab's recurrent base network
+scored the same way on its own truth (time-lagged linear watcher against true kick responses).
+*Predictions:* (1) residual basis, all seen: watching at least 0.8 (the residual stream is additive and
+close to linear); (2) half seen: lower than all seen in every condition, but at least 0.4; (3) MLP basis
+lower than residual basis in both seen conditions (gated units, the transformer's version of silent
+links); (4) trained lower than untrained in the MLP basis.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
