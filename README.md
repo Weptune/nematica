@@ -2805,6 +2805,30 @@ are closer to the worm than base on (a) and (c); D and G are not. (2) No system 
 worm on all three measures. *Decision:* each judged on the stated comparisons as they fall; "closer"
 means a smaller absolute difference from the worm value.
 
+## Does the brain's state change where a pulse spreads in human cortex? (pre-registered 6 Nov 2026)
+
+The worm's state-dependent spread replicated; mouse touch cortex leaned the same way but was
+inconclusive. The human recordings repeat each pulse about 10 times at the same site, so the same test
+can be run there. The per-pulse strengths saved so far cannot carry it (a noisier moment inflates the
+strength of every channel unevenly), so a third extraction (`ccep_extract_v2.py` with
+`NEMATICA_CCEP_V3=1`, everything else unchanged) also keeps each pulse's waveform from 10 to 100 ms
+(256 Hz) and its **state**: each channel's log variance from 1 s to 50 ms before the pulse (common
+average referenced). Written before that extraction ran; `scripts/run_ccep_state.py`.
+
+**Test.** Blocks as in the tiring test (consecutive pulses at one ordered pair, at least 8 valid pulses
+with a state). State of a pulse: the first principal component of the block's pulse-by-channel state
+matrix (channels more than 10 mm from the pair), sign aligned so the mean loading is positive. High and
+low: the upper and lower halves of the block's pulses by state. Response pattern of a group: the root
+mean square, from 10 to 100 ms, of the group's *averaged* waveform, on channels more than 10 mm away
+(averaging first removes most ongoing activity, unlike per-pulse strengths). S = Pearson correlation of
+the log patterns of high and low, minus the mean of 200 random equal splits of the same block. Per
+patient: median S over blocks; across patients: median, 95% interval (resampling patients, 2,000),
+sign-flip p (10,000). *Positive control:* the same with the split made by pulse order (first half against
+second half) must not differ from the random splits more than the state split does, or the null is
+too generous. *Prediction:* S below 0 (state dependence, as in worms). *Decision:* supported if the
+median is below 0 with sign-flip p < 0.05; none detected if the 95% interval includes 0 and its lower end
+is above -0.02; otherwise inconclusive.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is

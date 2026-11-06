@@ -16,6 +16,7 @@ Usage:  python scripts/ccep_extract_v2.py RUN_ieeg.vhdr OUT.npz
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -186,6 +187,9 @@ def process(vhdr: Path) -> dict:
     r0, r1 = int(RESP[0] * FS), int(RESP[1] * FS)
     p0, p1 = int(PRE_RMS[0] * FS), int(PRE_RMS[1] * FS)
     t_on, site_i, resp, prer, ok = [], [], [], [], []
+    V3 = os.environ.get("NEMATICA_CCEP_V3") == "1"          # third extraction: waveforms and state too
+    wave, state = [], []
+    Ww = (r1 - r0) // 2
     for t0, s in stims:
         k = int(t0 * FS)
         t_on.append(t0)
@@ -194,6 +198,8 @@ def process(vhdr: Path) -> dict:
             resp.append(np.full(C, np.nan, np.float32))
             prer.append(np.full(C, np.nan, np.float32))
             ok.append(False)
+            if V3:
+                wave.append(np.full((C, Ww), np.nan, np.float16)); state.append(np.full(C, np.nan, np.float16))
             continue
         pair = [p.strip() for p in s.split("-")]
         idx = [good.index(p) for p in pair if p in good]
@@ -208,6 +214,18 @@ def process(vhdr: Path) -> dict:
         resp.append(r.astype(np.float32))
         prer.append(q.astype(np.float32))
         ok.append(True)
+        if V3:   # the response waveform from 10 to 100 ms at 256 Hz, and the state: log variance from -1 s to -50 ms
+            wv = ep[pre + r0: pre + r0 + 2 * Ww].reshape(Ww, 2, C).mean(1).T.copy()
+            wv[idx] = np.nan
+            wave.append(wv.astype(np.float16))
+            if k - FS >= 0 and not bad[k - FS: k].any():
+                z0 = get(k - FS, k - int(0.05 * FS)).astype(np.float64)
+                z0 = z0 - z0.mean(1, keepdims=True)
+                st = np.log(z0.var(0) + 1e-12)
+                st[idx] = np.nan
+            else:
+                st = np.full(C, np.nan)
+            state.append(st.astype(np.float16))
         ep = ep[pre - keep:]
         ep = ep[: (ep.shape[0] // 2) * 2].reshape(-1, 2, C).mean(1).T[:, :W]
         ep[idx] = np.nan
@@ -235,7 +253,9 @@ def process(vhdr: Path) -> dict:
             "window_start_s": -0.05, "blank_s": np.array([-BLANK_PRE_S, BLANK_POST_S]),
             "pulse_onset_s": np.array(t_on), "pulse_site": np.array(site_i), "pulse_ok": np.array(ok),
             "pulse_resp_rms": np.array(resp, np.float32).reshape(len(t_on), C),
-            "pulse_pre_rms": np.array(prer, np.float32).reshape(len(t_on), C)}
+            "pulse_pre_rms": np.array(prer, np.float32).reshape(len(t_on), C),
+            **({"pulse_wave": np.array(wave, np.float16).reshape(len(t_on), C, Ww),
+                "pulse_state": np.array(state, np.float16).reshape(len(t_on), C)} if V3 else {})}
 
 
 def main() -> int:
