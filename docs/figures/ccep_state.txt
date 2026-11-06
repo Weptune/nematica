@@ -2,3 +2,5 @@
   S, state split minus random splits (primary): median -0.0017 [95%: -0.0046, +0.0015], 30 of 54 patients below 0, sign-flip p (below) = 0.1328
   positive control: order split (first half against second) minus random splits: median +0.0020 [95%: -0.0005, +0.0042], 21 of 54 patients below 0, sign-flip p (below) = 0.9214
   verdict: NONE DETECTED; control check: order split differs MORE from random splits than the state split does
+  EXPLORATORY (review 5): random-split correlation, median over patients 0.7280
+  S relative to (1 - random-split correlation): median -0.0063 [95%: -0.0173, +0.0086], 30 of 54 patients below 0, sign-flip p (below) = 0.1723

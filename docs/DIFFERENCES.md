@@ -25,8 +25,8 @@ Systems compared:
 | **Resting structure**: variance in the top 3 patterns | 0.43 | 0.25 to 0.27 | Drives: 0.40 to 0.43 | 0.51 | **Dissolved.** One ingredient (shared slow drives) produces it |
 | **Individuality**: each individual has its own causal fingerprint | 0.089 | 0.016 to 0.028 | Silent links raise it; drives erase it | 0.087, but set by the weight noise we chose | **Dissolved, tunable.** It depends on how individuals are made |
 | **Reliability**: individuals agree on poke responses | 0.094 | 0.075 | Silent links overshoot, drives undershoot | 0.38 | **Not a difference by itself.** Depends on noise and on how similar individuals are |
-| **Echo sparseness**: share of neuron classes a poke reaches (> 3 SD) | 0.65 [0.64, 0.68] | Base 0.71 to 0.78 (matched readout, paired units) | Round 9 setting 0.58 to 0.64; quiet units overshoot (0.42 to 0.52) | Not tested | **Dissolved**: drives, silent links and some quiet units together reproduce it |
-| **Echo persistence**: how long a response lasts (mean run, frames) | 6.5 [6.2, 6.8] | 2.2 to 3.3 with a matched calcium readout; 5.6 with slow units (5 s time constant) | Round 9 setting with slow units: 6.8, but its other properties break (error 0.21 to 0.72: echoes twice as broad, individuality gone); slowing only 30% of units reaches 3.4 to 3.9 and still breaks them | Not tested | **Survives as a combination.** Lasting, narrow and individual echoes can each be produced, but not together |
+| **Echo sparseness**: share of neuron classes a poke reaches (> 3 SD) | 0.65 [0.64, 0.68] | Base 0.71 to 0.78; slow drives 0.73 to 0.79 (matched readout, paired units) | Round 9 setting 0.55 to 0.64 (brain 0 below the worm, brain 1 touches it); quiet units overshoot (0.41 to 0.52) | Not tested | **Closer, not matched** (corrected after review 5) |
+| **Echo persistence**: how long a response lasts (mean run, frames) | 6.5 [6.2, 6.8] | Base 2.2 to 2.5, slow drives 3.2 to 3.3 (matched readout); base with slow units 5.6 | Round 9 setting 2.9 to 3.2; with slow units 4.7 to 5.0, but five-axis error 0.21 rises to 0.80 to 0.88 (echoes twice as broad, reliability doubled, watching falls) | Not tested | **Survives as a combination.** Lasting responses come only at the cost of other worm properties (a first, confounded run had overstated both) |
 | **Sensory neurons harder to copy** | Not detected | n/a | n/a | n/a | No evidence either way |
 
 ## What this says, plainly
@@ -38,22 +38,24 @@ Systems compared:
 2. **Tiring with use: still a candidate** (corrected after review 4, which caught that the first reading,
    "it was the tool", rested on a confounded comparison and on a human measure of the network rather
    than the stimulated tissue). Worm neurons answer less the second time, and compared with themselves
-   they also answer less after being driven by other neurons; no artificial network does either. Network
+   they also answer less after being driven by other neurons (exploratory, shuffle p = 0.026); no artificial network tires on repeat pokes (the driven-by-others design is not tested in them). Network
    responses (the echo) decline little in worms and not at all in human cortex at 5 s.
 3. **What survives, shakily:**
    - *The kind of state dependence*: in worms, where a poke spreads depends on the main pattern of
      resting activity; in artificial networks, state dependence exists but follows other variables.
      Beyond the worm it is not established: mouse leans yes, human shows none.
-   - *The echo as a whole*: drives, silent links and some quiet units give the worm's sparseness, and slow
-     units give its persistence, but slow units then make echoes twice as broad and erase individuality.
-     No network has echoes that are at once narrow, lasting and individual.
+   - *The echo as a whole*: drives, silent links and some quiet units bring sparseness close to the worm's,
+     and slow units lengthen responses part of the way, but then echoes become twice as broad,
+     individuals agree twice as much and watching falls. No network has echoes that are at once narrow,
+     lasting and worm-like on the other properties.
 4. **The worm's whole profile is not reproduced.** No combination of five biological ingredients
    matches all six measured properties at once; the closest settings need strong hidden drives,
    large differences between individuals and many units that stay quiet unless strongly driven.
    That shows what is sufficient, not what the worm has.
-5. **Mostly one animal.** Human cortex adds two results on (mostly) artefact-free data: network responses
+5. **Mostly one animal.** Human cortex adds three results on (mostly) artefact-free data: network responses
    do not tire at 5 s, and a linear watching copy predicts responses worse than distance alone (0.30
-   against 0.45), as in worms. Mouse hippocampus was inconclusive; mouse touch cortex leans towards state
+   against 0.45), as in worms; and no detectable state dependence (calibration check failed as worded).
+   Mouse hippocampus was inconclusive; mouse touch cortex leans towards state
    dependence but cannot separate watching from poking and its tiring test is uninformative.
 
 ## What would settle the surviving differences

@@ -86,7 +86,7 @@ def block_scores(f, rng):
             p = rng.permutation(idx)
             null.append(corr(pattern(Wf, list(p[: n // 2])), pattern(Wf, list(p[n - n // 2:]))))
         mnull = np.nanmean(null)
-        out.append((s_state - mnull, s_order - mnull))
+        out.append((s_state - mnull, s_order - mnull, mnull, (s_state - mnull) / max(1e-6, 1 - mnull)))
     return out
 
 
@@ -127,10 +127,20 @@ def main():
         v = "NONE DETECTED"
     else:
         v = "INCONCLUSIVE"
+    if "--scale" in sys.argv:   # review 5: the level of the random-split correlation, and S relative to its distance from 1
+        per_null = {k: float(np.nanmedian([b[2] for b in v])) for k, v in by.items() if v}
+        per_rel = {k: float(np.nanmedian([b[3] for b in v])) for k, v in by.items() if v}
+        nv = np.array(list(per_null.values()))
+        lines.append(f"  EXPLORATORY (review 5): random-split correlation, median over patients {np.median(nv):.4f}")
+        summarise(per_rel, "S relative to (1 - random-split correlation)", lines, 3)
     lines.append(f"  verdict: {v}; control check: order split {'differs less' if abs(mo) <= abs(m) else 'differs MORE'} from random splits than the state split does")
     text = "\n".join(lines)
     print(text)
-    OUT.write_text(text + "\n")
+    if "--scale" in sys.argv:
+        with OUT.open("a") as fh:
+            fh.write("\n".join(l for l in lines if "EXPLORATORY" in l or "relative" in l) + "\n")
+    else:
+        OUT.write_text(text + "\n")
 
 
 if __name__ == "__main__":

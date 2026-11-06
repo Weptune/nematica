@@ -2731,8 +2731,14 @@ with the number of other pokes in the window as a covariate: direct poke before 
 **Reading (corrected after review 4; the first reading said "being active does not detectably tire a
 worm neuron; being lit does").** By the pre-registered rule the test is inconclusive. Its positive
 coefficient came from comparing different neurons, some more responsive than others; compared with
-itself, a neuron recently driven by other neurons answers less, about a sixth as much per SD of drive
-as after being lit directly. So activity itself may tire worm neurons. Whether the larger drop after a
+itself, a neuron recently driven by other neurons answers less: a 1 SD drive goes with about a sixth of
+the drop after a direct poke *(wording corrected after review 5, which noted the first version compared a
+per-SD coefficient with a per-poke one)*. Refit after review 5 with the pre-registered pre-level
+covariate the first refit had left out, and a within-neuron shuffle (`scripts/run_tiring_within.py`):
+drive -0.092 [90%: -0.164, -0.015], shuffle p = 0.026; direct -0.57; the drive coefficient stays near
+-0.09 to -0.10 with or without order terms, and without stimulations that follow a direct poke (review 5's
+check). A single post-hoc analysis, and not yet run on the lab networks. So activity itself may tire worm
+neurons. Whether the larger drop after a
 direct poke is the neuron or the light-gated channel stays open.
 
 ## Do human cortical responses tire? (pre-registered 6 Nov 2026)
@@ -2860,16 +2866,26 @@ units 0.42 to 0.47, runs 1.3 to 1.4; drives, silent links and quiet units 0.49 t
 round 9's setting 0.55 to 0.64, runs 2.9 to 3.2 (set changes 0.86 to 0.93). **Reading (replaces the
 withdrawn one):** with a matched readout the indicator does not make the networks' responses last
 (runs barely change from 1 to 3 s of decay, because the threshold scales with the smoothed
-fluctuations too). **Persistence survives**: no network's responses last even half as long as the
-worm's. **Sparseness does not**: round 9's setting (strong drives, silent links, 30% quiet units) reaches
-the worm's share (0.58 to 0.64 against 0.65). Caveats: the worm stimulation's length was not matched to the lab pokes
+fluctuations too). **Persistence survives**: no network's responses last much more than half as long as
+the worm's (at most 3.3 against 6.5). **Sparseness: closer, not matched** *(corrected after review 5;
+first written "reaches the worm's share (0.58 to 0.64)")*: round 9's setting gives 0.55 to 0.64; on brain
+0 every interval lies below the worm's, only brain 1 at 3 s touches it. Random pairs of lab units are
+mostly unrelated, while worm left and right homologs respond together, so pairing may favour sparseness. Caveats: the worm stimulation's length was not matched to the lab pokes
 (the lab holds pokes 2 to 3 s), and the worms' indicator may decay more slowly than 3 s.
+
+**Review 5 (6 Nov 2026, late)** checked everything after review 4. All numbers matched except those it
+flagged; every verdict followed its rule. Applied above, marked: the slow-units build confound (major;
+re-run, trade-off stands in a different form); round 9's sparseness overstated (major; now "closer, not
+matched"); the within-neuron tiring refit committed with the pre-level covariate and a shuffle p (holds);
+the human state test's failed calibration check stated plainly, its scale reported, power not
+established; smaller wording fixes (persistence "at most 3.3", mixed-units ratios, a superseded reading
+marked).
 
 **Review 4: independent review of the tiring, human, mouse and echo tests (6 Nov 2026).** All reported
 numbers matched their files (one factual slip, the mouse T4 "none"), and every verdict followed its rule.
 Its major findings changed the conclusions, and are applied above, marked:
 1. The tiring-source test's "after" control was not a valid null; a within-neuron refit reverses the
-   reading (activity does lower a neuron's next response). "Tiring was the tool" is withdrawn.
+   reading (activity may lower a neuron's next response). "Tiring was the tool" is withdrawn.
 2. The human tiring test measured the network (channels beyond 10 mm), the analogue of the worm's echo,
    not of the stimulated neuron's own response, which is where the worm's clear drop is.
 3. The mouse tiring test had no equivalence bound; its interval allows a 30% to 50% decline.
@@ -2903,7 +2919,10 @@ them (3.4) and widens echoes only within the interval (0.77 against 0.76). **Rea
 lasting echo is what slow units produce. The lab's default units settle in about a second, worm neurons
 are graded and slow; give artificial units a time constant of a few seconds and, together with drives,
 silent links and quiet units, a network's echo is as sparse and as lasting as a worm's. So this
-candidate difference dissolves too: it is a property of slow units, not of biology as such.
+candidate difference dissolves too: it is a property of slow units, not of biology as such. *(Superseded
+by the two tests below. Review 5 also found that this test's round 9 rows are confounded: the leak was
+set before the brain was built, and the brain builder scales the hidden drives by the leak, so at leak
+0.1 the drives were about four times stronger. The base-network rows have no drives and stand.)*
 
 **Slow units in the closest network (pre-registered 6 Nov 2026, after "What could make responses last?").**
 If slower units are what the closest network lacks, adding them should not break the five properties it
@@ -2925,6 +2944,18 @@ erase most of the individuality and halve the watching share. **Reading:** each 
 can be produced on its own, but no network here has echoes that are at once narrow, lasting and
 individual. The worm's echo stays a candidate difference, as a combination.
 
+*Correction after review 5 (`scripts/run_slow_units_fixed.py`, `docs/figures/slow_units_fixed.csv`).*
+This test set the leak before building the brain, which made the hidden drives about four times stronger
+at leak 0.1, so its results above are confounded. Re-run with the brain built at the ordinary leak and the
+slow leak applied while recording (brain 0, brain 1; leak 0.5 / 0.25 / 0.1): five-axis error 0.21 / 0.39
+/ 0.80 and 0.22 / 0.48 / 0.88; mean run 3.0 / 3.5 / 4.7 and 3.2 / 3.7 / 5.0 (worm 6.5); share ever
+responding 0.56 / 0.60 / 0.65 and 0.62 / 0.67 / 0.72; at leak 0.1, echo breadth 0.20 and 0.22 (worm
+0.085), reliability 0.19 and 0.18 (worm 0.094), watching share 0.22 and 0.24 (worm 0.61), individuality
+0.095 and 0.108 (worm 0.089, now kept). So without the confound, slow units lengthen responses only part
+of the way (4.7 to 5.0) and still break three other properties (echoes twice as broad, individuals agree
+twice as much, watching falls); individuality, which the confounded run erased, is kept. The trade-off
+stands, in a different form.
+
 **Slow units in only some places (pre-registered 6 Nov 2026, after the trade-off above).** Real nervous
 systems mix fast and slow cells. Round 9's setting with a time constant of 5 s (leak 0.1) on 30% of units
 only, either (a) the quiet units or (b) a random 30%, the rest unchanged (leak 0.5); brains 0 and 1;
@@ -2938,8 +2969,8 @@ stated; otherwise the trade-off stands.
 *Result (`docs/figures/slow_mixed.csv`).* Mean run (frames) and five-axis error: quiet units slow, brain
 0 3.4 / 0.96, brain 1 3.6 / 0.79; random 30% slow, brain 0 3.8 / 0.51, brain 1 3.9 / 0.48. **Refuted**:
 mixing slow and fast units lengthens responses only part of the way (worm 6.5) and still breaks the
-other properties (individuality and reliability rise two to three times above the worm's, watching
-falls). The trade-off stands: in these networks, lasting echoes, narrow echoes and worm-like
+other properties (individuality and reliability rise 2.0 to 2.5 times above the worm's when the quiet
+units are slow, 1.3 to 1.5 times when a random 30% are; watching falls). The trade-off stands: in these networks, lasting echoes, narrow echoes and worm-like
 individuality do not come together. This line of tests stops here; the next step would be a mechanism
 with its own rationale (for example slow synapses on specific links), not more tuning.
 
@@ -2971,11 +3002,14 @@ is above -0.02; otherwise inconclusive.
 **Result (6 Nov 2026; `docs/figures/ccep_state.txt`).** All 117 recordings re-extracted (none failed);
 2,928 blocks, 54 patients with at least one block of 8 or more pulses (many blocks are 5 pulses per
 polarity). S, state split minus random splits: median -0.0017 [95%: -0.0046, +0.0015], 30 of 54 below 0,
-sign-flip p = 0.13: **no detectable state dependence** by the pre-registered rule (the interval includes
-0 and its lower end is above -0.02). The control check tripped as worded: the order split differs from
-random splits slightly more (+0.0020 [-0.0005, +0.0042]) than the state split does, though in the
-other direction; both are under 0.005, so the null is not visibly too generous at the size the rule
-cares about. **Reading:** in human cortex, the pattern a pulse produces does not change detectably with
+sign-flip p = 0.13: **none detected by the pre-registered rule; the null-calibration check failed as
+worded** (the order split differs from random splits slightly more, +0.0020 [-0.0005, +0.0042], than
+the state split does; the pre-registration said that would mean the null is too generous). *(Wording
+corrected after review 5, which noted the first version softened the failed check with post-hoc
+reasoning.)* Scale (review 5, exploratory, `ccep_state.txt`): random equal splits of a block correlate
+at 0.73 (median over patients), so S relative to the room below 1 is -0.006 [-0.017, +0.009]. The order
+split only checks calibration; no known state effect was planted, so power for a worm-sized effect is
+not established. **Reading:** in human cortex, the pattern a pulse produces does not change detectably with
 the cortex's state just before it, measured as the main pattern of its ongoing power. Caveats: this
 state measure is not the worm's (the main pattern of activity, over 10 s); blocks are short (8 to 10
 pulses split in halves); and the worm effect itself was small (-0.049).
