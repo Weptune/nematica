@@ -2850,6 +2850,21 @@ multi-frame runs and changes the threshold; the 1.5 s decay was chosen after the
 D reached worm-like runs; and worm classes average their neurons while lab units are single. A matched
 re-test is below.
 
+*Matched re-test (exploratory, after review 4; `scripts/run_echo_matched.py`, `docs/figures/echo_matched.csv`).*
+The indicator decay now acts on activity before measurement noise is added; lab units are averaged in
+fixed random pairs into classes, as worm classes average left and right neurons; decays of 1, 1.5 and
+3 s; two lab brains; 30 individuals each; 95% intervals by resampling individuals. Worms: ever respond
+0.65 [0.64, 0.68], mean run 6.5 [6.2, 6.8] frames, set changes 0.87. Across all three decays and both
+brains: base networks 0.71 to 0.78, runs 2.2 to 2.5; slow drives 0.73 to 0.79, runs 3.2 to 3.3; quiet
+units 0.42 to 0.47, runs 1.3 to 1.4; drives, silent links and quiet units 0.49 to 0.52, runs 2.1 to 2.3;
+round 9's setting 0.55 to 0.64, runs 2.9 to 3.2 (set changes 0.86 to 0.93). **Reading (replaces the
+withdrawn one):** with a matched readout the indicator does not make the networks' responses last
+(runs barely change from 1 to 3 s of decay, because the threshold scales with the smoothed
+fluctuations too). **Persistence survives**: no network's responses last even half as long as the
+worm's. **Sparseness does not**: round 9's setting (strong drives, silent links, 30% quiet units) reaches
+the worm's share (0.58 to 0.64 against 0.65). Caveats: the worm stimulation lasts longer than a lab poke
+(the lab holds pokes 2 to 3 s), and the worms' indicator may decay more slowly than 3 s.
+
 **Review 4: independent review of the tiring, human, mouse and echo tests (6 Nov 2026).** All reported
 numbers matched their files (one factual slip, the mouse T4 "none"), and every verdict followed its rule.
 Its major findings changed the conclusions, and are applied above, marked:
