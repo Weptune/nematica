@@ -72,7 +72,8 @@ i { font-style: italic; }
 main > section { padding: clamp(64px, 9vw, 128px) var(--gut); }
 main > section > * { max-width: var(--wrap); margin-left: auto; margin-right: auto; }
 h2 { font-size: clamp(2.1rem, 4vw, 3.25rem); line-height: 1.06; letter-spacing: -.012em; font-variation-settings: "opsz" 72; }
-.intro { font-size: 1.25rem; color: var(--ink-2); margin-top: 18px; padding-right: max(0px, calc(100% - 40rem)); }
+/* the intro keeps the section's left edge (sections centre their children) but reads at 40rem */
+main > section > .intro { font-size: 1.25rem; color: var(--ink-2); margin-top: 18px; max-width: 40rem; margin-left: max(0px, calc((100% - var(--wrap)) / 2)); margin-right: auto; }
 .intro a, .ledger a { color: var(--ink); }
 
 .scope { position: relative; aspect-ratio: 1; border-radius: 50%; }
@@ -310,9 +311,13 @@ h2 { font-size: clamp(2.1rem, 4vw, 3.25rem); line-height: 1.06; letter-spacing: 
 /* the question's pair */
 .pair { margin: clamp(28px, 4vw, 44px) 0 0; max-width: 520px; }
 .pair svg { width: 100%; height: auto; overflow: visible; }
-.pair .worm { fill: #dbe7e1; stroke: var(--real); stroke-width: 1.2; }
+.pair .worm { fill: #dde9e3; stroke: var(--real); stroke-width: 1.1; stroke-linejoin: round; }
 .pair .cells circle { fill: var(--real); }
-.pair .units rect { fill: #f1dbe8; stroke: var(--art); stroke-width: 1; }
+.pair .cells .cord { fill: none; stroke: var(--real); stroke-width: 0.8; opacity: 0.45; }
+.pair .cells .cord.faint { opacity: 0.22; }
+.pair .cells .bulb { fill: none; stroke: var(--real); stroke-width: 0.8; opacity: 0.4; }
+.pair .units line { stroke: var(--art); stroke-width: 0.6; opacity: 0.32; }
+.pair .units circle { fill: #f6e4ee; stroke: var(--art); stroke-width: 1.2; }
 .pair .link { fill: none; stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 3 4; }
 .pair .t { font: 500 13px var(--sans); fill: var(--ink-3); }
 .pair .mid { text-anchor: middle; }

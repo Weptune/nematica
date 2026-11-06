@@ -189,11 +189,16 @@ def main():
         jobs = [("EleutherAI/pythia-70m", None)] + [(f"EleutherAI/pythia-70m-seed{k}", None) for k in (1, 2)]
         bases = ("resid",)
     ids = None
+    done = {(r["model"], r["revision"], r["basis"]) for r in csv.DictReader(OUT.open())} if OUT.exists() else set()
     for name, rev in jobs:
+        if all((name, rev or "final", b) in done for b in bases):
+            continue
         m, tok = load(name, rev)
         if ids is None:
             ids = windows(tok)
         for basis in bases:
+            if (name, rev or "final", basis) in done:
+                continue
             res = analyse(m, ids, basis)
             mats = {k: res.pop(k) for k in [k for k in res if k.startswith("_")]}
             save = ROOT / "results" / "tlab" / "pythia"

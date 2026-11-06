@@ -47,7 +47,7 @@ def download(url: str, dst: Path, base_wait: float = 10.0):
     for attempt in range(5):
         try:
             if shutil.which("curl"):                  # streams to disk; urllib held large files in memory here
-                subprocess.run(["curl", "-sSfL", "--retry", "3", "-o", str(tmp), url], check=True, timeout=3600)
+                subprocess.run(["curl", "-sSfL", "--retry", "5", "-C", "-", "-o", str(tmp), url], check=True, timeout=3600)  # resumes cut transfers
             else:
                 with urllib.request.urlopen(url, timeout=120) as r, open(tmp, "wb") as f:
                     shutil.copyfileobj(r, f, length=1 << 24)

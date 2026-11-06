@@ -64,12 +64,28 @@
       const pts = engine.body(agent).map(p => [X(p[0]), Y(p[1])]);
       hitPoints.push(pts);
       g.globalAlpha = selected >= 0 && selected !== i ? .35 : 1;
+      // a tapered body: rounded head, full width mid-body, a fine tail; translucent, with the gut down the middle
+      const n = pts.length, maxW = Math.max(2.4, .05 * sc), half = [];
+      for (let j = 0; j < n; j++) {
+        const a = pts[Math.max(0, j - 1)], b = pts[Math.min(n - 1, j + 1)], dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1;
+        const u = j / (n - 1), w = maxW * (u < .1 ? .62 + .38 * Math.sqrt(u / .1) : u > .72 ? Math.max(.08, Math.pow((1 - u) / .28, .8)) : 1);
+        half.push([-dy / L * w / 2, dx / L * w / 2]);
+      }
+      const outline = () => {
+        g.beginPath(); g.moveTo(pts[0][0] + half[0][0], pts[0][1] + half[0][1]);
+        for (let j = 1; j < n; j++) g.lineTo(pts[j][0] + half[j][0], pts[j][1] + half[j][1]);
+        for (let j = n - 1; j >= 0; j--) g.lineTo(pts[j][0] - half[j][0], pts[j][1] - half[j][1]);
+        g.closePath();
+      };
       g.lineCap = "round"; g.lineJoin = "round";
-      trace(pts); g.strokeStyle = "#0a1418"; g.lineWidth = Math.max(3.7, .075 * sc); g.stroke();
-      trace(pts); g.strokeStyle = agent.reversing ? "#f477ba" : "#d7e9e3";
-      g.lineWidth = Math.max(2.5, .052 * sc); g.stroke();
+      g.save(); g.translate(1.2, 1.6); outline(); g.fillStyle = "rgba(0,0,0,.35)"; g.fill(); g.restore();   // shadow on the agar
+      outline();
+      g.fillStyle = agent.reversing ? "rgba(244,140,196,.88)" : "rgba(206,232,222,.86)"; g.fill();
+      g.strokeStyle = agent.reversing ? "rgba(255,210,232,.9)" : "rgba(240,255,248,.75)"; g.lineWidth = .7; g.stroke();
+      trace(pts.slice(1, Math.max(3, Math.round(n * .8))));
+      g.strokeStyle = agent.reversing ? "rgba(150,50,105,.45)" : "rgba(70,110,100,.4)"; g.lineWidth = Math.max(.8, maxW * .28); g.stroke();
       g.fillStyle = agent.reversing ? "#ffe6f0" : "#f7fff9";
-      g.beginPath(); g.arc(pts[0][0], pts[0][1], Math.max(1.8, .028 * sc), 0, Math.PI * 2); g.fill();
+      g.beginPath(); g.arc(pts[0][0], pts[0][1], Math.max(1.2, maxW * .34), 0, Math.PI * 2); g.fill();
       if (agent.touch || selected === i) {
         g.strokeStyle = selected === i ? "#8ef2c7" : "#ffffff";
         g.lineWidth = selected === i ? 1.6 : 1;

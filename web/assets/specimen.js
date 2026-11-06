@@ -198,68 +198,176 @@
         this.x = step(this.net, this.x, nz);
       }
     }
+    /* geometry that never changes for a given size: each link is a gently curved neurite */
+    curve(j, i) {
+      const [x1, y1] = this.xy(j), [x2, y2] = this.xy(i);
+      const h = Math.sin((j * 31 + i * 17 + this.o.seed) * 12.9898) * 43758.5453, f = h - Math.floor(h);
+      const bend = (f - 0.5) * 0.5, mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      return [x1, y1, mx - (y2 - y1) * bend, my + (x2 - x1) * bend, x2, y2];
+    }
+    at(c, t) {
+      const u = 1 - t;
+      return [u * u * c[0] + 2 * u * t * c[2] + t * t * c[4], u * u * c[1] + 2 * u * t * c[3] + t * t * c[5]];
+    }
+    path(g, c) { g.beginPath(); g.moveTo(c[0], c[1]); g.quadraticCurveTo(c[2], c[3], c[4], c[5]); }
+    /* the still layer: tissue background, out-of-focus cells, neuropil, the neurites and somata outlines */
+    still() {
+      const w = this.w, R = w / 2, d = Math.min(devicePixelRatio || 1, 2);
+      const key = `${w}x${d}`;
+      if (this._stillKey === key) return this._still;
+      const cv = document.createElement("canvas");
+      cv.width = Math.round(w * d); cv.height = Math.round(w * d);
+      const g = cv.getContext("2d");
+      g.setTransform(d, 0, 0, d, 0, 0);
+      const r = rng(4242 + this.o.seed);
+      const bg = g.createRadialGradient(R * 0.85, R * 0.75, R * 0.05, R, R, R);
+      bg.addColorStop(0, "#0e232b"); bg.addColorStop(0.6, "#08161c"); bg.addColorStop(1, "#03090c");
+      g.fillStyle = bg; g.fillRect(0, 0, w, w);
+      // out-of-focus cells in other planes: soft, dim discs
+      for (let k = 0; k < 70; k++) {
+        const x = r() * w, y = r() * w, rr = w * (0.012 + 0.03 * r()), a = 0.025 + 0.06 * r();
+        const gr = g.createRadialGradient(x, y, 0, x, y, rr);
+        gr.addColorStop(0, `rgba(120,200,170,${a.toFixed(3)})`); gr.addColorStop(1, "rgba(120,200,170,0)");
+        g.fillStyle = gr; g.beginPath(); g.arc(x, y, rr, 0, Math.PI * 2); g.fill();
+      }
+      // neuropil: many faint fibres
+      g.lineCap = "round";
+      for (let k = 0; k < 140; k++) {
+        const x = r() * w, y = r() * w, ang = r() * Math.PI * 2, len = w * (0.08 + 0.25 * r());
+        const x2 = x + Math.cos(ang) * len, y2 = y + Math.sin(ang) * len;
+        const cx = (x + x2) / 2 + (r() - 0.5) * len * 0.6, cy = (y + y2) / 2 + (r() - 0.5) * len * 0.6;
+        g.strokeStyle = `rgba(150,210,190,${(0.025 + 0.04 * r()).toFixed(3)})`; g.lineWidth = 0.4 + 0.7 * r();
+        g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(cx, cy, x2, y2); g.stroke();
+      }
+      // this network's neurites, with short side branches
+      for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+        if (!this.net.W[i][j]) continue;
+        const c = this.curve(j, i);
+        g.strokeStyle = "rgba(168,224,204,0.16)"; g.lineWidth = 1.2; this.path(g, c); g.stroke();
+        for (const t of [0.3, 0.62]) {
+          const [bx, by] = this.at(c, t), ang = r() * Math.PI * 2, len = w * (0.015 + 0.025 * r());
+          g.strokeStyle = "rgba(168,224,204,0.09)"; g.lineWidth = 0.7;
+          g.beginPath(); g.moveTo(bx, by); g.quadraticCurveTo(bx + Math.cos(ang + 0.6) * len * 0.6, by + Math.sin(ang + 0.6) * len * 0.6, bx + Math.cos(ang) * len, by + Math.sin(ang) * len); g.stroke();
+        }
+      }
+      // silent links: barely visible dashed paths until they carry signal
+      if (this.o.quiet) for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+        if (!this.net.G[i][j]) continue;
+        g.setLineDash([2, 5]); g.strokeStyle = "rgba(255,200,96,0.10)"; g.lineWidth = 1;
+        this.path(g, this.curve(j, i)); g.stroke(); g.setLineDash([]);
+      }
+      // fine grain
+      const img = g.getImageData(0, 0, cv.width, cv.height), px = img.data;
+      for (let k = 0; k < px.length; k += 4) { const n = (r() - 0.5) * 10; px[k] += n; px[k + 1] += n; px[k + 2] += n; }
+      g.putImageData(img, 0, 0);
+      // cell shapes: each soma a little different (size, elongation, angle)
+      this.shape = Array.from({ length: N }, () => ({ s: 0.8 + 0.45 * r(), e: 1 + 0.35 * r(), a: r() * Math.PI }));
+      this._still = cv; this._stillKey = key;
+      return cv;
+    }
+    soma(g, i, x, y, rad, v, ring) {
+      const sh = this.shape[i];
+      g.save(); g.translate(x, y); g.rotate(sh.a); g.scale(sh.e, 1 / sh.e);
+      const r0 = rad * sh.s;
+      // fluorescence: the cytoplasm lights up, the nucleus stays darker
+      const body = g.createRadialGradient(-r0 * 0.25, -r0 * 0.3, r0 * 0.1, 0, 0, r0);
+      body.addColorStop(0, `rgba(${Math.round(90 + 120 * v)},${Math.round(150 + 100 * v)},${Math.round(130 + 80 * v)},${(0.55 + 0.45 * v).toFixed(3)})`);
+      body.addColorStop(0.75, `rgba(${Math.round(40 + 90 * v)},${Math.round(110 + 120 * v)},${Math.round(95 + 90 * v)},${(0.5 + 0.45 * v).toFixed(3)})`);
+      body.addColorStop(1, `rgba(20,60,50,${(0.4 + 0.3 * v).toFixed(3)})`);
+      g.fillStyle = body; g.beginPath(); g.arc(0, 0, r0, 0, Math.PI * 2); g.fill();
+      g.fillStyle = `rgba(6,20,22,${(0.35 + 0.25 * v).toFixed(3)})`;
+      g.beginPath(); g.arc(r0 * 0.12, r0 * 0.08, r0 * 0.42, 0, Math.PI * 2); g.fill();
+      g.strokeStyle = `rgba(190,255,228,${(0.18 + 0.5 * v).toFixed(3)})`; g.lineWidth = 0.8 / sh.s;
+      g.beginPath(); g.arc(0, 0, r0, 0, Math.PI * 2); g.stroke();
+      g.restore();
+      if (ring) {
+        g.strokeStyle = "rgba(255,255,255,0.85)"; g.lineWidth = 1.25;
+        g.beginPath(); g.arc(x, y, rad * 1.9, 0, Math.PI * 2); g.stroke();
+      }
+    }
     draw(now) {
       if (!this.w) return;
       const g = this.ctx, w = this.w, R = w / 2;
       g.clearRect(0, 0, w, w);
       g.save();
       g.beginPath(); g.arc(R, R, R - 1, 0, Math.PI * 2); g.clip();
-      const bg = g.createRadialGradient(R * 0.8, R * 0.7, R * 0.1, R, R, R);
-      bg.addColorStop(0, "#0c1d24"); bg.addColorStop(1, "#050d11");
-      g.fillStyle = bg; g.fillRect(0, 0, w, w);
-      g.lineWidth = 1; g.strokeStyle = "rgba(168,214,196,0.10)";
+      g.drawImage(this.still(), 0, 0, w, w);
+      const rad = Math.max(5, w * 0.024);
+      for (let i = 0; i < N; i++) {
+        const a = (Math.tanh(this.x[i]) + 1) / 2;
+        this.glow[i] += (a - this.glow[i]) * 0.3;
+      }
+      g.globalCompositeOperation = "lighter";
+      g.lineCap = "round";
+      // active neurites brighten with their sending cell
       for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
         if (!this.net.W[i][j]) continue;
-        const [x1, y1] = this.xy(j), [x2, y2] = this.xy(i);
-        g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke();
+        const v = Math.max(0, this.glow[j] - 0.45) / 0.55;
+        if (v < 0.04) continue;
+        g.strokeStyle = `rgba(90,230,170,${(0.22 * v).toFixed(3)})`; g.lineWidth = 1.4;
+        this.path(g, this.curve(j, i)); g.stroke();
+      }
+      // signal travelling along neurites
+      this.sparks = this.sparks || [];
+      if (!reduced.matches) {
+        if (!paused || this.poke) for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+          if (!this.net.W[i][j]) continue;
+          const v = Math.max(0, this.glow[j] - 0.55);
+          if (Math.random() < v * 0.04) this.sparks.push({ c: this.curve(j, i), t: 0, s: 0.012 + 0.01 * Math.random() });
+        }
+        this.sparks = this.sparks.filter((sp) => (sp.t += sp.s) < 1);
+        for (const sp of this.sparks) {
+          const [x, y] = this.at(sp.c, sp.t), al = Math.sin(Math.PI * sp.t);
+          const gr = g.createRadialGradient(x, y, 0, x, y, rad * 0.9);
+          gr.addColorStop(0, `rgba(170,255,220,${(0.8 * al).toFixed(3)})`); gr.addColorStop(1, "rgba(170,255,220,0)");
+          g.fillStyle = gr; g.beginPath(); g.arc(x, y, rad * 0.9, 0, Math.PI * 2); g.fill();
+        }
       }
       // links that are silent at rest show, in amber, only while they carry signal
       if (this.o.quiet) for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
         if (!this.net.G[i][j] || this.x[j] <= XTH) continue;
         const a = Math.min((this.x[j] - XTH) / 2, 1);
-        const [x1, y1] = this.xy(j), [x2, y2] = this.xy(i);
-        g.strokeStyle = `rgba(255,200,96,${(0.3 + 0.65 * a).toFixed(3)})`; g.lineWidth = 2;
-        g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); g.lineWidth = 1;
+        g.strokeStyle = `rgba(255,190,90,${(0.35 + 0.6 * a).toFixed(3)})`; g.lineWidth = 2.2;
+        this.path(g, this.curve(j, i)); g.stroke();
       }
       const p = this.poke, res = this.result;
-      // where the signal went: lines from the poked neuron to its strongest responders, fading
+      // where the signal went: arcs from the poked neuron to its strongest responders, fading
       if (this.o.trace && res) {
         const age = (now - this.resultAt) / 1000, fade = Math.max(0, 1 - age / 3);
         if (fade > 0) {
           const ranked = [...Array(N).keys()].filter((i) => i !== res.j).sort((a, b) => Math.abs(res.measured[b]) - Math.abs(res.measured[a])).slice(0, 4);
           const top = Math.abs(res.measured[ranked[0]]) || 1;
-          const [x0, y0] = this.xy(res.j);
           ranked.forEach((i) => {
-            const [x1, y1] = this.xy(i), s = Math.abs(res.measured[i]) / top;
-            g.strokeStyle = `rgba(150,246,204,${(0.75 * s * fade).toFixed(3)})`; g.lineWidth = 1 + 2.5 * s;
-            g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke();
+            const s = Math.abs(res.measured[i]) / top, c = this.curve(res.j, i);
+            g.strokeStyle = `rgba(150,246,204,${(0.7 * s * fade).toFixed(3)})`; g.lineWidth = 1 + 2.5 * s;
+            this.path(g, c); g.stroke();
           });
-          g.lineWidth = 1;
         }
       }
+      // halos
+      for (let i = 0; i < N; i++) {
+        const [x, y] = this.xy(i), v = this.glow[i], hr = rad * (1.5 + 1.6 * v * v);
+        const halo = g.createRadialGradient(x, y, rad * 0.4, x, y, hr);
+        halo.addColorStop(0, `rgba(60,220,160,${(0.38 * v * v).toFixed(3)})`); halo.addColorStop(1, "rgba(60,220,160,0)");
+        g.fillStyle = halo; g.beginPath(); g.arc(x, y, hr, 0, Math.PI * 2); g.fill();
+      }
+      g.globalCompositeOperation = "source-over";
       if (p && !reduced.matches) {
         const [px, py] = this.xy(p.j), age = (now - p.born) / 1000;
         for (let k = 0; k < 3; k++) {
           const rr = (age * 0.9 + k * 0.25) % 1;
-          g.strokeStyle = `rgba(255,255,255,${(0.35 * (1 - rr)).toFixed(3)})`; g.lineWidth = 1.5;
+          g.strokeStyle = `rgba(200,255,235,${(0.3 * (1 - rr)).toFixed(3)})`; g.lineWidth = 1.25;
           g.beginPath(); g.arc(px, py, 8 + rr * R * 0.9, 0, Math.PI * 2); g.stroke();
         }
-        g.lineWidth = 1;
       }
-      const rad = Math.max(5, w * 0.022);
       for (let i = 0; i < N; i++) {
-        const [x, y] = this.xy(i), a = (Math.tanh(this.x[i]) + 1) / 2;
-        this.glow[i] += (a - this.glow[i]) * 0.35;
-        const v = this.glow[i], hr = rad * (2.2 + 2.4 * v);
-        const halo = g.createRadialGradient(x, y, 0, x, y, hr);
-        halo.addColorStop(0, `rgba(70,227,165,${(0.55 * v).toFixed(3)})`); halo.addColorStop(1, "rgba(70,227,165,0)");
-        g.fillStyle = halo; g.beginPath(); g.arc(x, y, hr, 0, Math.PI * 2); g.fill();
-        g.fillStyle = `rgba(150,246,204,${(0.25 + 0.75 * v).toFixed(3)})`;
-        g.beginPath(); g.arc(x, y, rad, 0, Math.PI * 2); g.fill();
-        if (i === this.hover || (p && p.j === i) || (res && res.j === i)) {
-          g.strokeStyle = "rgba(255,255,255,0.85)"; g.lineWidth = 1.5; g.beginPath(); g.arc(x, y, rad + 5, 0, Math.PI * 2); g.stroke(); g.lineWidth = 1;
-        }
+        const [x, y] = this.xy(i);
+        this.soma(g, i, x, y, rad, this.glow[i], i === this.hover || (p && p.j === i) || (res && res.j === i));
       }
+      // the objective's field: darker towards the edge
+      const vg = g.createRadialGradient(R, R, R * 0.62, R, R, R);
+      vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(0,0,0,0.55)");
+      g.fillStyle = vg; g.fillRect(0, 0, w, w);
       g.restore();
       g.strokeStyle = "rgba(19,33,42,0.85)"; g.lineWidth = 1; g.beginPath(); g.arc(R, R, R - 1, 0, Math.PI * 2); g.stroke();
     }
@@ -378,14 +486,27 @@
       const pts = top.concat(bot.reverse());
       worm.setAttribute("d", "M" + pts.map((p) => p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" L") + " Z");
     }
-    for (let k = 0; k < 72; k++) { const [x, y] = at(0.82 + r() * 0.12, (r() * 2 - 1) * 0.62); dot(cells, x, y, 1.5); } // head ganglia
-    for (let k = 0; k < 24; k++) { const [x, y] = at(0.2 + (k + r() * 0.6) / 24 * 0.6, 0.45 + r() * 0.15); dot(cells, x, y, 1.3); } // ventral cord
-    for (let k = 0; k < 9; k++) { const [x, y] = at(0.07 + r() * 0.07, (r() * 2 - 1) * 0.5); dot(cells, x, y, 1.4); } // tail ganglia
-    for (let i = 0; i < 7; i++) for (let k = 0; k < 6; k++) {
-      const q = document.createElementNS(NS, "rect");
-      q.setAttribute("x", 392 + i * 12); q.setAttribute("y", 44 + k * 14); q.setAttribute("width", 8); q.setAttribute("height", 8); q.setAttribute("rx", 1.5);
-      units.appendChild(q);
-    }
+    const el = (g, tag, attrs) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); g.appendChild(e); return e; };
+    const line = (u0, u1, side, cls) => { // a nerve cord running along the body
+      const pts = []; for (let k = 0; k <= 60; k++) pts.push(at(u0 + (u1 - u0) * k / 60, side));
+      el(cells, "path", { d: "M" + pts.map((q) => q[0].toFixed(1) + " " + q[1].toFixed(1)).join(" L"), class: cls });
+    };
+    line(0.08, 0.86, 0.42, "cord");                       // ventral nerve cord
+    line(0.12, 0.84, -0.48, "cord faint");                // dorsal cord
+    // the pharynx: two muscular bulbs in the head, which the nerve ring wraps around
+    [[0.905, 5.2, 3.6], [0.955, 4.2, 3.4]].forEach(([u, rx, ry]) => {
+      const [x, y] = at(u, 0), ang = Math.atan2(yc(u + 0.002) - yc(u - 0.002), 0.004 * L) * 180 / Math.PI;
+      el(cells, "ellipse", { cx: x.toFixed(1), cy: y.toFixed(1), rx, ry, transform: `rotate(${ang.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)})`, class: "bulb" });
+    });
+    const cell = (u, sd, rr, op) => { const [x, y] = at(u, sd); el(cells, "circle", { cx: x.toFixed(1), cy: y.toFixed(1), r: rr.toFixed(2), opacity: op.toFixed(2) }); };
+    for (let k = 0; k < 90; k++) { const u = 0.835 + Math.pow(r(), 1.4) * 0.07, sd = (r() * 2 - 1) * 0.78; cell(u, sd, 0.9 + r() * 1.0, 0.55 + 0.45 * r()); } // nerve ring and head ganglia
+    for (let k = 0; k < 30; k++) cell(0.12 + (k + r() * 0.7) / 30 * 0.7, 0.42 + (r() - 0.5) * 0.18, 0.9 + r() * 0.6, 0.5 + 0.5 * r()); // ventral cord motor neurons
+    for (let k = 0; k < 12; k++) cell(0.05 + r() * 0.07, (r() * 2 - 1) * 0.55, 0.9 + r() * 0.8, 0.6 + 0.4 * r()); // tail ganglia
+    // an artificial network: layers of units, every unit linked to the next layer
+    const layers = [3, 5, 5, 3], x0 = 382, dx = 34, yMid = 86;
+    const ys = layers.map((n) => Array.from({ length: n }, (_, k) => yMid + (k - (n - 1) / 2) * 17));
+    for (let l = 0; l < layers.length - 1; l++) ys[l].forEach((y1) => ys[l + 1].forEach((y2) => el(units, "line", { x1: x0 + l * dx, y1, x2: x0 + (l + 1) * dx, y2 })));
+    ys.forEach((col, l) => col.forEach((y) => el(units, "circle", { cx: x0 + l * dx, cy: y, r: 4.6 })));
   }
 
   // the recording schedule schematic: identical poke times in both rows (about 70 pokes in 37 min)
