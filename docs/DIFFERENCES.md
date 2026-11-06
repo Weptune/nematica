@@ -46,9 +46,9 @@ Systems compared:
    matches all six measured properties at once; the closest settings need strong hidden drives,
    large differences between individuals and many units that stay quiet unless strongly driven.
    That shows what is sufficient, not what the worm has.
-5. **Everything rests on one animal**, apart from the human tiring test. Mouse hippocampus was
-   inconclusive; the human watching test is being rerun on the clean extraction; mouse touch cortex
-   is downloaded but not analysed.
+5. **Mostly one animal.** Human cortex now adds two results on artefact-free data: no tiring, and a
+   linear watching copy predicts responses worse than distance alone (0.30 against 0.45), as in worms.
+   Mouse hippocampus was inconclusive; mouse touch cortex is downloaded but not analysed.
 
 ## What would settle the surviving differences
 
