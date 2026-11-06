@@ -13,12 +13,20 @@ from pathlib import Path
 import numpy as np
 import torch
 
-ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "docs" / "figures" / "tlab_pythia.csv"
-TEXT = ROOT / "data" / "external" / "wikitext" / "test.parquet"
 import os
+ROOT = Path(__file__).resolve().parents[1]
+OUT = ROOT / "docs" / "figures" / ("tlab_pythia_v2.csv" if os.environ.get("NEMATICA_PY_V2") == "1" else "tlab_pythia.csv")
+TEXT = ROOT / "data" / "external" / "wikitext" / "test.parquet"
 N_WIN = int(os.environ.get("NEMATICA_PY_WIN", "48"))       # 24 for Pythia-70m (memory)
 WIN, POS, N_ATTR = 256, 200, 256
+# Review-3 rerun ("v2"): eager attention (PyTorch's fused "sdpa" attention returned wrong float32
+# gradients on CPU in Pythia-14m's last layers: 22 against a float64 and eager value of 1.02, found
+# while checking the review's point); attribution on every window, in chunks; per-layer scores;
+# optional SDs from positions >= NEMATICA_TRIM; the truth may use fewer windows than watching.
+V2 = os.environ.get("NEMATICA_PY_V2") == "1"
+TRIM = int(os.environ.get("NEMATICA_TRIM", "0"))      # positions excluded from SDs (check)
+PUSH = float(os.environ.get("NEMATICA_PUSH", "1.0"))     # push size in SD (diagnostic)
+N_TRUTH = int(os.environ.get("NEMATICA_TRUTH_WIN", str(N_WIN)))
 torch.set_num_threads(1)
 
 
@@ -73,17 +81,20 @@ def analyse(model, ids, basis, attribution=True):
     L = model.config.num_hidden_layers
     src, dst = (basis, 0), [(basis, l) for l in range(1, L)]
     rec = P.run(ids)
-    X = rec[src].reshape(-1, rec[src].shape[-1]).numpy()
+    X = rec[src][:, TRIM:].reshape(-1, rec[src].shape[-1]).numpy()
     Yfull = torch.cat([rec[d] for d in dst], -1)
-    Y = Yfull.reshape(-1, Yfull.shape[-1]).numpy()
+    Y = Yfull[:, TRIM:].reshape(-1, Yfull.shape[-1]).numpy()
     sx, sy = X.std(0) + 1e-6, Y.std(0) + 1e-6
     J, I = X.shape[1], Y.shape[1]
     K = np.zeros((I, J))
+    tids = ids[:N_TRUTH]
+    with torch.no_grad():
+        Ybase = torch.cat([P.run(tids)[d] for d in dst], -1)[:, POS] if N_TRUTH != len(ids) else Yfull[:, POS]
     for j in range(J):
-        z = torch.zeros(N_WIN, WIN, J)
-        z[:, POS, j] = float(sx[j])
-        r = P.run(ids, (src, z))
-        K[:, j] = ((torch.cat([r[d] for d in dst], -1) - Yfull)[:, POS].mean(0).numpy()) / sy
+        z = torch.zeros(len(tids), WIN, J)
+        z[:, POS, j] = PUSH * float(sx[j])
+        r = P.run(tids, (src, z))
+        K[:, j] = ((torch.cat([r[d] for d in dst], -1)[:, POS] - Ybase).mean(0).numpy()) / sy / PUSH
     Xs, Ys = (X - X.mean(0)) / sx, (Y - Y.mean(0)) / sy
     B = np.linalg.solve(Xs.T @ Xs / len(Xs) + 1e-2 * np.eye(J), Xs.T @ Ys / len(Xs))
     corr = lambda a, b: float(np.corrcoef(a.ravel(), b.ravel())[0, 1])  # noqa: E731
@@ -97,14 +108,23 @@ def analyse(model, ids, basis, attribution=True):
     out["watch_half"] = float(np.mean(halves))
     if attribution:
         sel = np.random.default_rng(7).choice(I, min(N_ATTR, I), replace=False)
-        sub = ids[:12]
-        z = torch.zeros(12, WIN, J, requires_grad=True)
-        r = P.run(sub, (src, z), grad=True)
-        o = torch.cat([r[d] for d in dst], -1)[:, POS]
         Ka = np.zeros((len(sel), J))
-        for a, i in enumerate(sel):
-            gi, = torch.autograd.grad(o[:, i].sum(), z, retain_graph=True)
-            Ka[a] = gi[:, POS, :].mean(0).numpy() * sx / sy[i]
+        chunks = [tids[c:c + 12] for c in range(0, len(tids), 12)] if V2 else [ids[:12]]
+        for sub in chunks:
+            z = torch.zeros(len(sub), WIN, J, requires_grad=True)
+            r = P.run(sub, (src, z), grad=True)
+            o = torch.cat([r[d] for d in dst], -1)[:, POS]
+            for a, i in enumerate(sel):
+                gi, = torch.autograd.grad(o[:, i].sum(), z, retain_graph=True)
+                Ka[a] += gi[:, POS, :].sum(0).numpy() * sx / sy[i]
+            del r, o, z
+        Ka /= sum(len(c) for c in chunks)
+        lay = sel // J
+        for l in range(len(dst)):
+            m = lay == l
+            if m.sum() >= 3:
+                out[f"attr_layer{l + 1}"] = corr(Ka[m], K[sel][m])
+                out[f"attr_overshoot_layer{l + 1}"] = float(np.linalg.norm(Ka[m]) / np.linalg.norm(K[sel][m]))
         out["attribution"] = corr(Ka, K[sel])
         out["watch_on_same_units"] = corr(B.T[sel], K[sel])
         # exploratory (added after seeing three seeds, before the rest): without the skip-connection
@@ -130,6 +150,8 @@ def analyse(model, ids, basis, attribution=True):
 def load(name, revision=None):
     from transformers import AutoModelForCausalLM, AutoTokenizer
     kw = {"dtype": torch.float32}
+    if V2:
+        kw["attn_implementation"] = "eager"
     m = AutoModelForCausalLM.from_pretrained(name, revision=revision, **kw) if revision else AutoModelForCausalLM.from_pretrained(name, **kw)
     m.eval()
     return m, AutoTokenizer.from_pretrained("EleutherAI/pythia-14m")
@@ -148,7 +170,16 @@ def record(row):
 
 def main():
     what = sys.argv[1]
-    if what == "seeds":
+    if what == "v2":
+        jobs = [("EleutherAI/pythia-14m", None)] + [(f"EleutherAI/pythia-14m-seed{k}", None) for k in range(1, 10)]
+        bases = ("resid", "mlp")
+    elif what == "v2_70m":
+        jobs = [("EleutherAI/pythia-70m", None)] + [(f"EleutherAI/pythia-70m-seed{k}", None) for k in (1, 2)]
+        bases = ("resid",)
+    elif what == "v2_checkpoints":
+        jobs = [("EleutherAI/pythia-14m", f"step{s}") for s in (0, 1000, 8000, 33000)]
+        bases = ("resid", "mlp")
+    elif what == "seeds":
         jobs = [("EleutherAI/pythia-14m", None)] + [(f"EleutherAI/pythia-14m-seed{k}", None) for k in range(1, 10)]
         bases = ("resid", "mlp")
     elif what == "checkpoints":
@@ -167,7 +198,7 @@ def main():
             mats = {k: res.pop(k) for k in [k for k in res if k.startswith("_")]}
             save = ROOT / "results" / "tlab" / "pythia"
             save.mkdir(parents=True, exist_ok=True)
-            np.savez_compressed(save / f"{name.split('/')[-1]}_{rev or 'final'}_{basis}.npz", **{k[1:]: v for k, v in mats.items()})
+            np.savez_compressed(save / f"{'v2_' if V2 else ''}{name.split('/')[-1]}_{rev or 'final'}_{basis}.npz", **{k[1:]: v for k, v in mats.items()})
             record({"model": name, "revision": rev or "final", "basis": basis, **{k: round(v, 4) for k, v in res.items()}})
 
 

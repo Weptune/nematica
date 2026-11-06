@@ -2407,8 +2407,11 @@ invisible whatever is poked (evoked share -0.07 to -0.10): that is why both pilo
 tokens at 10 SD: one MLP unit still invisible (-0.04); one attention head's gain inconsistent across
 contexts (consistency 0.09 to 0.12); a residual-stream dimension 0.49 (consistency 0.88); a random
 residual direction 0.42 (0.86); a principal residual direction 0.89 (0.92, far stronger than worms).
-Chosen for phase 1: residual-stream dimensions as the units, pokes of 10 SD held 30 tokens, the closest
-match to the worms' evoked share (about 0.4).
+Chosen for phase 1: residual-stream dimensions as the units, pokes of 10 SD held 30 tokens. *(Corrected
+after review 3: this originally said the choice was "the closest match to the worms' evoked share (about
+0.4)"; the random direction, 0.42, was closer. The real reason was that single dimensions are
+identifiable units that can be seen or unseen, like neurons, with a usable evoked share and high
+consistency.)*
 
 **Phases 3 and 4: training and size (pre-registered 6 Nov 2026).** The depth test of phase 2 (same
 code, `run_tlab_depth.py --steps N --width D --layers L`). Phase 3, training: the default network
@@ -2443,7 +2446,8 @@ as phase 2 (`scripts/run_tlab_more.py`).
 Hugging Face, so the depth test runs on real models: Pythia-14m (6 layers, width 128, 512 MLP units
 per layer) trained with 10 different seeds (EleutherAI's PolyPythia: `pythia-14m` and
 `pythia-14m-seed1` to `seed9`), its training checkpoints (steps 0, 1,000, 8,000, 33,000 and the final
-143,000), and Pythia-70m (width 512) with 3 seeds, residual basis only (24 windows instead of 48, after a first run ran out of memory). Inputs: WikiText-103 test text
+143,000), and Pythia-70m (width 512) with 3 seeds, residual basis only. *Amendment, 6 Nov 2026, after a first 70m run ran out of
+memory and before any 70m result: 24 windows instead of 48.* Inputs: WikiText-103 test text
 (kept locally, not redistributed), 48 windows of 256 tokens. Truth: one push of 1 SD per unit at
 position 200 of every window (Pythia attends over the whole context, so one patched position per
 window keeps patches from interacting), read at the same position in later layers. Watching: ridge
@@ -2463,20 +2467,26 @@ the size sweep and 10,000 training steps are still running).*
 
 Phase 3, training (small network, watching with all seen, residual / MLP): 0 steps 0.675 / 0.091; 300
 steps 0.576 / 0.075; 1,000 steps 0.518 / 0.069; 3,000 steps 0.453 / 0.053. **Supported so far**: lower at
-every later checkpoint, and the MLP basis stays below 0.15 throughout.
+every later checkpoint, and the MLP basis stays below 0.15 throughout. *(Caveat added after review 3:
+trained networks' individuals get 50 steps of fine-tuning on their own data and untrained ones none, so
+the 0-step point differs in that too. "Base loss" in the CSV is the last training minibatch's loss,
+not a held-out loss.)*
 
 Phase 5, state dependence with a known state (dissimilarity of effect matrices between hidden states,
 against the noise floor): trained 0.045 against 0.0016 (residual) and 0.32 against 0.014 (MLP), about
-25 times the floor; untrained 0.004 against 0.0003 and 0.066 against 0.005. **Supported**: what a unit
+25 times the floor *(inflated: see the review 3 corrections below)*; untrained 0.004 against 0.0003 and 0.066 against 0.005. **Supported**: what a unit
 does depends strongly on the language's hidden state, and training makes it ten times stronger in the
 residual basis. This is the transformer counterpart of the worms' state-dependent spread, and it is
 much stronger here.
 
 Phase 6, silent links (share of each true effect lying in the lower half of natural principal
 components, against the share of natural variance there): trained 0.089 against 0.002 (residual) and
-0.132 against 0.018 (MLP); untrained 0.041 against 0.0001 and 0.125 against 0.0009. **Supported** (MLP
-barely): effects reach directions that natural activity hardly uses, 7 to 400 times more than their
-share of natural variance, and training increases it in the residual basis.
+0.132 against 0.018 (MLP); untrained 0.041 against 0.0001 and 0.125 against 0.0009. **Supported** in the residual basis; in the MLP basis 0.132 against 0.125 is a tie with no noise
+estimate. Effects reach directions that natural activity hardly uses, 7 to 400 times more than their
+share of natural variance. *(Corrected after review 3: this said "training increases it in the
+residual basis"; the share itself rises, 0.041 to 0.089, but relative to natural variance it falls,
+about 410 times untrained against 44 times trained, because training spreads natural variance into
+those directions too.)*
 
 Phase 9, attribution patching (correlation with the truth, beside watching): trained 0.999 against
 0.467 (residual) and 0.991 against 0.055 (MLP); untrained 0.9997 against 0.676 and 0.996 against 0.093.
@@ -2485,28 +2495,37 @@ correlations fail.
 
 Phase 8, real language models. Pythia-14m, 10 seeds (median and range): watching, all seen, residual
 0.69 (0.63 to 0.75) and MLP 0.47 (0.43 to 0.50); half seen 0.60 and 0.41; residual without the
-skip-connection entries 0.59; attribution patching residual 0.33 (0.14 to 0.88) and MLP 0.69 (0.39 to
+skip-connection entries (exploratory; `watch_all_offdiag`, all later units) 0.59; attribution patching residual 0.33 (0.14 to 0.88) and MLP 0.69 (0.39 to
 0.88); by rank, residual 0.51 and MLP 0.76. Training checkpoints (seed 0, residual / MLP watching): step 0
 0.94 / 0.74; 1,000 0.86 / 0.70; 8,000 0.79 / 0.62; 33,000 0.74 / 0.48; final 0.71 / 0.45 (attribution
-0.99 falling to 0.88). Verdicts: (1) **refuted**: a real language model is more readable from its
+0.99 falling to 0.88; affected by the same artifact, rerun under way). Verdicts: (1) **refuted**: a real language model is more readable from its
 correlations than predicted (0.69 and 0.47, not below 0.6 and 0.2), and far more than the small
-trained transformers (0.45 and 0.05); (2) **refuted**: attribution patching is not 0.3 above watching;
-in the residual basis it is unreliable from seed to seed and below watching in most seeds; (3)
+trained transformers (0.45 and 0.05); (2) **refuted as first run, withdrawn pending rerun**: attribution
+patching was not 0.3 above watching and looked unreliable from seed to seed. *Correction after review 3:
+the failure sat entirely in the last two layers (layers 1 to 3 scored 0.94 to 0.97 in every seed), and
+it is a software artifact: PyTorch's fused attention ("sdpa") returned wrong float32 gradients on CPU in
+those layers (a gradient size of 22 where float64 and the plain attention code both give 1.02). Rerun
+with plain attention under way (`tlab_pythia_v2.csv`); this verdict will be replaced by the rerun's;* (3)
 **supported**: watching falls steadily through training, from near-perfect at initialisation (0.94) to
 0.71, and in the MLP basis from 0.74 to 0.45; (4) **supported**: Pythia-70m, 3 seeds, residual
 watching 0.54 (0.538 to 0.545; half seen 0.49 to 0.51; without the skip entries 0.32), below every
-Pythia-14m seed (0.63 to 0.75). Unplanned observation: in Pythia-70m attribution patching is high and
-stable (0.95 to 0.96; by rank 0.90; without the skip entries 0.91 against watching's 0.32), unlike
-Pythia-14m's swings, so its unreliability in the smaller model is not a general property of real
-language models.
+Pythia-14m seed (0.63 to 0.75). *Caveat after review 3: Pythia-70m's watching was fit on 24 windows for
+512 regressors, against 48 windows for 128 in Pythia-14m, a handicap; rerun on 48 windows under way.*
+Unplanned observation (exploratory measures): in Pythia-70m attribution patching is high and stable
+(0.95 to 0.96; by rank, exploratory, 0.90; without the skip entries, exploratory, 0.91 against
+watching's 0.32).
 
-Reading so far. Training is what makes these networks hard to read from correlations: at
-initialisation a transformer's correlations reflect its cause and effect almost perfectly, and every
-stage of training erodes that, in small networks and in a real language model alike. Training also
-makes effects depend on context and reach directions that natural activity hardly uses, two properties
-the worms share. The cheap gradient shortcut that interpretability relies on works in small networks
-and in Pythia-70m, but is unreliable from seed to seed in Pythia-14m's residual stream. Larger models
-are less readable from correlations (14m 0.69, 70m 0.54), as wider small networks are.
+Reading so far (rewritten after review 3; the first version overclaimed in four places, listed in the
+corrections below). Training lowers how well correlations reflect cause and effect, in the small
+networks (one base seed) and in Pythia-14m's checkpoints (one seed): from 0.94 at initialisation to 0.71
+in Pythia, and from 0.68 to 0.45 in the small networks, whose correlations are far from perfect even
+untrained. Training also makes effects depend more on the language's hidden state (on a measure that is
+not the worms' own; the worms' own test, phase 5b, finds nothing in the transformer). The gradient
+shortcut works almost perfectly in the small networks; in Pythia its apparent failure was a software
+artifact, being rerun. Whether larger models are less readable is not settled yet: the comparisons
+mix in skip-connection entries whose weight changes with width, and Pythia-70m had half the data;
+across families the claim already fails (Pythia-14m, width 128, 0.69, against the small width-128
+network's 0.31).
 
 **Phase 7 result.** From phase 1's tiring axis: the trained transformer does not tire (-0.002;
 untrained 0.000; worms -0.42), as expected: nothing in it changes with use within a context.
@@ -2520,9 +2539,10 @@ and untrained (`scripts/run_tlab_state.py`). *Prediction:* state dependence in t
 no detectable state dependence; untrained: -0.007 [-0.009, -0.006], p < 0.0001 (tiny but very consistent,
 because untrained individuals are nearly identical). **Refuted, in the opposite direction.** Phase 5
 found strong dependence on the language's true hidden state in the same trained network, so this test,
-which takes the strongest resting pattern as the state, does not see the transformer's real state. The
-caveat carries back to the worms: their state-dependent spread is dependence on their main resting
-pattern, one kind of state; a test built on the main resting pattern can miss other kinds.
+which takes the strongest resting pattern as the state, does not see the transformer's real state. A
+hypothesis for the worms (not tested there; labelled as such after review 3): their state-dependent
+spread is dependence on their main resting pattern, one kind of state, and a test built on the main
+resting pattern can miss other kinds.
 
 **Phase 1: the worm test in token time (pre-registered 6 Nov 2026).** The trained base model (HMM
 language); units are the residual-stream dimensions after each of the 4 blocks (256 units, each its own
@@ -2542,18 +2562,22 @@ memory beside other jobs).* Trained: watching share -0.17, echo breadth 0.13, ti
 dimensionality 0.51, individuality 0.087, reliability 0.38, evoked share 0.54. Untrained: -0.002, 0.011,
 0.000, 0.36, 0.028, 0.84, 0.83. Worms: 0.61, 0.085, -0.42, 0.43, 0.089, 0.094, 0.42. **The prediction is
 refuted, in the opposite direction**: the trained transformer is not copyable by watching at all
-(watching agreement about zero, below the worms' 0.61 and far below the recurrent networks' 1.3 or
+(watching share -0.17, below zero, below the worms' 0.61 and far below the recurrent networks' 1.3 or
 more), although its individuals agree with each other (0.38) and its pokes stand out (0.54). So is the
 untrained one. Reading: in a transformer a poke's effect lands on later layers within the same token,
 and a model of how activity follows activity from one token to the next cannot see that kind of cause
-and effect at all; phase 2 measures it directly in depth. On other axes the trained transformer is
-strikingly worm-like: individuality 0.087 against 0.089, resting structure 0.51 against 0.43. It does
+and effect at all; phase 2 measures it directly in depth. On other axes the trained transformer lands close
+to the worms: individuality 0.087 against 0.089, resting structure 0.51 against 0.43. *(Qualified after
+review 3: individuality depends on the 10% weight noise chosen to make individuals, so the match in
+that axis is set by a design choice, not found.)* It does
 not tire (-0.002 against the worms' -0.42).
 
 **Phase 2: the test in depth, with known truth (pre-registered 6 Nov 2026).** In a transformer, most
 cause and effect runs through depth within one forward pass, where exact intervention effects are
 known. True effect matrix: the change in each later-layer unit when a first-block unit is pushed by
-one natural SD (paired runs, averaged over 24 contexts x 4 positions spaced beyond the attention span, so patches cannot affect each other; changed from "12 contexts x 24 positions" before any run finished, for speed). Watching estimate: ridge
+one natural SD (paired runs, averaged over 24 contexts x 4 positions spaced beyond one layer's 64-token attention span; *corrected after review 3: across layers the span
+compounds, so patches 70 tokens apart can interact weakly in later layers; this was first stated as
+"patches cannot affect each other"*; changed from "12 contexts x 24 positions" before any run finished, for speed). Watching estimate: ridge
 regression of later-layer units on first-block units across natural activations. Score: correlation
 of the two over all pairs, with every first-block unit seen or a random half seen (unseen units are
 then unknown confounders, as unrecorded neurons are in worms); reference: two individuals' true
@@ -2587,6 +2611,38 @@ recovers little of cause and effect, and training makes it worse; the units that
 are the ones whose correlations say least about their effects. Caveat: individuals here differ very
 little (their truths agree at 0.95 to 0.998), so this is a test against truth, not against a ruler of
 individual variation.
+
+**Review 3: independent review of the transformer programme (6 Nov 2026).** A separate agent that had
+not run the work checked every number against the files, every verdict against its decision rule, the
+code, and the prose. All README numbers it checked matched the files. Its findings, and what was done:
+1. *The lab recurrent row of the phase 2 table was missing from `tlab_depth.csv`* (overwritten by a later
+   job that rewrote the file). Fixed the cause: `run_tlab_depth.py` now re-reads the file before writing;
+   the row is being regenerated.
+2. *Phase 5's noise floor was too low:* it compared random halves (about 96 samples each) while state
+   matrices use about 24, so "25 times the floor" was inflated; sticky states were also confused with
+   contexts. Rerun with floors from groups of the same size, and with labels shuffled across whole
+   contexts (`tlab_more_v2.csv`).
+3. *Pythia-14m's attribution failure was confined to its last two layers.* Checking this found a
+   software artifact (wrong float32 gradients from PyTorch's fused attention on CPU; checked against
+   float64 and the plain attention code). Rerun with plain attention, all windows, per-layer scores
+   (`tlab_pythia_v2.csv`).
+4. *Comparisons across sizes were confounded* by skip-connection entries (38 to 58% of the truth's
+   energy, weighted differently at each width) and by Pythia-70m's 24 windows. All small-network
+   configurations are being rerun with a score without skip entries (`watch_offdiag`) and their matrices
+   saved; Pythia-70m is being rerun on 48 windows.
+5. *Overclaims, corrected in place and marked:* "at initialisation correlations reflect cause and effect
+   almost perfectly" (true only of Pythia); "training is what makes these networks hard to read" (one
+   seed each); "larger models are less readable" (confounded, and contradicted across families);
+   "two properties the worms share" (the worms' own state test finds nothing in the transformer, and
+   phase 6 has no worm counterpart); phase 1's "about zero" (it is -0.17) and "strikingly worm-like"
+   individuality (set by the chosen weight noise); phase 5b's lesson for the worms (now labelled a
+   hypothesis); phase 0's stated reason for the design; phase 2's "patches cannot affect each other".
+6. *Smaller points:* phase 6's MLP result is a tie and its "training increases it" was wrong relative
+   to natural variance; phase 3's untrained point lacks the 50-step fine-tune the trained points get;
+   "base loss" is a training minibatch's loss; the phase 4 decision rule did not name a basis (the
+   residual basis is taken as primary, the MLP basis reported beside it); the 2-versus-4-layer result
+   is a tie; exploratory measures are now labelled where reported, and the 70m window change is marked
+   as a dated amendment.
 
 ## Where the data runs out (2 Nov 2026)
 

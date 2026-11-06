@@ -31,6 +31,7 @@ from nematica import tlab as T  # noqa: E402
 
 torch.set_num_threads(2)
 OUT = ROOT / "docs" / "figures" / "tlab_depth.csv"
+MAT = ROOT / "results" / "tlab" / "depth"
 
 
 def individual(base, i, steps, Tm, E):
@@ -47,8 +48,9 @@ def individual(base, i, steps, Tm, E):
 
 def matrices(net, basis, Tm, E, n_ctx=24, length=300, ridge=1e-2, seed=0):
     """Truth from batched paired runs: in every context, unit j is pushed by 1 SD at positions 20, 90,
-    160, 230 (spaced beyond the 64-token attention span, so patches cannot affect each other), and the
-    effect is read at the same positions in later blocks."""
+    160, 230 (spaced beyond the 64-token attention span of one layer; across layers the span compounds,
+    so patches can interact weakly in later layers, review 3 note), and the effect is read at the same
+    positions in later blocks."""
     L = net.cfg["L"]
     src = (basis, 0)
     dst = [(basis, l) for l in range(1, L)]
@@ -61,7 +63,7 @@ def matrices(net, basis, Tm, E, n_ctx=24, length=300, ridge=1e-2, seed=0):
     Y = Yfull.reshape(-1, Yfull.shape[-1]).numpy()
     sx, sy = X.std(0) + 1e-6, Y.std(0) + 1e-6
     J = X.shape[1]
-    pos = [20, 90, 160, 230]
+    pos = [20, 90, 160, 230]                     # spacing amended in review: see README
     width = net.cfg["D"] if basis == "resid" else net.cfg["H"]
     K = np.zeros((Y.shape[1], J))
     for j in range(J):
@@ -82,7 +84,18 @@ def matrices(net, basis, Tm, E, n_ctx=24, length=300, ridge=1e-2, seed=0):
     return K, watch, J
 
 
-def corr(a, b):
+def offdiag_mask(K, basis, J):
+    """True except the skip-connection entries (resid basis: the same dimension in a later layer)."""
+    m = np.ones(K.shape, bool)
+    if basis == "resid":
+        for blk in range(K.shape[0] // J):
+            m[blk * J + np.arange(J), np.arange(J)] = False
+    return m
+
+
+def corr(a, b, mask=None):
+    if mask is not None:
+        a = np.where(mask, a, np.nan)
     m = np.isfinite(a) & np.isfinite(b)
     return float(np.corrcoef(a[m], b[m])[0, 1])
 
@@ -101,14 +114,17 @@ def main():
         cfg = {}
     base, loss = T.base_model(steps=a.steps if a.cond == "trained" else 0, **cfg)
     ft = 50 if a.cond == "trained" else 0
-    rows = list(csv.DictReader(OUT.open())) if OUT.exists() else []
     for basis in ("resid", "mlp"):
-        Ks, scores = [], {"all": [], "half": []}
+        Ks, scores = [], {"all": [], "half": [], "off": []}
+        save = {}
         for i in range(a.n_ind):
             net = individual(base, i, ft, Tm, E)
             K, watch, J = matrices(net, basis, Tm, E, seed=i)
             Ks.append(K)
-            scores["all"].append(corr(watch(np.ones(J, bool)), K))
+            Kw = watch(np.ones(J, bool))
+            scores["all"].append(corr(Kw, K))
+            scores["off"].append(corr(Kw, K, offdiag_mask(K, basis, J)))
+            save[f"K{i}"], save[f"W{i}"] = K, Kw
             halves = [corr(watch(np.random.default_rng(50 + r).random(J) < 0.5), K) for r in range(5)]
             scores["half"].append(float(np.mean(halves)))
         ind = [corr(Ks[p], Ks[q]) for p in range(len(Ks)) for q in range(p + 1, len(Ks))]
@@ -117,11 +133,18 @@ def main():
                "base_loss": round(loss, 3) if loss == loss else "",
                "watch_all": round(float(np.median(scores["all"])), 3),
                "watch_half": round(float(np.median(scores["half"])), 3),
-               "individuals": round(float(np.median(ind)), 3), "n_ind": a.n_ind}
+               "individuals": round(float(np.median(ind)), 3), "n_ind": a.n_ind,
+               "watch_offdiag": round(float(np.median(scores["off"])), 3)}
+        key = f"{a.cond}_w{a.width}_l{a.layers}_s{row['steps']}_{basis}"
+        MAT.mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(MAT / f"{key}.npz", **save)
+        # re-read just before writing, so concurrent jobs do not erase each other's rows (review 3)
+        rows = [r for r in (csv.DictReader(OUT.open()) if OUT.exists() else [])
+                if not all(str(r.get(k)) == str(row[k]) for k in ("condition", "width", "layers", "basis", "steps"))]
         rows.append(row)
         print(row, flush=True)
         with OUT.open("w", newline="") as fh:
-            w = csv.DictWriter(fh, fieldnames=list(row), restval="")
+            w = csv.DictWriter(fh, fieldnames=list(row), restval="", extrasaction="ignore")
             w.writeheader()
             w.writerows(rows)
 

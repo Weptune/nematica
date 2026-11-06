@@ -19,7 +19,7 @@ from nematica import tlab as T  # noqa: E402
 import run_tlab_depth as TD  # noqa: E402
 
 torch.set_num_threads(1)
-OUT = ROOT / "docs" / "figures" / "tlab_more.csv"
+OUT = ROOT / "docs" / "figures" / ("tlab_more_v2.csv" if "--v2" in sys.argv else "tlab_more.csv")
 N_CTX, LENGTH, POS = 48, 300, [20, 90, 160, 230]
 
 
@@ -56,6 +56,16 @@ def analyse(net, basis, Tm, E, seed):
         h1, h2 = perm[: len(perm) // 2], perm[len(perm) // 2:]
         floor.append(corr(dys[:, h1].mean(1).T, dys[:, h2].mean(1).T))
     state_dis, floor_dis = 1 - float(np.mean(st)), 1 - float(np.mean(floor))
+    # review 3: floors with groups the same size as the state groups, (a) labels shuffled across
+    # samples, (b) labels shuffled across whole contexts (keeps the within-context grouping, so it
+    # also absorbs context differences that sticky states would otherwise be confused with)
+    def grouped(lab):
+        Kg = [dys[:, lab == s_].mean(1).T for s_ in np.unique(lab) if (lab == s_).sum() >= 10]
+        return 1 - float(np.mean([corr(Kg[a], Kg[b]) for a in range(len(Kg)) for b in range(a + 1, len(Kg))]))
+    lab2 = states.reshape(N_CTX, len(POS))
+    floor_size = float(np.mean([grouped(np.random.default_rng(400 + r_).permutation(states)) for r_ in range(10)]))
+    floor_ctx = float(np.mean([grouped(lab2[np.random.default_rng(500 + r_).permutation(N_CTX)].reshape(-1))
+                               for r_ in range(10)]))
     # phase 6: silent links (effects in low-variance directions of later-layer natural activity)
     Ys = (Y - Y.mean(0)) / sy
     _, sv, Vt = np.linalg.svd(Ys, full_matrices=False)
@@ -73,7 +83,8 @@ def analyse(net, basis, Tm, E, seed):
         Ka[i] = gi[:, POS, :].mean((0, 1)).numpy() * sx / sy[i]             # gradient for every j at once
     Xs, Ysn = (X - X.mean(0)) / sx, (Y - Y.mean(0)) / sy
     B = np.linalg.solve(Xs.T @ Xs / len(Xs) + 1e-2 * np.eye(J), Xs.T @ Ysn / len(Xs))
-    return dict(state_dissimilarity=state_dis, floor_dissimilarity=floor_dis, effect_low_share=eff_low,
+    return dict(state_dissimilarity=state_dis, floor_dissimilarity=floor_dis,
+                floor_same_size=floor_size, floor_context_shuffle=floor_ctx, effect_low_share=eff_low,
                 natural_low_share=nat_low, attribution=corr(Ka, K), watching=corr(B.T, K))
 
 
