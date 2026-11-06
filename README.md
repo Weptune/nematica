@@ -2750,6 +2750,9 @@ and that of (slope minus the pre-pulse slope, per unit, then the same aggregatio
 Caveats stated before running: the gap here is 5 s (minutes in the worm), and electrical pulses
 activate axons as well as cell bodies.
 
+Analysis code: `scripts/run_ccep_tiring.py`, written and checked for counts only (`--dry`) before any
+statistic was computed.
+
 **Also rerun:** the original human test (`scripts/run_ccep_test.py`, unchanged) on the clean extraction;
 its numbers will be reported beside the first ones, which they supersede where they differ.
 
