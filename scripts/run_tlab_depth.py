@@ -113,6 +113,7 @@ def main():
             scores["half"].append(float(np.mean(halves)))
         ind = [corr(Ks[p], Ks[q]) for p in range(len(Ks)) for q in range(p + 1, len(Ks))]
         row = {"condition": a.cond, "width": a.width, "layers": a.layers, "basis": basis,
+               "steps": a.steps if a.cond == "trained" else 0,
                "base_loss": round(loss, 3) if loss == loss else "",
                "watch_all": round(float(np.median(scores["all"])), 3),
                "watch_half": round(float(np.median(scores["half"])), 3),
@@ -120,7 +121,7 @@ def main():
         rows.append(row)
         print(row, flush=True)
         with OUT.open("w", newline="") as fh:
-            w = csv.DictWriter(fh, fieldnames=list(row))
+            w = csv.DictWriter(fh, fieldnames=list(row), restval="")
             w.writeheader()
             w.writerows(rows)
 
