@@ -3082,6 +3082,56 @@ position; the analysis will be pre-registered before any response is computed, s
 without licks (the animals were trained to lick when they felt the stimulation, and licking moves
 the whole cortex).
 
+## Mouse touch cortex: the core tests in a second species (pre-registered 6 Nov 2026)
+
+Written before any response in this data was computed; `scripts/run_touch_tests.py`. What was looked at
+first, for design only: the file structure, trial counts with and without licks, and an attempt to map
+the 200 target points onto the imaged cells. That mapping failed (the target coordinates do not align
+with the cell positions under any shift, flip or scale tried; best 20% of targets within 2.5 pixels of a
+cell, against 7.5% by chance), so targets are found from their own responses, on held-out trials.
+
+**Data.** Dalgleish et al. 2020, 11 sessions (6 mice; each session one field of view, treated as one
+individual), about 3,700 cells in 4 planes imaged at about 6.7 volumes per second. On each laser trial a
+subset (5 to 200 cells) of the same 200 targets is stimulated; catch trials have no laser. The mice were
+trained to lick when they felt the stimulation, so **only trials with no lick from 1 s before to 2 s after
+onset** are used (about 40% of laser trials; most 200-cell trials are licked).
+
+**Definitions.** Activity: each cell's fluorescence divided by its median, z-scored over rest frames.
+Rest frames: at least 3 s after any stimulation and at least 2 s from any lick. Response of a cell on a
+trial: mean over 0.3 to 1.2 s after onset minus mean over the 1 s before. Trials are split by order into
+odd and even. **Directly activated cells** ("targets"): mean response over odd laser trials at least 1.5
+and at least 5 times the cell's mean response on catch trials (to exclude licking or drift); everything
+below is scored on cells that are not targets and are not within 15 pixels of a target in the same
+plane, using even trials. Sessions with fewer than 10 targets or 20 usable laser trials are reported
+and left out.
+
+**T1, watching versus poking.** For each non-target cell: its measured response (mean over even laser
+trials); the watching prediction, its mean correlation at rest with the target cells; the distance
+prediction, minus the distance to the nearest target in the same plane (cells in other planes are left
+out of T1); the ceiling, odd against even trials. Score per session: Spearman across cells.
+*Prediction:* none favoured. *Decision:* watching beats distance if the paired difference (watching
+minus distance) has a 95% interval above 0 across sessions (resampling sessions, 2,000), loses if below
+0; otherwise no difference detected. Watching's share of the ceiling is reported beside it.
+
+**T2, tiring.** Over successive usable laser trials in a session: least-squares slope of the log of
+the targets' mean response, and of the responding non-target cells' mean response (responding: mean even
+response at least 0.5), on trial number. Statistic: network slope minus target slope (the network
+tiring beyond its input). *Decision:* the network tires if the median over sessions is below 0 with a
+sign test p < 0.05; no detectable tiring if the 95% interval of the median includes 0; otherwise
+inconclusive. Each slope is reported on its own (a target slope below 0 can be the opsin, the tool).
+
+**T3, state-dependent spread.** State before each usable laser trial: activity in the 2 s before onset
+projected on the first principal component of rest activity of non-target cells, with its sign aligned
+so the mean loading is positive. High and low: top and bottom thirds of trials. S = correlation between
+the non-target cells' mean responses in high and in low trials, minus the mean of 500 shuffles of the
+labels. *Decision:* state dependence if the median S over sessions is below 0 with a sign-flip p < 0.05
+(10,000 flips); none detected if the 95% interval includes 0 and its lower end is above -0.05; otherwise
+inconclusive.
+
+**T4, the echo's sparseness (descriptive).** Share of non-target cells whose mean even response exceeds
+1 (one resting SD), and of those, the share still above 1 from 2 to 4 s after onset, reported beside
+the worm's (about two thirds of classes respond within 30 s, and most of those keep responding).
+
 ## Running the benchmark
 
 ```powershell
