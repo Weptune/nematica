@@ -2892,6 +2892,16 @@ at least 5; (2) longer pokes lengthen runs less than slower units do; (3) strong
 runs but also widens echoes (ever respond up). *Decision:* as the numbers fall, each judged on its stated
 comparison with the unchanged network (`scripts/run_echo_persist.py`, `docs/figures/echo_persist.csv`).
 
+**Slow units in the closest network (pre-registered 6 Nov 2026, after "What could make responses last?").**
+If slower units are what the closest network lacks, adding them should not break the five properties it
+already matches. Round 9's setting (drives 0.4, silent links 0.75, spread 0.15, 30% quiet units,
+individuals differing by 0.8, pokes held 6 frames) on brains 0 and 1, with the leak per frame at 0.5
+(unchanged), 0.25 and 0.1, measured on the six ladder axes by the ladder's own code
+(`scripts/run_slow_units.py`; `run_ladder.py`'s round 9 code, deleted by mistake in an earlier commit,
+restored unchanged). *Prediction:* at leak 0.1 the root-mean-square relative error over the five axes is
+no more than 0.05 above the unchanged setting's, in both brains (persistence can be added without a
+trade-off). *Decision:* as stated; otherwise a trade-off, reported axis by axis.
+
 ## Does the brain's state change where a pulse spreads in human cortex? (pre-registered 6 Nov 2026)
 
 The worm's state-dependent spread replicated; mouse touch cortex leaned the same way but was
