@@ -1,0 +1,4 @@
+117 recordings, 74 patients, 2928 blocks
+  S, state split minus random splits (primary): median -0.0017 [95%: -0.0046, +0.0015], 30 of 54 patients below 0, sign-flip p (below) = 0.1328
+  positive control: order split (first half against second) minus random splits: median +0.0020 [95%: -0.0005, +0.0042], 21 of 54 patients below 0, sign-flip p (below) = 0.9214
+  verdict: NONE DETECTED; control check: order split differs MORE from random splits than the state split does

@@ -5,3 +5,7 @@
   non-responding channels' slope (control): median +0.0021 [95%: +0.0002, +0.0034], 28 of 74 patients below 0, sign test p = 0.0474
   pulse 2 minus pulse 1, log response: median +0.0110 [95%: +0.0029, +0.0181], 26 of 74 patients below 0, sign test p = 0.0141
   verdict: NO DETECTABLE TIRING (interval includes 0, lower end above -0.01 per pulse)
+EXPLORATORY sensitivity (review 4), blocks by unordered pair split at gaps over 6 s: 74 patients
+  slope of log response per pulse: median +0.0005 [95%: -0.0009, +0.0016], 33 of 74 patients below 0, sign test p = 0.416
+EXPLORATORY sensitivity (review 4), same blocks, window from about 18 ms (third extraction): 74 patients
+  slope of log response per pulse: median +0.0009 [95%: -0.0006, +0.0019], 30 of 74 patients below 0, sign test p = 0.13

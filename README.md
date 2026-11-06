@@ -2967,6 +2967,23 @@ too generous. *Prediction:* S below 0 (state dependence, as in worms). *Decision
 median is below 0 with sign-flip p < 0.05; none detected if the 95% interval includes 0 and its lower end
 is above -0.02; otherwise inconclusive.
 
+
+**Result (6 Nov 2026; `docs/figures/ccep_state.txt`).** All 117 recordings re-extracted (none failed);
+2,928 blocks, 54 patients with at least one block of 8 or more pulses (many blocks are 5 pulses per
+polarity). S, state split minus random splits: median -0.0017 [95%: -0.0046, +0.0015], 30 of 54 below 0,
+sign-flip p = 0.13: **no detectable state dependence** by the pre-registered rule (the interval includes
+0 and its lower end is above -0.02). The control check tripped as worded: the order split differs from
+random splits slightly more (+0.0020 [-0.0005, +0.0042]) than the state split does, though in the
+other direction; both are under 0.005, so the null is not visibly too generous at the size the rule
+cares about. **Reading:** in human cortex, the pattern a pulse produces does not change detectably with
+the cortex's state just before it, measured as the main pattern of its ongoing power. Caveats: this
+state measure is not the worm's (the main pattern of activity, over 10 s); blocks are short (8 to 10
+pulses split in halves); and the worm effect itself was small (-0.049).
+
+Human tiring sensitivities (review 4, exploratory, `ccep_tiring.txt`): blocks by unordered pair split
+at gaps over 6 s, +0.0005 per pulse [-0.0009, +0.0016]; with the response window starting at about 18 ms
+(third extraction), +0.0009 [-0.0006, +0.0019]. Unchanged.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
