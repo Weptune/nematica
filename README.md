@@ -2862,7 +2862,7 @@ withdrawn one):** with a matched readout the indicator does not make the network
 (runs barely change from 1 to 3 s of decay, because the threshold scales with the smoothed
 fluctuations too). **Persistence survives**: no network's responses last even half as long as the
 worm's. **Sparseness does not**: round 9's setting (strong drives, silent links, 30% quiet units) reaches
-the worm's share (0.58 to 0.64 against 0.65). Caveats: the worm stimulation lasts longer than a lab poke
+the worm's share (0.58 to 0.64 against 0.65). Caveats: the worm stimulation's length was not matched to the lab pokes
 (the lab holds pokes 2 to 3 s), and the worms' indicator may decay more slowly than 3 s.
 
 **Review 4: independent review of the tiring, human, mouse and echo tests (6 Nov 2026).** All reported

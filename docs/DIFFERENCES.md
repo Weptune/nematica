@@ -26,7 +26,7 @@ Systems compared:
 | **Individuality**: each individual has its own causal fingerprint | 0.089 | 0.016 to 0.028 | Silent links raise it; drives erase it | 0.087, but set by the weight noise we chose | **Dissolved, tunable.** It depends on how individuals are made |
 | **Reliability**: individuals agree on poke responses | 0.094 | 0.075 | Silent links overshoot, drives undershoot | 0.38 | **Not a difference by itself.** Depends on noise and on how similar individuals are |
 | **Echo sparseness**: share of neuron classes a poke reaches (> 3 SD) | 0.65 [0.64, 0.68] | Base 0.71 to 0.78 (matched readout, paired units) | Round 9 setting 0.58 to 0.64; quiet units overshoot (0.42 to 0.52) | Not tested | **Dissolved**: drives, silent links and some quiet units together reproduce it |
-| **Echo persistence**: how long a response lasts (mean run, frames) | 6.5 [6.2, 6.8] | 2.2 to 3.3 with a matched calcium readout (1 to 3 s decays, both brains) | At most 3.2 | Not tested | **Survives**: no network's responses last half as long; the indicator does not explain it (caveat: worm stimulation lasts longer than lab pokes) |
+| **Echo persistence**: how long a response lasts (mean run, frames) | 6.5 [6.2, 6.8] | 2.2 to 3.3 with a matched calcium readout (1 to 3 s decays, both brains) | At most 3.2 | Not tested | **Survives**: no network's responses last half as long; the indicator does not explain it (caveat: the worm stimulation's length was not matched to the lab pokes, held 2 to 3 s) |
 | **Sensory neurons harder to copy** | Not detected | n/a | n/a | n/a | No evidence either way |
 
 ## What this says, plainly
@@ -60,7 +60,7 @@ Systems compared:
 - **Tiring:** a worm test with the same neuron driven by others at matched strength, and a human test
   on the stimulated tissue itself (needs a cleaner way round the stimulation artefact near the pair).
 - **The sustained echo**: what makes a worm's responses last (slow synapses, neuromodulators, recurrent
-  loops, or the longer stimulation); add each to the lab networks with poke length matched to the worm's.
+  loops, or the stimulation's length); add each to the lab networks with poke length matched to the worm's.
 - **The worm kind of state dependence beyond the worm**: mouse touch cortex leaned yes (inconclusive);
   the human test is running.
 
