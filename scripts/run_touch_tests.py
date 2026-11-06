@@ -208,5 +208,26 @@ def main():
     (FIG / "touch_tests.txt").write_text(text + "\n")
 
 
+def explore():
+    """Exploratory checks added after the pre-registered run (review 4 asked for the code): T1 against
+    catch-trial 'responses' (no laser), and T1 on laser minus catch responses."""
+    src = open(__file__).read()
+    body = src.split("def session(sess, dry=False):")[1].split("    # T2:")[0]
+    ns = {}
+    exec(compile("def _s(sess, dry=False):" + body + "    return watch, dist, m, R, C, non, even\n", "x", "exec"), globals(), ns)
+    rows = []
+    for r in csv.DictReader((FIG / "touch_sessions.csv").open()):
+        if r.get("included") != "1":
+            continue
+        watch, dist, m, R, C, non, even = ns["_s"](r["session"])
+        y = even[non][m]
+        yc = C[non][m].mean(1)
+        rows.append((spearmanr(watch[m], y).statistic, spearmanr(watch[m], yc).statistic,
+                     spearmanr(watch[m], y - yc).statistic, spearmanr(-dist[m], y - yc).statistic))
+    o = np.array(rows)
+    print(f"watching vs laser {np.median(o[:, 0]):+.3f}, vs catch {np.median(o[:, 1]):+.3f} (laser better in {(o[:, 0] > o[:, 1]).sum()} of {len(o)}); "
+          f"on laser minus catch: watching {np.median(o[:, 2]):+.3f}, distance {np.median(o[:, 3]):+.3f}, watching minus distance positive in {(o[:, 2] > o[:, 3]).sum()} of {len(o)}")
+
+
 if __name__ == "__main__":
-    main()
+    explore() if "--explore" in sys.argv else main()

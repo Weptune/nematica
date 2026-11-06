@@ -16,3 +16,4 @@ EXPLORATORY (after the pre-registered run): responsiveness control, window 600; 
   groups     direct -0.360 [-0.555, -0.202];  driven +0.456 [+0.347, +0.547];  order -0.297 [-0.512, -0.092];  pre -0.043 [-0.088, +0.006];  drive_after +0.177 [+0.105, +0.243]; n = 1969
   continuous direct -0.359 [-0.532, -0.224];  drive +0.179 [+0.116, +0.239];  order -0.257 [-0.441, -0.098];  pre -0.064 [-0.100, -0.025];  drive_after +0.160 [+0.102, +0.211]; n = 2789
 EXPLORATORY: continuous drive before minus after: +0.019 [90%: -0.058, +0.110]
+EXPLORATORY (review 4): within-neuron fit (each worm's neuron its own fixed effect; poked at least twice), n = 1007: direct -0.560 [90%: -0.735, -0.412]; drive per SD -0.103 [-0.172, -0.027]; other pokes in window +0.015 [-0.013, +0.044]

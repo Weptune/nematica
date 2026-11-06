@@ -2717,14 +2717,23 @@ response to other neurons' pokes in the 5 min *after* its own was added as a con
 nearly symmetric: per SD of drive, +0.18 before and +0.16 after; before minus after +0.02 [-0.06,
 +0.11]. Tiring by activity would make the history matter more than the future, in the negative
 direction; it does not, within about -0.06 per SD of drive. A direct poke costs about -0.19 per SD of
-the neuron's own response (-0.38 over a typical 2 SD response).
+the neuron's own response (-0.38 over a typical 2 SD response). *(Review 4: the "after" control is not a
+valid null, since a neuron that tires would also answer less to later pokes; and the "typical 2 SD" is
+not in any output. Both sentences are withdrawn as evidence. The -0.38 is the uncorrected B1-like
+effect, not B1's corrected -0.28.)*
 
-**Reading.** In the atlas, being active does not detectably tire a worm neuron; being lit does. That
-points to the light-gated channel (or something else about direct light) as the source of the
-repeat-poke drop, not the neuron, though the bound is loose and indirect activation is weaker than
-direct. So the strongest of the two surviving differences between worms and artificial networks may
-belong to the tool. The decisive test is a species poked without a light-gated channel: the human
-recordings (repeated electrical pulses) are next in `docs/DIFFERENCES.md`.
+*Exploratory refit after review 4* (`tiring_source.txt`, last line): comparing each neuron only with
+itself (each worm's neuron its own fixed effect; 1,007 stimulations of neurons poked at least twice),
+with the number of other pokes in the window as a covariate: direct poke before -0.56 [90%: -0.74,
+-0.41]; **being driven by other neurons, per SD of drive, -0.10 [-0.17, -0.03]**; other pokes +0.015
+[-0.013, +0.044]. Within a neuron, being driven without light *does* go with a smaller next response.
+
+**Reading (corrected after review 4; the first reading said "being active does not detectably tire a
+worm neuron; being lit does").** By the pre-registered rule the test is inconclusive. Its positive
+coefficient came from comparing different neurons, some more responsive than others; compared with
+itself, a neuron recently driven by other neurons answers less, about a sixth as much per SD of drive
+as after being lit directly. So activity itself may tire worm neurons. Whether the larger drop after a
+direct poke is the neuron or the light-gated channel stays open.
 
 ## Do human cortical responses tire? (pre-registered 6 Nov 2026)
 
@@ -2774,11 +2783,17 @@ Slope minus the pre-pulse slope: +0.0012 [+0.0003, +0.0025]. Pulse 2 minus pulse
 pre-registered rule: across a block of about 10 pulses the response changes by less than 1.5%, against
 the worm's drop of about a quarter at the second poke.
 
-**Reading.** Human cortex, poked electrically, does not answer less when poked again (at 5 s gaps).
-Together with the worm test above (activity alone does not tire a worm neuron; being lit does), the
-worm's repeat-poke drop is most likely a property of the light-gated tool, not of neurons. This
-removes the strongest remaining candidate difference between biological and artificial networks found
-so far. Caveats: the human gap is 5 s against minutes in the worm, electrical pulses also drive axons,
+**Reading (corrected after review 4; the first reading said the worm's drop "is most likely a property
+of the light-gated tool" and that this "removes the strongest remaining candidate difference").** The
+channels scored here are more than 10 mm from the pulse, so this measures the *network's* response, the
+analogue of the worm's echo, not the stimulated tissue's own response (the worm's clear drop, -0.28, is
+the stimulated neuron's own; the worm echo's drop was small, -0.04 [-0.19, +0.12] after noise
+correction). Human network responses do not decline across about 10 pulses 5 s apart; the stimulated
+tissue was not measured. Sensitivity (review 4): with stricter responders (ratio at least 4: 43,140
+units; at least 8: 10,830) the slope stays near 0 (+0.0012 and +0.0017 per pulse). Relative to
+non-responding channels, which drift up (+0.0021), responders fall about 0.0017 per pulse; and the
+measure includes ongoing activity, which dilutes the evoked part. Some blocks are not independent
+same-site runs (polarity reversals after 5 pulses; one run spans a 130 s gap). Caveats: the human gap is 5 s against minutes in the worm, electrical pulses also drive axons,
 the patients have epilepsy, and the response window (10 to 100 ms) is an average over early and later
 components.
 
@@ -2828,10 +2843,12 @@ decays over about a second and a half, and the networks' is not. With the same d
 networks' traces (`--calcium`, `echo_sparse_calcium.csv`), their responses last as long as the worm's
 (base 3 frames, mean 5.2; drives 4, mean 7.0; worm 3, mean 6.5), but more of their units cross the
 threshold (0.78 to 0.89 against 0.65) and the responding set changes slightly more often (0.95 against
-0.88). **Reading:** the "sustained" half of the worm's echo is mostly the indicator, the tool again; the
-"sparse" half survives: with matched readout, a worm's poke reaches fewer of its neurons than any
-network's here, and the one ingredient that narrows echoes (quiet units) overshoots and breaks other
-properties.
+0.88). *First reading, withdrawn after review 4:* "the sustained half of the worm's echo is mostly the
+indicator; the sparse half survives." The check filtered the networks' traces after measurement noise
+was added (in worms, camera noise is added after the indicator), so filtered noise itself makes
+multi-frame runs and changes the threshold; the 1.5 s decay was chosen after the result; only base and
+D reached worm-like runs; and worm classes average their neurons while lab units are single. A matched
+re-test is below.
 
 ## Does the brain's state change where a pulse spreads in human cortex? (pre-registered 6 Nov 2026)
 
@@ -3223,18 +3240,24 @@ first run is kept as `touch_tests_run1_unusable.txt`).** 7 of 11 sessions includ
   laser minus catch responses (the part caused by the light), watching is at 0.00 and distance at -0.02.
   So, as in mouse hippocampus, what watching predicts here is the cells' ordinary co-activity at trial
   times, not the effect of the poke; and with groups of 5 to 200 cells cycling, the poke-specific signal
-  is too weak for either predictor. **No reading about watching versus poking in this data.**
+  is too weak for either predictor. *(Corrected after review 4: "about as well" overstated it, 0.04 is less
+  than half of 0.09; on laser minus catch, watching minus distance is +0.042, positive in 5 of 7, with no
+  ceiling computed. The pre-registered verdict stands, with the caveat that part of what watching predicts
+  is trial-locked co-activity. The exploratory code is now in `run_touch_tests.py --explore`.)*
 - *T2:* targets' slope -0.0018, network -0.0016 per trial; network minus target +0.0002 [-0.0061,
-  +0.0075], 3 of 7 below 0: **no detectable tiring** of the network beyond its input (a second species,
-  again).
+  +0.0075], 3 of 7 below 0: **no detectable tiring** by the rule, but *uninformative (review 4)*: the rule
+  had no equivalence bound and the interval allows a 30% to 50% decline over a session; the target slope
+  uses only trials above 3 SD, which truncates a decline; the lick-free trial mix can change with order.
 - *T3:* S median -0.085 [-0.122, -0.005], 6 of 7 below 0, sign-flip p = 0.066: **inconclusive by the
   rule**, in the direction of state dependence (the 95% interval lies below 0, but the pre-registered
   test needs p < 0.05).
-- *T4:* averaged over all trials, 0.1% of non-target cells move by more than 1 SD and none of them is
-  still above it 2 to 4 s later. Because each trial hits only a small group, this says the averaged echo
+- *T4:* averaged over all trials, 0.1% of non-target cells move by more than 1 SD; of those, the share
+  still above it 2 to 4 s later is 0 in most sessions (1.0 in one; corrected after review 4, which caught
+  "none of them"). Because each trial hits only a small group, this says the averaged echo
   is very sparse, not how sparse a single echo is; it is not comparable with the worm number.
 
-**Reading.** This data can test tiring (no network tiring) and leans towards state dependence, but its
+**Reading (corrected after review 4).** This data leans towards state dependence; its tiring test is
+uninformative; and its
 stimulation design (small groups cycling through 200 targets, most large-group trials licked) cannot
 separate watching from poking. A dataset that stimulates the same small group many times, without
 behaviour, is what that test needs.
