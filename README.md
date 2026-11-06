@@ -2471,6 +2471,19 @@ through attention to the token stream, which a lagged linear model of the units 
 *Decision:* by those thresholds; between them (or at or below 0.8 and 16%), it is reported as
 intermediate (or worm-like). If individuals agree below 0.05 the test is unusable.
 
+*Phase 1 result, six axes (`docs/figures/tlab_phase1.csv`; the full ruler is pending: it ran out of
+memory beside other jobs).* Trained: watching share -0.17, echo breadth 0.13, tiring -0.002, rest
+dimensionality 0.51, individuality 0.087, reliability 0.38, evoked share 0.54. Untrained: -0.002, 0.011,
+0.000, 0.36, 0.028, 0.84, 0.83. Worms: 0.61, 0.085, -0.42, 0.43, 0.089, 0.094, 0.42. **The prediction is
+refuted, in the opposite direction**: the trained transformer is not copyable by watching at all
+(watching agreement about zero, below the worms' 0.61 and far below the recurrent networks' 1.3 or
+more), although its individuals agree with each other (0.38) and its pokes stand out (0.54). So is the
+untrained one. Reading: in a transformer a poke's effect lands on later layers within the same token,
+and a model of how activity follows activity from one token to the next cannot see that kind of cause
+and effect at all; phase 2 measures it directly in depth. On other axes the trained transformer is
+strikingly worm-like: individuality 0.087 against 0.089, resting structure 0.51 against 0.43. It does
+not tire (-0.002 against the worms' -0.42).
+
 **Phase 2: the test in depth, with known truth (pre-registered 6 Nov 2026).** In a transformer, most
 cause and effect runs through depth within one forward pass, where exact intervention effects are
 known. True effect matrix: the change in each later-layer unit when a first-block unit is pushed by
