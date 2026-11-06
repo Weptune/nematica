@@ -45,32 +45,32 @@ def individual(base, i, steps, Tm, E):
     return net
 
 
-def matrices(net, basis, Tm, E, n_ctx=12, length=300, n_pos=24, ridge=1e-2, seed=0):
+def matrices(net, basis, Tm, E, n_ctx=24, length=300, ridge=1e-2, seed=0):
+    """Truth from batched paired runs: in every context, unit j is pushed by 1 SD at positions 20, 90,
+    160, 230 (spaced beyond the 64-token attention span, so patches cannot affect each other), and the
+    effect is read at the same positions in later blocks."""
     L = net.cfg["L"]
     src = (basis, 0)
     dst = [(basis, l) for l in range(1, L)]
     g = np.random.default_rng(seed)
-    toks = [torch.tensor(T.sample(Tm, E, length, g))[None] for _ in range(n_ctx)]
+    toks = torch.tensor(np.array([T.sample(Tm, E, length, g) for _ in range(n_ctx)]))
     with torch.no_grad():
-        recs = [net(t)[1] for t in toks]
-    X = torch.cat([r[src][0] for r in recs]).numpy()                       # (N, J)
-    Y = torch.cat([torch.cat([r[d][0] for d in dst], -1) for r in recs]).numpy()   # (N, I)
+        rec = net(toks)[1]
+    X = rec[src].reshape(-1, rec[src].shape[-1]).numpy()                                   # (N, J)
+    Yfull = torch.cat([rec[d] for d in dst], -1)                                           # (B, T, I)
+    Y = Yfull.reshape(-1, Yfull.shape[-1]).numpy()
     sx, sy = X.std(0) + 1e-6, Y.std(0) + 1e-6
     J = X.shape[1]
-    # truth: push unit j by 1 SD at n_pos positions per context; effect on the same position's later units
+    pos = [20, 90, 160, 230]
+    width = net.cfg["D"] if basis == "resid" else net.cfg["H"]
     K = np.zeros((Y.shape[1], J))
     for j in range(J):
-        acc = []
-        for c, t in enumerate(toks):
-            pos = g.choice(np.arange(20, length), n_pos, replace=False)
-            width = net.cfg["D"] if basis == "resid" else net.cfg["H"]
-            z = torch.zeros(1, length, width)
-            z[0, pos, j] = float(sx[j])
-            with torch.no_grad():
-                r = net(t, {src: z})[1]
-            dy = torch.cat([r[d][0] for d in dst], -1).numpy() - torch.cat([recs[c][d][0] for d in dst], -1).numpy()
-            acc.append(dy[pos])
-        K[:, j] = np.concatenate(acc).mean(0) / sy
+        z = torch.zeros(n_ctx, length, width)
+        z[:, pos, j] = float(sx[j])
+        with torch.no_grad():
+            r = net(toks, {src: z})[1]
+        dy = (torch.cat([r[d] for d in dst], -1) - Yfull)[:, pos].reshape(-1, Y.shape[1]).numpy()
+        K[:, j] = dy.mean(0) / sy
     Xs, Ys = (X - X.mean(0)) / sx, (Y - Y.mean(0)) / sy
 
     def watch(seen):

@@ -2405,7 +2405,7 @@ size, consistency across contexts, evoked share (worms about 0.4). Chooses the d
 **Phase 2: the test in depth, with known truth (pre-registered 6 Nov 2026).** In a transformer, most
 cause and effect runs through depth within one forward pass, where exact intervention effects are
 known. True effect matrix: the change in each later-layer unit when a first-block unit is pushed by
-one natural SD (paired runs, averaged over 12 contexts x 24 positions). Watching estimate: ridge
+one natural SD (paired runs, averaged over 24 contexts x 4 positions spaced beyond the attention span, so patches cannot affect each other; changed from "12 contexts x 24 positions" before any run finished, for speed). Watching estimate: ridge
 regression of later-layer units on first-block units across natural activations. Score: correlation
 of the two over all pairs, with every first-block unit seen or a random half seen (unseen units are
 then unknown confounders, as unrecorded neurons are in worms); reference: two individuals' true
