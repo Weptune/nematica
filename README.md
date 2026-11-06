@@ -2850,6 +2850,23 @@ multi-frame runs and changes the threshold; the 1.5 s decay was chosen after the
 D reached worm-like runs; and worm classes average their neurons while lab units are single. A matched
 re-test is below.
 
+**Review 4: independent review of the tiring, human, mouse and echo tests (6 Nov 2026).** All reported
+numbers matched their files (one factual slip, the mouse T4 "none"), and every verdict followed its rule.
+Its major findings changed the conclusions, and are applied above, marked:
+1. The tiring-source test's "after" control was not a valid null; a within-neuron refit reverses the
+   reading (activity does lower a neuron's next response). "Tiring was the tool" is withdrawn.
+2. The human tiring test measured the network (channels beyond 10 mm), the analogue of the worm's echo,
+   not of the stimulated neuron's own response, which is where the worm's clear drop is.
+3. The mouse tiring test had no equivalence bound; its interval allows a 30% to 50% decline.
+4. The echo calcium check filtered measurement noise as well as activity, and worm classes average
+   their neurons while lab units are single; "sustained was the indicator" and "sparseness survives" are
+   withdrawn pending a matched re-test (`scripts/run_echo_matched.py`).
+5. The mouse watching checks were misdescribed and their code was not committed (now
+   `run_touch_tests.py --explore`).
+Minor: responder-threshold and block-definition sensitivities for the human test (stated above); the
+blanking window ends 1 ms before the response window, so a sensitivity with the window from 15 ms will
+be run on the third extraction; dated amendments; DIFFERENCES.md updated.
+
 ## Does the brain's state change where a pulse spreads in human cortex? (pre-registered 6 Nov 2026)
 
 The worm's state-dependent spread replicated; mouse touch cortex leaned the same way but was
