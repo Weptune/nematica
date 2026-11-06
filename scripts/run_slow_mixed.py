@@ -27,22 +27,33 @@ def leak_vec(kind, seed):
     return np.where(slow, 0.1, 0.5)
 
 
+def with_leak(rec, vec):
+    """The recording function with the mixed leak in force only while recording (the brain is built with
+    the ordinary scalar leak, as its drive scaling needs)."""
+    def f(*a, **k):
+        L.LEAK = vec
+        try:
+            return rec(*a, **k)
+        finally:
+            L.LEAK = 0.5
+    return f
+
+
 def main():
     worm = {k: float(v) for k, v in next(csv.DictReader((LD.FIG / "ladder_worms.csv").open())).items()}
     rows = []
     rec0 = LD.record
     for seed in (0, 1):
         for kind in ("quiet", "random"):
-            L.LEAK = leak_vec(kind, seed)
+            vec = leak_vec(kind, seed)
             LD.KICK_HOLD["frames"] = 6
-            LD.record = rec0
+            LD.record = with_leak(rec0, vec)
             ws = [W1.Worm(r, valid_fn=lambda c: True) for r in LD.param_recs(PR, seed, sigma=0.8)]
             fp = LD.fingerprint(ws)
             EM.TAU["t"] = 1.5
-            LD.record = EM.record_ca
+            LD.record = with_leak(EM.record_ca, vec)
             M = EM.per_rec(EM.paired(LD.param_recs(PR, seed, n_ind=30, sigma=0.8)))
             LD.record = rec0
-            L.LEAK = 0.5
             LD.KICK_HOLD["frames"] = LD.KICK_FRAMES
             rel = [abs(fp[a] - worm[a]) / abs(worm[a]) for a in LD.FIT_AXES]
             med = np.median(M, axis=0)

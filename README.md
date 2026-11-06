@@ -2929,7 +2929,9 @@ individual. The worm's echo stays a candidate difference, as a combination.
 systems mix fast and slow cells. Round 9's setting with a time constant of 5 s (leak 0.1) on 30% of units
 only, either (a) the quiet units or (b) a random 30%, the rest unchanged (leak 0.5); brains 0 and 1;
 measured on the six ladder axes and on the matched-readout echo (decay 1.5 s, paired units, 30
-individuals) (`scripts/run_slow_mixed.py`). *Prediction:* in at least one of (a) and (b), in both brains,
+individuals) (`scripts/run_slow_mixed.py`; the brain is built with the ordinary leak, which its drive
+scaling uses, and the mixed leak applies while recording; fixed after a first launch crashed, before any
+result). *Prediction:* in at least one of (a) and (b), in both brains,
 the mean run is at least 5 frames while the five-axis error stays at or below 0.30. *Decision:* as
 stated; otherwise the trade-off stands.
 
