@@ -60,7 +60,7 @@ class Patcher:
     def run(self, ids, patch=None, grad=False):
         self.patch, self.rec = patch, {}
         with torch.set_grad_enabled(grad):
-            self.m(ids)
+            self.m.gpt_neox(ids)
         return dict(self.rec)
 
 
@@ -110,7 +110,8 @@ def analyse(model, ids, basis, attribution=True):
 
 def load(name, revision=None):
     from transformers import AutoModelForCausalLM, AutoTokenizer
-    m = AutoModelForCausalLM.from_pretrained(name, revision=revision) if revision else AutoModelForCausalLM.from_pretrained(name)
+    kw = {"dtype": torch.float32}
+    m = AutoModelForCausalLM.from_pretrained(name, revision=revision, **kw) if revision else AutoModelForCausalLM.from_pretrained(name, **kw)
     m.eval()
     return m, AutoTokenizer.from_pretrained("EleutherAI/pythia-14m")
 
