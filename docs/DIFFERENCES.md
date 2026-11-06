@@ -19,7 +19,7 @@ Systems compared:
 | Property | Worm | Recurrent nets | Lab + biology | Transformer | Verdict |
 |---|---|---|---|---|---|
 | **Copyable by watching** (recorded activity predicts poke responses) | No: 4 to 16% of worm-to-worm agreement | Yes: random 51 to 82%, trained 75 to 91% | Drives plus silent links: 18 to 19%, near the worm | In time: no, but trivially (effects land in depth, not in later tokens). In depth: partly; correlations recover 0.31 to 0.71 of the residual stream's cause and effect and 0.05 to 0.47 in the computing (MLP) units; training lowers it | **Dissolved as a categorical difference.** Hidden shared signals and training both produce it in artificial networks. It separates worms from the small recurrent nets we tested, not biology from artificial networks |
-| **Tiring**: a neuron answers less when poked again | Yes: about a quarter less (D -0.28 after selection correction) | No (-0.02) | Adding stimulation that weakens with use reaches only -0.13: saturating units hide it | No (-0.002) | **Survives.** No artificial network we built reproduces it. Open: the neuron or the light-activated channel? |
+| **Tiring**: a neuron answers less when poked again | Yes: about a quarter less (D -0.28 after selection correction) | No (-0.02) | Adding stimulation that weakens with use reaches only -0.13: saturating units hide it | No (-0.002) | **Survives in the data, but probably the tool.** No artificial network reproduces it; but in the atlas, being driven by other neurons (no light) does not tire a neuron, only being lit does (exploratory bound). Next: humans, poked electrically |
 | **State-dependent spread** along the main resting pattern | Yes (-0.049, p = 0.002); replicated in new worms (-0.080, p = 0.033) | Only with strong slow drives | One of two brains (p = 0.0008; p = 0.12) | No on this test (p = 0.39); yes on the language's true hidden state, strongly | **Partly survives.** Artificial networks depend on state too, but not on their main resting pattern; the worm's kind of state dependence is reproduced only with slow drives |
 | **Echo breadth**: share of neurons a poke moves | 0.085 | 0.095 to 0.100 | Modules: no detectable narrowing | 0.133 | **Weak.** Close in recurrent nets; transformers wider. Combined with tiring and the rest, no ingredient combination matches all axes at once |
 | **Resting structure**: variance in the top 3 patterns | 0.43 | 0.25 to 0.27 | Drives: 0.40 to 0.43 | 0.51 | **Dissolved.** One ingredient (shared slow drives) produces it |
@@ -33,9 +33,11 @@ Systems compared:
    copy by watching, but so are trained transformers in their computing units, and so are artificial
    networks once they have signals no recording sees. This was the project's first headline, and the
    transformer work is what showed it is not a brain-only property.
-2. **Two differences survive every artificial network we built.**
+2. **Two differences survive every artificial network we built, one of them shakily.**
    - *Use-dependence*: worm neurons answer less the second time; no artificial network does, and
-     simply weakening the input does not reproduce it.
+     simply weakening the input does not reproduce it. But the first test of its source (6 Nov)
+     found that activity alone does not tire a worm neuron; light on it does. So this may be the
+     light-gated channel, not the neuron, until it is seen in a brain poked another way.
    - *The kind of state dependence*: in worms, where a poke spreads depends on the main pattern of
      resting activity; in artificial networks, state dependence exists but follows other variables.
 3. **The worm's whole profile is not reproduced.** No combination of five biological ingredients
@@ -47,11 +49,12 @@ Systems compared:
 
 ## What would settle the surviving differences
 
-- **Is the tiring the neuron or the tool?** In the worm atlas, does the drop recover with the time
-  between pokes as the light-activated channel's known kinetics predict, and do downstream neurons
-  drop in proportion? (Existing data.)
-- **Does tiring appear beyond the worm?** Human brains: repeated single pulses at the same site
-  (74 people, data in hand). Mouse touch cortex: repeated stimulation of the same groups (data in
+- **Is the tiring the neuron or the tool?** First test done (README, "Is it the neuron or the tool
+  that tires?"): neurons driven by other neurons, with no light on them, do not answer less later
+  (inconclusive by the pre-registered rule; exploratory bound points to the tool).
+- **Does tiring appear beyond the worm?** This is now the decisive test. Human brains: repeated single pulses at the same site
+  (74 people; the per-pulse responses need re-extraction from the raw recordings on the laptop, which
+  the pulse-artifact fix needs anyway). Mouse touch cortex: repeated stimulation of the same groups (data in
   hand). If responses drop with repetition there too, use-dependence is a general biological
   property; if not, it may be the worm or the method.
 - **Can a known mechanism produce it in an artificial network** without breaking the other axes?

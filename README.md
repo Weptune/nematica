@@ -2664,8 +2664,9 @@ own response a. Covariates, from the window of 600 frames (5 min) before f, coun
 whose own 15 s response window ends before f:
 - *direct before*: k itself was stimulated in the window (1 or 0);
 - *driven*: the largest response of k to a stimulation of another neuron in the window (not of k's
-  class, and the stimulated neuron not among the three nearest positioned neurons to k, positions and
-  z scaling 4 as in the neighbour tests, so that no light could have reached k), k counted as driven
+  class, and neither neuron among the other's three nearest positioned neurons, positions and
+  z scaling 4 as in the neighbour tests, so that no light could have reached k; *amended before
+  running: first written one-way, "the stimulated neuron not among the three nearest to k"*), k counted as driven
   if that largest response is at least 1.0 SD and as not driven if it is below 0.5 SD; stimulations
   between 0.5 and 1.0 are left out of the primary test; at least one stimulation of another neuron in
   the window is required either way, so both groups follow a poke elsewhere;
@@ -2688,6 +2689,30 @@ responses, a third of the direct effect); otherwise inconclusive. Sensitivity (r
 decisive): the largest indirect response as a continuous covariate instead of the two groups; a 2 min
 window. Power caveat, stated before running: indirect responses are usually much smaller than direct
 ones, so even a real effect may be small.
+
+**Result (6 Nov 2026; `docs/figures/tiring_source.txt`).** 104 worms, 2,914 direct stimulations
+(662 after being driven, 1,401 not driven, 212 after a direct poke). Positive control passes: a
+direct poke in the previous 5 min lowers the next own response, -0.38 [-0.57, -0.23] in log units
+(about a third smaller), the B1 effect recovered. The test: being driven by another neuron's poke
+beforehand goes with a *larger* own response, +0.51 [+0.39, +0.60] (within-class shuffle p = 1.0 for
+an effect below 0). **Inconclusive by the pre-registered rule** (the interval lies above 0, a case the
+rule did not foresee), and the opposite of tiring by activity. Sensitivity: continuous drive +0.20
+[+0.13, +0.26]; 2 min window +0.38 [+0.24, +0.51], direct -0.67 [-1.06, -0.31].
+
+*Exploratory, after seeing that result.* A positive link is what a neuron's lasting responsiveness
+would produce (a well-tracked or strongly expressing neuron answers every poke more), so k's largest
+response to other neurons' pokes in the 5 min *after* its own was added as a control. The two are
+nearly symmetric: per SD of drive, +0.18 before and +0.16 after; before minus after +0.02 [-0.06,
++0.11]. Tiring by activity would make the history matter more than the future, in the negative
+direction; it does not, within about -0.06 per SD of drive. A direct poke costs about -0.19 per SD of
+the neuron's own response (-0.38 over a typical 2 SD response).
+
+**Reading.** In the atlas, being active does not detectably tire a worm neuron; being lit does. That
+points to the light-gated channel (or something else about direct light) as the source of the
+repeat-poke drop, not the neuron, though the bound is loose and indirect activation is weaker than
+direct. So the strongest of the two surviving differences between worms and artificial networks may
+belong to the tool. The decisive test is a species poked without a light-gated channel: the human
+recordings (repeated electrical pulses) are next in `docs/DIFFERENCES.md`.
 
 ## Where the data runs out (2 Nov 2026)
 
