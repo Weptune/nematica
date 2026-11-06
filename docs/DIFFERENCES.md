@@ -54,8 +54,8 @@ Systems compared:
   that tires?"): neurons driven by other neurons, with no light on them, do not answer less later
   (inconclusive by the pre-registered rule; exploratory bound points to the tool).
 - **Does tiring appear beyond the worm?** This is now the decisive test. Human brains: repeated single pulses at the same site
-  (74 people; the per-pulse responses need re-extraction from the raw recordings on the laptop, which
-  the pulse-artifact fix needs anyway). Mouse touch cortex: repeated stimulation of the same groups (data in
+  (74 people; re-extraction with per-pulse responses and the pulse artifact removed is running in the
+  cloud workspace, started 6 Nov). Mouse touch cortex: repeated stimulation of the same groups (data in
   hand). If responses drop with repetition there too, use-dependence is a general biological
   property; if not, it may be the worm or the method.
 - **Can a known mechanism produce it in an artificial network** without breaking the other axes?
