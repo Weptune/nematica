@@ -1,0 +1,1 @@
+EXPLORATORY (clean extraction): Spearman with 1/distance, median over 74 patients: pre-pulse strength (-50 to -10 ms) +0.055; response strength (10 to 100 ms) +0.407

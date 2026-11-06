@@ -2753,6 +2753,23 @@ activate axons as well as cell bodies.
 Analysis code: `scripts/run_ccep_tiring.py`, written and checked for counts only (`--dry`) before any
 statistic was computed.
 
+**Result (6 Nov 2026; `docs/figures/ccep_tiring.txt`).** All 117 recordings re-extracted (none failed),
+74 patients, 186,466 responding units, 36,619 non-responding. Slope of log response per pulse (primary):
+median over patients +0.0004 [95%: -0.0008, +0.0015], 36 of 74 patients below 0 (sign test p = 0.91).
+Slope minus the pre-pulse slope: +0.0012 [+0.0003, +0.0025]. Pulse 2 minus pulse 1: +0.011 [+0.003,
++0.018] (the second pulse is, if anything, slightly larger). Controls: pre-pulse slope -0.0008 [-0.0020,
++0.0011]; non-responding channels +0.0021 [+0.0002, +0.0034]. **No detectable tiring** by the
+pre-registered rule: across a block of about 10 pulses the response changes by less than 1.5%, against
+the worm's drop of about a quarter at the second poke.
+
+**Reading.** Human cortex, poked electrically, does not answer less when poked again (at 5 s gaps).
+Together with the worm test above (activity alone does not tire a worm neuron; being lit does), the
+worm's repeat-poke drop is most likely a property of the light-gated tool, not of neurons. This
+removes the strongest remaining candidate difference between biological and artificial networks found
+so far. Caveats: the human gap is 5 s against minutes in the worm, electrical pulses also drive axons,
+the patients have epilepsy, and the response window (10 to 100 ms) is an average over early and later
+components.
+
 **Also rerun:** the original human test (`scripts/run_ccep_test.py`, unchanged) on the clean extraction;
 its numbers will be reported beside the first ones, which they supersede where they differ.
 
@@ -2880,6 +2897,20 @@ Not pre-registered, exploratory (on the 116 recordings reviewed): distance beat 
 patients' pokes (+0.101, +0.087 to +0.116; 71 of 73), which must not be read as a fact about human cortex. A post-hoc re-extraction that
 blanks and interpolates a few milliseconds around each pulse before any filtering is needed
 before any claim about human brains; it requires the raw recordings again.
+
+**Rerun on the clean extraction (6 Nov 2026; `docs/figures/ccep_v2/`; pre-registered in "Do human cortical
+responses tire?"; scoring code unchanged).** Stimulation artefact blanked from 2 ms before to 9 ms after
+each pulse in the raw signal, before any filtering; all 117 recordings, 74 patients. The artefact's leak
+is gone: the pre-pulse strength (-50 to -10 ms) now hardly follows distance (Spearman with 1/distance,
+median over patients +0.055, against about 0.35 to 0.39 before; exploratory check,
+`artifact_check.txt`), while the response still does (+0.41). Median Spearman across patients: ceiling
+0.69; distance 0.45; other patients' pokes 0.35; watching copy 0.30 (same-sign pulse 0.13); beyond 20 mm
+distance 0.27, others 0.22, watching 0.18. (1) Watching minus distance: -0.130 (95% interval -0.145 to
+-0.115; positive in 1 of 74 patients); beyond 20 mm -0.087 (-0.105 to -0.069; 8 of 74). (2) Other
+patients minus watching: +0.036 (+0.016 to +0.055; 50 of 74). **The first result stands on clean data**:
+a linear watching copy of human cortex predicts its responses to pokes worse than distance alone, and
+worse than other people's measured responses. The caveat above about the artefact no longer applies;
+the one about a crude linear copy still does.
 
 Disclosed deviations from the analysis details: patient scores are weighted by the number of
 pairs (unweighted gives the same result); stimulated pairs with fewer than 4 pulses are dropped;
