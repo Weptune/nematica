@@ -2443,7 +2443,7 @@ as phase 2 (`scripts/run_tlab_more.py`).
 Hugging Face, so the depth test runs on real models: Pythia-14m (6 layers, width 128, 512 MLP units
 per layer) trained with 10 different seeds (EleutherAI's PolyPythia: `pythia-14m` and
 `pythia-14m-seed1` to `seed9`), its training checkpoints (steps 0, 1,000, 8,000, 33,000 and the final
-143,000), and Pythia-70m (width 512) with 3 seeds, residual basis only. Inputs: WikiText-103 test text
+143,000), and Pythia-70m (width 512) with 3 seeds, residual basis only (24 windows instead of 48, after a first run ran out of memory). Inputs: WikiText-103 test text
 (kept locally, not redistributed), 48 windows of 256 tokens. Truth: one push of 1 SD per unit at
 position 200 of every window (Pythia attends over the whole context, so one patched position per
 window keeps patches from interacting), read at the same position in later layers. Watching: ridge

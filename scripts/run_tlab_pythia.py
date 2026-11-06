@@ -16,7 +16,9 @@ import torch
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "figures" / "tlab_pythia.csv"
 TEXT = ROOT / "data" / "external" / "wikitext" / "test.parquet"
-N_WIN, WIN, POS, N_ATTR = 48, 256, 200, 256
+import os
+N_WIN = int(os.environ.get("NEMATICA_PY_WIN", "48"))       # 24 for Pythia-70m (memory)
+WIN, POS, N_ATTR = 256, 200, 256
 torch.set_num_threads(1)
 
 
@@ -33,8 +35,9 @@ class Patcher:
     """Forward hooks: record the residual after each layer and the MLP hidden units of each layer;
     optionally add a patch at layer 0 (residual or MLP hidden)."""
 
-    def __init__(self, model):
+    def __init__(self, model, record_mlp=True):
         self.m, self.rec, self.patch, self.hooks = model, {}, None, []
+        self.record_mlp = record_mlp
         layers = model.gpt_neox.layers
         for i, layer in enumerate(layers):
             self.hooks.append(layer.register_forward_hook(self._res_hook(i)))
@@ -53,7 +56,8 @@ class Patcher:
         def f(mod, inp, out):
             if self.patch is not None and self.patch[0] == ("mlp", i):
                 out = out + self.patch[1]
-            self.rec[("mlp", i)] = out
+            if self.record_mlp:
+                self.rec[("mlp", i)] = out
             return out
         return f
 
@@ -65,7 +69,7 @@ class Patcher:
 
 
 def analyse(model, ids, basis, attribution=True):
-    P = Patcher(model)
+    P = Patcher(model, record_mlp=(basis == "mlp"))
     L = model.config.num_hidden_layers
     src, dst = (basis, 0), [(basis, l) for l in range(1, L)]
     rec = P.run(ids)
