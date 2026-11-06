@@ -2510,6 +2510,14 @@ sign-aligned first-component state test (`run_week1.py`'s B2 machinery) on phase
 and untrained (`scripts/run_tlab_state.py`). *Prediction:* state dependence in the trained transformer
 (p < 0.05, median below 0), stronger than in the worms (-0.049); none in the untrained.
 
+*Result (`docs/figures/b2_pc1_aligned_transformer_*.txt`).* Trained: -0.001 [-0.008, +0.005], p = 0.39,
+no detectable state dependence; untrained: -0.007 [-0.009, -0.006], p < 0.0001 (tiny but very consistent,
+because untrained individuals are nearly identical). **Refuted, in the opposite direction.** Phase 5
+found strong dependence on the language's true hidden state in the same trained network, so this test,
+which takes the strongest resting pattern as the state, does not see the transformer's real state. The
+caveat carries back to the worms: their state-dependent spread is dependence on their main resting
+pattern, one kind of state; a test built on the main resting pattern can miss other kinds.
+
 **Phase 1: the worm test in token time (pre-registered 6 Nov 2026).** The trained base model (HMM
 language); units are the residual-stream dimensions after each of the 4 blocks (256 units, each its own
 class); individuals are 113 copies with 10% multiplicative weight noise and 50 steps of training on
