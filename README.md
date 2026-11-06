@@ -2459,7 +2459,7 @@ residual basis; (3) over training, watching in the residual basis is lower at th
 at step 0; (4) Pythia-70m's watching (residual) is lower than Pythia-14m's.
 
 *Results, phases 3, 5, 6, 8 and 9 (`docs/figures/tlab_depth.csv`, `tlab_more.csv`, `tlab_pythia.csv`;
-the size sweep, 10,000 training steps and Pythia-70m are still running).*
+the size sweep and 10,000 training steps are still running).*
 
 Phase 3, training (small network, watching with all seen, residual / MLP): 0 steps 0.675 / 0.091; 300
 steps 0.576 / 0.075; 1,000 steps 0.518 / 0.069; 3,000 steps 0.453 / 0.053. **Supported so far**: lower at
@@ -2493,14 +2493,20 @@ correlations than predicted (0.69 and 0.47, not below 0.6 and 0.2), and far more
 trained transformers (0.45 and 0.05); (2) **refuted**: attribution patching is not 0.3 above watching;
 in the residual basis it is unreliable from seed to seed and below watching in most seeds; (3)
 **supported**: watching falls steadily through training, from near-perfect at initialisation (0.94) to
-0.71, and in the MLP basis from 0.74 to 0.45; (4) pending.
+0.71, and in the MLP basis from 0.74 to 0.45; (4) **supported**: Pythia-70m, 3 seeds, residual
+watching 0.54 (0.538 to 0.545; half seen 0.49 to 0.51; without the skip entries 0.32), below every
+Pythia-14m seed (0.63 to 0.75). Unplanned observation: in Pythia-70m attribution patching is high and
+stable (0.95 to 0.96; by rank 0.90; without the skip entries 0.91 against watching's 0.32), unlike
+Pythia-14m's swings, so its unreliability in the smaller model is not a general property of real
+language models.
 
 Reading so far. Training is what makes these networks hard to read from correlations: at
 initialisation a transformer's correlations reflect its cause and effect almost perfectly, and every
 stage of training erodes that, in small networks and in a real language model alike. Training also
 makes effects depend on context and reach directions that natural activity hardly uses, two properties
 the worms share. The cheap gradient shortcut that interpretability relies on works in small networks
-but is unreliable in the real model's residual stream.
+and in Pythia-70m, but is unreliable from seed to seed in Pythia-14m's residual stream. Larger models
+are less readable from correlations (14m 0.69, 70m 0.54), as wider small networks are.
 
 **Phase 7 result.** From phase 1's tiring axis: the trained transformer does not tire (-0.002;
 untrained 0.000; worms -0.42), as expected: nothing in it changes with use within a context.
