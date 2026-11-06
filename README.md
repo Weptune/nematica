@@ -2727,7 +2727,11 @@ workspace with `scripts/ccep_stream.py --extractor ccep_extract_v2`): the stimul
 replaced by a straight line from 2 ms before to 9 ms after each pulse in the raw signal, before any
 filtering (the fix the human section's caveat asked for); per-pulse response strengths are kept
 (root mean square from 10 to 100 ms after the same referencing and baseline as before; pre-pulse
-strength from -50 to -10 ms). Written before any recording was re-extracted.
+strength from -50 to -10 ms). Written before any recording was re-extracted. *Amendment, before any
+response was computed: the cloud workspace has less memory than the laptop, so the signal is now
+filtered in 120 s pieces with 10 s of padding for the notches (the low-pass was already done in
+pieces), and the common average for the watching statistics is taken per segment; numerically the same
+up to edge effects of order e^-50. Downloads use curl.*
 
 **Test.** Units: (recording, block, responding channel). A block is a run of consecutive pulses at the
 same ordered pair, at least 4 valid pulses. Responding channel: not one of the pair, more than 10 mm

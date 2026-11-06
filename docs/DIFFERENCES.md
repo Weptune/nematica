@@ -25,6 +25,7 @@ Systems compared:
 | **Resting structure**: variance in the top 3 patterns | 0.43 | 0.25 to 0.27 | Drives: 0.40 to 0.43 | 0.51 | **Dissolved.** One ingredient (shared slow drives) produces it |
 | **Individuality**: each individual has its own causal fingerprint | 0.089 | 0.016 to 0.028 | Silent links raise it; drives erase it | 0.087, but set by the weight noise we chose | **Dissolved, tunable.** It depends on how individuals are made |
 | **Reliability**: individuals agree on poke responses | 0.094 | 0.075 | Silent links overshoot, drives undershoot | 0.38 | **Not a difference by itself.** Depends on noise and on how similar individuals are |
+| **Echo complexity**: who joins the echo after a poke | Sparse and sustained: a third of classes never respond, responders keep responding | Fitted worm models: almost every class flickers in briefly | Not tested | Not tested | **Open.** No model matches it yet; the strongest remaining candidate |
 | **Sensory neurons harder to copy** | Not detected | n/a | n/a | n/a | No evidence either way |
 
 ## What this says, plainly
