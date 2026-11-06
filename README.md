@@ -2439,6 +2439,22 @@ as phase 2 (`scripts/run_tlab_more.py`).
   basis, and above watching by at least 0.3 in both bases), so the failure is specific to inferring
   cause from correlations, not to linear summaries as such.
 
+**Phase 8: real language models (pre-registered 6 Nov 2026).** The user opened network access to
+Hugging Face, so the depth test runs on real models: Pythia-14m (6 layers, width 128, 512 MLP units
+per layer) trained with 10 different seeds (EleutherAI's PolyPythia: `pythia-14m` and
+`pythia-14m-seed1` to `seed9`), its training checkpoints (steps 0, 1,000, 8,000, 33,000 and the final
+143,000), and Pythia-70m (width 512) with 3 seeds, residual basis only. Inputs: WikiText-103 test text
+(kept locally, not redistributed), 48 windows of 256 tokens. Truth: one push of 1 SD per unit at
+position 200 of every window (Pythia attends over the whole context, so one patched position per
+window keeps patches from interacting), read at the same position in later layers. Watching: ridge
+regression across all positions. Attribution patching: the Jacobian at natural activations, on 256
+randomly chosen later units. Seeds are scored separately against their own truth (their units are not
+aligned, so there is no ruler of individuals here) (`scripts/run_tlab_pythia.py`).
+*Predictions:* (1) final Pythia-14m, all seen: watching below 0.6 in the residual basis and below 0.2
+in the MLP basis (median over seeds); (2) attribution patching above watching by at least 0.3 in the
+residual basis; (3) over training, watching in the residual basis is lower at the final checkpoint than
+at step 0; (4) Pythia-70m's watching (residual) is lower than Pythia-14m's.
+
 **Phase 1: the worm test in token time (pre-registered 6 Nov 2026).** The trained base model (HMM
 language); units are the residual-stream dimensions after each of the 4 blocks (256 units, each its own
 class); individuals are 113 copies with 10% multiplicative weight noise and 50 steps of training on
