@@ -2449,7 +2449,10 @@ position 200 of every window (Pythia attends over the whole context, so one patc
 window keeps patches from interacting), read at the same position in later layers. Watching: ridge
 regression across all positions. Attribution patching: the Jacobian at natural activations, on 256
 randomly chosen later units. Seeds are scored separately against their own truth (their units are not
-aligned, so there is no ruler of individuals here) (`scripts/run_tlab_pythia.py`).
+aligned, so there is no ruler of individuals here) (`scripts/run_tlab_pythia.py`). *Exploratory additions, made after
+the first three seeds showed attribution scores swinging from 0.14 to 0.88:* rank correlations, and in
+the residual basis scores without the skip-connection entries (the same dimension in later layers,
+which every method gets nearly for free); all matrices are saved (`results/tlab/pythia`).
 *Predictions:* (1) final Pythia-14m, all seen: watching below 0.6 in the residual basis and below 0.2
 in the MLP basis (median over seeds); (2) attribution patching above watching by at least 0.3 in the
 residual basis; (3) over training, watching in the residual basis is lower at the final checkpoint than

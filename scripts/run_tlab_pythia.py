@@ -103,6 +103,21 @@ def analyse(model, ids, basis, attribution=True):
             Ka[a] = gi[:, POS, :].mean(0).numpy() * sx / sy[i]
         out["attribution"] = corr(Ka, K[sel])
         out["watch_on_same_units"] = corr(B.T[sel], K[sel])
+        # exploratory (added after seeing three seeds, before the rest): without the skip-connection
+        # entries (same dimension in later layers, residual basis) and by rank correlation
+        from scipy.stats import spearmanr
+        out["attribution_spearman"] = float(spearmanr(Ka.ravel(), K[sel].ravel()).statistic)
+        out["watch_spearman"] = float(spearmanr(B.T[sel].ravel(), K[sel].ravel()).statistic)
+        if basis == "resid":
+            D = J
+            off = np.array([[(i % D) != j for j in range(J)] for i in sel])
+            out["attribution_offdiag"] = float(np.corrcoef(Ka[off], K[sel][off])[0, 1])
+            out["watch_offdiag"] = float(np.corrcoef(B.T[sel][off], K[sel][off])[0, 1])
+        out["_K"], out["_Kw"], out["_Ka"], out["_sel"] = K, B.T, Ka, sel
+    if basis == "resid":
+        D = J
+        offm = np.array([[(i % D) != j for j in range(J)] for i in range(I)])
+        out["watch_all_offdiag"] = float(np.corrcoef(B.T[offm], K[offm])[0, 1])
     for h in P.hooks:
         h.remove()
     return out
@@ -145,6 +160,10 @@ def main():
             ids = windows(tok)
         for basis in bases:
             res = analyse(m, ids, basis)
+            mats = {k: res.pop(k) for k in [k for k in res if k.startswith("_")]}
+            save = ROOT / "results" / "tlab" / "pythia"
+            save.mkdir(parents=True, exist_ok=True)
+            np.savez_compressed(save / f"{name.split('/')[-1]}_{rev or 'final'}_{basis}.npz", **{k[1:]: v for k, v in mats.items()})
             record({"model": name, "revision": rev or "final", "basis": basis, **{k: round(v, 4) for k, v in res.items()}})
 
 
