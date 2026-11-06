@@ -2882,6 +2882,16 @@ Minor: responder-threshold and block-definition sensitivities for the human test
 blanking window ends 1 ms before the response window, so a sensitivity with the window from 15 ms will
 be run on the third extraction; dated amendments; DIFFERENCES.md updated.
 
+**What could make responses last? (pre-registered 6 Nov 2026, after the matched re-test).** Same
+measures, matched readout (decay 1.5 s before noise), paired units, lab brain 0, base network and round
+9's setting, 30 individuals each, one change at a time: (a) pokes held 8 or 16 frames instead of 4 (6
+for round 9); (b) slower units, the leak per frame 0.25 or 0.1 instead of 0.5 (unit time constant 2 or 5
+s instead of 1 s); (c) stronger recurrence, spectral radius 1.6 instead of 1.3 (base only).
+*Predictions:* (1) slower units lengthen the mean run toward the worm's 6.5 frames, and at leak 0.1 reach
+at least 5; (2) longer pokes lengthen runs less than slower units do; (3) stronger recurrence lengthens
+runs but also widens echoes (ever respond up). *Decision:* as the numbers fall, each judged on its stated
+comparison with the unchanged network (`scripts/run_echo_persist.py`, `docs/figures/echo_persist.csv`).
+
 ## Does the brain's state change where a pulse spreads in human cortex? (pre-registered 6 Nov 2026)
 
 The worm's state-dependent spread replicated; mouse touch cortex leaned the same way but was
