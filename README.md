@@ -3128,6 +3128,15 @@ labels. *Decision:* state dependence if the median S over sessions is below 0 wi
 (10,000 flips); none detected if the 95% interval includes 0 and its lower end is above -0.05; otherwise
 inconclusive.
 
+*Amendment 1 (6 Nov, after the first run).* The first run was **unusable by its own rule**: 10 of 11
+sessions had fewer than 10 targets (0 to 5; one session 18), because each trial stimulates only a subset
+of the 200 targets, so a target's mean over all trials is diluted. Seen in that run: target counts, and
+T1 to T4 for the one included session (uninformative alone). Changed, before computing anything else:
+a cell is a target if, on odd laser trials, its response exceeds 3 on at least 3 trials and on at least
+10% of them, while on catch trials it exceeds 3 on at most 5%. Its own measured response (for T2) is then
+the mean over the even trials on which it exceeds 3 (the trials where it was hit); everything else is
+unchanged. If this still leaves fewer than 5 sessions, the package is declared unusable for this data.
+
 **T4, the echo's sparseness (descriptive).** Share of non-target cells whose mean even response exceeds
 1 (one resting SD), and of those, the share still above 1 from 2 to 4 s after onset, reported beside
 the worm's (about two thirds of classes respond within 30 s, and most of those keep responding).
