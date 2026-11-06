@@ -2502,6 +2502,14 @@ makes effects depend on context and reach directions that natural activity hardl
 the worms share. The cheap gradient shortcut that interpretability relies on works in small networks
 but is unreliable in the real model's residual stream.
 
+**Phase 7 result.** From phase 1's tiring axis: the trained transformer does not tire (-0.002;
+untrained 0.000; worms -0.42), as expected: nothing in it changes with use within a context.
+
+**Phase 5b, the worms' own state test on the transformer (pre-registered 6 Nov 2026).** The
+sign-aligned first-component state test (`run_week1.py`'s B2 machinery) on phase 1's recordings, trained
+and untrained (`scripts/run_tlab_state.py`). *Prediction:* state dependence in the trained transformer
+(p < 0.05, median below 0), stronger than in the worms (-0.049); none in the untrained.
+
 **Phase 1: the worm test in token time (pre-registered 6 Nov 2026).** The trained base model (HMM
 language); units are the residual-stream dimensions after each of the 4 blocks (256 units, each its own
 class); individuals are 113 copies with 10% multiplicative weight noise and 50 steps of training on
