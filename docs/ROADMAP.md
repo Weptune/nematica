@@ -28,16 +28,17 @@ dissolve when one mechanism is added to an artificial network. Three remain open
 1. **Tiring with use.** A worm neuron answers less the second time and, compared with itself, also
    after being driven by other neurons; network-level responses decline little in worms and not at all
    in human cortex at 5 s gaps. Cause open (neuron, channel, or both).
-2. **The echo as a whole.** A worm's echo is narrow, lasting and individual at once. Each part can be
-   built into a network, but slow units that make responses last broaden echoes and erase
-   individuality; slowing only some units does not escape the trade-off.
+2. **The echo as a whole.** A worm's echo is narrow and lasting at once. Sparseness can be brought
+   close; slow units lengthen responses part of the way (4.7 to 5.0 against 6.5) but broaden echoes,
+   double how much individuals agree and halve the watching share; slowing only some units does not
+   escape the trade-off.
 3. **State-dependent spread.** Found and replicated in worms; mouse leans yes (inconclusive); human
-   cortex shows none (with a different state measure).
+   cortex shows none (a different state measure; its calibration check failed as worded).
 
 **Plan executed (6 Nov):** conclusion written; mouse touch cortex (tiring uninformative, state leaning,
 watching versus poking not separable in that design); the echo (matched readout, persistence, slow
-units); human state test; paper rewritten around the conclusion; two independent reviews (3 and 4), a
-fifth running. The transformer programme is closed.
+units); human state test; paper rewritten around the conclusion; three independent reviews (3, 4 and 5),
+all corrections applied and marked. The transformer programme is closed.
 
 **Next, only where it would settle something:** a mechanism with its own rationale for lasting but
 narrow echoes (slow synapses on specific links); the worm tiring test with the same neuron driven by
