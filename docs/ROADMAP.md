@@ -17,6 +17,33 @@ One difference is a finding, not an answer. An answer has three parts:
 The work below is grouped by which of these it serves. Every test is pre-registered in the README
 before it runs, as now. "In hand" means the data is already on the laptop or in the sandbox.
 
+## Status (6 Nov 2026, night): the conclusion and the plan from it
+
+**Conclusion so far.** Watching ongoing activity does not reveal cause and effect in worms, and
+(suggestively, on artefact-free data) not in human cortex either; poking does. That is not a brain-only
+property: artificial networks with unrecorded slow signals and links silent at rest are as hard to read,
+and so are trained transformers (correlations recover 0.31 to 0.71 of the true effects through their
+layers, 0.05 to 0.47 in the units that compute; gradients recover 0.99). Most candidate differences
+dissolve when one mechanism is added to an artificial network. Three remain open, none settled:
+1. **Tiring with use.** A worm neuron answers less the second time and, compared with itself, also
+   after being driven by other neurons; network-level responses decline little in worms and not at all
+   in human cortex at 5 s gaps. Cause open (neuron, channel, or both).
+2. **The echo as a whole.** A worm's echo is narrow, lasting and individual at once. Each part can be
+   built into a network, but slow units that make responses last broaden echoes and erase
+   individuality; slowing only some units does not escape the trade-off.
+3. **State-dependent spread.** Found and replicated in worms; mouse leans yes (inconclusive); human
+   cortex shows none (with a different state measure).
+
+**Plan executed (6 Nov):** conclusion written; mouse touch cortex (tiring uninformative, state leaning,
+watching versus poking not separable in that design); the echo (matched readout, persistence, slow
+units); human state test; paper rewritten around the conclusion; two independent reviews (3 and 4), a
+fifth running. The transformer programme is closed.
+
+**Next, only where it would settle something:** a mechanism with its own rationale for lasting but
+narrow echoes (slow synapses on specific links); the worm tiring test with the same neuron driven by
+others at matched strength; data with repeated pokes of the same target over long recordings (an
+experiment, needs a lab, only with your go-ahead).
+
 ## Status (6 Nov 2026, evening)
 
 Checked against the README before running anything, several items turned out to be partly done
