@@ -1,0 +1,8 @@
+11 sessions, 1 included
+T1 medians: ceiling +0.357, watching +0.004, distance -0.078; watching minus distance +0.082 [95%: +0.082, +0.082], positive in 1 of 1
+  T1 verdict: watching beats distance
+T2: target slope median +0.0008, network slope +0.0018; network minus target +0.0010 [95%: +0.0010, +0.0010], 0 of 1 below 0, sign test p = 1
+  T2 verdict: inconclusive
+T3: S median -0.0586 [95%: -0.0586, -0.0586], sign-flip p = 0.4989
+  T3 verdict: inconclusive
+T4: share of non-target cells responding (> 1 SD) median 0.004; of those, still responding 2 to 4 s later 0.000

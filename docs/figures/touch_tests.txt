@@ -1,0 +1,10 @@
+11 sessions, 7 included
+T1 medians: ceiling +0.333, watching +0.090, distance -0.023; watching minus distance +0.132 [95%: +0.058, +0.176], positive in 7 of 7
+  T1 verdict: watching beats distance
+T2: target slope median -0.0018, network slope -0.0016; network minus target +0.0002 [95%: -0.0061, +0.0075], 3 of 7 below 0, sign test p = 1
+  T2 verdict: no detectable tiring
+T3: S median -0.0854 [95%: -0.1221, -0.0052], sign-flip p = 0.0664
+  T3 verdict: inconclusive
+T4: share of non-target cells responding (> 1 SD) median 0.001; of those, still responding 2 to 4 s later 0.000
+EXPLORATORY T1 control: watching against catch-trial (no laser) 'responses': median +0.039, against laser responses +0.090; laser minus catch positive in 3 of 7
+EXPLORATORY T1 on laser minus catch responses: watching median -0.003, distance -0.024, watching minus distance positive in 5 of 7 (median +0.042)

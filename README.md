@@ -3141,6 +3141,32 @@ unchanged. If this still leaves fewer than 5 sessions, the package is declared u
 1 (one resting SD), and of those, the share still above 1 from 2 to 4 s after onset, reported beside
 the worm's (about two thirds of classes respond within 30 s, and most of those keep responding).
 
+**Results (6 Nov 2026, amendment 1; `docs/figures/touch_tests.txt`, `touch_sessions.csv`; the unusable
+first run is kept as `touch_tests_run1_unusable.txt`).** 7 of 11 sessions included (13 to 41 targets each;
+4 sessions had 1 to 8).
+- *T1:* median Spearman across cells: ceiling 0.33, watching 0.09, distance -0.02; watching minus distance
+  +0.13 [95%: +0.06, +0.18], positive in 7 of 7: **watching beats distance by the rule.** But two
+  exploratory checks, run afterwards, undo the reading. Watching "predicts" catch trials, when nothing was
+  stimulated, about as well (median 0.04 against 0.09 on laser trials; laser better in only 3 of 7). And on
+  laser minus catch responses (the part caused by the light), watching is at 0.00 and distance at -0.02.
+  So, as in mouse hippocampus, what watching predicts here is the cells' ordinary co-activity at trial
+  times, not the effect of the poke; and with groups of 5 to 200 cells cycling, the poke-specific signal
+  is too weak for either predictor. **No reading about watching versus poking in this data.**
+- *T2:* targets' slope -0.0018, network -0.0016 per trial; network minus target +0.0002 [-0.0061,
+  +0.0075], 3 of 7 below 0: **no detectable tiring** of the network beyond its input (a second species,
+  again).
+- *T3:* S median -0.085 [-0.122, -0.005], 6 of 7 below 0, sign-flip p = 0.066: **inconclusive by the
+  rule**, in the direction of state dependence (the 95% interval lies below 0, but the pre-registered
+  test needs p < 0.05).
+- *T4:* averaged over all trials, 0.1% of non-target cells move by more than 1 SD and none of them is
+  still above it 2 to 4 s later. Because each trial hits only a small group, this says the averaged echo
+  is very sparse, not how sparse a single echo is; it is not comparable with the worm number.
+
+**Reading.** This data can test tiring (no network tiring) and leans towards state dependence, but its
+stimulation design (small groups cycling through 200 targets, most large-group trials licked) cannot
+separate watching from poking. A dataset that stimulates the same small group many times, without
+behaviour, is what that test needs.
+
 ## Running the benchmark
 
 ```powershell
