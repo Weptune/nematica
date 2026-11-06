@@ -2419,6 +2419,26 @@ each later checkpoint in at least 3 of the 4 steps, and the MLP basis stays belo
 (4) watching falls with width (32 above 64 above 128) and with depth (2 above 4 above 8). *Decision:*
 each ordering supported if it holds exactly, otherwise reported as it falls.
 
+**Phases 5, 6 and 9 in depth (pre-registered 6 Nov 2026).** Default network (width 64, 4 layers),
+untrained and trained (3,000 steps), residual and MLP bases, 6 individuals, the same truth computation
+as phase 2 (`scripts/run_tlab_more.py`).
+- *Phase 5, state dependence with a known state.* The true effect matrix is computed separately for
+  positions where the language's hidden state is each of its 8 states; state dependence = 1 minus the
+  mean correlation between two states' matrices, against the same for two random halves of positions
+  regardless of state (the noise floor). *Prediction:* in the trained network, effects depend on the
+  hidden state well above the noise floor (state dissimilarity at least twice the floor, residual
+  basis); less so untrained.
+- *Phase 6, silent links.* For each true effect vector (one column of the matrix), the share of its
+  squared size lying in the lower half of the later layers' natural principal components, against the
+  share of natural variance there. *Prediction:* trained effects put more of their size in
+  low-variance directions than untrained, in both bases.
+- *Phase 9, attribution patching.* The gradient (Jacobian) of later units with respect to a first-block
+  unit at natural activations, times that unit's SD, averaged over the same positions: the standard
+  cheap stand-in for patching. Score: correlation with the truth, beside watching's. *Prediction:*
+  attribution patching recovers the truth far better than watching (at least 0.8 in the residual
+  basis, and above watching by at least 0.3 in both bases), so the failure is specific to inferring
+  cause from correlations, not to linear summaries as such.
+
 **Phase 1: the worm test in token time (pre-registered 6 Nov 2026).** The trained base model (HMM
 language); units are the residual-stream dimensions after each of the 4 blocks (256 units, each its own
 class); individuals are 113 copies with 10% multiplicative weight noise and 50 steps of training on
