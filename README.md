@@ -2935,6 +2935,14 @@ result). *Prediction:* in at least one of (a) and (b), in both brains,
 the mean run is at least 5 frames while the five-axis error stays at or below 0.30. *Decision:* as
 stated; otherwise the trade-off stands.
 
+*Result (`docs/figures/slow_mixed.csv`).* Mean run (frames) and five-axis error: quiet units slow, brain
+0 3.4 / 0.96, brain 1 3.6 / 0.79; random 30% slow, brain 0 3.8 / 0.51, brain 1 3.9 / 0.48. **Refuted**:
+mixing slow and fast units lengthens responses only part of the way (worm 6.5) and still breaks the
+other properties (individuality and reliability rise two to three times above the worm's, watching
+falls). The trade-off stands: in these networks, lasting echoes, narrow echoes and worm-like
+individuality do not come together. This line of tests stops here; the next step would be a mechanism
+with its own rationale (for example slow synapses on specific links), not more tuning.
+
 ## Does the brain's state change where a pulse spreads in human cortex? (pre-registered 6 Nov 2026)
 
 The worm's state-dependent spread replicated; mouse touch cortex leaned the same way but was
