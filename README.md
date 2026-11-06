@@ -2402,7 +2402,7 @@ pokes to one MLP unit, one residual-stream dimension, a random residual directio
 residual direction, and one attention head's gain, at two strengths and durations; reported: echo
 size, consistency across contexts, evoked share (worms about 0.4). Chooses the design for phase 1.
 
-*Phase 0 result.* Base model loss 2.69 (guessing: 3.47). Weak, brief pokes (3 SD for 4 tokens) are
+*Phase 0 result.* Base model loss 2.77 (guessing: 3.47). Weak, brief pokes (3 SD for 4 tokens) are
 invisible whatever is poked (evoked share -0.07 to -0.10): that is why both pilots failed. Held for 30
 tokens at 10 SD: one MLP unit still invisible (-0.04); one attention head's gain inconsistent across
 contexts (consistency 0.09 to 0.12); a residual-stream dimension 0.49 (consistency 0.88); a random
@@ -2438,6 +2438,28 @@ scored the same way on its own truth (time-lagged linear watcher against true ki
 close to linear); (2) half seen: lower than all seen in every condition, but at least 0.4; (3) MLP basis
 lower than residual basis in both seen conditions (gated units, the transformer's version of silent
 links); (4) trained lower than untrained in the MLP basis.
+
+*Phase 2 result (`docs/figures/tlab_depth.csv`).* Correlation of the watching estimate with the true
+effects, every first-block unit seen / half seen (individuals' true matrices agree at 0.95 to 0.998):
+
+| Network | Basis | All seen | Half seen |
+|---|---|---|---|
+| transformer, untrained | residual stream | 0.675 | 0.447 |
+| transformer, trained | residual stream | 0.453 | 0.393 |
+| transformer, untrained | MLP units | 0.091 | 0.069 |
+| transformer, trained | MLP units | 0.053 | 0.050 |
+| lab recurrent network (time-lagged watcher) | units | 0.690 | 0.263 |
+
+(1) **Refuted**: even with every unit seen, correlations recover 0.68 of the residual stream's true
+effects untrained and 0.45 trained, not 0.8. (2) Half seen is lower in every condition, as predicted,
+but not always above 0.4 (trained residual 0.39; MLP far below): partly refuted. (3) **Supported, and
+by far**: in the MLP basis correlations recover almost nothing (0.05 to 0.09). (4) **Supported**:
+training lowers it further (0.091 to 0.053; in the residual basis too, 0.675 to 0.453). So in
+transformers, as in worms and unlike the recurrent lab networks with everything recorded, watching
+recovers little of cause and effect, and training makes it worse; the units that compute (MLP neurons)
+are the ones whose correlations say least about their effects. Caveat: individuals here differ very
+little (their truths agree at 0.95 to 0.998), so this is a test against truth, not against a ruler of
+individual variation.
 
 ## Where the data runs out (2 Nov 2026)
 
