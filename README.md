@@ -2785,6 +2785,26 @@ components.
 **Also rerun:** the original human test (`scripts/run_ccep_test.py`, unchanged) on the clean extraction;
 its numbers will be reported beside the first ones, which they supersede where they differ.
 
+## The sparse, sustained echo: worms against artificial networks, one measure (pre-registered 6 Nov 2026)
+
+One of the two candidate differences left (`docs/DIFFERENCES.md`): after a poke, a third of a real
+worm's neuron classes never respond, and those that do keep responding; fitted worm models flicker
+(earlier diagnostic, pool 1 only). Here the same three numbers are computed with the same code
+(`nematica.bench.perturbational.event_matrices`, threshold 3 resting SD, the standard post-stimulus
+window) on all 113 atlas worms and on the lab networks recorded like them, to see which ingredient,
+if any, produces a worm-like echo (`scripts/run_echo_sparse.py`). Lab units are each their own class.
+
+**Measures**, per system: (a) share of classes that ever respond in the window, median over pokes;
+(b) median length of a response run (frames above threshold); (c) share of time steps where the set of
+responding classes changes, median over pokes. **Systems:** worms; lab brain 0 with 40 individuals each
+for base, D (slow drives), G (silent links), Q (quiet units, half the units held near the bottom of
+their range), DG, DGQ, and round 9's best setting (drives 0.4, silent links 0.75, spread 0.15, quiet
+0.3, individuals differing by 0.8, pokes held 6 frames).
+*Predictions:* (1) quiet units are what make echoes sparse and sustained: Q, DGQ and the round 9 setting
+are closer to the worm than base on (a) and (c); D and G are not. (2) No system is within 25% of the
+worm on all three measures. *Decision:* each judged on the stated comparisons as they fall; "closer"
+means a smaller absolute difference from the worm value.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
