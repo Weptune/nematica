@@ -62,5 +62,40 @@ def main():
         w.writerows(rows)
 
 
+
+
+def calcium(recs, tau=1.5):
+    """Exploratory (added after the pre-registered run): a GCaMP-like decay of tau seconds applied to each
+    recorded trace (causal exponential filter), as the worms' calcium indicator does."""
+    out = []
+    for r in recs:
+        x = r.x.copy()
+        a = np.exp(-r.dt / tau)
+        for t in range(1, x.shape[1]):
+            prev = np.where(np.isfinite(x[:, t - 1]), x[:, t - 1], x[:, t])
+            x[:, t] = np.where(np.isfinite(x[:, t]), a * prev + (1 - a) * x[:, t], np.nan)
+        import dataclasses
+        r2 = dataclasses.replace(r, x=x)
+        out.append(r2)
+    return out
+
+
+def exploratory():
+    rows = []
+    for code in ["base", "D", "Q", "DGQ"]:
+        recs = calcium(LD.variant_recs("" if code == "base" else code, 0, n_ind=40))
+        rows.append({"system": code + "+calcium", **measures(recs)})
+        print(rows[-1], flush=True)
+    LD.KICK_HOLD["frames"] = 6
+    recs = calcium(LD.param_recs({"share": 0.4, "g": 0.75, "spread": 0.15, "quiet": 0.3, "mod": 0}, 0, n_ind=40, sigma=0.8))
+    LD.KICK_HOLD["frames"] = LD.KICK_FRAMES
+    rows.append({"system": "round9_best+calcium", **measures(recs)})
+    print(rows[-1], flush=True)
+    with (ROOT / "docs" / "figures" / "echo_sparse_calcium.csv").open("w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(rows[0]))
+        w.writeheader()
+        w.writerows(rows)
+
+
 if __name__ == "__main__":
-    main()
+    exploratory() if "--calcium" in sys.argv else main()

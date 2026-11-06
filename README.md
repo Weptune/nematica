@@ -2805,6 +2805,34 @@ are closer to the worm than base on (a) and (c); D and G are not. (2) No system 
 worm on all three measures. *Decision:* each judged on the stated comparisons as they fall; "closer"
 means a smaller absolute difference from the worm value.
 
+**Result (6 Nov 2026; `docs/figures/echo_sparse.csv`).** Share of classes ever responding / median run
+(mean) / share of steps where the responding set changes:
+
+| System | Ever respond | Run, median (mean) | Set changes |
+|---|---|---|---|
+| Worms (3,516 pokes) | 0.65 | 3 (6.5) | 0.88 |
+| Base network | 0.72 | 1 (1.9) | 0.92 |
+| D, slow drives | 0.71 | 1 (2.4) | 0.97 |
+| G, silent links | 0.74 | 1 (2.0) | 0.92 |
+| Q, quiet units | 0.47 | 1 (1.2) | 0.65 |
+| DG | 0.73 | 1 (2.5) | 0.97 |
+| DGQ | 0.51 | 1 (1.8) | 0.83 |
+| Round 9 best | 0.56 | 1 (2.3) | 0.92 |
+
+(1) **Refuted**: quiet units make echoes sparser than the worm's (0.47 against 0.65), further from it than
+the base network, and no ingredient makes responses last: every network's responses last one frame
+(median), the worm's three. (2) **Supported**: no system is within 25% of the worm on all three.
+
+*Exploratory, after that result:* the worm's activity is read through a calcium indicator whose signal
+decays over about a second and a half, and the networks' is not. With the same decay applied to the
+networks' traces (`--calcium`, `echo_sparse_calcium.csv`), their responses last as long as the worm's
+(base 3 frames, mean 5.2; drives 4, mean 7.0; worm 3, mean 6.5), but more of their units cross the
+threshold (0.78 to 0.89 against 0.65) and the responding set changes slightly more often (0.95 against
+0.88). **Reading:** the "sustained" half of the worm's echo is mostly the indicator, the tool again; the
+"sparse" half survives: with matched readout, a worm's poke reaches fewer of its neurons than any
+network's here, and the one ingredient that narrows echoes (quiet units) overshoots and breaks other
+properties.
+
 ## Does the brain's state change where a pulse spreads in human cortex? (pre-registered 6 Nov 2026)
 
 The worm's state-dependent spread replicated; mouse touch cortex leaned the same way but was
