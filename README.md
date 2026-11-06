@@ -2410,6 +2410,15 @@ residual direction 0.42 (0.86); a principal residual direction 0.89 (0.92, far s
 Chosen for phase 1: residual-stream dimensions as the units, pokes of 10 SD held 30 tokens, the closest
 match to the worms' evoked share (about 0.4).
 
+**Phases 3 and 4: training and size (pre-registered 6 Nov 2026).** The depth test of phase 2 (same
+code, `run_tlab_depth.py --steps N --width D --layers L`). Phase 3, training: the default network
+(width 64, 4 layers) at 300, 1,000 and 10,000 training steps, beside 0 and 3,000 from phase 2. Phase 4,
+size: width 32 and 128 with 4 layers, and 2 and 8 layers with width 64, all at 3,000 steps.
+*Predictions:* (3) in the residual basis, watching (all seen) falls as training proceeds: lower at
+each later checkpoint in at least 3 of the 4 steps, and the MLP basis stays below 0.15 throughout;
+(4) watching falls with width (32 above 64 above 128) and with depth (2 above 4 above 8). *Decision:*
+each ordering supported if it holds exactly, otherwise reported as it falls.
+
 **Phase 1: the worm test in token time (pre-registered 6 Nov 2026).** The trained base model (HMM
 language); units are the residual-stream dimensions after each of the 4 blocks (256 units, each its own
 class); individuals are 113 copies with 10% multiplicative weight noise and 50 steps of training on
