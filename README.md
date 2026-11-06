@@ -2515,6 +2515,18 @@ Unplanned observation (exploratory measures): in Pythia-70m attribution patching
 (0.95 to 0.96; by rank, exploratory, 0.90; without the skip entries, exploratory, 0.91 against
 watching's 0.32).
 
+**Phase 8 rerun after review 3 (`docs/figures/tlab_pythia_v2.csv`; plain attention, attribution on every
+window, per-layer scores).** Pythia-14m, 10 seeds: attribution patching, residual basis, median 0.994
+(0.993 to 0.997; every later layer 0.98 or more, overshoot 0.99 to 1.00), MLP basis 0.998; watching
+0.69 (0.63 to 0.75) and 0.47. Prediction (2), attribution above watching by at least 0.3 in the
+residual basis: 0.994 - 0.693 = 0.30, **supported, at the threshold** (it replaces the withdrawn
+"refuted"). Checkpoints (seed 0, residual / MLP watching; attribution 0.997 to 0.999 throughout):
+step 0 0.94 / 0.74; 1,000 0.86 / 0.70; 8,000 0.79 / 0.62; 33,000 0.74 / 0.48; final 0.71 / 0.45. (3)
+unchanged: **supported**. Pythia-70m on 48 windows (the review's equal-data check), seed 0: watching
+0.61 (24 windows: 0.54), without skip entries 0.41 (14m: 0.53 to 0.65); attribution 0.998. So
+prediction (4) still holds on equal data for seed 0, below every Pythia-14m seed; seeds 1 and 2 are
+running.
+
 Reading so far (rewritten after review 3; the first version overclaimed in four places, listed in the
 corrections below). Training lowers how well correlations reflect cause and effect, in the small
 networks (one base seed) and in Pythia-14m's checkpoints (one seed): from 0.94 at initialisation to 0.71
