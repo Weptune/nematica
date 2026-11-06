@@ -2644,6 +2644,51 @@ code, and the prose. All README numbers it checked matched the files. Its findin
    is a tie; exploratory measures are now labelled where reported, and the 70m window change is marked
    as a dated amendment.
 
+## Is it the neuron or the tool that tires? (pre-registered 6 Nov 2026)
+
+The synthesis (`docs/DIFFERENCES.md`) leaves two differences between worms and every artificial
+network built here; one is that a worm neuron answers about a quarter less when poked again (test B1).
+That matters for the project's question only if the neuron tires, not the light-gated channel used to
+poke it. The atlas can separate the two without new experiments: neurons are also driven *without
+light on them*, when another neuron is poked and activates them through the network. If use tires the
+neuron, a neuron recently driven that way should answer its own first direct poke less; if only the
+channel tires, being driven without light should not matter. Written before computing anything below;
+`scripts/run_tiring_source.py`.
+
+**Data.** The 113 wild-type atlas worms; definitions of the response (mean over 0 to 15 s after onset
+minus the 10 s before, in units of the neuron's SD over unpoked frames), of valid neurons and of
+stimulations exactly as in test B1 (`run_week1.py`).
+
+**Units of analysis.** Every direct stimulation of a valid neuron k at frame f with a finite, positive
+own response a. Covariates, from the window of 600 frames (5 min) before f, counting only stimulations
+whose own 15 s response window ends before f:
+- *direct before*: k itself was stimulated in the window (1 or 0);
+- *driven*: the largest response of k to a stimulation of another neuron in the window (not of k's
+  class, and the stimulated neuron not among the three nearest positioned neurons to k, positions and
+  z scaling 4 as in the neighbour tests, so that no light could have reached k), k counted as driven
+  if that largest response is at least 1.0 SD and as not driven if it is below 0.5 SD; stimulations
+  between 0.5 and 1.0 are left out of the primary test; at least one stimulation of another neuron in
+  the window is required either way, so both groups follow a poke elsewhere;
+- *order*: f divided by the recording's length; *pre level*: k's mean over the 10 s before f, in SD
+  units relative to its unpoked mean.
+
+**Model.** log a regressed on direct before, driven, order and pre level, with a fixed effect for
+k's class (only classes with at least one driven and one not-driven stimulation contribute to the
+driven coefficient); 90% interval of each coefficient by resampling worms (2,000); p for driven by
+shuffling driven labels within class (5,000).
+
+*Positive control:* the direct-before coefficient must be below 0 with its 90% interval below 0 (the
+B1 effect, about -0.3, recovered by this model); otherwise the test is declared unable to see tiring
+and no reading is made.
+*Prediction:* none is favoured; the two outcomes answer the question either way.
+*Decision:* **activity tires the neuron** if the driven coefficient's 90% interval lies below 0 and
+p < 0.05; **no detectable tiring from activity alone** (the channel, or something else about light, is
+the likelier source) if the interval includes 0 and its lower end is above -0.10 (about 10% smaller
+responses, a third of the direct effect); otherwise inconclusive. Sensitivity (reported, not
+decisive): the largest indirect response as a continuous covariate instead of the two groups; a 2 min
+window. Power caveat, stated before running: indirect responses are usually much smaller than direct
+ones, so even a real effect may be small.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
