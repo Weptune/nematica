@@ -2915,6 +2915,16 @@ restored unchanged). *Prediction:* at leak 0.1 the root-mean-square relative err
 no more than 0.05 above the unchanged setting's, in both brains (persistence can be added without a
 trade-off). *Decision:* as stated; otherwise a trade-off, reported axis by axis.
 
+*Result (`docs/figures/slow_units.csv`).* Root-mean-square relative error over the five axes, unchanged /
+leak 0.25 / leak 0.1: brain 0 0.21 / 0.43 / 0.72; brain 1 0.22 / 0.53 / 0.75. At leak 0.1 (brain 0, brain
+1): echo breadth 0.20, 0.20 (worm 0.085; unchanged 0.09, 0.11); individuality 0.029, 0.022 (worm 0.089;
+unchanged 0.081, 0.074); watching share 0.30, 0.30 (worm 0.61; unchanged 0.61, 0.62); rest dimensionality
+0.52, 0.54 (worm 0.43). **Refuted: a trade-off.** Slow units make responses last as long as the worm's,
+but in doing so they spread weak responses across twice as many units (more cross 1 SD, though not 3 SD),
+erase most of the individuality and halve the watching share. **Reading:** each half of the worm's echo
+can be produced on its own, but no network here has echoes that are at once narrow, lasting and
+individual. The worm's echo stays a candidate difference, as a combination.
+
 ## Does the brain's state change where a pulse spreads in human cortex? (pre-registered 6 Nov 2026)
 
 The worm's state-dependent spread replicated; mouse touch cortex leaned the same way but was

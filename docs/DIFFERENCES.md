@@ -26,7 +26,7 @@ Systems compared:
 | **Individuality**: each individual has its own causal fingerprint | 0.089 | 0.016 to 0.028 | Silent links raise it; drives erase it | 0.087, but set by the weight noise we chose | **Dissolved, tunable.** It depends on how individuals are made |
 | **Reliability**: individuals agree on poke responses | 0.094 | 0.075 | Silent links overshoot, drives undershoot | 0.38 | **Not a difference by itself.** Depends on noise and on how similar individuals are |
 | **Echo sparseness**: share of neuron classes a poke reaches (> 3 SD) | 0.65 [0.64, 0.68] | Base 0.71 to 0.78 (matched readout, paired units) | Round 9 setting 0.58 to 0.64; quiet units overshoot (0.42 to 0.52) | Not tested | **Dissolved**: drives, silent links and some quiet units together reproduce it |
-| **Echo persistence**: how long a response lasts (mean run, frames) | 6.5 [6.2, 6.8] | 2.2 to 3.3 with a matched calcium readout; 5.6 with slow units (5 s time constant) | Round 9 setting with slow units: 6.8 [6.7, 7.1], sparseness 0.62 | Not tested | **Dissolved: slow units.** Artificial units with a time constant of a few seconds reproduce it; the lab's default units settle in about 1 s. Whether that keeps the other properties is being checked |
+| **Echo persistence**: how long a response lasts (mean run, frames) | 6.5 [6.2, 6.8] | 2.2 to 3.3 with a matched calcium readout; 5.6 with slow units (5 s time constant) | Round 9 setting with slow units: 6.8, but its other properties break (error 0.21 to 0.72: echoes twice as broad, individuality gone) | Not tested | **Survives as a combination.** Lasting, narrow and individual echoes can each be produced, but not together |
 | **Sensory neurons harder to copy** | Not detected | n/a | n/a | n/a | No evidence either way |
 
 ## What this says, plainly
@@ -43,8 +43,9 @@ Systems compared:
 3. **What survives, shakily:**
    - *The kind of state dependence*: in worms, where a poke spreads depends on the main pattern of
      resting activity; in artificial networks, state dependence exists but follows other variables.
-   - (*The sparse, sustained echo* has since dissolved: drives, silent links and some quiet units give the
-     sparseness, and slow units, a time constant of a few seconds, give the persistence.)
+   - *The echo as a whole*: drives, silent links and some quiet units give the worm's sparseness, and slow
+     units give its persistence, but slow units then make echoes twice as broad and erase individuality.
+     No network has echoes that are at once narrow, lasting and individual.
 4. **The worm's whole profile is not reproduced.** No combination of five biological ingredients
    matches all six measured properties at once; the closest settings need strong hidden drives,
    large differences between individuals and many units that stay quiet unless strongly driven.
@@ -58,8 +59,8 @@ Systems compared:
 
 - **Tiring:** a worm test with the same neuron driven by others at matched strength, and a human test
   on the stimulated tissue itself (needs a cleaner way round the stimulation artefact near the pair).
-- **The sustained echo**: slow units reproduce it; checking that they keep the closest network's other
-  five properties (running).
+- **The echo as a whole**: which mechanism gives lasting responses without broadening them (slow
+  synapses on a few links rather than slow units everywhere; neuromodulated gain).
 - **The worm kind of state dependence beyond the worm**: mouse touch cortex leaned yes (inconclusive);
   the human test is running.
 
