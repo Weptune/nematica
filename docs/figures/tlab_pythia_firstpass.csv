@@ -1,0 +1,6 @@
+model,revision,basis,watch_all,watch_half,attribution,watch_on_same_units
+EleutherAI/pythia-14m,final,resid,0.7061,0.6158,0.8812,0.7026
+EleutherAI/pythia-14m,final,mlp,0.4463,0.3853,0.8819,0.4367
+EleutherAI/pythia-14m-seed1,final,resid,0.6757,0.5899,0.1412,0.6765
+EleutherAI/pythia-14m-seed1,final,mlp,0.4709,0.4125,0.5662,0.4517
+EleutherAI/pythia-14m-seed2,final,resid,0.6739,0.5936,0.3449,0.672
