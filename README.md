@@ -2402,6 +2402,27 @@ pokes to one MLP unit, one residual-stream dimension, a random residual directio
 residual direction, and one attention head's gain, at two strengths and durations; reported: echo
 size, consistency across contexts, evoked share (worms about 0.4). Chooses the design for phase 1.
 
+*Phase 0 result.* Base model loss 2.69 (guessing: 3.47). Weak, brief pokes (3 SD for 4 tokens) are
+invisible whatever is poked (evoked share -0.07 to -0.10): that is why both pilots failed. Held for 30
+tokens at 10 SD: one MLP unit still invisible (-0.04); one attention head's gain inconsistent across
+contexts (consistency 0.09 to 0.12); a residual-stream dimension 0.49 (consistency 0.88); a random
+residual direction 0.42 (0.86); a principal residual direction 0.89 (0.92, far stronger than worms).
+Chosen for phase 1: residual-stream dimensions as the units, pokes of 10 SD held 30 tokens, the closest
+match to the worms' evoked share (about 0.4).
+
+**Phase 1: the worm test in token time (pre-registered 6 Nov 2026).** The trained base model (HMM
+language); units are the residual-stream dimensions after each of the 4 blocks (256 units, each its own
+class); individuals are 113 copies with 10% multiplicative weight noise and 50 steps of training on
+their own data; each reads its own 4,440-token stream; recorded activity is each unit's value plus
+measurement noise of 0.1 of its SD; half the units seen per recording and 30% never; pokes from token
+230, every 60 tokens, to a random seen unit, 10 SD held 30 tokens (`run_tlab_phase1.py`). Measured on
+the ladder's six axes, then the full ruler on pool 0. Untrained control: the same with untrained
+weights. *Prediction:* the trained transformer is copyable by watching like the recurrent networks
+(cheap watching share at least 1.3; ruler share at least 40%), because its token-to-token dynamics run
+through attention to the token stream, which a lagged linear model of the units can follow.
+*Decision:* by those thresholds; between them (or at or below 0.8 and 16%), it is reported as
+intermediate (or worm-like). If individuals agree below 0.05 the test is unusable.
+
 **Phase 2: the test in depth, with known truth (pre-registered 6 Nov 2026).** In a transformer, most
 cause and effect runs through depth within one forward pass, where exact intervention effects are
 known. True effect matrix: the change in each later-layer unit when a first-block unit is pushed by

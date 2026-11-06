@@ -1,0 +1,11 @@
+base model loss 2.766; natural mean-square change 0.419
+mlp-unit      strength    3 for  4 tokens: mean |echo| 0.006 SD; consistency across contexts 0.68; evoked share -0.09
+mlp-unit      strength   10 for 30 tokens: mean |echo| 0.107 SD; consistency across contexts 0.87; evoked share -0.04
+resid-dim     strength    3 for  4 tokens: mean |echo| 0.024 SD; consistency across contexts 0.67; evoked share -0.10
+resid-dim     strength   10 for 30 tokens: mean |echo| 0.359 SD; consistency across contexts 0.88; evoked share 0.49
+resid-random  strength    3 for  4 tokens: mean |echo| 0.028 SD; consistency across contexts 0.68; evoked share -0.10
+resid-random  strength   10 for 30 tokens: mean |echo| 0.552 SD; consistency across contexts 0.86; evoked share 0.42
+resid-pc      strength    3 for  4 tokens: mean |echo| 0.091 SD; consistency across contexts 0.65; evoked share -0.07
+resid-pc      strength   10 for 30 tokens: mean |echo| 1.473 SD; consistency across contexts 0.92; evoked share 0.89
+head          strength    0 for 30 tokens: mean |echo| 0.080 SD; consistency across contexts 0.09; evoked share -0.10
+head          strength    4 for 30 tokens: mean |echo| 0.238 SD; consistency across contexts 0.12; evoked share 0.13
