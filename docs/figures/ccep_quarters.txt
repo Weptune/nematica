@@ -1,0 +1,5 @@
+33 recordings; 32 scored at every data size (1 without a score at some size: too few pulses or rows in a quarter)
+median watching: quarter 0.229, half 0.248, all 0.285
+median gain quarter->half +0.011; half->all +0.032 (95% bootstrap +0.027 to +0.060)
+recordings gaining from half to all: 28 of 32
+prediction (plateau, median gain half->all below 0.02): refuted

@@ -3192,6 +3192,42 @@ same token input), not a lack of data. Including the skip-connection entries (ph
 measure) the scores are 0.68 to 0.69 untrained and 0.44 to 0.48 trained, matching phase 2's 0.675
 and 0.453, and also flat beyond 24 contexts; the off-diagonal measure is stricter, hence lower.
 
+**Result, part C (7 Nov 2026; `docs/figures/latent_watch.csv`; 400 Adam steps and 150 L-BFGS
+iterations per fit, set before any part B or C result).** Worms, split cv3, the same ruler as
+every copy:
+
+| Pool | Hidden units chosen | Best watcher's share | VAR watcher's share (`worm_stitch.csv`) | Data-limited agreement |
+|---|---|---|---|---|
+| 0 | 4 | -0.03 | 0.10 | 0.69 (SD 0.02) |
+| 1 | 8 | 0.01 | 0.13 | 0.67 (SD 0.06) |
+| 2 | 4 | 0.005 | 0.04 | 0.59 (SD 0.04) |
+
+**Verdict by the rules fixed in advance: partial.** The best watcher's share is far below 0.25 in
+every pool, but the data-limited agreement (0.59 to 0.69) is neither at least 0.8 (structural) nor
+below 0.5 (data-limited). **My prediction (structural) is not confirmed as worded.** The best
+watcher fits worm rest activity better than the VAR watcher (held-out likelihood improves with
+hidden units in every pool) and predicts worm pokes worse than it.
+
+*Exploratory, written after the worm results were read (`scripts/explore_latent_hidden_share.py`,
+`docs/figures/latent_hidden_share.csv`).* (1) The fitted worm models attribute 12% (pool 0) and 19%
+(pool 1) of the seen classes' rest variance to their hidden units' own noise, far from the 93 to
+96% of part A's data-starved networks; seen-to-seen links are weak (RMS 0.03) and the slowest mode
+lasts about 100 s. A first version of this measure cut the hidden-to-seen links instead, which
+with two-way hidden units also removes feedback loops and gave a negative share (-0.94, pool 1);
+it was replaced and its output kept as `latent_hidden_share_v1_flawed.csv`. (2) Lab brain D had the
+same data-limited agreement (0.68, fold 0) and a best-watcher share of 1.25 (noisy: its individuals
+agree at only 0.03), so a data check near 0.68 is compatible with watching succeeding. Both point
+towards a structural reading for worms; neither changes the pre-registered verdict.
+
+**Result, part E (7 Nov 2026; `docs/figures/ccep_quarters.csv`, `ccep_quarters.txt`).** 33
+recordings of patients UMCU01 to UMCU12; 32 scored at every data size (one has too few rows in a
+quarter). Median watching agreement (Spearman with measured response strength): a quarter of the
+rest data 0.229, half 0.248, all 0.285. Gain from half to all +0.032 (95% bootstrap interval
++0.027 to +0.060), positive in 28 of 32 recordings. **Prediction (plateau) refuted:** watching
+human cortex is still improving with more rest data at full recording length, unlike the
+transformers. A first summary printed "refuted" from NaN medians (one unscored recording); the
+script now drops recordings unscored at any size and the verdict is from the fixed summary.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is

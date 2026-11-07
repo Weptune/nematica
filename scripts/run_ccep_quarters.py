@@ -69,12 +69,18 @@ def main():
         w = csv.DictWriter(fh, fieldnames=list(rows[0]))
         w.writeheader()
         w.writerows(rows)
+    ok = [r for r in rows if all(np.isfinite(r[k]) for k in ("quarter", "half", "all"))]
+    dropped = len(rows) - len(ok)
+    rows_all, rows = rows, ok
     gain_q = [r["half"] - r["quarter"] for r in rows]
     gain_h = [r["all"] - r["half"] for r in rows]
-    txt = [f"{len(rows)} recordings",
+    lo, hi = np.percentile([np.median(np.random.default_rng(i).choice(gain_h, len(gain_h))) for i in range(2000)], [2.5, 97.5])
+    txt = [f"{len(rows_all)} recordings; {len(rows)} scored at every data size ({dropped} without a score at some size: "
+           f"too few pulses or rows in a quarter)",
            f"median watching: quarter {np.median([r['quarter'] for r in rows]):.3f}, half "
            f"{np.median([r['half'] for r in rows]):.3f}, all {np.median([r['all'] for r in rows]):.3f}",
-           f"median gain quarter->half {np.median(gain_q):+.3f}; half->all {np.median(gain_h):+.3f}",
+           f"median gain quarter->half {np.median(gain_q):+.3f}; half->all {np.median(gain_h):+.3f} (95% bootstrap {lo:+.3f} to {hi:+.3f})",
+           f"recordings gaining from half to all: {sum(g > 0 for g in gain_h)} of {len(gain_h)}",
            f"prediction (plateau, median gain half->all below 0.02): {'holds' if np.median(gain_h) < 0.02 else 'refuted'}"]
     (out / "ccep_quarters.txt").write_text("\n".join(txt) + "\n")
     print("\n".join(txt))
