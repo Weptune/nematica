@@ -10,11 +10,12 @@ Dear Dr Leifer,
 I have been using the public signal-propagation atlas (Randi et al. 2023) to benchmark whole-brain
 models of C. elegans, and found something in the data that you may already know about, or may want to.
 
-When the same neuron is stimulated again within 2 minutes, its own response is about 40% of its
-first response (gap-matched controls subtracted; 81 pairs, 47 worms). After 2 to 5 minutes it is
-about 64%, and by 5 to 10 minutes it has recovered. About 40% of repeat stimulations of a neuron in
-the atlas fall within 5 minutes of the previous one. The decline is as large in the unc-31 recordings,
-so it does not seem to need dense-core-vesicle release.
+When the same neuron is stimulated again 0.6 to 2 minutes later, its own response is about half
+its previous response (geometric mean, gap-matched controls subtracted; 56 pairs, 37 worms; repeats
+30 s apart excluded because their baseline still holds the previous response). After 2 to 5 minutes
+it is about two thirds, and after 5 to 10 minutes it is not detectably weaker. About 9% of the atlas's
+identified stimulations are repeats within 5 minutes. The decline persists in the unc-31 recordings,
+so it does not seem to need UNC-31-dependent release.
 
 What I cannot settle from the atlas is whether this is the GUR-3/PRDX-2 actuator desensitising or
 the neuron itself. Two pre-registered attempts to separate light from the activity it causes failed

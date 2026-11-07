@@ -185,8 +185,8 @@ def fig_repeat_recovery(out):
     ax.set_yticks([0, 50, 100, 150], ["0%", "50%", "100%", "150%"])
     ax.grid(axis="x", visible=False)
     ax.set_xlabel("Time since the same neuron was last stimulated")
-    ax.set_title("A repeat stimulation within 2 minutes gets about 40% of the first response", loc="left")
-    ax.text(0, -0.24, "Worm atlas, 113 animals: second response as % of the first, minus gap-matched controls; 90% intervals over worms",
+    ax.set_title("A repeat stimulation 0.6 to 2 minutes later gets about half the previous response", loc="left")
+    ax.text(0, -0.24, "Worm atlas, 113 animals: response as % of the previous one (geometric mean, gap-matched controls subtracted); 90% intervals over worms",
             transform=ax.transAxes, color=MUTED, fontsize=9)
     fig.savefig(out / "fig-repeat-recovery.png", bbox_inches="tight")
 
