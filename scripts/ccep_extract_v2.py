@@ -161,6 +161,10 @@ def process(vhdr: Path) -> dict:
                    if e["trial_type"] == "electrical_stimulation" and e["electrical_stimulation_site"] not in ("", "n/a"))
     d = LAGS * C + 1
     XtX, XtY, n_rows, seg = np.zeros((d, d)), np.zeros((d, C)), 0, 0.0
+    QUART = os.environ.get("NEMATICA_CCEP_QUARTERS") == "1"   # watching-limit part E: statistics per quarter
+    if QUART:
+        XtXq, XtYq, nq = np.zeros((4, d, d)), np.zeros((4, d, C)), np.zeros(4, int)
+        span = (stims[0][0], stims[-1][0]) if stims else (0.0, 1.0)
     for (t0, _), (t1, _) in zip(stims[:-1], stims[1:]):
         if t1 - t0 > 10:
             continue
@@ -175,6 +179,11 @@ def process(vhdr: Path) -> dict:
         XtY += X.T @ Y
         n_rows += Y.shape[0]
         seg += (b - a) / FS
+        if QUART:
+            qi = min(3, int(4 * (t0 - span[0]) / max(span[1] - span[0], 1e-9)))
+            XtXq[qi] += X.T @ X
+            XtYq[qi] += X.T @ Y
+            nq[qi] += Y.shape[0]
     pre, post, base_end = int(E.EP_PRE_S * FS), int(E.EP_POST_S * FS), int(E.BASE_END_S * FS)
     keep = int(0.05 * FS)
     sites = sorted({s for _, s in stims})
@@ -255,7 +264,8 @@ def process(vhdr: Path) -> dict:
             "pulse_resp_rms": np.array(resp, np.float32).reshape(len(t_on), C),
             "pulse_pre_rms": np.array(prer, np.float32).reshape(len(t_on), C),
             **({"pulse_wave": np.array(wave, np.float16).reshape(len(t_on), C, Ww),
-                "pulse_state": np.array(state, np.float16).reshape(len(t_on), C)} if V3 else {})}
+                "pulse_state": np.array(state, np.float16).reshape(len(t_on), C)} if V3 else {}),
+            **({"XtX_q": XtXq, "XtY_q": XtYq, "n_rows_q": nq} if QUART else {})}
 
 
 def main() -> int:

@@ -97,6 +97,7 @@ class LatentCopy(ClassVAR):
             k = ks[0]
         F, lq, lr_, loss = self._fit_k(gt + gv, C, k, init0)
         self.k = k
+        self.lr_ = lr_
         self.classes = classes + [f"_hidden{h}" for h in range(k)]
         d = C + k
         self.W = np.vstack([F.T, np.zeros((1, d))])          # A[from, to] = F^T, zero bias

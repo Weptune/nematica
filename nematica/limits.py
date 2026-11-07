@@ -372,7 +372,7 @@ def whittle_fit_groups(groups, n, k, steps=1500, init=None, seed=0, lr=0.02, hid
         F0 = np.zeros((d, d))
         F0[:n, :n] = 0.5 * np.eye(n)
         if k:
-            F0[n:, n:] = 0.9 * np.eye(k)
+            F0[n:, n:] = np.diag(0.9 - 0.03 * np.arange(k))
             F0[:n, n:] = 0.1 * rng.standard_normal((n, k))
         lq0 = np.zeros(n)
         lr0 = np.log(0.1) * np.ones(n)
@@ -384,7 +384,7 @@ def whittle_fit_groups(groups, n, k, steps=1500, init=None, seed=0, lr=0.02, hid
             m0 = F0.shape[0]
             G0[:m0, :m0] = F0
             for h in range(m0, d):
-                G0[h, h] = 0.9
+                G0[h, h] = 0.9 - 0.03 * (h - m0)      # distinct timescales
             G0[:n, m0:] = 0.05 * rng.standard_normal((n, d - m0))
             F0 = G0
     F = torch.tensor(F0, requires_grad=True)
@@ -411,8 +411,14 @@ def whittle_fit_groups(groups, n, k, steps=1500, init=None, seed=0, lr=0.02, hid
             ld = 2 * torch.log(torch.diagonal(L, dim1=1, dim2=2).real).sum(1)
             tr = torch.diagonal(torch.cholesky_solve(P, L), dim1=1, dim2=2).real.sum(1)
             loss = loss + (wt * (ld + tr)).sum()
-        rad = torch.linalg.eigvals(Fm).abs().max()
-        pen = 100 * torch.relu(rad - 0.995) ** 2
+        # stability penalty only when it bites: differentiating eigenvalues is unsafe when two
+        # coincide (NaN gradients even where the penalty is zero)
+        with torch.no_grad():
+            rad0 = float(torch.linalg.eigvals(Fm).abs().max())
+        pen = 0.0
+        if rad0 > 0.995:
+            rad = torch.linalg.matrix_norm(torch.linalg.matrix_power(Fm, 8), ord=2) ** (1 / 8)
+            pen = 100 * torch.relu(rad - 0.995) ** 2
         if ridge:
             pen = pen + ridge * (Fm[:n, :n] ** 2).sum() / n
         return loss / totw + pen
@@ -427,11 +433,15 @@ def whittle_fit_groups(groups, n, k, steps=1500, init=None, seed=0, lr=0.02, hid
                 best[0] = loss
                 best[1] = (Fm.copy(), lq.detach().numpy().copy(), lrr.detach().numpy().copy())
 
+    with torch.no_grad():
+        keep(float(objective()))                 # the starting point is always a fallback
     opt = torch.optim.Adam([F, lq, lrr], lr=lr)
     for it in range(steps):
         opt.zero_grad()
         try:
             loss = objective()
+            if not torch.isfinite(loss):
+                raise FloatingPointError
         except Exception:                       # a non-positive-definite S: step back
             with torch.no_grad():
                 if best[1] is not None:
@@ -440,6 +450,8 @@ def whittle_fit_groups(groups, n, k, steps=1500, init=None, seed=0, lr=0.02, hid
                     lrr.copy_(torch.tensor(best[1][2]))
             continue
         loss.backward()
+        if not all(torch.isfinite(p.grad).all() for p in (F, lq, lrr)):
+            continue
         opt.step()
         if it % 25 == 0 or it == steps - 1:
             keep(float(loss.detach()))
@@ -454,9 +466,16 @@ def whittle_fit_groups(groups, n, k, steps=1500, init=None, seed=0, lr=0.02, hid
         lb = torch.optim.LBFGS([F, lq, lrr], lr=1, max_iter=polish, history_size=50,
                                tolerance_grad=1e-10, tolerance_change=1e-13, line_search_fn="strong_wolfe")
 
+        calls = [0]
+
         def closure():
+            calls[0] += 1
+            if calls[0] > 4 * polish:
+                raise RuntimeError("polish budget")
             lb.zero_grad()
             l = objective()
+            if not torch.isfinite(l):
+                raise FloatingPointError("non-finite loss")
             l.backward()
             return l
         try:
