@@ -3413,6 +3413,34 @@ poke of the same neuron 100 s later was about 4% smaller in S2. The registered v
 S2 and S3 are also run with 4 times the gain (KF 0.02, KD 0.032) as a sensitivity check. This
 addition was informed by the smoke test and is labelled as such.
 
+## The reverse question: do artificial networks keep the same rules while brains drift? (pre-registered 7 Nov 2026)
+
+**Why.** Every candidate difference so far was something worms do; none asked what artificial networks
+do that brains do not. The first candidate: an artificial network without learning has exactly the same
+dynamics at the end of a recording as at the start; a brain may not (adaptation, plasticity, state,
+or the preparation changing).
+
+**Measure.** For each recording, rest activity is split into four time quarters. The lag-1
+cross-correlation matrix (correlation of unit i at t with unit j at t - 1, i != j) is computed from the
+early half (quarters 1 and 2) and the late half (3 and 4), and, as a noise control with the same amount
+of data, from quarters 1 and 3 against 2 and 4. Drift = similarity(interleaved) minus
+similarity(early, late), where similarity is the correlation of the off-diagonal entries. Drift above 0
+means the rules changed systematically over the recording beyond what sampling noise explains. Median
+over recordings with a 90% bootstrap interval.
+
+**Systems.** Worms (113 atlas recordings: unpoked frames, at least 30 s after any stimulation, classes
+z-scored per recording; quarters by time over the whole recording); human cortex (the 33 recordings
+re-extracted with quarters: lag-1 blocks of the stored lagged statistics); lab brains base and drives
+(40 individuals, same frames rule as worms); the spiking network S0 and its slow variants S1 to S3 (40
+individuals).
+
+**Predictions.** Worms and human cortex drift (interval above 0); the lab brains and plain spiking S0 do
+not (interval includes 0). If so, staying the same over a recording is a property of the artificial
+networks we build (a difference in the reverse direction), and the slow variants S1 to S3 say whether
+use-dependent processes are enough to make a network drift. Caveat stated in advance: biological drift
+can also come from the measurement (bleaching, electrode drift) or the preparation; correlations remove
+changes in scale but not in which units are visible.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
