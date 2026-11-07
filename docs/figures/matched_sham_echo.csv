@@ -1,0 +1,5 @@
+system,recordings,sparseness_excess,sp_lo,sp_hi,persistence_excess,pe_lo,pe_hi
+worms,104,0.0243,0.0124,0.0389,0.236,0.152,0.332
+lab base,40,0.0,0.0,0.0217,-0.043,-0.065,-0.034
+lab D,40,0.0,-0.0139,0.0159,-0.041,-0.079,0.009
+lab G,40,0.011,0.0,0.0241,-0.073,-0.086,-0.049
