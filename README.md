@@ -3447,6 +3447,37 @@ gaps: each individual's pokes are drawn from 14 of its seen neurons (median gap 
 else unchanged. Variants S0, S2x4, S4, S5, S6 ("@w" suffix). Rule unchanged: S6 must reach -0.2 or
 below for the others to be read; predictions as registered (S0 none; S4 and S5 worm-like).
 
+**Result (8 Nov 2026; `docs/figures/spiking.csv`, `scripts/run_spiking.py`, `nematica/spiking.py`).**
+Tiring is the stimulated neuron's own repeat-poke change (worms -0.42); "@w" = worm-matched repeat gaps.
+
+| Variant | Tiring | Watching share | Echo breadth | Resting structure | Individuality | Reliability |
+|---|---|---|---|---|---|---|
+| S0 plain | +0.008 (@w +0.018) | 1.33 | 0.018 | 0.13 | -0.005 | 0.058 |
+| S1 spike-fed adaptation | +0.003 | 0.45 | 0.000 | 0.16 | -0.005 | 0.052 |
+| S2 gated fatigue | +0.075 (x4 +0.38; x4@w +0.50) | 1.18 | 0.000 | 0.14 | -0.008 | 0.039 |
+| S3 gated synaptic depletion | +0.002 (x4 +0.008) | 1.42 | 0.000 | 0.13 | -0.005 | 0.044 |
+| S4 gated gain fatigue (post hoc) | +0.13 (@w +0.20) | 1.06 | 0.000 | 0.14 | -0.003 | 0.038 |
+| S5 gated refractoriness (post hoc) | +0.60 (@w +0.75) | 0.47 | 0.000 | 0.15 | +0.002 | 0.019 |
+| S6 channel desensitisation (calibration) | -0.14 (@w -0.17) | 1.57 | 0.000 | 0.13 | -0.005 | 0.043 |
+
+- *Predictions 1, 2 and 4 confirmed:* plain spiking, spike-fed adaptation and synaptic depletion do not
+  tire, and the plain network is readable by watching (share 1.33).
+- *Prediction 3 refuted, and the calibration failed:* S6, built to tire, reached only -0.14 (-0.17 at
+  worm gaps), short of the -0.2 the rule required, so by the rule the mechanism tests are
+  uninformative. **Exploratory reading:** every mechanism acting on the neuron itself (S2, S4, S5) gives
+  the opposite sign, because what lingers after a strong poke lowers the neuron's resting level more
+  than its peak, and the measure counts the response from the resting level. Only a mechanism that
+  weakens the stimulation input itself (S6) gives the worm's sign. So in this network the worm's kind
+  of tiring is reproduced by a tiring stimulation channel and not by any neuron-level fatigue tried,
+  which reopens the question "the neuron or the tool" in the tool's favour, against the exploratory
+  within-neuron worm result (-0.09 after drive from other neurons).
+- *Spiking networks, as built, are less worm-like than the rate networks on other axes:* pokes barely
+  spread (echo breadth 0 to 0.018, worms 0.085), resting structure is weak (0.13 to 0.18, worms 0.43),
+  no individuality. A spiking network is not automatically closer to a brain on these measures.
+- The echo-persistence excesses in `spiking.csv` used the confounded matched sham (review 6) and are not
+  read.
+
+
 ## The reverse question: do artificial networks keep the same rules while brains drift? (pre-registered 7 Nov 2026)
 
 **Why.** Every candidate difference so far was something worms do; none asked what artificial networks

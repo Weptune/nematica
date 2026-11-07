@@ -1,0 +1,5 @@
+worms with AVA used: 113; stimulated classes scored: 0
+class S(high,low) mean-null S-minus-null size(high/low) n_high n_low responders
+median S minus null: +nan [90%: +nan, +nan], sign-flip p (one-sided) = 0.0000
+echo size high/low: median nan
+verdict: inconclusive
