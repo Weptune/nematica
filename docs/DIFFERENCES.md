@@ -19,7 +19,7 @@ Systems compared:
 | Property | Worm | Recurrent nets | Lab + biology | Transformer | Verdict |
 |---|---|---|---|---|---|
 | **Copyable by watching** (recorded activity predicts poke responses) | No: 4 to 16% of worm-to-worm agreement | Yes: random 51 to 82%, trained 75 to 91% | Drives plus silent links: 18 to 19%, near the worm | In time: no, but trivially (effects land in depth, not in later tokens). In depth: partly; correlations recover 0.31 to 0.71 of the residual stream's cause and effect and 0.05 to 0.47 in the computing (MLP) units; training lowers it | **Dissolved as a categorical difference.** Hidden shared signals and training both produce it in artificial networks. It separates worms from the small recurrent nets we tested, not biology from artificial networks |
-| **Tiring**: a neuron answers less when poked again | Yes: about a quarter less (D -0.28 after selection correction) | No (-0.02) | Adding stimulation that weakens with use reaches only -0.13: saturating units hide it | No (-0.002) | **Survives, cause open** (corrected after review 4; it was briefly called "the tool"). Spiking networks (8 Nov): plain spiking, spike-fed adaptation and synaptic depletion do not tire; every neuron-level fatigue tried gives the opposite sign on this measure (+0.13 to +0.75), and only a tiring stimulation channel gives the worm's sign (-0.17; calibration short of its -0.2 rule, so exploratory), which leans back towards the tool. A direct worm test (8 Nov): before a neuron's second poke its resting level does not detectably drop (-0.04 [-0.16, +0.09]) while its response drops (-0.74), the channel's pattern; formally inconclusive (interval wider than +-0.1), but neuron-level fatigue of the size tried in spiking networks is ruled out. Compared with itself, a worm neuron recently driven by other neurons, with no light on it, answers less (-0.09 per SD of drive [90%: -0.16, -0.02], within-neuron shuffle p = 0.026; exploratory), so activity may tire it; the larger drop after being lit could still be partly the channel. Network-level responses decline little: worm echo -0.04 [-0.19, +0.12]; human cortex, channels beyond 10 mm, +0.0004 per pulse [-0.0008, +0.0015] (the stimulated tissue not measured); mouse touch cortex uninformative |
+| **Tiring**: a neuron answers less when poked again (8 Nov: see the late update below) | Yes: about a quarter less (D -0.28 after selection correction) | No (-0.02) | Adding stimulation that weakens with use reaches only -0.13: saturating units hide it | No (-0.002) | **Survives, cause open** (corrected after review 4; it was briefly called "the tool"). Spiking networks (8 Nov): plain spiking, spike-fed adaptation and synaptic depletion do not tire; every neuron-level fatigue tried gives the opposite sign on this measure (+0.13 to +0.75), and only a tiring stimulation channel gives the worm's sign (-0.17; calibration short of its -0.2 rule, so exploratory), which leans back towards the tool. A direct worm test (8 Nov): before a neuron's second poke its resting level does not detectably drop (-0.04 [-0.16, +0.09]) while its response drops (-0.74), the channel's pattern; formally inconclusive (interval wider than +-0.1), but neuron-level fatigue of the size tried in spiking networks is ruled out. Compared with itself, a worm neuron recently driven by other neurons, with no light on it, answers less (-0.09 per SD of drive [90%: -0.16, -0.02], within-neuron shuffle p = 0.026; exploratory), so activity may tire it; the larger drop after being lit could still be partly the channel. Network-level responses decline little: worm echo -0.04 [-0.19, +0.12]; human cortex, channels beyond 10 mm, +0.0004 per pulse [-0.0008, +0.0015] (the stimulated tissue not measured); mouse touch cortex uninformative |
 | **State-dependent spread** along the main resting pattern | Yes (-0.049, p = 0.002); replicated in new worms (-0.080, p = 0.033). Matched shams (7 Nov, 3 draws): -0.014, -0.022, -0.003, none significant; with a stricter pseudo-onset pool the real effect is -0.093, p = 0.0008: specific to pokes | Only with strong slow drives | One of two brains (p = 0.0008; p = 0.12) | No on this test (p = 0.39); yes on the language's true hidden state, strongly | **Partly survives.** Artificial networks depend on state too, but not on their main resting pattern; the worm's kind of state dependence is reproduced only with slow drives. Mouse touch cortex leans the same way (S -0.085, 6 of 7 sessions, p = 0.066, inconclusive); human cortex: none detected (S -0.0017 [-0.0046, +0.0015], 54 patients; a different state measure) |
 | **Echo breadth**: share of neurons a poke moves | 0.085 | 0.095 to 0.100 | Modules: no detectable narrowing | 0.133 | **Weak.** Close in recurrent nets; transformers wider. Combined with tiring and the rest, no ingredient combination matches all axes at once |
 | **Resting structure**: variance in the top 3 patterns | 0.43 | 0.25 to 0.27 | Drives: 0.40 to 0.43 | 0.51 | **Dissolved.** One ingredient (shared slow drives) produces it |
@@ -148,3 +148,57 @@ and carry that caveat.
 
 Survivors now: **tiring** (cause open, leaning tool; a direct worm test shows the channel's pattern), **the worm's kind of state dependence**, and a
 reverse-direction candidate, **drifting rules**, quantitative rather than categorical.
+
+## Update, 8 Nov 2026 (late): tiring, hidden state, and the conclusion
+
+**Tiring, settled as far as the atlas allows** (README "Light or activity: what tires a worm neuron?",
+corrected by review 7). A neuron poked again 0.6 to 2 minutes later answers at about half its previous
+response (-0.76 [-1.08, -0.44]); after 2 to 5 minutes about two thirds; after 5 to 10 minutes it is not
+detectably weaker. The decline persists in unc-31 mutants. Two pre-registered ways of splitting light
+from activity failed on synthetic worms where the cause was known, so the split is not measurable in
+this atlas: every direct poke delivers both. Activity caused by other neurons, with no light, is
+followed by a slightly smaller response (-0.10 per SD, beyond the range of synthetic worms without
+neuron fatigue), so a modest neuron component is likely but not established. **The tiring row stays
+"survives, cause split"**: a short-lived decline that follows light, plus probably a smaller part that
+follows activity.
+
+**Invisible machinery: no answer.** A cheap measure of slow hidden state from rest failed its
+calibration (at worm recording length, neither model predicts 20 to 40 s ahead on held-out data), so
+the test stopped before any brain data was read, as registered.
+
+## Conclusion: what separates real neural networks from artificial ones
+
+This is the project's answer to its main question, as of 8 Nov 2026, with how strong each part is.
+
+1. **No difference in kind was found.** Every property that first separated worms from artificial
+   networks either dissolved when a network was given the right ingredient (hidden slow drives, links
+   silent at rest, calm and active regimes, non-propagating noise, individual variation) or turned out
+   to be a measurement of ongoing activity rather than of the brain's response. *Strong for the
+   properties tested; limited to one animal with single-neuron pokes and to small artificial networks.*
+2. **The difference is in what the system carries outside its units' activity.** Every surviving or
+   dissolved-but-real difference traces to state that a recording of activity does not show: slow
+   hidden drives (why watching fails and why rules drift), use-dependent change (tiring), and
+   switching between calm and active regimes. An ordinary artificial network's state is its units'
+   activity; a brain's state is more than its neurons' activity. Artificial networks can be given such
+   state, and when they are, they acquire the brain's properties. *This is a synthesis across results,
+   not a single test; it fits every row of the table and was not predicted in advance.*
+3. **The consequence that matters most in practice:** realism at rest does not predict realism under
+   perturbation (rho -0.06 across 88 model-pool scores), and individual worms have causal fingerprints
+   invisible at rest. A copy of a brain cannot be certified by watching it. *Strong, pre-registered,
+   checked by reviews; the independence caveat in review 7 does not change a null.*
+4. **What survives as a measured difference, by degree:** tiring with use (part probably the tool,
+   part probably the neuron), the worm's kind of state dependence (poke-specific, -0.093, p = 0.0008),
+   and drifting rules over a recording (worms and human cortex drift, networks without slow processes
+   do not). *Each is moderate evidence from mostly one species.*
+
+**Is any of this noteworthy?** Two things are, modestly: the benchmark result that looking right at rest
+says nothing about being right under perturbation (packaged as a preprint draft), and the repeat-
+stimulation decline in the field's main perturbation atlas (a practical caveat, not reported before as
+far as we found). The main question's answer, "the difference is state outside the activity", is a
+coherent reading, not a discovery: it would need a test designed for it (measuring hidden state
+directly, which the atlas and our cheap measure cannot do) before it is more than that.
+
+**What would move it further:** the light-free tiring experiment (draft email to the atlas authors,
+not sent); a perturbation dataset with repeated pokes of the same neurons at controlled intervals; and
+recordings long enough to measure slow hidden state from rest (our calibration says 16 minutes is too
+short).
