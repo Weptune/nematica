@@ -3628,6 +3628,83 @@ than the neuron, consistent with the spiking result; the exploratory within-neur
 drive from other neurons) remains the main evidence for a neuron-level part.
 
 
+## Light or activity: what tires a worm neuron? (pre-registered 8 Nov 2026)
+
+**Why.** Tiring is the strongest surviving difference between worms and artificial networks
+(`docs/DIFFERENCES.md`), but it matters for the project's question only if the neuron tires and not the
+light-gated channel (GUR-3/PRDX-2) used to poke it. Two earlier tests each saw half of the picture:
+activity without light lowers a neuron's next response a little (-0.09 per SD of drive, within-neuron,
+exploratory), and before a second poke the resting level does not detectably drop (formally
+inconclusive). This section separates the two causes in one model, checks the method on synthetic data
+where the cause is known, and adds three tests the atlas can answer without new experiments. Written
+before computing anything below. Novelty check (8 Nov): neither the atlas paper, its tool paper
+(TWISP, Sharma et al. 2023) nor Creamer, Leifer and Pillow (2024/2026) analyse repeat-stimulation
+decrements.
+
+**Data and definitions.** The 113 wild-type atlas worms and the 18 unc-31 recordings; response,
+valid neurons and stimulations exactly as test B1 (`run_week1.py`): mean over 15 s after onset minus
+the 10 s before, in units of the neuron's SD over unpoked frames. Neighbour exclusion as in the
+tiring-source test (neither neuron among the other's three nearest positioned neurons).
+
+**T1 (primary): the light share.** Units: every direct stimulation of a valid neuron k with a finite,
+positive own response a, among neurons stimulated at least twice in their worm. Covariates from the
+5 min before (events whose 15 s window ends before f):
+- *L*: 1 if k itself was poked in the window;
+- *A*: the largest activity evoked in k by any earlier event in the window, in SD units: k's own
+  response to its own earlier poke (clipped at 0), or k's response to another neuron's poke (subject to
+  the neighbour exclusion), whichever is larger; 0 if none;
+- the number of other pokes in the window, order (f over recording length), and pre level (k's mean
+  over the 10 s before f, SD units relative to its unpoked mean).
+
+Model: log a regressed on L, A and the controls, each worm's neuron its own fixed effect. *beta_L* is
+what light does beyond the activity it causes; *beta_A* is what activity does per SD, whatever caused
+it. **Light share** S = beta_L / (beta_L + beta_A * A_dir), A_dir the mean of A over rows with L = 1.
+90% intervals by resampling worms (2,000); p for beta_L by shuffling L within neuron (2,000).
+
+*Validation, before the real data is touched.* Semi-synthetic worms built on the atlas's real poke
+schedules (which neuron, when) and response sizes: each neuron has a slowly drifting responsiveness
+(the confound that made the first tiring-source test misleading), sparse random network weights,
+measurement noise, and one of two truths tuned so the direct-poke drop matches the worm's:
+(i) *tool*: each poke halves the channel's gain at the lit neuron, recovering with a 10 min time
+constant; activity has no effect; (ii) *neuron*: activity lowers the neuron's gain in proportion to
+its size in SD, recovering with 10 min; light has no effect beyond the activity. Ten synthetic atlases
+per truth. *Pass* if S's 90% interval lies above 0.5 in at least 8 of 10 tool atlases and below 0.5
+in at least 8 of 10 neuron atlases. If it fails, T1 is declared unable to separate the causes and no
+reading is made.
+
+*Decision on the worms:* **mostly light** (the actuator, or another effect of light) if S's 90%
+interval lies above 0.5 and beta_L's below 0 with shuffle p < 0.05; **mostly activity** (the neuron)
+if S's interval lies below 0.5 and beta_A's below 0; otherwise inconclusive. No outcome is favoured.
+
+**T2: does the drop pass downstream?** For each repeat pair (a neuron's first two pokes) and each B1
+control pair, the downstream set is the five classes with the largest mean absolute response to the
+target's class in the *other* worms (at least 5 other worms contributing), excluding the target's class
+and its three nearest neighbours; the downstream response is the mean of their sign-aligned responses
+(sign from the other worms). Per worm: log(mean second / mean first) over repeat pairs, minus the same
+over control pairs, for the target (D_target) and for the downstream set (D_down), requiring positive
+means. Report D_target, D_down and D_down - D_target (90% intervals over worms). *Reading:* **passed on**
+(the drop is at or before the target's activity: the channel or the neuron's excitability) if
+D_down - D_target's interval lies within +-0.2 and D_down's lies below 0; **not passed on** (the drop is
+in the target's own measured signal, not in what it sends) if D_down's interval includes 0 with lower end
+above -0.15 while D_target's lies below -0.3; **extra downstream loss** (synapses tire too) if
+D_down - D_target's interval lies below -0.2; otherwise inconclusive.
+
+**T3: two clocks?** T1's model with L and A each split by time since the event: 0 to 2, 2 to 5,
+5 to 10 and 10 to 20 min (window extended to 20 min). Reported as two recovery curves. *Reading:*
+**different clocks** if the light effect's 10 to 20 min interval lies below 0 while both of the
+activity effect's 5 to 10 and 10 to 20 min intervals include 0, or the reverse; otherwise not
+distinguished.
+
+**T4: unc-31.** T1 and the B1 target effect on the unc-31 recordings (dense-core-vesicle release
+blocked). Reported with intervals; with 18 recordings no decision is made unless intervals exclude 0.
+
+**What would make this noteworthy.** Either outcome is a one-sentence claim about the field's main
+perturbation atlas: "X% of the repeat-stimulation decline is light-specific" (a caveat for every user of
+the atlas and the tool) or "worm neurons tire with use, by Y per SD" (a property no artificial network
+here has).
+
+Code: `nematica/tiring_sim.py` (synthetic atlases), `scripts/run_light_or_activity.py`.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
