@@ -33,3 +33,12 @@ D,0,2,hybrid_kernels,0.0274,0.0222,inside
 G,0,0,var3_spontaneous,0.0378,0.1348,outside
 G,0,0,stitch3_hp,0.0319,0.1348,outside
 G,0,0,hybrid_kernels,0.1325,0.1348,inside
+G,0,1,var3_spontaneous,0.0302,0.1334,outside
+G,0,1,stitch3_hp,0.027,0.1334,outside
+G,0,1,hybrid_kernels,0.1167,0.1334,outside
+G,0,2,var3_spontaneous,0.0333,0.1198,outside
+G,0,2,stitch3_hp,0.033,0.1198,outside
+G,0,2,hybrid_kernels,0.1232,0.1198,inside
+DG,0,0,var3_spontaneous,0.0209,0.0757,outside
+DG,0,0,stitch3_hp,0.0228,0.0757,outside
+DG,0,0,hybrid_kernels,0.0654,0.0757,inside
