@@ -3369,6 +3369,43 @@ the intervals overlap. So a small poke-specific echo difference exists, a fracti
 6.5 against 2.2 to 3.3 frames believed before the 7 Nov sham check.
 
 
+## A spiking network on the same tests, and what makes neurons tire (pre-registered 7 Nov 2026)
+
+**Why.** The artificial side of the comparison had no spiking networks, the artificial networks closest
+to real neurons; and the first surviving difference, tiring with use, has a candidate mechanism
+(activity-dependent depletion) that has never been tested. One build answers both.
+
+**Network** (`nematica/spiking.py`). 120 leaky integrate-and-fire neurons (96 excitatory, 24
+inhibitory, Dale's law), random connections with probability 0.1 and lognormal weights (J = 0.15,
+inhibition 4 times stronger), membrane 20 ms, synapses 10 ms, refractory 10 ms, noisy background input
+(mean 0.8, SD 0.3 of threshold); simulated at 5 ms steps; about 12 Hz, irregular. 113 individuals,
+each with every weight's magnitude scaled by max(0, 1 + 0.3 N(0, 1)). Recorded like the atlas and the
+lab brains (`scripts/run_ladder.py`): firing rate per 0.5 s frame through a calcium-like decay of 1.5 s,
+plus measurement noise; 37-minute recordings, half the neurons seen per recording, 30% never seen; a
+poke every 30 s of a random seen neuron, a current of 1.5 thresholds held 2 s.
+
+**Variants** (identical wiring and noise; 10 min recovery for every slow process, since repeat pokes of
+the same neuron are about 20 min apart in this design):
+- S0, plain.
+- S1, slow spike-frequency adaptation: every spike adds a hyperpolarising current that decays over
+  10 min (size set so background firing lowers rates by about 20%).
+- S2, use-dependent fatigue: a neuron's calcium-like rate (1 s) above 30 Hz (background about 12 Hz;
+  pokes drive 40 Hz and more) builds a hyperpolarising current that decays over 10 min.
+- S3, use-dependent synaptic depletion: the same rate above 30 Hz depletes the neuron's outgoing
+  synapses, which recover over 10 min.
+
+**Measures.** The six fingerprint axes of `run_ladder.fingerprint` (watching share, echo breadth,
+tiring = the stimulated neuron's own repeat-poke change, resting structure, individuality,
+reliability), the matched-sham echo excess and the matched-sham state test of
+`scripts/check_matched_sham.py`, and the state test itself (`run_b2`, aligned PC1). Worms: tiring
+-0.42, watching share 0.61, resting structure 0.43, individuality 0.090, reliability 0.094.
+
+**Predictions.** (1) S0 behaves like the rate networks: no tiring (above -0.1) and watching share
+above 1. (2) S1 does not tire either (above -0.1): background firing, not pokes, sets its adaptation.
+(3) S2 tires like a worm (-0.2 or below). (4) S3's own-response tiring stays above -0.1. If (3) holds
+and (2) and (4) hold too, the worm's tiring is reproduced by depletion that is gated by strong drive and
+acts on the neuron itself, and tiring stops being a difference in kind.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
