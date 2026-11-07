@@ -3639,7 +3639,8 @@ inconclusive). This section separates the two causes in one model, checks the me
 where the cause is known, and adds three tests the atlas can answer without new experiments. Written
 before computing anything below. Novelty check (8 Nov): neither the atlas paper, its tool paper
 (TWISP, Sharma et al. 2023) nor Creamer, Leifer and Pillow (2024/2026) analyse repeat-stimulation
-decrements.
+decrements. *(Review 7: worded as "we found no analysis of repeat-stimulation decrements in these three";
+the actuator's original characterisation, Bhatla and Horvitz 2015, was not checked for this.)*
 
 **Data and definitions.** The 113 wild-type atlas worms and the 18 unc-31 recordings; response,
 valid neurons and stimulations exactly as test B1 (`run_week1.py`): mean over 15 s after onset minus
@@ -3751,25 +3752,35 @@ also run on the worms and reported with that caveat.
   values of -0.09 and +0.05, neuron truths leak -0.07 to -0.24, tool truths give -0.37 to -0.67. The
   worm's -0.64 at 0 to 2 min, gone by 5 min, looks like a light-specific decrement that recovers within a
   few minutes; one untested alternative (a neuron that tires strongly and recovers in about 2 min) could
-  leak more.
+  leak more. *(Corrected after review 7: the synthetic check covered only the 0-to-2-min light value, and
+  the same file shows large artefacts in later light bins (no-tiring atlas 1: +0.53 at 5 to 10 min; tool and
+  neuron truths +0.26 to +0.58), so "gone by 5 min" cannot be read from this curve; the no-tiring activity
+  range is -0.04 to -0.18. What stands: the 0-to-2-min light value lies outside the no-tiring range.)*
 - *T4, unc-31.* 13 recordings with repeats, 112 pairs: target D **-0.60 [-1.03, -0.23]** (wild type,
   same uncorrected measure: -0.42 [-0.53, -0.31]). **Tiring does not need dense-core-vesicle release**:
-  it is not mediated by neuropeptides.
+  it is not mediated by neuropeptides. *(Overstated; corrected after review 7: unc-31 reduces but does not
+  abolish dense-core-vesicle release, and 13 recordings overlap wild type. Read: tiring persists in unc-31
+  mutants; it does not require UNC-31-dependent release.)*
 - *Exploratory: activity measured from network drive only* (`scripts/explore_light_net.py`; no lagged
   own response). On 12 synthetic atlases with no tiring or tool-only tiring the drive slope is -0.01 to
   +0.07; with neuron tiring -0.13 to +0.05. The worms: **-0.10 [-0.18, -0.02] per SD**, outside the
   no-tiring and tool-only range. So worm neurons do answer less after activity that involved no light, by
-  a modest amount. This design's light share (0.62 [0.29, 0.91]) is not informative: neuron truths also
+  a modest amount. *(Softened after review 7: post hoc, upper end near 0, and the synthetic worms model no
+  pre-level or state-dependent gain effects. Read: consistent with a modest neuron component, not decisive.
+  It holds with drive events within 60 s excluded, -0.093 [-0.180, -0.008].)* This design's light share (0.62 [0.29, 0.91]) is not informative: neuron truths also
   give 0.6 to 1.2, because drives are small and a saturating effect looks weak per SD.
 
 **Reading.** The atlas cannot say how much of a worm neuron's repeat decline is the neuron and how much is
 the light: two validated estimators failed, and the light-free contrast (activity caused by other neurons)
 is too small and too rare. Three things it does say. (1) A repeat light poke within about 2 minutes gives a
-response about half as large (-0.64 in log units), and the deficit is gone by about 5 minutes. For users
+response about half as large (-0.64 in log units), and the deficit is gone by about 5 minutes. *(Review 7:
+"gone by 5 minutes" cannot be read from T3; the model-free curve below says the same thing more safely.)* For users
 of the atlas this is a practical caveat: trials of the same neuron less than a few minutes apart are not
 exchangeable. (2) Activity without light also lowers a neuron's next response, modestly (-0.10 per SD),
 beyond what the artefacts we found produce. (3) Neither needs neuropeptide release. So the tiring that no
-artificial network here shows has at least a small genuine neuron component. The decisive split needs an
+artificial network here shows has at least a small genuine neuron component. *(Review 7: (3) reads "neither
+needs UNC-31-dependent release"; "at least a small genuine neuron component" is softened to "probably has a
+modest neuron component".)* The decisive split needs an
 experiment: drive a neuron hard without light (through its inputs) and then poke it with light, against
 light-then-light, at matched activity.
 
@@ -3779,6 +3790,18 @@ min **-0.92 [-1.20, -0.64]** (81 pairs), 2 to 5 min **-0.45 [-0.65, -0.25]** (12
 [-0.35, +0.12] (175), 10 to 20 min +0.02 (155), 20 to 40 min +0.09 (50). A neuron poked again within 2
 minutes answers at about 40% of its first response; recovery takes about 5 to 10 minutes (time constant
 of a few minutes). This is the plainest statement of the effect, and it needs no model.
+
+**Corrected after review 7 (8 Nov 2026).** 54 of the 141 repeats within 2 min were about 30 s apart: the 10 s
+baseline before the second poke then falls inside the first poke's response window (the project's own 30 s
+exclusion), the neuron is still raised (pre level +1.89 SD against +0.35), and half of those pairs drop out
+of the both-positive filter. Repeats under 36 s are now excluded (`explore_recovery_curve.py`, first bin 0.6
+to 2 min): **0.6 to 2 min -0.76 [-1.08, -0.44] (56 pairs, 37 worms), about half the previous response**;
+2 to 5 min -0.45 [-0.66, -0.25], about two thirds; 5 to 10 min -0.11 [-0.34, +0.11], not detectably
+different from controls (a loss up to about 30% is not excluded); 10 to 20 min +0.02; 20 to 40 min +0.09.
+The percentages are geometric-mean ratios to the *previous* response, control-adjusted, among pairs with both
+responses positive; plain ratios of mean responses are 0.45 at 1 to 2 min and 0.71 at 2 to 5 min. The "40%"
+and "recovered by 5 to 10 minutes" above are withdrawn. Repeats within 5 min are 296 of 3,436 identified
+stimulations (8.6%): the caveat concerns about 9% of the atlas's trials.
 
 ## Invisible machinery: how much of a brain's activity is set by slow state its neurons do not show? (pre-registered 8 Nov 2026)
 
@@ -3831,17 +3854,36 @@ design is changed once: the target is the components' mean 20 to 40 s ahead; the
 last frame and the means over 0 to 2, 2 to 5 and 5 to 10 s (32 features instead of 160, less
 overfitting); the distant blocks are unchanged. The formal calibration uses seeds not used in the smoke
 test (brain seed 1, individuals from 5000). Everything else, including the pass rule, is unchanged. If
-it fails, the test stops.
+it fails, the test stops. *(Review 7: the order is honest but cannot be shown from git: the deviation was
+committed 76 s after the pre-registration, with the script and smoke-test code first appearing in that
+commit, and the calibration result 27 s after it.)*
 
 **Calibration result (8 Nov 2026; `docs/figures/invisible.csv`, `invisible.txt`). FAIL: the test stops; no
 worm or spiking recording was read.** Median DPG at r = 0.1 for hidden shares 0, 0.1, 0.25, 0.4: 0.000,
 -0.035, -0.027, -0.029 (not monotone; share 0.1 minus 0: -0.035 [-0.069, -0.025], the wrong sign). At
 r = 0.3: -0.000, -0.006, -0.008, -0.062. All units seen, share 0: -0.0001. With hidden drives the distant
 past makes held-out prediction *worse*: in 960 s there are only about ten independent stretches of a
-90 s drive, so coefficients learned on one half do not carry to the other. **Reading:** at the length of
-the worm recordings, slow hidden state cannot be measured from rest by this kind of model; this agrees
+90 s drive, so coefficients learned on one half do not carry to the other. *(Corrected after review 7: that
+explanation was not tested. Review 7 found the recent-only model's held-out R^2 negative in 7 of 8
+calibration networks, so DPG here is the difference between two models that both fail; per-network DPG
+ranges from -0.46 to +0.67, share 0 included.)* **Reading:** at the length of
+the worm recordings, neither model predicts 20 to 40 s ahead on held-out data, so slow hidden state cannot be measured from rest by this kind of model; this agrees
 with part A's data-starved regime. The worm's hidden share stays known only from the earlier latent fits
 (12 to 19%, one fragile model class). Bet 2 ("how much invisible machinery") ends here without an answer.
+
+**Review 7: independent review of the 8 Nov work (8 Nov 2026).** A separate agent that had not seen the work
+reran the scripts and checked every number. Numbers matched the outputs throughout (recovery curve, T2 to T4,
+validation counts, invisible-machinery tables, rest-vs-poke rho -0.063, fingerprints 36 of 43). Findings,
+all corrected in place above: (1) **error**: the 0-to-2-min recovery bin was partly a baseline artefact (30 s
+repeats); corrected value -0.76 at 0.6 to 2 min, about half, not 40%; (2) the percentages are geometric-mean
+ratios to the previous response; (3) "recovered by 5 to 10 min" overstated; (4) T3's later light bins are not
+interpretable; (5) unc-31 reduces rather than abolishes dense-core-vesicle release; (6) the net-drive result
+is consistent with a modest neuron component, not decisive; (7) the atlas caveat concerns about 9% of trials;
+(8) the invisible-machinery calibration compared two failing models; (9) the deviation's order cannot be shown
+from git; (10) the novelty check did not cover Bhatla and Horvitz 2015; (11) older claims: the 88 brain-pools
+are about 30 brains in 3 pools, so p = 0.56 assumes independence the data lacks (harmless for a null), and
+the fingerprint's odd and even halves interleave in time, so shared slow state within a worm (including the
+repeat decline) is another alternative to measurement quirks.
 
 ## Paper draft and outreach (8 Nov 2026)
 

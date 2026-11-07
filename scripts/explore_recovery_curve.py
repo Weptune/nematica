@@ -2,7 +2,9 @@
 pokes of the same neuron (not only the first two), log(second / first own response) minus the same for
 control pairs (first pokes of two different neurons about the same time apart, as test B1), binned by gap.
 Per worm means, then 90% bootstrap over worms. Output appended to docs/figures/light_or_activity.txt and
-docs/figures/recovery_curve.csv."""
+docs/figures/recovery_curve.csv.
+Corrected after review 7 (8 Nov): the first bin starts at 0.6 min; the first version (0 to 2 min, -0.92) is kept in
+light_or_activity.txt and superseded."""
 import csv
 import sys
 from collections import defaultdict
@@ -13,7 +15,7 @@ import numpy as np  # noqa: E402
 import run_light_or_activity as R  # noqa: E402
 import run_week1 as W  # noqa: E402
 
-BINS = [(0, 2), (2, 5), (5, 10), (10, 20), (20, 40)]
+BINS = [(0.6, 2), (2, 5), (5, 10), (10, 20), (20, 40)]   # review 7: repeats under 36 s start from a still-raised baseline (the 10 s before falls inside the first response) and are excluded; first version used (0, 2)
 
 
 def per_worm(w):

@@ -92,3 +92,8 @@ EXPLORATORY recovery curve, gap 2-5 min: -0.451 [90%: -0.652, -0.252], worms 70,
 EXPLORATORY recovery curve, gap 5-10 min: -0.112 [90%: -0.345, +0.117], worms 78, pairs 175
 EXPLORATORY recovery curve, gap 10-20 min: +0.021 [90%: -0.191, +0.223], worms 67, pairs 155
 EXPLORATORY recovery curve, gap 20-40 min: +0.091 [90%: -0.251, +0.425], worms 30, pairs 50
+EXPLORATORY recovery curve, gap 0.6-2 min: -0.760 [90%: -1.075, -0.442], worms 37, pairs 56
+EXPLORATORY recovery curve, gap 2-5 min: -0.451 [90%: -0.656, -0.252], worms 70, pairs 128
+EXPLORATORY recovery curve, gap 5-10 min: -0.112 [90%: -0.344, +0.106], worms 78, pairs 175
+EXPLORATORY recovery curve, gap 10-20 min: +0.021 [90%: -0.196, +0.228], worms 67, pairs 155
+EXPLORATORY recovery curve, gap 20-40 min: +0.091 [90%: -0.270, +0.423], worms 30, pairs 50
