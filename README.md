@@ -3705,6 +3705,25 @@ here has).
 
 Code: `nematica/tiring_sim.py` (synthetic atlases), `scripts/run_light_or_activity.py`.
 
+**Validation result (8 Nov 2026; `docs/figures/light_or_activity.txt`). FAIL.** Calibration first set the
+two truths to the worm's known direct drop (about -0.57): tool h = 0.35 (total -0.65), neuron kappa = 0.5
+(total -0.58). Then 10 atlases per truth: S's interval lay above 0.5 in 6 of 10 tool atlases and below
+0.5 in 7 of 10 neuron atlases (pass needs 8 and 8). Point estimates were on the right side in all 20
+(tool 0.62 to 0.92, neuron 0.09 to 0.46), so the model points the right way but the 5 min window leaves
+too few repeat pokes (about 250 of 1,200 rows) for its intervals. **By the rule, T1 as written cannot
+separate the causes; no reading of T1 as written will be made.** One more weakness seen: when activity's
+effect saturates, part of it leaks into beta_L (neuron atlases bL -0.06 to -0.38).
+
+**Amendment 1 (8 Nov 2026, before any real data entered T1).** Two changes, aimed at the two weaknesses:
+(a) all pokes in the previous 20 min count, each weighted by exp(-age / 5 min): L = the sum of the
+weights of k's own pokes; A = the largest of log(1 + activity) times its weight over all earlier events
+(own or, with the neighbour exclusion, network); (b) S = beta_L mean(L) / (beta_L mean(L) + beta_A
+mean(A)) over rows with L > 0. The 5 min decay is deliberately not the synthetic truths' 10 min. *Stricter
+validation:* both truths with recovery times of 5, 10 and 20 min, 10 atlases each; pass needs at least
+8 of 10 in every one of the six conditions (same interval rule as before). Also reported, not part of the
+rule: a mixed truth (h = 0.6 and kappa = 0.25 together). Decision rule on the worms unchanged. If this
+validation fails too, T1 is abandoned and only T2 to T4 are read.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
