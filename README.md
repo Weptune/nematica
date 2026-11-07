@@ -3590,6 +3590,25 @@ the reviewer).** Findings and corrections, marked in place in the sections above
 Not checked by the reviewer: whether neighbours of the stimulated neuron (stray light) lengthen
 real-poke runs; excluding spatial neighbours would test it.
 
+## Neuron or tool: does a worm neuron's resting level drop before its second poke? (pre-registered 8 Nov 2026)
+
+**Why.** In spiking networks every neuron-level fatigue tried lowered the neuron's resting level before
+its next poke, while a tiring stimulation channel left it unchanged (README "A spiking network on the
+same tests"). The worm data can tell these apart directly.
+
+**Measure** (`scripts/run_neuron_or_tool.py`). For each worm's repeat pairs (the same target poked
+twice; `run_week1.b1_pairs` logic) and their matched control pairs (first pokes of two different
+neurons the same time apart): the target's pre-poke level (mean over the 10 s before, in units of its
+SD over unpoked frames, relative to its unpoked mean) before the second poke minus before the first,
+repeats minus controls, averaged per worm; and the same for the post-poke level (mean over 15 s). 90%
+bootstrap over worms.
+
+**Reading.** Neuron-level fatigue predicts a lower pre-poke level before the second poke (repeat minus
+control below 0, interval excluding 0). A tiring channel predicts no change in the pre-poke level
+(interval including 0, within +-0.1 SD) and a lower post-poke level. Either way the result is reported;
+the same measure is run on spiking S0, S5@w and S6@w as checks that it separates the two (S5@w should
+show the drop, S6@w should not).
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
