@@ -3228,6 +3228,35 @@ human cortex is still improving with more rest data at full recording length, un
 transformers. A first summary printed "refuted" from NaN medians (one unscored recording); the
 script now drops recordings unscored at any size and the verdict is from the fixed summary.
 
+## Does a transformer have the worm's narrow, lasting echo? (pre-registered 7 Nov 2026)
+
+**Why.** "An echo that is narrow and lasting at once" is one of the three differences that survive in
+`docs/DIFFERENCES.md`, but it was measured only against recurrent networks; transformers were never
+tested on it. This fills that hole in the table, with the worm's measure applied unchanged.
+
+**Mapping.** A transformer's time is its token positions. A poke adds s natural SDs to one dimension of
+the residual stream after the first block, at one position f of one context (sampled from the phase 2
+synthetic language); the other positions and dimensions are untouched. The recording is the poked
+run's activity at a readout layer, from 10 positions before f to 30 after (the worm's 5 s before and
+15 s after at 0.5 s frames, so `event_matrices` is used exactly as for worms: response = activity after
+f minus the mean of the 10 positions before, in units of each unit's pre-poke fluctuation pooled over
+that individual's pokes; significant above 3). The poked dimension's own readout is excluded, as the
+stimulated class is in worms. Each individual's pokes are concatenated into one recording.
+
+**Networks.** The phase 2 small transformers (width 64, 4 layers), trained and untrained, 3 individuals
+each (`individual()` of `scripts/run_tlab_depth.py`); 256 pokes per individual (a fresh context per
+poke, poked dimension drawn at random, f = 100). Readouts: the residual stream after the last block
+(primary) and the last block's MLP units. Strengths s = 1 (primary) and 3 (sensitivity).
+
+**Measures and rule.** Sparseness = median over pokes of the share of units that respond at any point
+(worms 0.65 [0.64, 0.68]); persistence = mean run length of significant response, in steps (worms 6.5
+[6.2, 6.8] frames; recurrent networks 2.2 to 3.3). A network is *worm-like* if its sparseness lies in
+[0.55, 0.75] and its persistence is at least 5.5, both at the same strength and readout. If any
+transformer setting is worm-like in at least 2 of 3 individuals, the narrow, lasting echo stops being a
+difference from artificial networks in general (it would remain one from recurrent networks).
+
+**Prediction.** Not worm-like in any setting.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
