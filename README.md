@@ -3106,6 +3106,36 @@ and all of the rest data. Prediction: plateau (median change from half to all be
 **F. The experiment.** From A to C, a worm experiment with predictions written before it is run
 is drafted (in `docs/`), and is not sent anywhere without the owner's go-ahead.
 
+**Progress log (7 Nov 2026, afternoon; everything here is provisional until each part finishes).**
+
+- *Monte Carlo check of the theory code* (`docs/figures/limit_mc.txt`, `scripts/run_limit_mc.py`).
+  The best watcher essentially reaches the bound: agreement 0.886 against a predicted 0.898 at
+  4000 frames, 0.975 against 0.972 at 16000. The VAR watcher stays at 0.73 at both lengths
+  (squared bias about 18 against the best watcher's 0.03): its shortfall is bias, not data.
+- *Two fitter bugs, found and fixed before any pre-registered result was read.* (1) The stability
+  penalty used the matrix norm, which pulled strong-drive fits away from the truth (squared bias 24
+  in the first Monte Carlo try); it now acts on the spectral radius, and only when that nears 1.
+  (2) Hidden units started at the same timescale give coinciding eigenvalues, and differentiating
+  through them gives NaN gradients even where the penalty is zero; with 4 hidden units every fit
+  failed (found on a worm smoke test). Fix: distinct starting timescales, the penalty computed only
+  when it bites, the starting point kept as a fallback, non-finite steps skipped, and a cap on the
+  L-BFGS polish (one Monte Carlo run hung in it). Tests still pass.
+- *Part A, run 1 superseded.* Its first run (`docs/figures/limit_lab_run1_prefix.csv`, kept on
+  record) used the fitter with bug (2) (two hidden drives both starting at 0.9), so its best-watcher
+  numbers may understate. Part A is being rerun in full with the fixed fitter into
+  `docs/figures/limit_lab.csv`; only the rerun counts for A1 and A2. Two observations from run 1,
+  to be checked against the rerun: at 1000 frames the biased VAR watcher beats the bound and the
+  best watcher (allowed: the bound limits unbiased watchers only); and with strong slow drives
+  (94 to 96% of seen-unit variance from hidden drives) the bound itself is only 0.10 to 0.59 at
+  these lengths, so A2 (VAR at least 0.10 below the best watcher) looks likely to be refuted: in
+  that regime watching is data-starved, not model-limited.
+- *Ready, not yet run:* `scripts/run_latent_watch.py` (parts B and C), `scripts/run_limit_tlab.py`
+  (part D), and an opt-in `NEMATICA_CCEP_QUARTERS=1` option in `scripts/ccep_extract_v2.py` that
+  saves the between-pulse statistics per quarter of a recording (part E; earlier extractions are
+  unchanged).
+- *Plan and reasons in plain language:* the Claude Doc "The watching limit: what we are doing next
+  and why".
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is

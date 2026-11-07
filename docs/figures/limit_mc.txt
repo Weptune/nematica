@@ -1,0 +1,8 @@
+Watching limit: Monte Carlo check of the best watcher against the Cramer-Rao bound
+Network: random_net(n=6, k=1, seed=4, drive_load=1.0); best watcher = Whittle MLE, generic starts, best of 2
+(scripts/run_limit_mc.py; T=4000: 30 recordings, rerun after the L-BFGS guard; T=16000: 20 recordings)
+
+T=4000: bound agreement 0.898 [5-95%: 0.720, 0.982]; best watcher 0.886; VAR watcher 0.732
+   variance of off-diagonal estimates: bound 0.869, best watcher 0.968 (median ratio 1.15), bias^2 0.032; VAR bias^2 18.97
+T=16000: bound agreement 0.972 [5-95%: 0.918, 0.995]; best watcher 0.975; VAR watcher 0.738
+   variance of off-diagonal estimates: bound 0.217, best watcher 0.169 (median ratio 0.75), bias^2 0.026; VAR bias^2 18.33
