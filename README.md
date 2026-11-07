@@ -3018,6 +3018,94 @@ Human tiring sensitivities (review 4, exploratory, `ccep_tiring.txt`): blocks by
 at gaps over 6 s, +0.0005 per pulse [-0.0009, +0.0016]; with the response window starting at about 18 ms
 (third extraction), +0.0009 [-0.0006, +0.0019]. Unchanged.
 
+## The watching limit: what could watching ever recover? (pre-registered 7 Nov 2026)
+
+**Why.** Every comparison so far asks how well one particular watching copy does. This programme
+asks what ANY watcher could do, so that a failure can be split into three parts: the watcher's
+model was wrong (fixable by a better watcher), the data ran out (fixable by recording longer), or
+the information is not in rest activity at all (fixable only by poking). If the worm's failure is
+of the third kind, it is a real property of the worm, and the experiment that would show it can be
+named in advance.
+
+**Theory (`nematica/limits.py`, checked in `tests/test_limits.py`; done before anything below
+was run).** For a linear network with hidden units (z[t+1] = F z[t] + noise, only some units seen,
+with measurement noise), and the poke response G = sum over 15 s of F^t on the seen units:
+
+1. *Shared-noise lemma (exact).* If hidden units' noise may correlate with seen units' noise,
+   the poke response is not identifiable from rest at any recording length: an explicit family of
+   networks has identical rest statistics and poke responses G - Gh M for any M (Gh: the seen units'
+   response to hidden pokes). Checked to machine precision.
+2. *Private noise: identifiable.* With private noise in every unit, the Fisher information of rest
+   recordings is full rank apart from rotations among hidden units (exactly k(k-1)/2 null
+   directions for k hidden units, checked for k = 1, 2, 3), and the poke response does not depend on
+   those directions. So watching is limited only by data, and the Cramer-Rao bound (from the Whittle
+   likelihood) gives the best agreement any unbiased watcher can reach with T frames.
+3. *Silent-link lemma.* A link that carries signal only when its source is above a threshold
+   contributes to the rest likelihood only on the frames where the source crosses it, so its
+   information grows with T times the fraction of such frames; a link that never fires at rest is
+   invisible to watching at any T.
+
+A first Monte Carlo check (6 seen units, 1 hidden drive, 4000 frames, 30 recordings; generic
+starts) is reported with the results below; it was run before this text was written and is a
+check of the code, not one of the predictions.
+
+**The best watcher.** `nematica/systems/latent.py`: a latent linear network fitted by maximum
+(Whittle) likelihood to unpoked frames, k hidden units chosen from 0, 2, 4, 8 by held-out
+likelihood on each fold's validation worms. Partial recordings are handled exactly: each 32 s
+stretch of rest contributes the likelihood of the classes it saw, nothing is zero-filled. It is
+poked with the same clamp protocol as every other copy and scored on the same ruler.
+
+**A. Linear lab: is the bound reached, and do VAR watchers plateau?** Networks: 10 seen units, 2
+hidden drives, drive loading 0.5, 1, 2 and drive memory 0.9, 0.98 per frame, plus a variant where
+the hidden units are ordinary units wired both ways; 3 seeds each. Recording lengths 1000, 4000,
+16000 frames. Watchers: VAR(1) on the seen units (the project's watching copy), the best watcher
+(k known), and the bound. Score: correlation of estimated and true off-diagonal G.
+- A1 (bound reached): the median over conditions of (best watcher minus bound) lies within plus or
+  minus 0.05 at 4000 and at 16000 frames.
+- A2 (VAR plateaus): with loading 2 and memory 0.98, at 16000 frames the VAR watcher is at least
+  0.10 below the best watcher in all 3 seeds, and its median gain from 4000 to 16000 frames is
+  below 0.03.
+
+**B. Nonlinear lab: does the decomposition classify known causes correctly?** The ladder brains
+of `scripts/run_ladder.py` (seed 0, the same 113 individuals per brain, the same 3 folds and ruler
+as `docs/figures/ladder_ruler.csv`): base, D (hidden drives), G (silent links), DG. Copies:
+var3_spontaneous and stitch3_hp (rerun or read from that file), and the best watcher. Shares are
+of the individuals' agreement, per fold.
+- B1: in D, the best watcher's share is at least 0.15 above the better of the two VAR copies, in at
+  least 2 of 3 folds.
+- B2: in G and DG, the best watcher's share stays at or below 0.40 in every fold (the silent links
+  carry most of the poke response and are invisible at rest).
+- B3 (the decomposition's control): data sufficiency is measured by refitting the best watcher to
+  data simulated from its own fitted model with the same recording structure (5 replicates):
+  "data-limited agreement" is the correlation of the refitted with the generating poke responses.
+  In G it is at least 0.8 (so the failure is classified structural, as it truly is).
+
+**C. Worms (the 113 stimulated worms, split cv3, all 3 pools, the same ruler).** Decision rules,
+fixed now:
+- best watcher's share at least 0.50: the worm's watching failure was mostly the watcher's model
+  class (hidden drives), not something rest activity lacks;
+- share at most 0.25 and data-limited agreement at least 0.8: structural: rest activity of these
+  worms, as far as any linear latent network can describe it, would allow recovery, yet the poke
+  responses are something else (nonlinear or silent pathways, shared noise, state, or stimulation
+  side effects);
+- data-limited agreement below 0.5: data-limited at atlas size; the recording length at which it
+  would reach 0.8 is reported by refitting on simulated data of 2, 4 and 8 times the length;
+- anything else: reported as partial, with the numbers.
+My prediction, stated now: structural (share at most 0.25), because slow patterns, stitching and a
+recurrent network with memory all failed to lift watching before.
+
+**D. Transformers.** Small trained and untrained transformers of phase 2 (residual basis, 3
+individuals each): truth from 96 contexts; watching regression from the first 6, 12, 24, 48, 96
+contexts. Prediction: plateau (change from 24 to 96 contexts below 0.03 in each network), because
+the confounding is structural (every unit shares the same token input), not a lack of data.
+
+**E. Human cortex.** 12 recordings re-extracted with the between-pulse statistics saved in
+quarters of each recording (same extraction otherwise). Watching agreement with a quarter, half
+and all of the rest data. Prediction: plateau (median change from half to all below 0.02).
+
+**F. The experiment.** From A to C, a worm experiment with predictions written before it is run
+is drafted (in `docs/`), and is not sent anywhere without the owner's go-ahead.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
