@@ -110,6 +110,11 @@ def main():
         echo, real = 1 - c1["system_median"], 1 - c1["bio_median"]
         print(f"[{a.data} fold {fi}] latent k={m.k} echo {echo:.4f} real {real:.4f} share {echo / real:.3f} "
               f"({time.time() - t0:.0f} s) {m.info}", flush=True)
+        # keep the fitted model (exploratory analyses, e.g. how much variance the hidden units carry)
+        mdir = ROOT / "results" / "limits" / "models"
+        mdir.mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(mdir / f"{a.data.replace(':', '_')}_fold{fi}.npz", W=m.W, noise_sd=m.noise_sd,
+                            lr=m.lr_, k=m.k, classes=np.array(m.classes))
         # data-limited agreement
         C = len(m.classes) - m.k
         G0 = model_G(m, m.classes[:C])
