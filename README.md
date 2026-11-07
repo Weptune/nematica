@@ -3780,6 +3780,49 @@ min **-0.92 [-1.20, -0.64]** (81 pairs), 2 to 5 min **-0.45 [-0.65, -0.25]** (12
 minutes answers at about 40% of its first response; recovery takes about 5 to 10 minutes (time constant
 of a few minutes). This is the plainest statement of the effect, and it needs no model.
 
+## Invisible machinery: how much of a brain's activity is set by slow state its neurons do not show? (pre-registered 8 Nov 2026)
+
+**Why.** Most differences between worms and artificial networks dissolved once networks got hidden slow
+drives. That turns the question from "is there a difference" into "how much": how large a share of a
+brain's ongoing activity comes from slow state that is not visible in its recorded neurons' recent
+activity (neuromodulators, unrecorded cells, the body), measured the same way in brains and networks.
+A fully recorded artificial network without slow hidden processes has none by construction. The
+earlier latent fits put the worm's hidden share at 12 to 19%, from one fragile model class (losses flat
+across the number of hidden units); counting hidden units with that fitter costs about 1.5 h per fit on
+this machine, so this test uses a cheaper measure, calibrated on networks whose hidden share is known.
+
+**Measure: the distant-past gain (DPG).** Per recording: z-score every recorded unit (worm ROIs, network
+units seen); keep the first 960 s (the length of the worm recordings); the top 8 principal components of
+the first half. Predict the components one frame ahead from (R) their values over the last 10 s, and
+from (D) the same plus their means over 10 to 30 s, 30 to 90 s and 90 to 270 s before. Ridge regression,
+penalty chosen on the last quarter of the training half from 10^-2 to 10^3; train on one half, test on
+the other, then swap; R^2 weighted by component variance, on frames with at least 270 s of past. **DPG =
+R^2(D) - R^2(R).** If the units' recent activity holds everything that drives them, distant past adds
+nothing beyond what averaging out measurement noise gives; slow hidden state makes it add more.
+
+**Calibration (the kill rule).** Lab networks (the `annlab` tanh networks with 30% never-recorded units
+and half the rest recorded, as everywhere in this project), no pokes, 960 s at 0.5 s, 30 individuals
+each, with hidden slow drives (45 s timescale) carrying a share of 0, 0.1, 0.25 and 0.4 of the input
+variance; measurement noise r = 0.1 and, as a robustness check, 0.3. *Pass* if, at r = 0.1, median DPG
+rises with share at every step and the share-0.1 minus share-0 difference's 90% interval (bootstrap over
+individuals) lies above 0. If it fails, this test stops and no system is read.
+
+**Systems.** Worms: Atanas 2023 (30 freely moving recordings) and the copper set (27); spiking networks
+S0 (plain) and S1 (spike-fed adaptation), no pokes; the lab calibration networks themselves.
+
+**Reading.** Each system's median DPG with a 90% bootstrap interval, and an *equivalent hidden share*:
+the share at which the r = 0.1 calibration curve reaches that DPG (linear interpolation; above 0.4
+reported as "beyond the calibration"). *My prediction:* worms between 0.1 and 0.4 in both datasets;
+S0 near 0; S1 above S0. **Noteworthy** if both worm datasets sit at an equivalent share of 0.25 or more
+with intervals above the share-0.1 calibration level: a quarter or more of the input to the worm's
+recorded neurons would come from slow state no recorded neuron shows. Caveat stated now: "hidden" here
+includes unrecorded neurons, the body and the environment (the worms move freely), not only
+neuromodulators; and the calibration networks are not worms, so the equivalent share is a yardstick,
+not a measurement of worm biology. Measurement noise also inflates DPG; the r = 0.3 calibration shows by
+how much.
+
+Code: `scripts/run_invisible.py`; output `docs/figures/invisible.csv`.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
