@@ -1,0 +1,43 @@
+system,individual,readout,strength,sparseness,persistence,median_run,worm_like
+recurrent (base lab brain),0,units,1.0,0.0,3.422,3.0,False
+recurrent (base lab brain),0,units,3.0,0.0,3.814,3.0,False
+recurrent (base lab brain),1,units,1.0,0.0,3.283,2.0,False
+recurrent (base lab brain),1,units,3.0,0.0042,3.556,2.0,False
+recurrent (base lab brain),2,units,1.0,0.0,2.943,2.0,False
+recurrent (base lab brain),2,units,3.0,0.0,3.272,3.0,False
+"transformer, untrained",0,resid,1.0,0.0,0.0,0.0,False
+"transformer, untrained",0,resid,3.0,0.0,0.0,0.0,False
+"transformer, untrained",0,resid,10.0,0.0,0.0,0.0,False
+"transformer, untrained",0,mlp,1.0,0.0,0.0,0.0,False
+"transformer, untrained",0,mlp,3.0,0.0,1.0,1.0,False
+"transformer, untrained",0,mlp,10.0,0.0156,1.0,1.0,False
+"transformer, untrained",1,resid,1.0,0.0,0.0,0.0,False
+"transformer, untrained",1,resid,3.0,0.0,0.0,0.0,False
+"transformer, untrained",1,resid,10.0,0.0,0.0,0.0,False
+"transformer, untrained",1,mlp,1.0,0.0,0.0,0.0,False
+"transformer, untrained",1,mlp,3.0,0.0,0.0,0.0,False
+"transformer, untrained",1,mlp,10.0,0.0156,1.0,1.0,False
+"transformer, untrained",2,resid,1.0,0.0,0.0,0.0,False
+"transformer, untrained",2,resid,3.0,0.0,0.0,0.0,False
+"transformer, untrained",2,resid,10.0,0.0,0.0,0.0,False
+"transformer, untrained",2,mlp,1.0,0.0,0.0,0.0,False
+"transformer, untrained",2,mlp,3.0,0.0,1.0,1.0,False
+"transformer, untrained",2,mlp,10.0,0.0156,1.0,1.0,False
+"transformer, trained",0,resid,1.0,0.0,0.0,0.0,False
+"transformer, trained",0,resid,3.0,0.0,0.0,0.0,False
+"transformer, trained",0,resid,10.0,0.0,1.017,1.0,False
+"transformer, trained",0,mlp,1.0,0.0,0.0,0.0,False
+"transformer, trained",0,mlp,3.0,0.0,1.0,1.0,False
+"transformer, trained",0,mlp,10.0,0.0547,1.067,1.0,False
+"transformer, trained",1,resid,1.0,0.0,0.0,0.0,False
+"transformer, trained",1,resid,3.0,0.0,1.0,1.0,False
+"transformer, trained",1,resid,10.0,0.0,1.043,1.0,False
+"transformer, trained",1,mlp,1.0,0.0,0.0,0.0,False
+"transformer, trained",1,mlp,3.0,0.0,1.054,1.0,False
+"transformer, trained",1,mlp,10.0,0.0469,1.06,1.0,False
+"transformer, trained",2,resid,1.0,0.0,0.0,0.0,False
+"transformer, trained",2,resid,3.0,0.0,1.0,1.0,False
+"transformer, trained",2,resid,10.0,0.0,1.041,1.0,False
+"transformer, trained",2,mlp,1.0,0.0,0.0,0.0,False
+"transformer, trained",2,mlp,3.0,0.0,1.326,1.0,False
+"transformer, trained",2,mlp,10.0,0.0469,1.063,1.0,False

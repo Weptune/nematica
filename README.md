@@ -3278,6 +3278,44 @@ they meet the registered band at some strength in at least 2 of 3 individuals; t
 worms stays labelled method-dependent unless the recurrent network's paired values match its unpaired
 ones (0.71 to 0.79; 2.2 to 3.3).
 
+**Amendment 1 result (7 Nov 2026; `docs/figures/tf_echo_paired.csv`, `scripts/run_tf_echo_paired.py`).**
+Under the paired measure, transformers barely respond at the readout: sparseness 0 to 0.05 and
+persistence 0 to 1.3 steps at every strength and readout, in all 6 networks. **Not worm-like**, as
+predicted. But the recurrent control shows the method's own effect is large: the base lab brain gives
+sparseness 0.00 to 0.004 and persistence 2.9 to 3.8 paired, against 0.71 to 0.79 and 2.2 to 3.3 with
+the worm's unpaired measure. By the amendment's rule, the comparison with worms is method-dependent.
+
+**Exploratory sham checks, prompted by that gap (7 Nov 2026; `scripts/check_echo_sham.py`,
+`docs/figures/echo_sham.csv`, `docs/figures/checks/`).** Each real stimulation is moved to a random
+moment whose 5 s before and 15 s after are at least 30 s from any stimulation, keeping its target.
+
+- *Echo sparseness and persistence are not specific to pokes.* Worms: real 0.65 and 6.5, sham 0.70
+  and 6.0. Base lab brain: real 0.72 and 1.9, sham 0.71 and 1.8. The per-event measure mostly reads
+  ongoing fluctuations crossing 3 SD of the pre-window, and the worm's long runs mostly reflect its
+  slow ongoing activity (which calcium imaging slows further), not a lasting response to the poke.
+- *Perturbational complexity and spread, computed on the same significance maps, are not specific to
+  pokes either.* Worms: median PCI 0.665 real, 0.685 sham; spread 0.159 real, 0.156 sham. The PCI
+  calibrations never included shifted stimulation times; they should have.
+- *The state-dependence test: the sham check is uninformative.* The worm test run on sham onsets gives
+  -0.064 (p = 0.002), as strong as with real pokes (-0.049). But the same sham run gives "supported" in
+  the base lab brain (-0.044, p = 0.0001) and the drives brain (-0.079, p < 0.0001), whose real pokes
+  show none (0.000, p = 0.52; -0.018, p = 0.13). The sham onsets are drawn from a different pool of
+  moments than the pseudo-onsets the test subtracts, and that mismatch alone produces the effect. A
+  matched sham (both drawn from the same pool) is needed before this check can say anything.
+- *Tiring is not affected:* it is measured on the stimulated neuron's own response to light, which
+  exists only when there is a poke, and is already corrected for drift and for the size of the first
+  response.
+
+**Consequences for `docs/DIFFERENCES.md`.** The echo-sparseness and echo-persistence rows, and with them
+the surviving difference "an echo that is narrow and lasting at once", are withdrawn as properties of
+the response to a poke: what was measured is mostly the timescale of ongoing activity. The
+perturbational complexity results (worm echoes "sparse and differentiated", models' "wide and
+stereotyped") are suspended until rerun with a poke-specific measure (real minus matched sham).
+Results built on averaged responses (the causal Turing test, watching versus poking, individuality,
+reliability) are not affected: averaging over pokes removes ongoing fluctuations, and their
+calibration with shuffled stimulation times fails as designed.
+
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is

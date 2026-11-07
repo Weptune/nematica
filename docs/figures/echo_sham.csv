@@ -1,0 +1,5 @@
+system,onsets,sparseness,persistence,median_run,events
+worms,real,0.6486,6.485,3.0,3516
+worms,sham,0.7037,6.031,3.0,3177
+lab base,real,0.7174,1.859,1.0,2800
+lab base,sham,0.7073,1.776,1.0,2800
