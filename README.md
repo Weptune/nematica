@@ -3184,10 +3184,9 @@ from 6 / 12 / 24 / 48 / 96 contexts of 300 tokens: untrained 0.21 to 0.24 at eve
 from 24 to 96 contexts -0.000 to +0.003); trained 0.10 to 0.13 at 6 contexts, 0.13 to 0.15 at 24
 and 0.14 to 0.15 at 96 (gain -0.010 to +0.014). **Prediction confirmed: plateau in all 6
 networks.** More watching data does not help: the shortfall is structural (every unit shares the
-same token input), not a lack of data. Including the skip-connection entries the scores are
-0.68 to 0.69 untrained and 0.44 to 0.48 trained, also flat beyond 24 contexts. Off-diagonal
-values are lower than phase 2's because the truth here averages 96 contexts, not 24, and so
-carries less noise of its own.
+same token input), not a lack of data. Including the skip-connection entries (phase 2's main
+measure) the scores are 0.68 to 0.69 untrained and 0.44 to 0.48 trained, matching phase 2's 0.675
+and 0.453, and also flat beyond 24 contexts; the off-diagonal measure is stricter, hence lower.
 
 ## Where the data runs out (2 Nov 2026)
 
