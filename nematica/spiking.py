@@ -7,6 +7,8 @@ for many individuals at once. Variants add slow (10 min) processes:
   S1  spike-frequency adaptation: every spike adds a hyperpolarising current (decays over 10 min)
   S2  use-dependent fatigue: rate above 30 Hz builds a hyperpolarising current (decays over 10 min)
   S3  use-dependent synaptic depletion: rate above 30 Hz depletes outgoing synapses (recover over 10 min)
+  S4  use-dependent gain fatigue: as S2, but it divides the neuron's synaptic, poke and noise input by
+      (1 + f) instead of subtracting a current (added 8 Nov after S2x4 gave the opposite sign)
 Readout per 0.5 s frame: firing rate through a 1.5 s calcium-like decay, scaled, plus measurement noise.
 """
 from __future__ import annotations
@@ -71,7 +73,10 @@ def simulate(Wb, kick_targets, variant="S0", frames=L.FRAMES, burn=400, seed=0):
             poke[bi[on], tg[on]] = POKE
         count = np.zeros((B, N))
         for _ in range(STEPS_PER_FRAME):
-            I = MU + s + poke - a + noise_scale * rng.standard_normal((B, N))
+            if variant == "S4":
+                I = MU + (s + poke + noise_scale * rng.standard_normal((B, N))) / (1.0 + a)
+            else:
+                I = MU + s + poke - a + noise_scale * rng.standard_normal((B, N))
             v = v + DT / TM * (-v + I)
             v[ref > 0] = 0.0
             ref -= 1
@@ -83,7 +88,7 @@ def simulate(Wb, kick_targets, variant="S0", frames=L.FRAMES, burn=400, seed=0):
             r = r * dec_r + spf / TAU_R
             if variant == "S1":
                 a = a * dec_slow + DA * spf
-            elif variant == "S2":
+            elif variant in ("S2", "S4"):
                 a = a * dec_slow + KF * np.maximum(r - THETA, 0.0) * DT
             out = spf
             if variant == "S3":
@@ -98,7 +103,7 @@ def simulate(Wb, kick_targets, variant="S0", frames=L.FRAMES, burn=400, seed=0):
     return y
 
 
-def recordings(variant, n_ind=113, seed=0, sigma=0.3, batch=40):
+def recordings(variant, n_ind=113, seed=0, sigma=0.3, batch=40, poke=True, burn=400):
     """Atlas-style recordings (PumpProbe) of n_ind individuals, poked as the lab brains are."""
     W0 = base_weights(seed)
     Wall = individuals(W0, n_ind, sigma)
@@ -109,6 +114,8 @@ def recordings(variant, n_ind=113, seed=0, sigma=0.3, batch=40):
         obs = (rng.random(N) < 0.5) & ~hidden
         targets = np.flatnonzero(obs)
         kicks = {f: int(rng.choice(targets)) for f in range(LEAD, L.FRAMES - L.WIN, EVERY)}
+        if not poke:
+            kicks = {}
         obs_all.append(obs)
         kicks_all.append(kicks)
     recs = []
@@ -118,7 +125,7 @@ def recordings(variant, n_ind=113, seed=0, sigma=0.3, batch=40):
         for row, i in enumerate(idx):
             for f, j in kicks_all[i].items():
                 kt[row, f:f + HOLD] = j
-        y = simulate(Wall[idx], kt, variant, seed=seed + b0)
+        y = simulate(Wall[idx], kt, variant, seed=seed + b0, burn=burn)
         for row, i in enumerate(idx):
             recs.append(L.as_pumpprobe(y[row], obs_all[i], kicks_all[i], f"spk{variant}_{i:03d}"))
     return recs

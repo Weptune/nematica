@@ -3413,6 +3413,16 @@ poke of the same neuron 100 s later was about 4% smaller in S2. The registered v
 S2 and S3 are also run with 4 times the gain (KF 0.02, KD 0.032) as a sensitivity check. This
 addition was informed by the smoke test and is labelled as such.
 
+*Amendment 2 (8 Nov 2026), a new hypothesis written after S2x4's result and before testing it.* S2x4
+gave the opposite sign to worms (+0.38: a second poke looks larger), because a fatigue current lowers
+the resting level while the poke still drives the neuron to about the same peak. So the worm's tiring
+(-0.42) needs a mechanism that lowers the neuron's *gain*, consistent with the worm finding that
+activity driven by other neurons also lowers the next response. S4, use-dependent gain fatigue: the same
+gated build-up as S2 (rate above 30 Hz, 10 min recovery, gain KF = 0.02 as in S2x4), but it divides
+all of the neuron's input except the background mean (synaptic input, poke and noise) by (1 + f).
+*Prediction:* S4 tires like a worm (-0.2 or below). This was prompted by a result, so it is labelled
+post hoc.
+
 ## The reverse question: do artificial networks keep the same rules while brains drift? (pre-registered 7 Nov 2026)
 
 **Why.** Every candidate difference so far was something worms do; none asked what artificial networks
@@ -3447,6 +3457,11 @@ spiking recordings, which are poked every 30 s. So every system, worms included,
 a 15 s rule (frames outside each poke's 15 s response window), and the lab and spiking networks are
 also run without pokes (same length, same individuals), the cleanest test of whether a network's rules
 change by themselves. The worms' registered (30 s) value is kept as the primary worm number.
+
+*Amendment 2 (7 Nov 2026, after the first spiking drift numbers):* the spiking variants' slow processes
+recover over 10 min, but the simulations warmed up for only 200 s, so S1's strong drift (+0.11 with
+pokes, +0.14 without) may be its adaptation still settling. The spiking systems are rerun with a 30 min
+warm-up ("+warm"); only those values are read.
 
 **Review 6 (independent, 7 Nov 2026, night; scratch work in a separate session, no tracked file changed by
 the reviewer).** Findings and corrections, marked in place in the sections above:
