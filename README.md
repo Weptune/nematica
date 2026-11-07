@@ -3843,6 +3843,15 @@ the worm recordings, slow hidden state cannot be measured from rest by this kind
 with part A's data-starved regime. The worm's hidden share stays known only from the earlier latent fits
 (12 to 19%, one fragile model class). Bet 2 ("how much invisible machinery") ends here without an answer.
 
+## Paper draft and outreach (8 Nov 2026)
+
+- **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of
+  *C. elegans*"), written as a Claude Doc: https://claude.ai/artifact/SB2WgGBuQ3giXQJCu81ZZu (private
+  until shared). It packages arcs 1 and 4, the watching results and the repeat-stimulation recovery
+  curve, with the corrections from all reviews. Not submitted.
+- **Draft email to the atlas authors** (`docs/outreach/atlas_authors_email_DRAFT.md`): the recovery
+  curve and a request about the light-free experiment. Not sent; needs the project owner's go-ahead.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
