@@ -20,13 +20,13 @@ Systems compared:
 |---|---|---|---|---|---|
 | **Copyable by watching** (recorded activity predicts poke responses) | No: 4 to 16% of worm-to-worm agreement | Yes: random 51 to 82%, trained 75 to 91% | Drives plus silent links: 18 to 19%, near the worm | In time: no, but trivially (effects land in depth, not in later tokens). In depth: partly; correlations recover 0.31 to 0.71 of the residual stream's cause and effect and 0.05 to 0.47 in the computing (MLP) units; training lowers it | **Dissolved as a categorical difference.** Hidden shared signals and training both produce it in artificial networks. It separates worms from the small recurrent nets we tested, not biology from artificial networks |
 | **Tiring**: a neuron answers less when poked again | Yes: about a quarter less (D -0.28 after selection correction) | No (-0.02) | Adding stimulation that weakens with use reaches only -0.13: saturating units hide it | No (-0.002) | **Survives, cause open** (corrected after review 4; it was briefly called "the tool"). Compared with itself, a worm neuron recently driven by other neurons, with no light on it, answers less (-0.09 per SD of drive [90%: -0.16, -0.02], within-neuron shuffle p = 0.026; exploratory), so activity may tire it; the larger drop after being lit could still be partly the channel. Network-level responses decline little: worm echo -0.04 [-0.19, +0.12]; human cortex, channels beyond 10 mm, +0.0004 per pulse [-0.0008, +0.0015] (the stimulated tissue not measured); mouse touch cortex uninformative |
-| **State-dependent spread** along the main resting pattern | Yes (-0.049, p = 0.002); replicated in new worms (-0.080, p = 0.033). Matched sham (7 Nov, valid): -0.014, p = 0.08, so mostly specific to pokes | Only with strong slow drives | One of two brains (p = 0.0008; p = 0.12) | No on this test (p = 0.39); yes on the language's true hidden state, strongly | **Partly survives.** Artificial networks depend on state too, but not on their main resting pattern; the worm's kind of state dependence is reproduced only with slow drives. Mouse touch cortex leans the same way (S -0.085, 6 of 7 sessions, p = 0.066, inconclusive); human cortex: none detected (S -0.0017 [-0.0046, +0.0015], 54 patients; a different state measure) |
+| **State-dependent spread** along the main resting pattern | Yes (-0.049, p = 0.002); replicated in new worms (-0.080, p = 0.033). Matched shams (7 Nov, 3 draws): -0.014, -0.022, -0.003, none significant; with a stricter pseudo-onset pool the real effect is -0.093, p = 0.0008: specific to pokes | Only with strong slow drives | One of two brains (p = 0.0008; p = 0.12) | No on this test (p = 0.39); yes on the language's true hidden state, strongly | **Partly survives.** Artificial networks depend on state too, but not on their main resting pattern; the worm's kind of state dependence is reproduced only with slow drives. Mouse touch cortex leans the same way (S -0.085, 6 of 7 sessions, p = 0.066, inconclusive); human cortex: none detected (S -0.0017 [-0.0046, +0.0015], 54 patients; a different state measure) |
 | **Echo breadth**: share of neurons a poke moves | 0.085 | 0.095 to 0.100 | Modules: no detectable narrowing | 0.133 | **Weak.** Close in recurrent nets; transformers wider. Combined with tiring and the rest, no ingredient combination matches all axes at once |
 | **Resting structure**: variance in the top 3 patterns | 0.43 | 0.25 to 0.27 | Drives: 0.40 to 0.43 | 0.51 | **Dissolved.** One ingredient (shared slow drives) produces it |
 | **Individuality**: each individual has its own causal fingerprint | 0.089 | 0.016 to 0.028 | Silent links raise it; drives erase it | 0.087, but set by the weight noise we chose | **Dissolved, tunable.** It depends on how individuals are made |
 | **Reliability**: individuals agree on poke responses | 0.094 | 0.075 | Silent links overshoot, drives undershoot | 0.38 | **Not a difference by itself.** Depends on noise and on how similar individuals are |
 | **Echo sparseness**: share of neuron classes a poke reaches (> 3 SD) | 0.65; but sham onsets give 0.70 | Base 0.71 to 0.78 (sham 0.71) | Round 9 setting 0.55 to 0.64 | Paired measure: 0 to 0.05 | **Withdrawn as a poke property (7 Nov sham check).** The per-event measure mostly reads ongoing fluctuations |
-| **Echo persistence**: how long a response lasts (mean run, frames) | 6.5; but sham onsets give 6.0. Poke-specific excess over matched sham +0.24 [+0.15, +0.33] | Base 2.2 to 2.5 (sham 1.8); excess -0.04 | Drives -0.04, silent links -0.07 | Paired measure: 0 to 1.3 steps | **Large difference withdrawn; a small poke-specific one survives.** Most of the 6.5 is the slow pace of ongoing activity; the poke itself lengthens worm responses by a quarter of a frame and shortens the lab brains' |
+| **Echo persistence**: how long a response lasts (mean run, frames) | 6.5; most of it is ongoing activity (first sham check 6.0). Against clean shams pokes lengthen runs by +0.44 to +0.56 (review 6) | Pokes lengthen runs too: base +0.08 against clean shams (+0.14 with the calcium-matched readout) | Drives +0.08 (calcium-matched, clean shams; interval includes 0) | Paired measure: 0 to 1.3 steps (comparison moot, review 6) | **The large contrast is withdrawn; a poke-specific difference is not established.** Worms lengthen more in frames, but relative to their slower ongoing timescale (about 9% against 4 to 6%) the gap may be a matter of scale |
 | **Sensory neurons harder to copy** | Not detected | n/a | n/a | n/a | No evidence either way |
 
 ## What this says, plainly
@@ -44,10 +44,11 @@ Systems compared:
    - *The kind of state dependence*: in worms, where a poke spreads depends on the main pattern of
      resting activity; in artificial networks, state dependence exists but follows other variables.
      Beyond the worm it is not established: mouse leans yes, human shows none.
-   - *The echo as a whole*: **withdrawn on 7 Nov.** A sham check showed the per-event sparseness and
-     persistence measures give nearly the same values with no poke at all (worms 0.70 and 6.0 sham,
-     0.65 and 6.5 real), so they describe ongoing activity, not the echo. Perturbational complexity,
-     computed on the same maps, is suspended for the same reason.
+   - *The echo as a whole*: **the large contrast is withdrawn (7 Nov, corrected by review 6).** The
+     per-event sparseness measure and perturbational complexity give the same values with no poke
+     (not poke-specific); persistence is mostly ongoing activity, and its poke-specific part
+     lengthens responses in worms and lab networks alike (worms more in frames, not clearly more for
+     their timescale). Perturbational complexity is suspended.
 4. **The worm's whole profile is not reproduced.** No combination of five biological ingredients
    matches all six measured properties at once; the closest settings need strong hidden drives,
    large differences between individuals and many units that stay quiet unless strongly driven.
@@ -122,11 +123,12 @@ Next for the project's question: a poke-specific echo measure (real minus matche
 worms and every artificial system, to see whether any echo property separates them once ongoing
 activity is removed; and a matched sham for the state-dependence test.
 
-## Update, 7 Nov 2026 (night): matched shams
+## Update, 7 Nov 2026 (night): matched shams, corrected by review 6
 
-With sham onsets drawn from the state test's own pool (valid: the lab brains show no effect on them),
-**the worm's state dependence is mostly specific to pokes** (matched sham -0.014, p = 0.08, against -0.049
-real), so it stays a survivor. And a **small poke-specific echo difference** exists: worm pokes lengthen
-responses beyond ongoing activity by a quarter of a frame (+0.24 [+0.15, +0.33]), lab brains' pokes
-shorten them slightly (-0.04 to -0.07). Survivors now: tiring (cause open), the worm's kind of state
-dependence (mostly poke-specific), and a small poke-specific lengthening of responses.
+The worm's **state dependence is specific to pokes** (matched shams null in 2 of 3 draws, the third
+-0.014, p = 0.08; with a stricter pseudo-onset pool the real effect is -0.093, p = 0.0008). The echo
+comparison against matched shams was confounded (the shams contained the next poke): against clean
+shams, pokes lengthen responses in worms (+0.44 to +0.56 frames) and in lab networks (+0.08 to +0.14),
+so **no poke-specific echo difference is established**. Survivors now: **tiring with use** (cause open)
+and **the worm's kind of state dependence**. The spiking runs' echo excesses used the confounded sham
+and carry that caveat.

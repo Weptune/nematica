@@ -3281,15 +3281,15 @@ ones (0.71 to 0.79; 2.2 to 3.3).
 **Amendment 1 result (7 Nov 2026; `docs/figures/tf_echo_paired.csv`, `scripts/run_tf_echo_paired.py`).**
 Under the paired measure, transformers barely respond at the readout: sparseness 0 to 0.05 and
 persistence 0 to 1.3 steps at every strength and readout, in all 6 networks. **Not worm-like**, as
-predicted. But the recurrent control shows the method's own effect is large: the base lab brain gives
+predicted *(review 6: moot, see review 6, item 5)*. But the recurrent control shows the method's own effect is large: the base lab brain gives
 sparseness 0.00 to 0.004 and persistence 2.9 to 3.8 paired, against 0.71 to 0.79 and 2.2 to 3.3 with
 the worm's unpaired measure. By the amendment's rule, the comparison with worms is method-dependent.
 
 **Exploratory sham checks, prompted by that gap (7 Nov 2026; `scripts/check_echo_sham.py`,
 `docs/figures/echo_sham.csv`, `docs/figures/checks/`).** Each real stimulation is moved to a random
-moment whose 5 s before and 15 s after are at least 30 s from any stimulation, keeping its target.
+moment whose 5 s before and 15 s after are at least 30 s from any stimulation, keeping its target. *(Review 6: the window is in fact 5 s before and 30 s after, and worm shams fall at the end of the recordings; persistence is poke-specific with clean shams. See review 6, item 3.)*
 
-- *Echo sparseness and persistence are not specific to pokes.* Worms: real 0.65 and 6.5, sham 0.70
+- *Echo sparseness and persistence are not specific to pokes.* *(Review 6: holds for sparseness; persistence is poke-specific with clean shams, item 3.)* Worms: real 0.65 and 6.5, sham 0.70
   and 6.0. Base lab brain: real 0.72 and 1.9, sham 0.71 and 1.8. The per-event measure mostly reads
   ongoing fluctuations crossing 3 SD of the pre-window, and the worm's long runs mostly reflect its
   slow ongoing activity (which calcium imaging slows further), not a lasting response to the poke.
@@ -3352,7 +3352,7 @@ outcome is met cleanly (the interval just excludes 0, so "poke-specific" in the 
 is above 0.05, so "a property of ongoing activity" fails too; the registration did not say what to call
 this case). Reading: about a quarter of the size of the real-poke effect (-0.049) appears without a
 poke and is not significant; **most of the worm's state dependence is specific to pokes**, and the
-difference survives, with this residue noted.
+difference survives, with this residue noted. *(Review 6: the residue was sham-draw noise; seeds 1 and 2 are null; withdrawn.)*
 
 *Test 2, a poke-specific echo.* Real minus matched sham, median over recordings [90%]:
 
@@ -3366,7 +3366,7 @@ difference survives, with this residue noted.
 On persistence the worms' interval lies outside all three lab brains' (worm pokes leave responses that
 run a quarter of a frame longer than ongoing activity does; lab pokes slightly shorter). On sparseness
 the intervals overlap. So a small poke-specific echo difference exists, a fraction of a frame, not the
-6.5 against 2.2 to 3.3 frames believed before the 7 Nov sham check.
+6.5 against 2.2 to 3.3 frames believed before the 7 Nov sham check. *(Review 6: this test was confounded, its shams contained the next poke; with clean shams lab pokes lengthen responses too, and a poke-specific echo difference is not established. See review 6, item 1.)*
 
 
 ## A spiking network on the same tests, and what makes neurons tire (pre-registered 7 Nov 2026)
@@ -3440,6 +3440,58 @@ networks we build (a difference in the reverse direction), and the slow variants
 use-dependent processes are enough to make a network drift. Caveat stated in advance: biological drift
 can also come from the measurement (bleaching, electrode drift) or the preparation; correlations remove
 changes in scale but not in which units are visible.
+
+*Amendment (7 Nov 2026, after worms and human cortex were computed, before any artificial system was):*
+the registered frames rule (at least 30 s after any stimulation) leaves no frames at all in the lab and
+spiking recordings, which are poked every 30 s. So every system, worms included, is also computed with
+a 15 s rule (frames outside each poke's 15 s response window), and the lab and spiking networks are
+also run without pokes (same length, same individuals), the cleanest test of whether a network's rules
+change by themselves. The worms' registered (30 s) value is kept as the primary worm number.
+
+**Review 6 (independent, 7 Nov 2026, night; scratch work in a separate session, no tracked file changed by
+the reviewer).** Findings and corrections, marked in place in the sections above:
+
+1. *Major: the matched-sham echo test (Test 2 of "Matched shams") was confounded.* Its sham onsets came
+   from the state test's pool, which keeps only 10 s before to 15 s after free of stimulation, but the
+   echo measure reads 30 s after onset (`window()`, POST_S = 30). 83% of worm and 84% of lab sham
+   windows contained the next real poke; 99% of real lab windows caught the next kick in their last
+   frame. With clean shams (no stimulation anywhere in the 35 s window) the reviewer found persistence
+   excesses of +0.56 [+0.36, +0.72] and +0.44 [+0.29, +0.65] in worms (two sham draws) and +0.083
+   [+0.053, +0.149] in the base lab brain (+0.139 and +0.079 with the calcium-matched readout).
+   **Correction: lab pokes lengthen responses too; "lab pokes shorten them" is withdrawn.** Worms
+   lengthen more in frames, but relative to their own sham run length (about 6 frames against 1.8 to
+   3.3) the excess is about 9% against 4 to 6%, so the difference may only reflect the worm's slower
+   timescale. **A poke-specific echo difference is not established.**
+2. *Major: the worm excess depends on the sham draw* (seeds 0, 1, 2: +0.236, +0.242, +0.105); the
+   interval did not include that variation. Future sham comparisons average over 20 or more draws.
+3. *Major (description) / OK (direction): the first sham check.* Its window is 5 s before and 30 s after
+   (not 15 s, as written above); the worm shams sit at the end of the recordings (median position
+   0.98) and the lab shams before the first poke (0.02). With clean shams the reviewer reproduced
+   "sparseness is not poke-specific" (excess 0.000 [-0.017, +0.016]) and "PCI is not poke-specific"
+   (0.665 real, 0.677 clean sham). **Persistence, however, is poke-specific with clean shams, so
+   "persistence is not specific to pokes" overstated; what is withdrawn is the large 6.5 against 2.2
+   to 3.3 contrast, most of which is ongoing activity.** The code for the PCI and spread shams and for
+   the first state-test sham was not committed; it is now (`scripts/check_sham_extras.py`).
+4. *Minor: the state-dependence matched sham.* Seed 0 gave -0.014 (p = 0.080); seeds 1 and 2 give -0.022
+   (p = 0.17) and -0.003 (p = 0.50), null by the registered rule, and the base lab brain's seed-0 pass was
+   marginal ([-0.030, +0.0005]). With the stricter pseudo-onset pool (`spec=False`) the real worm test
+   gives -0.093 [-0.145, -0.039], p = 0.0008 (35 worms, 25 classes). **Correction: "about a quarter of
+   the effect appears without a poke" is withdrawn; the state dependence is poke-specific.**
+5. *Minor: the transformer test.* The registered run (`run_tf_echo.py`) concatenated each poke's
+   41-position block with the next, so each "after" window ran into an unrelated context, a third reason
+   its values did not change with strength; the amendment used 31 steps after the poke, half the worm's
+   61. Since the worm targets (0.65, 6.5) are withdrawn and the paired measure gives about 0 even in the
+   recurrent control, **the transformer echo comparison is moot**, not "not worm-like as predicted".
+6. *Minor: numbers.* DIFFERENCES row "echo persistence" mixed a calcium-matched lab value with an
+   unfiltered sham value (real base on the same check: 1.86); "lab -0.04 to -0.07" included an interval
+   ([-0.079, +0.009]) that contains 0; an outdated item in DIFFERENCES fixed (its two lists are numbered separately, which the review read as a duplicate).
+7. *Major (website draft): overclaims in sections 0, 4.2, 4.3 and the conclusion,* corrected to the
+   readings above.
+8. *Consequence for the spiking runs:* their "echo persistence excess" used the same confounded sham
+   and is reported only with this caveat.
+
+Not checked by the reviewer: whether neighbours of the stimulated neuron (stray light) lengthen
+real-poke runs; excluding spatial neighbours would test it.
 
 ## Where the data runs out (2 Nov 2026)
 
