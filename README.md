@@ -3773,6 +3773,13 @@ artificial network here shows has at least a small genuine neuron component. The
 experiment: drive a neuron hard without light (through its inputs) and then poke it with light, against
 light-then-light, at matched activity.
 
+*Exploratory, model-free recovery curve* (`scripts/explore_recovery_curve.py`, `docs/figures/recovery_curve.csv`;
+every consecutive repeat of a neuron, minus gap-matched control pairs as in B1, per-worm means): gap 0 to 2
+min **-0.92 [-1.20, -0.64]** (81 pairs), 2 to 5 min **-0.45 [-0.65, -0.25]** (128), 5 to 10 min -0.11
+[-0.35, +0.12] (175), 10 to 20 min +0.02 (155), 20 to 40 min +0.09 (50). A neuron poked again within 2
+minutes answers at about 40% of its first response; recovery takes about 5 to 10 minutes (time constant
+of a few minutes). This is the plainest statement of the effect, and it needs no model.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is

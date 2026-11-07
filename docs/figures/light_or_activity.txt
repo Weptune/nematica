@@ -87,3 +87,8 @@ EXPLORATORY net-drive split, SYNTHETIC mixed tau10 atlas 1: n 1218 (L=1 252); bL
 EXPLORATORY net-drive split, SYNTHETIC mixed tau10 atlas 2: n 1199 (L=1 246); bL -0.689 [-0.838, -0.527]; bA(net) -0.079 [-0.158, +0.048]; own act 1.87; light share 0.79 [0.58, 1.15]
 EXPLORATORY net-drive split, SYNTHETIC mixed tau10 atlas 3: n 1200 (L=1 252); bL -0.588 [-0.705, -0.467]; bA(net) +0.040 [-0.056, +0.128]; own act 1.92; light share 1.13 [0.81, 1.43]
 EXPLORATORY net-drive split, WORMS (wild type): n 1171 (L=1 231); bL -0.615 [-0.782, -0.471]; bA(net) -0.103 [-0.179, -0.024]; own act 2.28; light share 0.62 [0.29, 0.91]; p(L) 0.0005
+EXPLORATORY recovery curve, gap 0-2 min: -0.919 [90%: -1.197, -0.643], worms 47, pairs 81
+EXPLORATORY recovery curve, gap 2-5 min: -0.451 [90%: -0.652, -0.252], worms 70, pairs 128
+EXPLORATORY recovery curve, gap 5-10 min: -0.112 [90%: -0.345, +0.117], worms 78, pairs 175
+EXPLORATORY recovery curve, gap 10-20 min: +0.021 [90%: -0.191, +0.223], worms 67, pairs 155
+EXPLORATORY recovery curve, gap 20-40 min: +0.091 [90%: -0.251, +0.425], worms 30, pairs 50
