@@ -3406,6 +3406,13 @@ above 1. (2) S1 does not tire either (above -0.1): background firing, not pokes,
 and (2) and (4) hold too, the worm's tiring is reproduced by depletion that is gated by strong drive and
 acts on the neuron itself, and tiring stops being a difference in kind.
 
+*Amendment (7 Nov 2026, before any full run, after a 4-individual smoke test).* Pokes drive the
+target to about 47 Hz (background 12 to 21 Hz), as assumed, but the 1 s rate estimate needs most of
+the 2 s poke to pass the 30 Hz gate, so one poke builds little fatigue: in the smoke test a second
+poke of the same neuron 100 s later was about 4% smaller in S2. The registered variants run unchanged;
+S2 and S3 are also run with 4 times the gain (KF 0.02, KD 0.032) as a sensitivity check. This
+addition was informed by the smoke test and is labelled as such.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
