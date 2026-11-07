@@ -350,6 +350,9 @@ def whittle_loss(groups, F, q, r, n):
     return tot / wsum
 
 
+BATCH = False      # padded batching is verified equal but slower (padding to the largest class set)
+
+
 def whittle_fit_groups(groups, n, k, steps=1500, init=None, seed=0, lr=0.02, hidden_kind="free",
                        verbose=False, polish=300, ridge=0.0):
     """Whittle MLE from grouped periodograms. groups: list of (obs index array, freqs (b,),
@@ -368,6 +371,24 @@ def whittle_fit_groups(groups, n, k, steps=1500, init=None, seed=0, lr=0.02, hid
         data.append((torch.tensor(np.asarray(obs)), torch.tensor([wpos[float(x)] for x in w]),
                      torch.tensor(wt, dtype=torch.float64), torch.tensor(P, dtype=torch.complex128)))
     Wt = torch.tensor(allw)
+    # batched form: every group padded to the largest class set; padded rows of U are zeroed
+    # and get unit noise, so they add a constant (log det 1 = 0, trace of I) and no gradient.
+    batched = BATCH and len(set(len(g[1]) for g in data)) == 1 and all(torch.equal(g[1], data[0][1]) for g in data)
+    if batched:
+        Om = max(len(g[0]) for g in data)
+        G_ = len(data)
+        idx = torch.zeros(G_, Om, dtype=torch.long)
+        msk = torch.zeros(G_, Om, dtype=torch.float64)
+        Pb = torch.zeros(G_, len(data[0][1]), Om, Om, dtype=torch.complex128)
+        wtb = torch.stack([g[2] for g in data])                     # (G, b)
+        for gi, (obs, wi, wt, P) in enumerate(data):
+            o = len(obs)
+            idx[gi, :o] = obs
+            msk[gi, :o] = 1
+            Pb[gi, :, :o, :o] = P
+            Pb[gi, :, o:, o:] = torch.eye(Om - o, dtype=torch.complex128)
+        fsel = data[0][1]
+        pad_const = ((Om - msk.sum(1))[:, None] * wtb).sum()       # trace of the identity blocks
     if init is None:
         F0 = np.zeros((d, d))
         F0[:n, :n] = 0.5 * np.eye(n)
@@ -403,7 +424,17 @@ def whittle_fit_groups(groups, n, k, steps=1500, init=None, seed=0, lr=0.02, hid
         e = torch.exp(-1j * Wt)[:, None, None]
         H = torch.linalg.inv(eye[None] - e * Fm.to(torch.complex128)[None])
         loss = 0.0
-        for obs, wi, wt, P in data:
+        if batched:
+            Hs = H[fsel]                                                    # (b, d, d)
+            U = Hs[:, idx, :].permute(1, 0, 2, 3) * msk.to(torch.complex128)[:, None, :, None]  # (G, b, Om, d)
+            S = (U * q[None, None, None, :]) @ U.conj().transpose(-1, -2)
+            rr = torch.where(msk > 0, torch.exp(lrr)[idx], torch.ones_like(msk))
+            S = S + torch.diag_embed(rr.to(torch.complex128))[:, None]
+            L = torch.linalg.cholesky(S)
+            ld = 2 * torch.log(torch.diagonal(L, dim1=-2, dim2=-1).real).sum(-1)       # (G, b)
+            tr = torch.diagonal(torch.cholesky_solve(Pb, L), dim1=-2, dim2=-1).real.sum(-1)
+            loss = (wtb * (ld + tr)).sum() - pad_const
+        for obs, wi, wt, P in ([] if batched else data):
             U = H[wi][:, obs, :]
             S = (U * q[None, None, :]) @ U.conj().transpose(1, 2)
             S = S + torch.diag_embed(torch.exp(lrr[obs]).to(torch.complex128))[None]
