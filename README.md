@@ -3136,6 +3136,13 @@ is drafted (in `docs/`), and is not sent anywhere without the owner's go-ahead.
   4% (0.068), 0.83 at 0.5% (0.26: with so few events the asymptotic bound is optimistic), and no
   estimate at all when it never fires. The ladder brains' silent links are active on 0.3% to 1.4%
   of rest frames.
+- *Part E, recordings fixed before extraction (7 Nov, evening):* patients UMCU01 to UMCU12 (the
+  first 12 in ID order), all of their recordings (the pre-registration said 12 recordings; a
+  patient with several runs contributes each run, and the count is reported), extracted with
+  `NEMATICA_CCEP_QUARTERS=1` into `data/derived/ccep_q` and scored by `scripts/run_ccep_quarters.py`
+  (quarter = the mean over the four quarters, half = the mean over the two halves).
+- *Part B and C settings:* 400 Adam steps and 150 L-BFGS iterations per fit (the script default is
+  600 and 200), chosen for time before any part B or C result was read.
 - *Ready, not yet run:* `scripts/run_latent_watch.py` (parts B and C), `scripts/run_limit_tlab.py`
   (part D), and an opt-in `NEMATICA_CCEP_QUARTERS=1` option in `scripts/ccep_extract_v2.py` that
   saves the between-pulse statistics per quarter of a recording (part E; earlier extractions are
