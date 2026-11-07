@@ -3487,6 +3487,33 @@ recover over 10 min, but the simulations warmed up for only 200 s, so S1's stron
 pokes, +0.14 without) may be its adaptation still settling. The spiking systems are rerun with a 30 min
 warm-up ("+warm"); only those values are read.
 
+**Result (8 Nov 2026; `docs/figures/drift.csv`, `scripts/run_drift.py`; the empty lab rows of the
+registered rule and the spiking rows without warm-up are dropped from the file, as superseded).**
+
+| System | Drift [90%] | Recordings above 0 |
+|---|---|---|
+| Worms, registered 30 s rule | +0.011 [+0.003, +0.021] | 66 of 105 |
+| Worms, 15 s rule | +0.059 [+0.037, +0.074] | 87 of 111 |
+| Human cortex | +0.040 [+0.027, +0.058] | 31 of 33 |
+| Lab base, 15 s rule / no pokes | +0.007 [-0.005, +0.010] / -0.001 [-0.004, +0.002] | 24 / 19 of 40 |
+| Lab drives, 15 s rule / no pokes | +0.003 [-0.018, +0.026] / +0.021 [+0.001, +0.035] | 20 / 26 of 40 |
+| Spiking S0 plain, 15 s / no pokes | +0.003 [-0.004, +0.011] / -0.004 [-0.009, +0.002] | 22 / 16 of 40 |
+| Spiking S1 adaptation, 15 s / no pokes | -0.003 [-0.006, +0.007] / -0.003 [-0.012, +0.006] | 18 / 19 of 40 |
+| Spiking S2 gated fatigue, 15 s / no pokes | +0.021 [+0.011, +0.039] / +0.000 [-0.009, +0.004] | 27 / 20 of 40 |
+| Spiking S3 gated depletion, 15 s / no pokes | +0.004 [-0.008, +0.009] / -0.006 [-0.009, +0.005] | 22 / 17 of 40 |
+
+**Predictions confirmed:** worms and human cortex drift; the plain lab brain and plain spiking network
+do not (S1's apparent drift without warm-up, +0.11 and +0.14, was its adaptation still settling, and
+vanishes with 30 min of warm-up). **But staying the same is not universal in artificial networks:**
+slow hidden drives make a network drift without any learning (+0.021 without pokes), and use-dependent
+fatigue makes it drift when pokes keep triggering it (+0.021). Under the comparable 15 s rule worms
+drift more than every artificial network built (+0.059, against upper bounds of 0.039 at most).
+Reading: drifting rules are a candidate difference in the reverse direction, but a quantitative one
+that slow processes partly reproduce. Caveats: in human cortex the "rest" is the time between pulses
+given every 5 s throughout, so its drift may be driven by the stimulation itself, as in spiking S2; in
+worms bleaching or the preparation could contribute.
+
+
 **Review 6 (independent, 7 Nov 2026, night; scratch work in a separate session, no tracked file changed by
 the reviewer).** Findings and corrections, marked in place in the sections above:
 
