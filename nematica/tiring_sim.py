@@ -213,3 +213,34 @@ def synth_worm(sched, N, classes, T, truth, rng, h=0.5, kappa=0.25, tau=1200, dr
         d[k] = np.inf
         near.append(set(np.argsort(d)[:3].tolist()))
     return dict(stims=stims, pre=lambda k, f: pre_noise.get((k, f), 0.0), near=near, classes=list(classes), T=T)
+
+
+def rows_net(w, window=WINDOW):
+    """Exploratory (8 Nov, after T1 was abandoned): activity covariate from network drive only (no lagged own
+    response), as the earlier within-neuron drive test; L as T1."""
+    stims = w["stims"]
+    count = defaultdict(int)
+    for k, _, _ in stims:
+        count[k] += 1
+    out = []
+    for k, f, v in stims:
+        a = v[k]
+        if count[k] < 2 or not (np.isfinite(a) and a > 0) or w["near"][k] is None:
+            continue
+        pre = w["pre"](k, f)
+        if not np.isfinite(pre):
+            continue
+        before = [(j, g, u) for j, g, u in stims if f - window <= g and g + POST <= f]
+        L = int(any(j == k for j, _, _ in before))
+        own = [max(u[k], 0.0) for j, _, u in before if j == k and np.isfinite(u[k])]
+        dr = [max(u[k], 0.0) for j, _, u in before if j != k and np.isfinite(u[k]) and _drive_ok(w, j, k)]
+        out.append(dict(unit=k, loga=float(np.log(a)), order=f / w["T"], pre=float(pre), nother=len(dr) + 0.0,
+                        L=L, A=float(max(dr)) if dr else 0.0, own=float(max(own)) if own else np.nan))
+    return out
+
+
+def light_share_net(b, rs, C):
+    iL, iA = C.index("L"), C.index("A")
+    own = np.nanmean([r["own"] for r in rs if r["L"] == 1]) if any(r["L"] == 1 for r in rs) else np.nan
+    tot = b[iL]
+    return ((tot - b[iA] * own) / tot if tot != 0 else np.nan), tot, own

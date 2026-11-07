@@ -3735,6 +3735,44 @@ the worms. T4 reduces to the B1 target effect in unc-31. *Exploratory only, labe
 original T1 model, whose point estimates fell on the right side in all 20 first-validation atlases, is
 also run on the worms and reported with that caveat.
 
+**Results (8 Nov 2026; `docs/figures/light_or_activity.txt`).**
+
+- *T2, does the drop pass downstream?* 66 worms, 414 repeat pairs: D_target -0.38 [-0.50, -0.27];
+  D_down -0.10 [-0.42, +0.23]; difference +0.28 [-0.06, +0.63]. **Inconclusive**: the downstream
+  readout is too noisy to say whether the drop is passed on.
+- *T3, two clocks?* The light effect beyond activity: 0 to 2 min **-0.64 [-0.97, -0.36]**, 2 to 5 min
+  -0.21 [-0.46, +0.00], 5 to 10 min +0.03, 10 to 20 min +0.16 (both intervals include 0). The activity
+  effect per SD: -0.09, -0.10, -0.08, -0.10, flat over 20 min. By the written rule: **different clocks**.
+  *But a check on synthetic truths (exploratory, run after the result) shows the activity curve is not
+  trustworthy:* with no tiring at all, the same model gives a flat -0.05 to -0.18 per SD at every lag
+  (each neuron's own earlier response is a lagged outcome, and comparing a neuron with itself over only
+  three or four pokes biases its slope negative). The worm's flat -0.09 sits inside that range. **The T3
+  verdict is withdrawn.** The light curve is not affected the same way: no-tiring truths give 0-to-2-min
+  values of -0.09 and +0.05, neuron truths leak -0.07 to -0.24, tool truths give -0.37 to -0.67. The
+  worm's -0.64 at 0 to 2 min, gone by 5 min, looks like a light-specific decrement that recovers within a
+  few minutes; one untested alternative (a neuron that tires strongly and recovers in about 2 min) could
+  leak more.
+- *T4, unc-31.* 13 recordings with repeats, 112 pairs: target D **-0.60 [-1.03, -0.23]** (wild type,
+  same uncorrected measure: -0.42 [-0.53, -0.31]). **Tiring does not need dense-core-vesicle release**:
+  it is not mediated by neuropeptides.
+- *Exploratory: activity measured from network drive only* (`scripts/explore_light_net.py`; no lagged
+  own response). On 12 synthetic atlases with no tiring or tool-only tiring the drive slope is -0.01 to
+  +0.07; with neuron tiring -0.13 to +0.05. The worms: **-0.10 [-0.18, -0.02] per SD**, outside the
+  no-tiring and tool-only range. So worm neurons do answer less after activity that involved no light, by
+  a modest amount. This design's light share (0.62 [0.29, 0.91]) is not informative: neuron truths also
+  give 0.6 to 1.2, because drives are small and a saturating effect looks weak per SD.
+
+**Reading.** The atlas cannot say how much of a worm neuron's repeat decline is the neuron and how much is
+the light: two validated estimators failed, and the light-free contrast (activity caused by other neurons)
+is too small and too rare. Three things it does say. (1) A repeat light poke within about 2 minutes gives a
+response about half as large (-0.64 in log units), and the deficit is gone by about 5 minutes. For users
+of the atlas this is a practical caveat: trials of the same neuron less than a few minutes apart are not
+exchangeable. (2) Activity without light also lowers a neuron's next response, modestly (-0.10 per SD),
+beyond what the artefacts we found produce. (3) Neither needs neuropeptide release. So the tiring that no
+artificial network here shows has at least a small genuine neuron component. The decisive split needs an
+experiment: drive a neuron hard without light (through its inputs) and then poke it with light, against
+light-then-light, at matched activity.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is

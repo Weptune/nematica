@@ -252,6 +252,8 @@ def t2():
                 ctl_d.append((down(kx, vx), down(ky, vy)))
 
         def lr(pairs):
+            if not pairs:
+                return np.nan
             a = np.array(pairs, float)
             a = a[np.isfinite(a).all(1)]
             if len(a) == 0:
