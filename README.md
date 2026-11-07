@@ -3143,6 +3143,10 @@ is drafted (in `docs/`), and is not sent anywhere without the owner's go-ahead.
   (quarter = the mean over the four quarters, half = the mean over the two halves).
 - *Part B and C settings:* 400 Adam steps and 150 L-BFGS iterations per fit (the script default is
   600 and 200), chosen for time before any part B or C result was read.
+- *Lost work, 7 Nov evening:* the part B runs on brains D and G were killed by the system for
+  lack of memory (about 3 GB each, next to other jobs on an 8 GB machine) after finishing fold 0.
+  Folds 1 and 2 of both brains are rerun after the worm runs, with fewer jobs at once; fold 0
+  results (in `docs/figures/latent_watch.csv`) are complete and kept.
 - *Ready, not yet run:* `scripts/run_latent_watch.py` (parts B and C), `scripts/run_limit_tlab.py`
   (part D), and an opt-in `NEMATICA_CCEP_QUARTERS=1` option in `scripts/ccep_extract_v2.py` that
   saves the between-pulse statistics per quarter of a recording (part E; earlier extractions are
