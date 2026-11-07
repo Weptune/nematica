@@ -3316,6 +3316,32 @@ reliability) are not affected: averaging over pokes removes ongoing fluctuations
 calibration with shuffled stimulation times fails as designed.
 
 
+## Matched shams: are the worm's state dependence and echo specific to pokes? (pre-registered 7 Nov 2026)
+
+**Why.** The 7 Nov sham checks withdrew the per-event echo measures and left the state-dependence test
+unresolved, because its sham onsets came from a different pool of moments than the pseudo-onsets the
+test subtracts. Both checks are repeated with a matched sham.
+
+**Matched sham.** For each real stimulation, a sham onset is drawn (seed 0) from the state test's own
+pseudo-onset pool in the same recording: every 5th frame t with no stimulation in [t - 5 s, t + 15 s)
+and a finite state value, keeping the stimulation's target. The real stimulations are left in the
+recording (so the pool, the thresholds and the corrections are computed exactly as in the real test).
+
+**Test 1, state dependence** (`run_week1.run_b2`, aligned PC1 state, unchanged). Run on the matched
+shams of the worms, the base lab brain and the drives brain. *Validity rule:* the matched sham is
+unbiased only if both lab brains give a median S minus null with a 90% interval that includes 0
+(their real pokes show none). *If valid:* the worm's state dependence is poke-specific if its matched
+sham also includes 0 while its real result stays as reported (-0.049, p = 0.002); it is a property of
+ongoing activity if its matched sham is supported (p < 0.05, median below 0). *If not valid:* the check
+is uninformative again and reported as such.
+
+**Test 2, a poke-specific echo.** For worms and the base, drives and silent-links lab brains (40
+individuals each, as `run_echo_sparse.py`): the per-event sparseness and persistence at real pokes minus
+the same at their matched shams, per recording, then the median over recordings with a 90% bootstrap
+interval. A recording-level excess near 0 means the measure carries no echo; the comparison of
+interest is whether worms' excesses lie outside the range of the three lab brains' excesses (both
+intervals non-overlapping). No direction is predicted.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
