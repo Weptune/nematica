@@ -42,3 +42,15 @@ G,0,2,hybrid_kernels,0.1232,0.1198,inside
 DG,0,0,var3_spontaneous,0.0209,0.0757,outside
 DG,0,0,stitch3_hp,0.0228,0.0757,outside
 DG,0,0,hybrid_kernels,0.0654,0.0757,inside
+DG,0,1,var3_spontaneous,0.0151,0.0784,outside
+DG,0,1,stitch3_hp,0.0195,0.0784,outside
+DG,0,1,hybrid_kernels,0.0662,0.0784,inside
+DG,0,2,var3_spontaneous,0.0259,0.0763,outside
+DG,0,2,stitch3_hp,0.0216,0.0763,outside
+DG,0,2,hybrid_kernels,0.0727,0.0763,inside
+base,0,1,var3_spontaneous,0.0372,0.0598,outside
+base,0,1,stitch3_hp,0.0301,0.0598,outside
+base,0,1,hybrid_kernels,0.055,0.0598,inside
+base,0,2,var3_spontaneous,0.0379,0.0481,inside
+base,0,2,stitch3_hp,0.0356,0.0481,inside
+base,0,2,hybrid_kernels,0.0483,0.0481,inside

@@ -3178,6 +3178,17 @@ fitter; run 1 superseded).** Agreement with the true poke responses, medians ove
 - *Note.* The bound limits unbiased watchers only; a biased watcher can beat it when data is short
   (VAR does at 1000 frames in most conditions).
 
+**Result, part D (7 Nov 2026; `docs/figures/limit_tlab.csv`, `scripts/run_limit_tlab.py`).**
+Watching agreement with the true effects (off-diagonal, residual stream, truth from 96 contexts)
+from 6 / 12 / 24 / 48 / 96 contexts of 300 tokens: untrained 0.21 to 0.24 at every size (gain
+from 24 to 96 contexts -0.000 to +0.003); trained 0.10 to 0.13 at 6 contexts, 0.13 to 0.15 at 24
+and 0.14 to 0.15 at 96 (gain -0.010 to +0.014). **Prediction confirmed: plateau in all 6
+networks.** More watching data does not help: the shortfall is structural (every unit shares the
+same token input), not a lack of data. Including the skip-connection entries the scores are
+0.68 to 0.69 untrained and 0.44 to 0.48 trained, also flat beyond 24 contexts. Off-diagonal
+values are lower than phase 2's because the truth here averages 96 contexts, not 24, and so
+carries less noise of its own.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
