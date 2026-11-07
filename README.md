@@ -3129,6 +3129,13 @@ is drafted (in `docs/`), and is not sent anywhere without the owner's go-ahead.
   (94 to 96% of seen-unit variance from hidden drives) the bound itself is only 0.10 to 0.59 at
   these lengths, so A2 (VAR at least 0.10 below the best watcher) looks likely to be refuted: in
   that regime watching is data-starved, not model-limited.
+- *Silent-link lemma check, added 7 Nov (it was listed as checked in the pre-registration but had
+  no test yet; `silent_link_demo` in `nematica/limits.py`, `tests/test_limits.py`).* A threshold
+  link from an AR(1) source, weight 1, 4000 frames, the best watcher knowing the form: error SD
+  0.018 when the link is active on 50% of frames (predicted 0.018), 0.031 at 19% (0.028), 0.089 at
+  4% (0.068), 0.83 at 0.5% (0.26: with so few events the asymptotic bound is optimistic), and no
+  estimate at all when it never fires. The ladder brains' silent links are active on 0.3% to 1.4%
+  of rest frames.
 - *Ready, not yet run:* `scripts/run_latent_watch.py` (parts B and C), `scripts/run_limit_tlab.py`
   (part D), and an opt-in `NEMATICA_CCEP_QUARTERS=1` option in `scripts/ccep_extract_v2.py` that
   saves the between-pulse statistics per quarter of a recording (part E; earlier extractions are

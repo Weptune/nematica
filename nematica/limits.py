@@ -487,3 +487,37 @@ def whittle_fit_groups(groups, n, k, steps=1500, init=None, seed=0, lr=0.02, hid
             print("polished", best[0], flush=True)
     Fh, lqh, lrh = best[1]
     return Fh, lqh, lrh, best[0]
+
+
+# ------------------------------------------------------------------ the silent-link lemma
+def silent_link_demo(theta, T, w=1.0, a=0.9, sigma=1.0, reps=200, seed=0):
+    """Lemma 3, numerically. Source x[t+1] = a x[t] + N(0, 1); target
+    y[t+1] = 0.5 y[t] + w * relu(x[t] - theta) + N(0, sigma^2). The best watcher knows the
+    form and estimates w by least squares (the MLE). Returns the efficient Fisher information
+    for w per recording (averaged), the predicted SD 1 / sqrt(info), the
+    empirical SD of the estimates, and the fraction of frames the link is active."""
+    rng = np.random.default_rng(seed)
+    est, info, act = [], [], []
+    for _ in range(reps):
+        x = np.zeros(T + 1)
+        e = rng.standard_normal(T + 1)
+        for t in range(T):
+            x[t + 1] = a * x[t] + e[t]
+        g = np.maximum(x[:-1] - theta, 0)
+        y = np.zeros(T + 1)
+        n = sigma * rng.standard_normal(T + 1)
+        for t in range(T):
+            y[t + 1] = 0.5 * y[t] + w * g[t] + n[t]
+        X = np.column_stack([y[:-1], g])
+        # efficient information for w: the target's own memory is estimated too, and its
+        # regressor is correlated with the link's input
+        XtX = X.T @ X
+        I = 0.0 if (g ** 2).sum() == 0 else 1.0 / (np.linalg.inv(XtX)[1, 1] * sigma ** 2)
+        info.append(I)
+        act.append(float((g > 0).mean()))
+        if I > 0:
+            est.append(np.linalg.lstsq(X, y[1:], rcond=None)[0][1])
+    info = float(np.mean(info))
+    return {"info": info, "pred_sd": 1 / np.sqrt(info) if info > 0 else np.inf,
+            "emp_sd": float(np.std(est)) if len(est) > 2 else np.inf,
+            "active": float(np.mean(act)), "estimable": len(est) / reps}

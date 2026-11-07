@@ -71,3 +71,15 @@ def test_private_noise_identifiable_up_to_hidden_rotation():
             assert np.abs(I @ N.T).max() < 1e-8 * ev[-1]       # the gauge is the null space
         cov, info = L.crb_G(net, T=1000, m=128)
         assert info["leak"] < 1e-8 and info["cond"] > 1e-9
+
+
+def test_silent_link_information_scales_with_activity():
+    lo = L.silent_link_demo(theta=1.0, T=2000, reps=60, seed=1)
+    hi = L.silent_link_demo(theta=4.0, T=2000, reps=60, seed=2)
+    # the error follows the Fisher prediction (within sampling noise of 60 replicates)
+    assert 0.7 < lo["emp_sd"] / lo["pred_sd"] < 1.4
+    # a link active on fewer frames carries less information, so a larger error
+    assert hi["active"] < lo["active"] and hi["pred_sd"] > 3 * lo["pred_sd"]
+    # a link that never fires at rest: no information at any length
+    never = L.silent_link_demo(theta=50.0, T=2000, reps=5, seed=3)
+    assert never["info"] == 0 and never["estimable"] == 0
