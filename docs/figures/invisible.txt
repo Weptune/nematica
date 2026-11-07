@@ -1,0 +1,1 @@
+CALIBRATION: medians at r 0.1 [np.float64(0.0), np.float64(-0.0345), np.float64(-0.0267), np.float64(-0.0291)]; monotone False; share 0.1 - 0 -0.0345 [90%: -0.0688, -0.0253] -> FAIL

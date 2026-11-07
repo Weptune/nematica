@@ -3833,6 +3833,16 @@ overfitting); the distant blocks are unchanged. The formal calibration uses seed
 test (brain seed 1, individuals from 5000). Everything else, including the pass rule, is unchanged. If
 it fails, the test stops.
 
+**Calibration result (8 Nov 2026; `docs/figures/invisible.csv`, `invisible.txt`). FAIL: the test stops; no
+worm or spiking recording was read.** Median DPG at r = 0.1 for hidden shares 0, 0.1, 0.25, 0.4: 0.000,
+-0.035, -0.027, -0.029 (not monotone; share 0.1 minus 0: -0.035 [-0.069, -0.025], the wrong sign). At
+r = 0.3: -0.000, -0.006, -0.008, -0.062. All units seen, share 0: -0.0001. With hidden drives the distant
+past makes held-out prediction *worse*: in 960 s there are only about ten independent stretches of a
+90 s drive, so coefficients learned on one half do not carry to the other. **Reading:** at the length of
+the worm recordings, slow hidden state cannot be measured from rest by this kind of model; this agrees
+with part A's data-starved regime. The worm's hidden share stays known only from the earlier latent fits
+(12 to 19%, one fragile model class). Bet 2 ("how much invisible machinery") ends here without an answer.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
