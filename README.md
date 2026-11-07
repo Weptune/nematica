@@ -3257,6 +3257,27 @@ difference from artificial networks in general (it would remain one from recurre
 
 **Prediction.** Not worm-like in any setting.
 
+**Result of the test as registered (7 Nov 2026; `docs/figures/tf_echo.csv`): uninformative.** On the
+residual readout, trained transformers gave sparseness 0.86 to 0.90 and persistence 6.0 to 6.1;
+untrained 0.25 to 0.27 and 1.1. But the values did not change with poke strength (identical to four
+decimals at s = 1 and 3), so a sham check was run (added after the result; it was missing from the
+registration): with s = 0, a poke of nothing, the trained network gives the same 0.9048 and 6.1. The
+measure, mapped this way, reads the transformer's ongoing token-to-token fluctuations, not the poke.
+The MLP readout scored no pokes at all, from a mapping bug (the stimulus marker row had no class name,
+so every poke was skipped). Nothing from this run is evidence either way.
+
+**Amendment 1 (7 Nov 2026, written after the uninformative result and before any amended number was
+computed).** The response is the exact paired difference between the poked run and the same context
+unpoked, in units of each unit's pre-poke fluctuation (deviation from its own 10-position mean, pooled
+over the individual's unpoked runs); significant above 3; sparseness and persistence as registered.
+Strengths s = 1, 3 and 10. Because the worms' values come from the unpaired measure, the same paired
+measure is applied to the base recurrent lab network (`make_brain` defaults as in `run_ladder.py`
+base, twin runs from 256 visited states, kicks held as in the ladder), so that the size of the method's
+own effect is visible. Reading: transformers are called worm-like under the amended measure only if
+they meet the registered band at some strength in at least 2 of 3 individuals; the comparison with
+worms stays labelled method-dependent unless the recurrent network's paired values match its unpaired
+ones (0.71 to 0.79; 2.2 to 3.3).
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
