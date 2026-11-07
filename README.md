@@ -3802,7 +3802,7 @@ nothing beyond what averaging out measurement noise gives; slow hidden state mak
 
 **Calibration (the kill rule).** Lab networks (the `annlab` tanh networks with 30% never-recorded units
 and half the rest recorded, as everywhere in this project), no pokes, 960 s at 0.5 s, 30 individuals
-each, with hidden slow drives (45 s timescale) carrying a share of 0, 0.1, 0.25 and 0.4 of the input
+each, with hidden slow drives (90 s timescale; *corrected 8 Nov before running: first written 45 s, but `tau=90` in `annlab` means a 90 s time constant*) carrying a share of 0, 0.1, 0.25 and 0.4 of the input
 variance; measurement noise r = 0.1 and, as a robustness check, 0.3. *Pass* if, at r = 0.1, median DPG
 rises with share at every step and the share-0.1 minus share-0 difference's 90% interval (bootstrap over
 individuals) lies above 0. If it fails, this test stops and no system is read.
@@ -3822,6 +3822,16 @@ not a measurement of worm biology. Measurement noise also inflates DPG; the r = 
 how much.
 
 Code: `scripts/run_invisible.py`; output `docs/figures/invisible.csv`.
+
+**Deviation, 8 Nov 2026, before the formal calibration and before any worm or spiking data was
+touched.** A smoke test on 3 lab individuals per setting (shares 0 and 0.4) gave negative DPG that fell
+with share (-0.007 and -0.038 medians): predicting one frame ahead is dominated by fast dynamics, and a
+slow drive's current value is already visible in the last 10 s, so the distant past adds only noise. The
+design is changed once: the target is the components' mean 20 to 40 s ahead; the recent block is the
+last frame and the means over 0 to 2, 2 to 5 and 5 to 10 s (32 features instead of 160, less
+overfitting); the distant blocks are unchanged. The formal calibration uses seeds not used in the smoke
+test (brain seed 1, individuals from 5000). Everything else, including the pass rule, is unchanged. If
+it fails, the test stops.
 
 ## Where the data runs out (2 Nov 2026)
 
