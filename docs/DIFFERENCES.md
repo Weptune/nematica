@@ -70,3 +70,39 @@ Systems compared:
 
 The transformer programme is closed after its current reruns (corrections of published claims).
 New work goes to the rows that survive.
+
+## Update, 7 Nov 2026: the watching limit, and what the table does not cover
+
+**Watching, row 1, now has a mechanism-level reading** (README "The watching limit"). Watching can fail
+for three different reasons, each with its own fingerprint: the watcher's model is wrong, the data is
+too short, or the information is not in rest activity at all. The three show up in different systems:
+
+- *Transformers: structural.* Watching gains nothing from 24 to 96 contexts in any of six networks;
+  every unit shares the same token input.
+- *Human cortex: data-limited.* Watching improves with more rest data (0.229 / 0.248 / 0.285 from a
+  quarter / half / all of a session; 28 of 32 recordings improve). Plateau prediction refuted.
+- *Worms: partial by the pre-registered rule, leaning structural.* The best watcher (latent linear,
+  maximum likelihood) predicts worm pokes at about zero in all three pools while the data check is 0.59
+  to 0.69; exploratory checks (hidden units carry 12 to 19% of rest variance; a lab brain with the same
+  data sufficiency is readable) lean structural.
+
+The row's verdict does not change (dissolved as a categorical difference), but the reason watching
+fails is itself a property that differs between systems, and in worms it points at influence that
+rest activity does not express, the property silent links produce.
+
+**What the table does not cover (gaps in answering the project's question):**
+
+1. *Two meanings of "different" are not separated in the verdicts.* "Dissolved" means an artificial
+   network can be built to have the property; ordinary networks mostly still lack it. Both answers
+   belong in every row.
+2. *Coverage holes.* Echo sparseness and persistence are untested in transformers; human and mouse data
+   cover only watching, tiring and state dependence (and partly individuality); only the worm has
+   single-neuron pokes at scale.
+3. *The artificial side is small:* recurrent networks of about 120 units, transformers up to 70M
+   parameters, no spiking networks.
+4. *One direction only:* every candidate is something worms do; nothing systematically asks what
+   artificial networks do that brains never do.
+5. *Unmeasured candidates:* change during a recording (plasticity), sparsity and energy, noise
+   structure.
+
+These are the next steps for the project's question, ahead of further work on watching.
