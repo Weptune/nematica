@@ -144,7 +144,7 @@ def fig_decomposition(out):
         ax.errorbar(float(r["data_limited_agreement"]), float(r["share"]), xerr=float(r["data_limited_sd"]),
                     fmt=m, color=c, ms=10, mec="white", mew=1.5, elinewidth=1.4, capsize=3)
     pts = {k: [(float(r["data_limited_agreement"]), float(r["share"])) for r in d if r["data"] == k] for k in style}
-    lab = {"worms": "Worms, one point per held-out pool:\nas much data as the drives brain,\nyet watching predicts nothing",
+    lab = {"worms": "Worms, one point per held-out pool:\nabout as much data as the drives brain,\nyet watching predicts nothing",
            "ladder:G": "Lab brain with silent links:\ndata enough, watching weak\n(structural, as built)",
            "ladder:D": "Lab brain with hidden drives:\nwatching works\n(noisy: its individuals barely agree)",
            "ladder:DG": "Lab brain, drives + silent links", "ladder:base": "Plain lab brain"}
