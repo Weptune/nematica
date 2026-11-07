@@ -3724,6 +3724,17 @@ validation:* both truths with recovery times of 5, 10 and 20 min, 10 atlases eac
 rule: a mixed truth (h = 0.6 and kappa = 0.25 together). Decision rule on the worms unchanged. If this
 validation fails too, T1 is abandoned and only T2 to T4 are read.
 
+**Amendment 1 validation (8 Nov 2026). FAIL, so T1 is abandoned.** Neuron truths passed (10, 9 and 9 of
+10 at 5, 10 and 20 min), but tool truths failed badly (0, 1 and 2 of 10; point estimates fell to about
+0.5): with decay weights, the activity of a neuron's own earlier poke moves almost in step with the light
+weight, and beta_A takes over part of the light effect. The mixed truth gave S 0.15 to 0.43, biased
+towards activity. **Neither version of the estimator separates light from the activity it causes at
+atlas size; that is a result about the atlas, not only about the method: every direct poke delivers
+both, and network-driven activity (the only light-free contrast) is small and rare.** T1 is not read on
+the worms. T4 reduces to the B1 target effect in unc-31. *Exploratory only, labelled as such:* the
+original T1 model, whose point estimates fell on the right side in all 20 first-validation atlases, is
+also run on the worms and reported with that caveat.
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
