@@ -3342,6 +3342,33 @@ interval. A recording-level excess near 0 means the measure carries no echo; the
 interest is whether worms' excesses lie outside the range of the three lab brains' excesses (both
 intervals non-overlapping). No direction is predicted.
 
+**Result (7 Nov 2026; `docs/figures/checks/matched_sham_state_*.txt`, `docs/figures/matched_sham_echo.csv`,
+`scripts/check_matched_sham.py`).**
+
+*Test 1, state dependence.* Validity rule met: on matched shams the base lab brain gives -0.009 [90%:
+-0.030, +0.000] and the drives brain +0.006 [-0.016, +0.032], both including 0. Worms on matched shams:
+-0.014 [-0.024, -0.001], sign-flip p = 0.080 (81 recordings, 61 stimulated classes). Neither registered
+outcome is met cleanly (the interval just excludes 0, so "poke-specific" in the strict sense fails; p
+is above 0.05, so "a property of ongoing activity" fails too; the registration did not say what to call
+this case). Reading: about a quarter of the size of the real-poke effect (-0.049) appears without a
+poke and is not significant; **most of the worm's state dependence is specific to pokes**, and the
+difference survives, with this residue noted.
+
+*Test 2, a poke-specific echo.* Real minus matched sham, median over recordings [90%]:
+
+| System | Recordings | Sparseness excess | Persistence excess (frames) |
+|---|---|---|---|
+| Worms | 104 | +0.024 [+0.012, +0.039] | +0.24 [+0.15, +0.33] |
+| Lab base | 40 | +0.000 [+0.000, +0.022] | -0.04 [-0.07, -0.03] |
+| Lab drives | 40 | +0.000 [-0.014, +0.016] | -0.04 [-0.08, +0.01] |
+| Lab silent links | 40 | +0.011 [+0.000, +0.024] | -0.07 [-0.09, -0.05] |
+
+On persistence the worms' interval lies outside all three lab brains' (worm pokes leave responses that
+run a quarter of a frame longer than ongoing activity does; lab pokes slightly shorter). On sparseness
+the intervals overlap. So a small poke-specific echo difference exists, a fraction of a frame, not the
+6.5 against 2.2 to 3.3 frames believed before the 7 Nov sham check.
+
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
