@@ -165,6 +165,32 @@ def fig_decomposition(out):
     fig.savefig(out / "fig-decomposition.png", bbox_inches="tight")
 
 
+def fig_repeat_recovery(out):
+    """8 Nov 2026: model-free recovery of a neuron's response to a repeat stimulation (docs/figures/recovery_curve.csv)."""
+    d = rows(ROOT / "docs/figures/recovery_curve.csv")
+    x = np.arange(len(d))
+    m = np.exp([float(r["decline"]) for r in d]) * 100
+    lo = np.exp([float(r["lo"]) for r in d]) * 100
+    hi = np.exp([float(r["hi"]) for r in d]) * 100
+    fig, ax = plt.subplots(figsize=(9, 4.8))
+    ax.axhline(100, color=MUTED, ls="--", lw=1.2, zorder=1)
+    ax.text(0.25, 104, "No decline", color=MUTED, fontsize=10)
+    for i in range(len(d)):
+        col = NAVY if hi[i] < 100 else "#94a3b8"
+        ax.plot([x[i], x[i]], [lo[i], hi[i]], color=col, lw=2.2, zorder=2)
+        ax.plot(x[i], m[i], "o", color=col, ms=10, zorder=3, mec="white", mew=2)
+        ax.text(x[i] + 0.1, m[i] + (-9 if m[i] < 100 else 5), f"{m[i]:.0f}%", color=INK if hi[i] < 100 else MUTED, fontsize=11)
+    ax.set_xticks(x, [f"{r['gap_min']} min\n{r['pairs']} pairs" for r in d])
+    ax.set_ylim(0, 160)
+    ax.set_yticks([0, 50, 100, 150], ["0%", "50%", "100%", "150%"])
+    ax.grid(axis="x", visible=False)
+    ax.set_xlabel("Time since the same neuron was last stimulated")
+    ax.set_title("A repeat stimulation within 2 minutes gets about 40% of the first response", loc="left")
+    ax.text(0, -0.24, "Worm atlas, 113 animals: second response as % of the first, minus gap-matched controls; 90% intervals over worms",
+            transform=ax.transAxes, color=MUTED, fontsize=9)
+    fig.savefig(out / "fig-repeat-recovery.png", bbox_inches="tight")
+
+
 if __name__ == "__main__":
     out = Path(sys.argv[1])
     out.mkdir(parents=True, exist_ok=True)
@@ -172,4 +198,5 @@ if __name__ == "__main__":
     fig_transformer(out)
     fig_decomposition(out)
     fig_silent_link(out)
+    fig_repeat_recovery(out)
     print("done")
