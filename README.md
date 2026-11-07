@@ -3436,6 +3436,17 @@ mechanism that caps high rates without touching background: the S2 gated build-u
 adds floor(20 f) steps of refractoriness after each spike, like slow inactivation of sodium
 channels). *Prediction:* S5 tires (-0.2 or below). Both are post hoc in motivation.
 
+*Result of the calibration as registered (8 Nov 2026): failed.* S6 gave -0.139, short of -0.2, so by
+the rule S2 to S5 are uninformative as run. The sign is right; the size is small because repeat pokes
+of the same neuron are about 20 min apart in this design (targets drawn from about 42 seen neurons),
+while in worms they are a median of 7.2 min apart (5th to 95th percentile 0.5 to 23.6 min; 592 repeat
+pairs). With a 10 min recovery, most of any use-dependent change has faded by the second poke.
+
+*Amendment 4 (8 Nov 2026, before running):* the spiking tiring test is rerun with the worms' repeat
+gaps: each individual's pokes are drawn from 14 of its seen neurons (median gap about 7 min); all
+else unchanged. Variants S0, S2x4, S4, S5, S6 ("@w" suffix). Rule unchanged: S6 must reach -0.2 or
+below for the others to be read; predictions as registered (S0 none; S4 and S5 worm-like).
+
 ## The reverse question: do artificial networks keep the same rules while brains drift? (pre-registered 7 Nov 2026)
 
 **Why.** Every candidate difference so far was something worms do; none asked what artificial networks

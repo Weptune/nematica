@@ -25,12 +25,14 @@ ALL = ["S0", "S1", "S2", "S3", "S2x4", "S3x4", "S4", "S6", "S5"]
 
 
 def run(name):
-    base = name[:2]
+    worm_gaps = name.endswith("@w")
+    core = name[:-2] if worm_gaps else name
+    base = core[:2]
     kf, kd = S.KF, S.KD
-    if name.endswith("x4") or name in ("S4", "S5"):
+    if core.endswith("x4") or core in ("S4", "S5"):
         S.KF, S.KD = 4 * kf, 4 * kd
     try:
-        recs = S.recordings(base)
+        recs = S.recordings(base, n_targets=14 if worm_gaps else None)
     finally:
         S.KF, S.KD = kf, kd
     valid = lambda c: True  # noqa: E731

@@ -109,7 +109,7 @@ def simulate(Wb, kick_targets, variant="S0", frames=L.FRAMES, burn=400, seed=0):
     return y
 
 
-def recordings(variant, n_ind=113, seed=0, sigma=0.3, batch=40, poke=True, burn=400):
+def recordings(variant, n_ind=113, seed=0, sigma=0.3, batch=40, poke=True, burn=400, n_targets=None):
     """Atlas-style recordings (PumpProbe) of n_ind individuals, poked as the lab brains are."""
     W0 = base_weights(seed)
     Wall = individuals(W0, n_ind, sigma)
@@ -119,6 +119,8 @@ def recordings(variant, n_ind=113, seed=0, sigma=0.3, batch=40, poke=True, burn=
     for _ in range(n_ind):
         obs = (rng.random(N) < 0.5) & ~hidden
         targets = np.flatnonzero(obs)
+        if n_targets is not None:
+            targets = rng.choice(targets, size=min(n_targets, len(targets)), replace=False)
         kicks = {f: int(rng.choice(targets)) for f in range(LEAD, L.FRAMES - L.WIN, EVERY)}
         if not poke:
             kicks = {}
