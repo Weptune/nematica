@@ -3136,6 +3136,34 @@ is drafted (in `docs/`), and is not sent anywhere without the owner's go-ahead.
 - *Plan and reasons in plain language:* the Claude Doc "The watching limit: what we are doing next
   and why".
 
+**Result, part A (7 Nov 2026; `docs/figures/limit_lab.csv`, 63 cells, the rerun with the fixed
+fitter; run 1 superseded).** Agreement with the true poke responses, medians over seeds:
+
+| Hidden units | Recording | Bound | Best watcher | VAR watcher |
+|---|---|---|---|---|
+| drives, loading 0.5, memory 0.90 | 1000 / 4000 / 16000 | 0.57 / 0.81 / 0.94 | 0.70 / 0.91 / 0.94 | 0.82 / 0.82 / 0.84 |
+| drives, loading 0.5, memory 0.98 | 1000 / 4000 / 16000 | 0.50 / 0.76 / 0.92 | 0.38 / 0.86 / 0.88 | 0.82 / 0.80 / 0.81 |
+| drives, loading 1, memory 0.90 | 1000 / 4000 / 16000 | 0.34 / 0.57 / 0.81 | 0.27 / 0.61 / 0.86 | 0.71 / 0.73 / 0.73 |
+| drives, loading 1, memory 0.98 | 1000 / 4000 / 16000 | 0.34 / 0.58 / 0.82 | -0.14 / 0.52 / 0.79 | 0.74 / 0.75 / 0.74 |
+| drives, loading 2, memory 0.90 | 1000 / 4000 / 16000 | 0.13 / 0.26 / 0.47 | -0.19 / -0.01 / 0.05 | 0.61 / 0.52 / 0.51 |
+| drives, loading 2, memory 0.98 | 1000 / 4000 / 16000 | 0.19 / 0.35 / 0.59 | 0.11 / 0.37 / 0.70 | 0.68 / 0.66 / 0.64 |
+| ordinary units, wired both ways | 1000 / 4000 / 16000 | 0.95 / 0.99 / 1.00 | 0.96 / 0.99 / 1.00 | 0.66 / 0.63 / 0.60 |
+
+- *A1 (bound reached): confirmed.* Median best watcher minus bound: +0.018 at 4000 frames,
+  -0.004 at 16000 (needed within 0.05).
+- *A2 (VAR at least 0.10 below the best watcher with strong slow drives): refuted.* The plateau
+  half holds (VAR's median gain from 4000 to 16000 frames: -0.004), but the best watcher beats VAR
+  by 0.10 or more in only 1 of 3 seeds (by 0.06 in another, and is 0.44 below in the third).
+- *Reading.* Two regimes. With hidden units that are ordinary, two-way-wired units, the right
+  model recovers the poke responses almost perfectly (0.96 to 1.00) while VAR is stuck at 0.60 to
+  0.66 at any length: there the shortfall is all model. With hidden drives that supply most of
+  the seen units' variance (93 to 96% at loading 2), the bound itself is low (0.13 to 0.59 at
+  16000 frames): rest data barely constrains the answer, and a biased watcher that ignores the
+  drives does better than the unbiased best at these lengths. So "watching fails" can mean
+  opposite things, and the data check in parts B and C is what tells them apart.
+- *Note.* The bound limits unbiased watchers only; a biased watcher can beat it when data is short
+  (VAR does at 1000 frames in most conditions).
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
