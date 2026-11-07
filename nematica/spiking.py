@@ -9,6 +9,8 @@ for many individuals at once. Variants add slow (10 min) processes:
   S3  use-dependent synaptic depletion: rate above 30 Hz depletes outgoing synapses (recover over 10 min)
   S4  use-dependent gain fatigue: as S2, but it divides the neuron's synaptic, poke and noise input by
       (1 + f) instead of subtracting a current (added 8 Nov after S2x4 gave the opposite sign)
+  S5  use-dependent refractoriness: the S2 build-up adds floor(20 f) steps of refractoriness
+  S6  calibration: only the poke's own input weakens with use (channel desensitisation)
 Readout per 0.5 s frame: firing rate through a 1.5 s calcium-like decay, scaled, plus measurement noise.
 """
 from __future__ import annotations
@@ -60,6 +62,7 @@ def simulate(Wb, kick_targets, variant="S0", frames=L.FRAMES, burn=400, seed=0):
     a = np.zeros((B, N))                       # S1 adaptation / S2 fatigue current
     x = np.ones((B, N))                        # S3 synaptic resources
     ca = np.zeros((B, N))
+    d = np.zeros((B, N))                       # S6 channel desensitisation
     y = np.empty((B, frames, N))
     dec_s, dec_r, dec_slow = np.exp(-DT / TS), np.exp(-DT / TAU_R), np.exp(-DT / SLOW)
     a_ca = np.exp(-0.5 / CA)
@@ -73,7 +76,10 @@ def simulate(Wb, kick_targets, variant="S0", frames=L.FRAMES, burn=400, seed=0):
             poke[bi[on], tg[on]] = POKE
         count = np.zeros((B, N))
         for _ in range(STEPS_PER_FRAME):
-            if variant == "S4":
+            if variant == "S6":
+                d = d * dec_slow + 0.15 * DT * (poke > 0)
+                I = MU + s + poke * np.clip(1.0 - d, 0.0, 1.0) + noise_scale * rng.standard_normal((B, N))
+            elif variant == "S4":
                 I = MU + (s + poke + noise_scale * rng.standard_normal((B, N))) / (1.0 + a)
             else:
                 I = MU + s + poke - a + noise_scale * rng.standard_normal((B, N))
@@ -82,13 +88,13 @@ def simulate(Wb, kick_targets, variant="S0", frames=L.FRAMES, burn=400, seed=0):
             ref -= 1
             sp = v > 1.0
             v[sp] = 0.0
-            ref[sp] = REF
+            ref[sp] = REF + (np.floor(20.0 * a[sp]) if variant == "S5" else 0)
             spf = sp.astype(float)
             count += spf
             r = r * dec_r + spf / TAU_R
             if variant == "S1":
                 a = a * dec_slow + DA * spf
-            elif variant in ("S2", "S4"):
+            elif variant in ("S2", "S4", "S5"):
                 a = a * dec_slow + KF * np.maximum(r - THETA, 0.0) * DT
             out = spf
             if variant == "S3":

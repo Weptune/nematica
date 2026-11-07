@@ -21,13 +21,13 @@ import run_ladder as LD  # noqa: E402
 import check_matched_sham as M  # noqa: E402
 
 OUT = ROOT / "docs" / "figures" / "spiking.csv"
-ALL = ["S0", "S1", "S2", "S3", "S2x4", "S3x4", "S4"]
+ALL = ["S0", "S1", "S2", "S3", "S2x4", "S3x4", "S4", "S6", "S5"]
 
 
 def run(name):
     base = name[:2]
     kf, kd = S.KF, S.KD
-    if name.endswith("x4") or name == "S4":
+    if name.endswith("x4") or name in ("S4", "S5"):
         S.KF, S.KD = 4 * kf, 4 * kd
     try:
         recs = S.recordings(base)

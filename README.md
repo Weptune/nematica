@@ -3423,6 +3423,19 @@ all of the neuron's input except the background mean (synaptic input, poke and n
 *Prediction:* S4 tires like a worm (-0.2 or below). This was prompted by a result, so it is labelled
 post hoc.
 
+*Amendment 3 (8 Nov 2026), after S4 also gave the wrong sign (+0.13), before running anything below.*
+The tiring measure (`run_week1.b1_pairs`) is the log ratio of a neuron's second to first response, each
+measured from its own pre-poke level, minus the same for first responses of two different neurons
+poked the same time apart. A residual fatigue that lowers the neuron's resting activity more than its
+peak makes the second response look larger, which is what S2x4 and S4 did. Two variants, registered
+before running: **S6, a calibration**, where only the poke's own input weakens with use (each second
+of poke depletes the target's sensitivity by 0.15, recovering over 10 min: the "light-gated channel
+tires" explanation). S6 must tire (-0.2 or below); if it does not, the measure cannot detect tiring in
+this network and S2 to S4 are uninformative. **S5, use-dependent refractoriness** (a neuron-level
+mechanism that caps high rates without touching background: the S2 gated build-up, gain KF = 0.02,
+adds floor(20 f) steps of refractoriness after each spike, like slow inactivation of sodium
+channels). *Prediction:* S5 tires (-0.2 or below). Both are post hoc in motivation.
+
 ## The reverse question: do artificial networks keep the same rules while brains drift? (pre-registered 7 Nov 2026)
 
 **Why.** Every candidate difference so far was something worms do; none asked what artificial networks
