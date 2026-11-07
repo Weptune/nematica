@@ -3609,6 +3609,25 @@ control below 0, interval excluding 0). A tiring channel predicts no change in t
 the same measure is run on spiking S0, S5@w and S6@w as checks that it separates the two (S5@w should
 show the drop, S6@w should not).
 
+**Result (8 Nov 2026; `docs/figures/neuron_or_tool.csv`; spiking checks with 40 individuals each).**
+Second minus first poke, repeats minus controls, in SD units [90%]:
+
+| System | Pre-poke level | Post-poke level |
+|---|---|---|
+| Worms (100 recordings) | -0.04 [-0.16, +0.09] | -0.74 [-0.91, -0.58] |
+| Spiking S5@w (neuron-level fatigue) | -1.31 [-1.39, -1.25] | -0.20 [-0.32, -0.09] |
+| Spiking S6@w (tiring channel) | -0.02 [-0.06, +0.02] | -0.26 [-0.31, -0.21] |
+| Spiking S0@w (plain) | -0.00 [-0.04, +0.04] | -0.00 [-0.05, +0.05] |
+
+The checks behave as required: neuron-level fatigue lowers the resting level, the tiring channel does
+not. **Worms: inconclusive by the registered rule** (the pre-poke interval includes 0 but is wider than
++-0.1), **but their pattern is the channel's**: no detectable drop in resting level, and a large drop in
+the response. A resting drop of the size neuron-level fatigue produced (-1.31) is ruled out; a modest
+one (down to -0.16) is not. Reading: the worm's tiring looks more like the stimulation tool tiring
+than the neuron, consistent with the spiking result; the exploratory within-neuron result (-0.09 after
+drive from other neurons) remains the main evidence for a neuron-level part.
+
+
 ## Where the data runs out (2 Nov 2026)
 
 Everything above that can be done with existing data has been tried at least once. What is
