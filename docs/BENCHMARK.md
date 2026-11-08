@@ -146,7 +146,17 @@ copy sits near 0 there): compare a level across copies, not levels with each oth
 
 ## Reference results
 
-REFERENCE_TABLE
+<!-- reference table -->
+| copy | cv3: rest, poked (seeds passing) | blocks1: rest, poked | echo size, median excess | dimensionality, median excess |
+|---|---|---|---|---|
+| NEMATICA emulator | 5/5, 5/5 | 5/5, 5/5 | +0.16 / +0.18 | -0.09 / +0.16 |
+| first hybrid | 0/3, 0/3 | 0/3, 0/3 | +1.08 / +1.19 | +0.93 / +1.52 |
+| linear model from rest | 0/3, 0/3 | 0/3, 0/3 | +0.83 / +0.80 | +0.68 / +1.24 |
+| silent (independent noise) | 0/3, 0/3 | 0/3, 0/3 | +6.09 / +6.46 | +1.91 / +2.85 |
+| VAR(3) from rest | 3/3, 0/3 | 3/3, 0/3 | +0.84 / +0.84 | +0.88 / +1.47 |
+
+The full table, every level: [`docs/benchmark/leaderboard.html`](benchmark/leaderboard.html); the emulator's report: [`docs/benchmark/emulator.html`](benchmark/emulator.html). The emulator was designed on these worms (cv3 for selection), so its passes are not a confirmation; on unc-31 worms it passed 3 of 5 seeds (bar 4 of 5) and it fails on freely moving worms (README, tests U and T). VAR(3) and the first hybrid read out one row per neuron class, which inflates echo size and spread.
+<!-- /reference table -->
 
 ## Limits (read before claiming anything)
 
