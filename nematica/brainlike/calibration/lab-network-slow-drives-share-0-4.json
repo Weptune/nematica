@@ -1,0 +1,115 @@
+{
+ "name": "lab network (slow drives share 0.4)",
+ "description": "The project's artificial-lab network: 120 tanh units, sparse random weights, plus slow hidden drives no recording sees (share 0.4, time constant 5 s). A baseline.",
+ "result": {
+  "signatures": {
+   "rest_dim": {
+    "value": 0.5503025024960463,
+    "distance": 4.528784665095462,
+    "inside": false,
+    "worm_median": 0.42631258588362686,
+    "worm_low": 0.4118172348117972,
+    "worm_high": 0.4536907735833076,
+    "label": "few patterns at rest",
+    "about": "Share of resting variance in the 3 strongest patterns: how few patterns the activity uses."
+   },
+   "slow_share": {
+    "value": 0.0,
+    "distance": -13.53376835934587,
+    "inside": false,
+    "worm_median": 0.7622162310373167,
+    "worm_low": 0.7058966450359085,
+    "worm_high": 0.8135464248281847,
+    "label": "slow activity",
+    "about": "Share of each unit's activity that is slow (still correlated 10 to 40 s later)."
+   },
+   "correlation": {
+    "value": 0.27728038577878833,
+    "distance": 3.615971922270554,
+    "inside": false,
+    "worm_median": 0.2151845668683251,
+    "worm_low": 0.194454342045031,
+    "worm_high": 0.23235721650313526,
+    "label": "units move together",
+    "about": "Mean absolute correlation between units at rest."
+   },
+   "timescale": {
+    "value": 4.0,
+    "distance": -4.070928119263763,
+    "inside": false,
+    "worm_median": 13.5,
+    "worm_low": 11.166379822565352,
+    "worm_high": 14.97309773700562,
+    "label": "timescale",
+    "about": "Median time for a unit's activity to become half-forgotten (autocorrelation 0.5), in seconds."
+   },
+   "echo_breadth": {
+    "value": 0.25,
+    "distance": 11.42392029640286,
+    "inside": false,
+    "worm_median": 0.08571428571428572,
+    "worm_low": 0.0775024920226827,
+    "worm_high": 0.10009513834833676,
+    "label": "push spread",
+    "about": "Share of units that a single push moves by more than 1 SD."
+   },
+   "evoked_share": {
+    "value": 0.20294068300275508,
+    "distance": -2.322254825494421,
+    "inside": false,
+    "worm_median": 0.4163005605897083,
+    "worm_low": 0.32442439125436084,
+    "worm_high": 0.4925407672067573,
+    "label": "push stands out",
+    "about": "How much of the change after a push is caused by the push, against moments with no push."
+   },
+   "tiring": {
+    "value": 0.06780183195175388,
+    "distance": 2.0613825524171707,
+    "inside": false,
+    "worm_median": -0.40090918047026525,
+    "worm_low": -0.6443600570017478,
+    "worm_high": -0.1735321650432112,
+    "label": "tiring on a second push",
+    "about": "Log change in a unit's own response when it is pushed a second time, against matched controls. Negative = it answers less."
+   },
+   "watch_share": {
+    "value": 1.891068198876088,
+    "distance": 3.8770503242988488,
+    "inside": false,
+    "worm_median": 0.3904590957684039,
+    "worm_low": 0.16203106957184338,
+    "worm_high": 0.7775082639731173,
+    "label": "copyable by watching",
+    "about": "How well a linear model fitted only to resting activity predicts the push responses, as a share of how well runs agree with each other. Real worms: poorly."
+   }
+  },
+  "valid": true,
+  "problems": [],
+  "notes": [],
+  "score": 0,
+  "out_of": 8,
+  "mean_abs_distance": 5.0595465511050275,
+  "measured": {
+   "rest_dim": 0.5503025024960463,
+   "slow_share": 0.0,
+   "correlation": 0.27728038577878833,
+   "timescale": 4.0,
+   "echo_breadth": 0.25,
+   "evoked_share": 0.20294068300275508,
+   "tiring": 0.06780183195175388,
+   "watch_share": 1.891068198876088,
+   "reliability": 0.02278783061890471,
+   "poked_response": 1.1933651487777017,
+   "n_runs": 30,
+   "n_pushes": 2160,
+   "units_per_run": 45.0
+  },
+  "how": "Python system run by the test",
+  "schedule": "ef144a5b36ba96e4",
+  "n_units": 120,
+  "step_seconds": 0.5,
+  "seconds": 5.4,
+  "push_strength": 10219.381035869417
+ }
+}

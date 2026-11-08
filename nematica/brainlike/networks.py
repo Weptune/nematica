@@ -6,11 +6,13 @@
        x <- (1 - leak) x + leak (W phi(x) + b + u),   activity = phi(x)
    where u is the test's input (noise and kicks), added to each unit's input.
 
-2. ONNX (.onnx): any recurrent model exported with two inputs and one output,
-       inputs  "state" (batch, N) float32 and "input" (batch, N) float32
-       output  "next_state" (batch, N) float32
-   The recorded activity of unit i is next_state[:, i]. The test's input (noise and kicks) is passed as
-   "input", one value per unit: export your model so that input[:, i] adds to unit i's drive.
+2. ONNX (.onnx): any recurrent model exported as one step,
+       inputs  "state" (batch, S) float32 and "input" (batch, N) float32
+       outputs "next_state" (batch, S) float32 and, optionally, "activity" (batch, N) float32
+   The state can hold anything (an LSTM's h and c, synaptic variables, spike traces...). The units are
+   what "activity" reports; without that output the units are the state itself (N = S). The test's input
+   (noise and pushes) is passed as "input", one value per unit: export your model so that input[:, i]
+   adds to unit i's drive. A model exported with a fixed batch of 1 is run one run at a time.
 
 Optional metadata, in the npz (keys) or as ONNX metadata_props: `noise_sd` (SD of the independent input
 noise per unit per step; default 0.1) and `step_seconds` (how many seconds one step stands for; default
@@ -57,8 +59,8 @@ class RateRNN(Network):
         if W.ndim != 2 or W.shape[0] != W.shape[1]:
             raise NetworkError(f"W must be square (N x N); got shape {W.shape}")
         n = W.shape[0]
-        if not 2 <= n <= MAX_UNITS:
-            raise NetworkError(f"the network must have 2 to {MAX_UNITS} units; got {n}")
+        if not 10 <= n <= MAX_UNITS:
+            raise NetworkError(f"the network must have 10 to {MAX_UNITS} units; got {n}")
         if not np.isfinite(W).all():
             raise NetworkError("W contains NaN or infinite values")
         b = np.zeros(n) if b is None else np.asarray(b, float).reshape(-1)
@@ -93,25 +95,64 @@ class OnnxNetwork(Network):
         except Exception as e:                                    # noqa: BLE001
             raise NetworkError(f"could not load the ONNX model: {e}") from e
         ins = {i.name: i for i in self.sess.get_inputs()}
-        outs = [o.name for o in self.sess.get_outputs()]
+        outs = {o.name: o for o in self.sess.get_outputs()}
         if set(ins) != {"state", "input"} or "next_state" not in outs:
-            raise NetworkError(f"the ONNX model needs inputs 'state' and 'input' and an output 'next_state'; "
-                               f"it has inputs {sorted(ins)} and outputs {outs}")
-        n = ins["state"].shape[-1]
-        if not isinstance(n, int) or not 2 <= n <= MAX_UNITS:
-            raise NetworkError(f"'state' must have a fixed last dimension of 2 to {MAX_UNITS} units; got {n}")
+            raise NetworkError(f"the ONNX model needs inputs 'state' and 'input' and an output 'next_state' "
+                               f"(optionally 'activity'); it has inputs {sorted(ins)} and outputs {sorted(outs)}")
+        S, n = ins["state"].shape[-1], ins["input"].shape[-1]
+        for what, v in (("state", S), ("input", n)):
+            if not isinstance(v, int) or v < 1:
+                raise NetworkError(f"'{what}' must have a fixed last dimension; got {v}")
+        if not 10 <= n <= MAX_UNITS:
+            raise NetworkError(f"the model must have 10 to {MAX_UNITS} units ('input' last dimension); got {n}")
+        if S > 4 * MAX_UNITS:
+            raise NetworkError(f"'state' may hold at most {4 * MAX_UNITS} numbers; got {S}")
+        self.has_activity = "activity" in outs
+        if not self.has_activity and S != n:
+            raise NetworkError(f"without an 'activity' output, 'state' and 'input' must have the same size; "
+                               f"got {S} and {n}")
+        b = ins["state"].shape[0]
+        self.batch1 = isinstance(b, int) and b == 1
+        self.S = S
+        self._outs = ["next_state"] + (["activity"] if self.has_activity else [])
+        self._last = None
         meta = self.sess.get_modelmeta().custom_metadata_map or {}
         for k in ("noise_sd", "step_seconds"):
             if k in meta and k not in kw:
-                kw[k] = float(meta[k])
+                try:
+                    kw[k] = float(meta[k])
+                except ValueError:
+                    raise NetworkError(f"metadata {k} must be a number; got {meta[k]!r}") from None
         super().__init__(n=n, **kw)
 
+    def init_state(self, batch, rng):
+        return 0.1 * rng.standard_normal((batch, self.S))
+
+    def _call(self, x, u):
+        feed = {"state": x.astype(np.float32), "input": u.astype(np.float32)}
+        if self.batch1 and x.shape[0] != 1:
+            parts = [self._call(x[i:i + 1], u[i:i + 1]) for i in range(x.shape[0])]
+            return [np.concatenate([p[k] for p in parts]) for k in range(len(self._outs))]
+        return [np.asarray(o, float) for o in self.sess.run(self._outs, feed)]
+
     def step(self, x, u):
-        out = self.sess.run(["next_state"], {"state": x.astype(np.float32), "input": u.astype(np.float32)})[0]
-        out = np.asarray(out, float)
-        if out.shape != x.shape:
-            raise NetworkError(f"next_state has shape {out.shape}; expected {x.shape}")
-        return out
+        out = self._call(x, u)
+        nxt = out[0]
+        if nxt.shape != x.shape:
+            raise NetworkError(f"next_state has shape {nxt.shape}; expected {x.shape}")
+        if self.has_activity:
+            a = out[1].reshape(x.shape[0], -1)
+            if a.shape[1] != self.n:
+                raise NetworkError(f"activity has {a.shape[1]} units; 'input' has {self.n}")
+            self._last = (nxt, a)
+        return nxt
+
+    def activity(self, x):
+        if not self.has_activity:
+            return x
+        if self._last is not None and self._last[0] is x:
+            return self._last[1]
+        raise NetworkError("activity was requested for a state the model did not just produce")
 
 
 def load_network(path: str | Path, name: str | None = None) -> Network:
@@ -119,19 +160,24 @@ def load_network(path: str | Path, name: str | None = None) -> Network:
     name = name or path.stem
     if path.suffix == ".npz":
         try:
-            z = np.load(path, allow_pickle=False)
-        except Exception as e:                                    # noqa: BLE001
-            raise NetworkError(f"could not read the npz file: {e}") from e
-        with z:
-            if "W" not in z.files:
-                raise NetworkError(f"the npz file needs an array W; it has {z.files}")
-            kw = {"name": name}
+            with np.load(path, allow_pickle=False) as z:
+                arrays = {k: z[k] for k in z.files}
+        except Exception as e:                                    # noqa: BLE001  (object arrays are refused here)
+            raise NetworkError(f"could not read the npz file (numbers only, no Python objects): {e}") from e
+        if "W" not in arrays:
+            raise NetworkError(f"the npz file needs an array W; it has {sorted(arrays)}")
+        kw = {"name": name}
+        try:
             for k in ("noise_sd", "step_seconds"):
-                if k in z.files:
-                    kw[k] = float(z[k])
-            nl = str(z["nonlinearity"]) if "nonlinearity" in z.files else "tanh"
-            return RateRNN(z["W"], z["b"] if "b" in z.files else None,
-                           float(z["leak"]) if "leak" in z.files else 1.0, nl, **kw)
+                if k in arrays:
+                    kw[k] = float(np.asarray(arrays[k]).item())
+            leak = float(np.asarray(arrays["leak"]).item()) if "leak" in arrays else 1.0
+        except (TypeError, ValueError):
+            raise NetworkError("noise_sd, step_seconds and leak must be single numbers") from None
+        nl = str(np.asarray(arrays["nonlinearity"]).item()) if "nonlinearity" in arrays else "tanh"
+        if arrays["W"].dtype.kind not in "fiu":
+            raise NetworkError("W must hold numbers")
+        return RateRNN(arrays["W"], arrays.get("b"), leak, nl, **kw)
     if path.suffix == ".onnx":
         return OnnxNetwork(path, name=name)
     raise NetworkError("upload a .npz (rate RNN weights) or an .onnx model")
@@ -140,5 +186,7 @@ def load_network(path: str | Path, name: str | None = None) -> Network:
 def check_settings(net: Network) -> None:
     if not 0 < net.noise_sd <= 10:
         raise NetworkError("noise_sd must be in (0, 10]")
-    if not 0.001 <= net.step_seconds <= 60:
-        raise NetworkError("step_seconds must be between 0.001 and 60")
+    if not 0.001 <= net.step_seconds <= 2.0:
+        raise NetworkError("step_seconds must be between 0.001 and 2")
+    if net.n < 10:
+        raise NetworkError("the network needs at least 10 units")

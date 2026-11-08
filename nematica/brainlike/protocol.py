@@ -49,6 +49,12 @@ class Schedule:
     step_seconds: float
     units: list                              # analysis units: indices into the system's units
     runs: list = field(default_factory=list)  # per run: {"recorded": [positions in units], "pushes": [[step, position]]}
+    framed: bool = False                     # activity given already averaged into 0.5 s frames (uploads)
+
+    @property
+    def frames(self) -> int:
+        """Number of 0.5 s frames a run covers once resampled."""
+        return int(np.floor((self.steps - 1) * self.step_seconds / FRAME_S)) + 1
 
     @property
     def steps(self) -> int:
@@ -80,14 +86,15 @@ def make_schedule(n_units: int, step_seconds: float = FRAME_S, protocol: Protoco
 
 def schedule_json(s: Schedule) -> str:
     return json.dumps({"version": s.protocol.version, "n_units": s.n_units, "step_seconds": s.step_seconds,
-                       "steps_per_run": s.steps, "push_steps": s.push_steps, "units": s.units,
+                       "steps_per_run": s.steps, "frames_per_run": s.frames, "push_steps": s.push_steps, "units": s.units,
                        "runs": s.runs,
                        "about": "units: indices of your system's units the test analyses. In each run, record the "
                                 "units listed (positions into `units`) for steps_per_run steps, and at each "
                                 "[step, position] give that unit a brief extra drive lasting push_steps steps, strong "
                                 "enough to move it clearly (the test checks the recorded change). Upload an npz with "
-                                "array `activity` of shape (runs, steps_per_run, len(units)): all analysis units, NaN "
-                                "where not recorded is fine."}, separators=(",", ":"))
+                                "array `activity` of shape (runs, steps_per_run, len(units)), or (runs, frames_per_run, "
+                                "len(units)) averaged into 0.5 s frames, plus `n_units` and `step_seconds`. Units a "
+                                "run does not record may be NaN."}, separators=(",", ":"))
 
 
 def _resample(a: np.ndarray, step_seconds: float) -> np.ndarray:
@@ -116,7 +123,8 @@ def to_recordings(activity: np.ndarray, sch: Schedule, rng: np.random.Generator)
     names = [f"U{u:04d}" for u in sch.units]
     for i, run in enumerate(sch.runs):
         a = np.asarray(activity[i], float)[:, run["recorded"]]
-        a = _resample(a, sch.step_seconds)
+        if not sch.framed:
+            a = _resample(a, sch.step_seconds)
         sd = np.nanstd(a, axis=0)
         a = a + sch.protocol.measurement_noise * np.where(sd > 0, sd, 0) * rng.standard_normal(a.shape)
         pos = {p: r for r, p in enumerate(run["recorded"])}

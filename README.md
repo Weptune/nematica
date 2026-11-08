@@ -4441,6 +4441,31 @@ random GRU* exported to ONNX. Expected: (2) and (4) score at most 4 of 8; (3) sc
 drives are the ingredient the emulator work found decisive). If a plain random network scores 6 or more,
 the test does not separate brains from arbitrary networks and is reported as such.
 
+**Calibration result (8 Nov 2026, night; `scripts/calibrate_brainlike.py`, `docs/figures/brainlike_calibration.json`,
+full results in `nematica/brainlike/calibration/`).**
+
+| system | inside, of 8 | misses |
+|---|---|---|
+| held-out worms, group 1 | **7** | echo breadth |
+| held-out worms, group 2 | **6** | slow activity, timescale |
+| held-out worms, group 3 | **7** | echo breadth |
+| random tanh RNN (npz) | 0 | all |
+| lab network, no slow drives | 0 | all |
+| lab network, slow drives share 0.4 | 0 | all |
+| random GRU (ONNX) | 0 | all |
+
+All runs valid. (1) passes: every held-out group scores at least 6. (2) and (4) score 0, well under the
+ceiling of 4. **(3) fails its expectation:** the lab network with slow hidden drives scores 0, the same as
+without them. Its drives have a 5 s time constant, too fast to count as slow at the atlas's scale (its slow
+share is 0 against 0.76 in worm groups), so "slow drives" in the lab sense are not the emulator's
+slow states. The test separates real worm groups (6 to 7) from untrained networks (0) by a wide margin;
+whether any artificial system can land in between is what submissions will show.
+
+**The website** (`nematica/brainlike/web`, guide `docs/BRAINLIKE.md`, container `deploy/brainlike`): upload
+recordings, a model (npz or ONNX) or, on a sandboxed server only, Python; queue with per-test CPU, memory
+and time limits; result pages and a leaderboard seeded with the calibration systems as references. Local
+use: `python -m nematica brainlike <file>`.
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of

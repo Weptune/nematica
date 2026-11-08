@@ -1,0 +1,118 @@
+{
+ "name": "random GRU",
+ "description": "A PyTorch GRU cell with 120 units and random weights, exported to ONNX. A baseline.",
+ "result": {
+  "signatures": {
+   "rest_dim": {
+    "value": 0.23151200055586263,
+    "distance": -13.438831827008379,
+    "inside": false,
+    "worm_median": 0.42631258588362686,
+    "worm_low": 0.4118172348117972,
+    "worm_high": 0.4536907735833076,
+    "label": "few patterns at rest",
+    "about": "Share of resting variance in the 3 strongest patterns: how few patterns the activity uses."
+   },
+   "slow_share": {
+    "value": 0.0,
+    "distance": -13.53376835934587,
+    "inside": false,
+    "worm_median": 0.7622162310373167,
+    "worm_low": 0.7058966450359085,
+    "worm_high": 0.8135464248281847,
+    "label": "slow activity",
+    "about": "Share of each unit's activity that is slow (still correlated 10 to 40 s later)."
+   },
+   "correlation": {
+    "value": 0.11819654617037909,
+    "distance": -4.6785802626203425,
+    "inside": false,
+    "worm_median": 0.2151845668683251,
+    "worm_low": 0.194454342045031,
+    "worm_high": 0.23235721650313526,
+    "label": "units move together",
+    "about": "Mean absolute correlation between units at rest."
+   },
+   "timescale": {
+    "value": 1.0,
+    "distance": -5.356484367452319,
+    "inside": false,
+    "worm_median": 13.5,
+    "worm_low": 11.166379822565352,
+    "worm_high": 14.97309773700562,
+    "label": "timescale",
+    "about": "Median time for a unit's activity to become half-forgotten (autocorrelation 0.5), in seconds."
+   },
+   "echo_breadth": {
+    "value": 0.045454545454545456,
+    "distance": -4.902673127420129,
+    "inside": false,
+    "worm_median": 0.08571428571428572,
+    "worm_low": 0.0775024920226827,
+    "worm_high": 0.10009513834833676,
+    "label": "push spread",
+    "about": "Share of units that a single push moves by more than 1 SD."
+   },
+   "evoked_share": {
+    "value": 0.01562908928752021,
+    "distance": -4.360994523397461,
+    "inside": false,
+    "worm_median": 0.4163005605897083,
+    "worm_low": 0.32442439125436084,
+    "worm_high": 0.4925407672067573,
+    "label": "push stands out",
+    "about": "How much of the change after a push is caused by the push, against moments with no push."
+   },
+   "tiring": {
+    "value": -0.0008717580094613098,
+    "distance": 1.7593573462535923,
+    "inside": false,
+    "worm_median": -0.40090918047026525,
+    "worm_low": -0.6443600570017478,
+    "worm_high": -0.1735321650432112,
+    "label": "tiring on a second push",
+    "about": "Log change in a unit's own response when it is pushed a second time, against matched controls. Negative = it answers less."
+   },
+   "watch_share": {
+    "value": 0.8799918942795205,
+    "distance": 1.264781941740794,
+    "inside": false,
+    "worm_median": 0.3904590957684039,
+    "worm_low": 0.16203106957184338,
+    "worm_high": 0.7775082639731173,
+    "label": "copyable by watching",
+    "about": "How well a linear model fitted only to resting activity predicts the push responses, as a share of how well runs agree with each other. Real worms: poorly."
+   }
+  },
+  "valid": true,
+  "problems": [],
+  "notes": [
+   "The test pushed as hard as was useful, but pushed units moved only 0.00 SD over the next 15 s (worms about 1.6): this system lets go of a push quickly."
+  ],
+  "score": 0,
+  "out_of": 8,
+  "mean_abs_distance": 5.2903589461105796,
+  "measured": {
+   "rest_dim": 0.23151200055586263,
+   "slow_share": 0.0,
+   "correlation": 0.11819654617037909,
+   "timescale": 1.0,
+   "echo_breadth": 0.045454545454545456,
+   "evoked_share": 0.01562908928752021,
+   "tiring": -0.0008717580094613098,
+   "watch_share": 0.8799918942795205,
+   "reliability": 0.004733177749172712,
+   "poked_response": 0.004042104720957566,
+   "n_runs": 30,
+   "n_pushes": 2160,
+   "units_per_run": 45.0
+  },
+  "how": "model run by the test",
+  "schedule": "ef144a5b36ba96e4",
+  "n_units": 120,
+  "step_seconds": 0.5,
+  "push_strength": 0.06812920690579613,
+  "noise_sd": 0.1,
+  "seconds": 1.7
+ }
+}

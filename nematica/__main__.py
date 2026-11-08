@@ -5,6 +5,10 @@
     python -m nematica report results/scores/<name>.json [--compare other.json ...]
     python -m nematica export --out kit/                      (for copies written in other languages)
     python -m nematica score-files sims/ --name my-copy
+
+Brain-likeness test for any artificial system (see docs/BRAINLIKE.md):
+    python -m nematica brainlike my_rnn.npz | model.onnx | recordings.npz | my_system.py [--class System]
+    python -m nematica brainlike-schedule --n-units 300 --step-seconds 0.5 > schedule.json
 """
 
 from __future__ import annotations
@@ -49,6 +53,13 @@ def _finish(name, rows, out, html, compare, t0, command, data=None, extra_meta=N
 
 
 def main(argv=None) -> int:
+    first = (argv if argv is not None else sys.argv[1:])[:1]
+    if first == ["brainlike"]:
+        from .brainlike.cli import main as bl
+        return bl((argv if argv is not None else sys.argv[1:])[1:])
+    if first == ["brainlike-schedule"]:
+        from .brainlike.cli import schedule_main
+        return schedule_main((argv if argv is not None else sys.argv[1:])[1:])
     ap = argparse.ArgumentParser(prog="nematica", description="The NEMATICA worm benchmark.")
     sub = ap.add_subparsers(dest="cmd", required=True)
 

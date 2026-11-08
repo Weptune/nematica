@@ -1,0 +1,331 @@
+{
+ "random tanh RNN (npz)": {
+  "score": 0,
+  "valid": true,
+  "problems": [],
+  "signatures": {
+   "rest_dim": {
+    "value": 0.2956602652917142,
+    "inside": false,
+    "distance": -9.013394704583819
+   },
+   "slow_share": {
+    "value": 0.0,
+    "inside": false,
+    "distance": -13.53376835934587
+   },
+   "correlation": {
+    "value": 0.14089370364611123,
+    "inside": false,
+    "distance": -3.5836979027229305
+   },
+   "timescale": {
+    "value": 1.5,
+    "inside": false,
+    "distance": -5.142224992754226
+   },
+   "echo_breadth": {
+    "value": 0.11363636363636363,
+    "inside": false,
+    "distance": 1.9416149120368493
+   },
+   "evoked_share": {
+    "value": 0.1689059731406973,
+    "inside": false,
+    "distance": -2.6926959323480526
+   },
+   "tiring": {
+    "value": 0.02756487063102846,
+    "inside": false,
+    "distance": 1.8844211245210694
+   },
+   "watch_share": {
+    "value": 1.2346541588796882,
+    "inside": false,
+    "distance": 2.1811054833859833
+   }
+  },
+  "poked_response": 1.4958702441344598
+ },
+ "lab network (slow drives share 0.0)": {
+  "score": 0,
+  "valid": true,
+  "problems": [],
+  "signatures": {
+   "rest_dim": {
+    "value": 0.2751475112916273,
+    "inside": false,
+    "distance": -10.428521106037557
+   },
+   "slow_share": {
+    "value": 0.0,
+    "inside": false,
+    "distance": -13.53376835934587
+   },
+   "correlation": {
+    "value": 0.13146707562849774,
+    "inside": false,
+    "distance": -4.038426594667506
+   },
+   "timescale": {
+    "value": 1.0,
+    "inside": false,
+    "distance": -5.356484367452319
+   },
+   "echo_breadth": {
+    "value": 0.11363636363636363,
+    "inside": false,
+    "distance": 1.9416149120368493
+   },
+   "evoked_share": {
+    "value": 0.2848169406072902,
+    "inside": false,
+    "distance": -1.4310960168844622
+   },
+   "tiring": {
+    "value": 0.07188066326336826,
+    "inside": false,
+    "distance": 2.0793211787288657
+   },
+   "watch_share": {
+    "value": 1.1919218583937317,
+    "inside": false,
+    "distance": 2.070700129244116
+   }
+  },
+  "poked_response": 1.3601155906785527
+ },
+ "lab network (slow drives share 0.4)": {
+  "score": 0,
+  "valid": true,
+  "problems": [],
+  "signatures": {
+   "rest_dim": {
+    "value": 0.5503025024960463,
+    "inside": false,
+    "distance": 4.528784665095462
+   },
+   "slow_share": {
+    "value": 0.0,
+    "inside": false,
+    "distance": -13.53376835934587
+   },
+   "correlation": {
+    "value": 0.27728038577878833,
+    "inside": false,
+    "distance": 3.615971922270554
+   },
+   "timescale": {
+    "value": 4.0,
+    "inside": false,
+    "distance": -4.070928119263763
+   },
+   "echo_breadth": {
+    "value": 0.25,
+    "inside": false,
+    "distance": 11.42392029640286
+   },
+   "evoked_share": {
+    "value": 0.20294068300275508,
+    "inside": false,
+    "distance": -2.322254825494421
+   },
+   "tiring": {
+    "value": 0.06780183195175388,
+    "inside": false,
+    "distance": 2.0613825524171707
+   },
+   "watch_share": {
+    "value": 1.891068198876088,
+    "inside": false,
+    "distance": 3.8770503242988488
+   }
+  },
+  "poked_response": 1.1933651487777017
+ },
+ "random GRU (ONNX)": {
+  "score": 0,
+  "valid": true,
+  "problems": [],
+  "signatures": {
+   "rest_dim": {
+    "value": 0.23151200055586263,
+    "inside": false,
+    "distance": -13.438831827008379
+   },
+   "slow_share": {
+    "value": 0.0,
+    "inside": false,
+    "distance": -13.53376835934587
+   },
+   "correlation": {
+    "value": 0.11819654617037909,
+    "inside": false,
+    "distance": -4.6785802626203425
+   },
+   "timescale": {
+    "value": 1.0,
+    "inside": false,
+    "distance": -5.356484367452319
+   },
+   "echo_breadth": {
+    "value": 0.045454545454545456,
+    "inside": false,
+    "distance": -4.902673127420129
+   },
+   "evoked_share": {
+    "value": 0.01562908928752021,
+    "inside": false,
+    "distance": -4.360994523397461
+   },
+   "tiring": {
+    "value": -0.0008717580094613098,
+    "inside": false,
+    "distance": 1.7593573462535923
+   },
+   "watch_share": {
+    "value": 0.8799918942795205,
+    "inside": false,
+    "distance": 1.264781941740794
+   }
+  },
+  "poked_response": 0.004042104720957566
+ },
+ "held_out_worms": [
+  {
+   "score": 7,
+   "signatures": {
+    "rest_dim": {
+     "value": 0.4288949436821291,
+     "inside": true,
+     "distance": -0.16354654389613618
+    },
+    "slow_share": {
+     "value": 0.7497640884678725,
+     "inside": true,
+     "distance": -0.19039290311528673
+    },
+    "correlation": {
+     "value": 0.20516227914353918,
+     "inside": true,
+     "distance": -0.9862437978281411
+    },
+    "timescale": {
+     "value": 12.5,
+     "inside": true,
+     "distance": -0.26636529154683414
+    },
+    "echo_breadth": {
+     "value": 0.09803921568627451,
+     "inside": false,
+     "distance": 1.6374952664865832
+    },
+    "evoked_share": {
+     "value": 0.4301437580486671,
+     "inside": true,
+     "distance": 0.24328314906405682
+    },
+    "tiring": {
+     "value": -0.41183900202996865,
+     "inside": true,
+     "distance": -0.01974205705849496
+    },
+    "watch_share": {
+     "value": 0.4698234147311213,
+     "inside": true,
+     "distance": 0.2879240188964199
+    }
+   }
+  },
+  {
+   "score": 6,
+   "signatures": {
+    "rest_dim": {
+     "value": 0.44504252650359316,
+     "inside": true,
+     "distance": 0.9497188916824219
+    },
+    "slow_share": {
+     "value": 0.8266524623737606,
+     "inside": false,
+     "distance": 1.6175677091883713
+    },
+    "correlation": {
+     "value": 0.21349086407532317,
+     "inside": true,
+     "distance": 0.1107943282861005
+    },
+    "timescale": {
+     "value": 16.0,
+     "inside": false,
+     "distance": 1.8135509211699365
+    },
+    "echo_breadth": {
+     "value": 0.08163265306122448,
+     "inside": true,
+     "distance": -0.3556778568352655
+    },
+    "evoked_share": {
+     "value": 0.44798949034250185,
+     "inside": true,
+     "distance": 0.436581385913925
+    },
+    "tiring": {
+     "value": -0.44518376206225657,
+     "inside": true,
+     "distance": -0.11085766422326077
+    },
+    "watch_share": {
+     "value": 0.4406909189254011,
+     "inside": true,
+     "distance": 0.05263920471800624
+    }
+   }
+  },
+  {
+   "score": 7,
+   "signatures": {
+    "rest_dim": {
+     "value": 0.4204572193523147,
+     "inside": true,
+     "distance": -0.6764598580401707
+    },
+    "slow_share": {
+     "value": 0.7800180348674516,
+     "inside": true,
+     "distance": 0.45021575376609946
+    },
+    "correlation": {
+     "value": 0.21056008883606028,
+     "inside": true,
+     "distance": -0.23367409838927575
+    },
+    "timescale": {
+     "value": 14.0,
+     "inside": true,
+     "distance": 0.5297873202036482
+    },
+    "echo_breadth": {
+     "value": 0.09523809523809523,
+     "inside": false,
+     "distance": 1.0860428167708966
+    },
+    "evoked_share": {
+     "value": 0.3921767050260543,
+     "inside": true,
+     "distance": -0.13716682947300263
+    },
+    "tiring": {
+     "value": -0.40016801936831,
+     "inside": true,
+     "distance": 0.1321571841393919
+    },
+    "watch_share": {
+     "value": 0.48854925480710526,
+     "inside": true,
+     "distance": 0.3008242052441007
+    }
+   }
+  }
+ ]
+}
