@@ -102,15 +102,16 @@ def template_of(rec: PumpProbe) -> Template:
 
 
 def validate_rows(x: np.ndarray, tpl: "Template", where: str) -> None:
-    """A copy's output: finite numbers, and each neuron either modelled for the whole run or not at
-    all (a NaN row)."""
+    """A copy's output must be finite where it is not NaN. NaN frames inside a modelled row are allowed
+    and treated exactly like a real worm's tracking gaps: gaps up to 5% of the frames are interpolated,
+    a class missing more than that is left out of that worm's scores (and lowers the copy's coverage)."""
     if np.isinf(x).any():
         raise ValueError(f"{where}: infinite values")
+
+
+def partial_rows(x: np.ndarray, tpl: "Template") -> list[str]:
     fin = np.isfinite(x)
-    partial = [tpl.names[j] or f"row {j}" for j in range(len(x)) if fin[j].any() and not fin[j].all()]
-    if partial:
-        raise ValueError(f"{where}: rows with some NaN frames ({', '.join(partial[:3])}"
-                         f"{'...' if len(partial) > 3 else ''}); a neuron is modelled for the whole run or not at all")
+    return [tpl.names[j] or f"row {j}" for j in range(len(x)) if fin[j].any() and fin[j].mean() < 0.95]
 
 
 def _as_model(copy):
@@ -381,6 +382,10 @@ def check(factory, data, log: Callable[[str], None] = print, seeds: int = 3) -> 
             validate_rows(x, tpl, f"worm {tpl.uid}")
         except ValueError as e:
             problems.append(str(e))
+        gaps = partial_rows(x, tpl)
+        if gaps:
+            warnings_.append(f"rows missing more than 5% of frames ({', '.join(gaps[:3])}{'...' if len(gaps) > 3 else ''}) "
+                             "are left out of the scores, as untracked neurons are in real worms")
         if np.array_equal(x, x2, equal_nan=True):
             problems.append("two different rng seeds gave identical output: use the rng you are given for all noise")
         elif not np.array_equal(x, x1b, equal_nan=True):

@@ -158,7 +158,13 @@ def test_check_flags_a_copy_that_ignores_its_drive(worms):
     class Patchy(Echo):
         def run(self, w, rng):
             x = super().run(w, rng)
-            x[0, :10] = np.nan
+            x[0, :500] = np.nan
+            return x
+
+    class Infinite(Echo):
+        def run(self, w, rng):
+            x = super().run(w, rng)
+            x[0, 3] = np.inf
             return x
 
     msgs = []
@@ -166,7 +172,9 @@ def test_check_flags_a_copy_that_ignores_its_drive(worms):
     assert check(Deaf, worms, log=msgs.append) == [] and any("drive" in m for m in msgs)    # a warning only
     assert any("expected" in p for p in check(Short, worms, log=lambda m: None))
     assert any("global" in p for p in check(Global, worms, log=lambda m: None))
-    assert any("whole run" in p for p in check(Patchy, worms, log=lambda m: None))
+    msgs = []
+    assert check(Patchy, worms, log=msgs.append) == [] and any("5% of frames" in m for m in msgs)
+    assert any("infinite" in p for p in check(Infinite, worms, log=lambda m: None))
 
 
 def test_leaderboard(scored):

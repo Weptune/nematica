@@ -84,8 +84,9 @@ class MyCopy(BrainCopy):
 For each fold, the copy is fitted on the training worms only. It then runs every held-out worm of that
 fold, with that worm's own neurons and pokes. `fit` is called once per fold. With `--seeds 3`, each
 held-out worm is simulated three times with fresh noise: use only the `rng` you are given (`nematica
-check` tests this). Each neuron row is either modelled for the whole run or NaN; infinite values and
-partly-NaN rows are errors.
+check` tests this). A neuron row is modelled or NaN; NaN frames inside a modelled row are treated
+like a real worm's tracking gaps (gaps up to 5% of frames interpolated, longer ones drop that class
+from the worm's scores and lower the copy's coverage). Infinite values are errors.
 
 What the copy is told, and what it is not:
 - Pokes whose target was unidentified, untracked, or within 5 s of the start or 30 s of the end are left
