@@ -3982,6 +3982,25 @@ the slope must be positive with p < 0.01; without spillover p must exceed 0.1. O
 fingerprint claim is corrected wherever it appears (README, synthesis, paper, site) and the next step is a
 spillover-corrected individuality test, registered separately.
 
+**Q0 results (8 Nov 2026).** *Calibration passes:* with spillover, slope +0.095 [+0.068, +0.124], p = 0.001;
+without, +0.005, p = 0.24. *Worms (95):* slope **+0.0185** [95% over worms: -0.008, +0.044], permutation p
+= 0.002; 38,968 comparisons; rows whose targets share neighbour classes agree by +0.019 more. **By the
+registered rule: spillover shapes echoes.** Two qualifications: the effect is about a fifth of full lab
+spillover, and the worm-level interval includes 0 (the within-class permutation treats comparisons as
+independent and is overconfident). So spillover shapes worm echoes a little; whether it explains the
+fingerprint needs the matched test below.
+
+**Amendment 2 (8 Nov 2026, before running): the neighbour-matched fingerprint.** Rows from each worm's two
+alternate halves as in Q0 (spillover neighbours and own class excluded). For worm w and class i: *within* =
+agreement of w's two halves' rows for i, kept when the neighbour-class overlap between the two halves'
+targets is at least 0.5; *matched between* = mean agreement of w's first-half row with other worms'
+second-half rows for i whose neighbour overlap with w's first half is at least 0.5. Per worm: mean within
+minus mean matched between, over its classes with both; median over worms with a 95% bootstrap interval.
+**Decision:** individuality beyond spillover if the interval lies above 0; spillover accounts for the
+fingerprint if it includes 0 with upper end below 0.03; otherwise inconclusive. *Calibration (ring lab,
+first):* identical wiring with spillover must include 0; individuals varying 30% with spillover must lie
+above 0. If either fails, this test is not read.
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of

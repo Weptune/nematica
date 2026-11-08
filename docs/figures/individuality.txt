@@ -28,3 +28,9 @@ EXPLORATORY fingerprint source, identical wiring rho 1.3, fixed obs and schedule
 EXPLORATORY fingerprint source, identical wiring rho 1.3, fixed obs and schedule, NO spillover, alternate, routing: excess +0.0028 [-0.0257, +0.0235]; within 0.126
 EXPLORATORY fingerprint source, identical wiring rho 1.3, fixed obs and schedule, NO spillover, time, raw: excess +0.0058 [-0.0258, +0.0294]; within 0.039
 EXPLORATORY fingerprint source, identical wiring rho 1.3, fixed obs and schedule, NO spillover, time, routing: excess -0.0078 [-0.0246, +0.0242]; within 0.031
+Q0 CALIBRATION (amendment 1: ring neighbours, identical wiring; with spillover slope > 0 and p < 0.01; without, p > 0.1)
+  lab spillover 0.3: slope +0.0951 [95%: +0.0682, +0.1237], p 0.0010; triples 25243, share with overlap 0.602; agreement with overlap minus without +0.0432
+  lab spillover 0.0: slope +0.0047 [95%: -0.0159, +0.0259], p 0.2448; triples 25243, share with overlap 0.602; agreement with overlap minus without -0.0036
+Q0 CALIBRATION result: PASS (lab spillover slope +0.0951)
+Q0 worms (95): slope +0.0185 [95%: -0.0084, +0.0442], p 0.0020; triples 38968, share with overlap 0.456; agreement with overlap minus without +0.0186
+Q0 verdict: spillover shapes echoes

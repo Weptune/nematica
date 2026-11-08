@@ -229,5 +229,159 @@ def q3(min_worms=8, boot=2000):
     log(f"Q3 verdict: {'supported' if lo > 0 else 'not supported'}")
 
 
+
+
+# ---------------------------------------------------------------- amendment 1: Q0, does spillover shape echoes?
+def rows_and_neighbours(recs, nears, nbr_classes):
+    """Per worm: {stim class: {resp class: amp}} from all pokes, and {stim class: set of neighbour classes}."""
+    out = []
+    for r, nr, nc in zip(recs, nears, nbr_classes):
+        m = IV.half_map(r, r.stims, nr)
+        rows = {}
+        for (ci, cj), a in m.items():
+            rows.setdefault(ci, {})[cj] = a
+        out.append((rows, nc))
+    return out
+
+
+def triples(data, min_resp=8):
+    T = []
+    n = len(data)
+    for a in range(n):
+        ra, na = data[a]
+        for b in range(a + 1, n):
+            rb, nb = data[b]
+            for ci in set(ra) & set(rb):
+                if ci not in na or ci not in nb or not (na[ci] or nb[ci]):
+                    continue
+                x, y = ra[ci], rb[ci]
+                ks = [k for k in x if k in y]
+                if len(ks) < min_resp:
+                    continue
+                u, v = np.array([x[k] for k in ks]), np.array([y[k] for k in ks])
+                if u.std() == 0 or v.std() == 0:
+                    continue
+                ov = len(na[ci] & nb[ci]) / len(na[ci] | nb[ci])
+                T.append((a, b, ci, float(np.corrcoef(u, v)[0, 1]), ov))
+    return T
+
+
+def slope_fe(T, w=None):
+    cls = {}
+    for t_i, t in enumerate(T):
+        cls.setdefault(t[2], []).append(t_i)
+    r = np.array([t[3] for t in T]); o = np.array([t[4] for t in T])
+    w = np.ones(len(T)) if w is None else w
+    rd, od = r.copy(), o.copy()
+    for idx in cls.values():
+        idx = np.array(idx)
+        ww = w[idx]
+        if ww.sum() == 0:
+            continue
+        rd[idx] -= np.average(r[idx], weights=ww); od[idx] -= np.average(o[idx], weights=ww)
+    den = np.sum(w * od * od)
+    return float(np.sum(w * od * rd) / den) if den > 0 else np.nan
+
+
+def q0_stats(T, n_worms, perm=2000, boot=1000, seed=0):
+    rng = np.random.default_rng(seed)
+    s0 = slope_fe(T)
+    cls = {}
+    for t_i, t in enumerate(T):
+        cls.setdefault(t[2], []).append(t_i)
+    cnt = 0
+    for _ in range(perm):
+        Tp = list(T)
+        for idx in cls.values():
+            ovs = [T[i][4] for i in idx]
+            sh = rng.permutation(ovs)
+            for i, o in zip(idx, sh):
+                Tp[i] = T[i][:4] + (o,)
+        if slope_fe(Tp) >= s0:
+            cnt += 1
+    p = (cnt + 1) / (perm + 1)
+    bs = []
+    A = np.array([t[0] for t in T]); B = np.array([t[1] for t in T])
+    for _ in range(boot):
+        c = np.bincount(rng.integers(0, n_worms, n_worms), minlength=n_worms)
+        bs.append(slope_fe(T, w=(c[A] * c[B]).astype(float)))
+    lo, hi = np.nanpercentile(bs, [2.5, 97.5])
+    r = np.array([t[3] for t in T]); o = np.array([t[4] for t in T])
+    return s0, p, lo, hi, len(T), float(np.mean(o > 0)), float(np.mean(r[o > 0]) - np.mean(r[o == 0])) if (o > 0).any() and (o == 0).any() else np.nan
+
+
+def lab_ring(spread, n_ind=60, seed=0):
+    import run_ladder as LD
+    br0 = __import__("nematica.annlab", fromlist=["x"]).make_brain(rho=1.3, share=0.0, tau=90.0, seed=seed, q=0.2)
+    from nematica import annlab as L
+    n = br0.n
+    hidden = L.design(n, np.random.default_rng(200))
+    rng = np.random.default_rng(7)
+    recs, nears, nbrc = [], [], []
+    saved = LD.NEIGH
+    try:
+        for i in range(n_ind):
+            g = np.random.default_rng(5000 + i)
+            neigh = np.array([g.choice([(v + d) % n for d in (-3, -2, -1, 1, 2, 3)], size=2, replace=False) for v in range(n)])
+            LD.NEIGH = neigh
+            ind = L.individual(br0, 0.0, 1000 + i)
+            obs = (rng.random(n) < 0.5) & ~hidden
+            targets = np.flatnonzero(obs)
+            kicks = {f: int(rng.choice(targets)) for f in range(LD.LEAD, L.FRAMES - L.WIN, L.EVERY)}
+            y = LD.record(ind, rng, obs, kicks, {f: 1.0 for f in kicks}, spread)
+            rec = L.as_pumpprobe(y, obs, kicks, f"ind{i:03d}")
+            units = [int(nm[1:]) for nm in rec.names]
+            p_of = {u: p for p, u in enumerate(units)}
+            nears.append([{p_of[v] for v in neigh[u] if v in p_of} | {p for p, w in enumerate(units) if u in neigh[w]} for u in units])
+            nbrc.append({f"U{u:03d}": {f"U{v:03d}" for v in neigh[u]} for u in units})
+            recs.append(rec)
+    finally:
+        LD.NEIGH = saved
+    return recs, nears, nbrc
+
+
+def calib0():
+    log("Q0 CALIBRATION (amendment 1: ring neighbours, identical wiring; with spillover slope > 0 and p < 0.01; without, p > 0.1)")
+    res = {}
+    for spread in (0.3, 0.0):
+        recs, nears, nbrc = lab_ring(spread)
+        T = triples(rows_and_neighbours(recs, nears, nbrc))
+        s, p, lo, hi, n, frac, diff = q0_stats(T, len(recs), perm=1000, boot=300)
+        res[spread] = (s, p)
+        log(f"  lab spillover {spread}: slope {s:+.4f} [95%: {lo:+.4f}, {hi:+.4f}], p {p:.4f}; triples {n}, share with overlap {frac:.3f}; "
+            f"agreement with overlap minus without {diff:+.4f}")
+    ok = res[0.3][0] > 0 and res[0.3][1] < 0.01 and res[0.0][1] > 0.1
+    log(f"Q0 CALIBRATION result: {'PASS' if ok else 'FAIL'} (lab spillover slope {res[0.3][0]:+.4f})")
+
+
+def q0(lab_slope):
+    import run_tiring_source as TS
+    recs, nears = worm_set(WT)
+    nbrc = []
+    for r, nr in zip(recs, nears):
+        d = {}
+        for k, _ in r.stims:
+            ci = r.classes[k]
+            if not ci or nr[k] is None:
+                continue
+            d.setdefault(ci, set()).update(r.classes[j] for j in nr[k] if r.classes[j])
+        nbrc.append(d)
+    T = triples(rows_and_neighbours(recs, nears, nbrc))
+    s, p, lo, hi, n, frac, diff = q0_stats(T, len(recs))
+    log(f"Q0 worms ({len(recs)}): slope {s:+.4f} [95%: {lo:+.4f}, {hi:+.4f}], p {p:.4f}; triples {n}, share with overlap {frac:.3f}; "
+        f"agreement with overlap minus without {diff:+.4f}")
+    if s > 0 and p < 0.01:
+        v = "spillover shapes echoes"
+    elif p > 0.1 and hi < lab_slope / 3:
+        v = "no detectable effect"
+    else:
+        v = "inconclusive"
+    log(f"Q0 verdict: {v}")
+
+
 if __name__ == "__main__":
-    {"calib": calib, "q1": q1, "q2": q2, "q3": q3}[sys.argv[1]]()
+    cmd = sys.argv[1]
+    if cmd == "q0":
+        q0(float(sys.argv[2]))
+    else:
+        {"calib": calib, "q1": q1, "q2": q2, "q3": q3, "calib0": calib0}[cmd]()
