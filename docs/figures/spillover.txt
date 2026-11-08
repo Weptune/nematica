@@ -1,0 +1,4 @@
+CALIBRATION (lab ring: real spillover 0.3 -> gamma interval above 0.5; pure crosstalk 0.3 -> includes 0 and below 0.5)
+  real spillover: beta -0.287 [-0.380, -0.224]; gamma +0.053 [+0.029, +0.077]; rows 90402
+  crosstalk: beta -0.290 [-0.423, -0.211]; gamma +0.011 [+0.001, +0.022]; rows 90402
+CALIBRATION result: (a) FAIL, (b) FAIL -> FAIL

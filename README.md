@@ -4043,6 +4043,15 @@ attributable.
 
 Code: `scripts/run_spillover.py`; output `docs/figures/spillover.txt`, `docs/figures/spillover_pairs.csv`.
 
+**Calibration result (8 Nov 2026). FAIL; the worm estimate is not read.** Real lab spillover gave gamma
++0.053 [+0.029, +0.077] (must exceed 0.5) and crosstalk +0.011; even the direct term came out negative
+(beta -0.29), so pair-level responses are too noisy for this design. **What is known instead** (5 Nov
+review, above): the neighbours' extra signal is a zero-lag, scaled copy (about 0.3) of the target's
+response over the whole 15 s, appears only when the target responds, and is about six times weaker for
+spontaneous rises; and (Q0) it propagates downstream at about a fifth of what lab spillover of that size
+produces. Mis-targeting or a stimulation-tied tracking artefact fit; ordinary bleed-through and lagged
+synaptic activation do not. The share of each atlas connection due to it is not measured.
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of
