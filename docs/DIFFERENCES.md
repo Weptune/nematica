@@ -166,28 +166,33 @@ follows activity.
 calibration (at worm recording length, neither model predicts 20 to 40 s ahead on held-out data), so
 the test stopped before any brain data was read, as registered.
 
-## Update, 8 Nov 2026 (night): a model that passes, and what it needed
+## Update, 8 Nov 2026 (night): a model that passes on the atlas, and what it does not show
 
 The question was turned around: build one artificial network that held-out real worms cannot be told
 apart from, at rest and when single neurons are poked, then remove one part at a time (README "A worm
-emulator"). The registered attempt **failed narrowly** on the independent split (rest 4 of 6, pokes 3 of
-3). Ablations showed two of its parts were unnecessary. The resulting *minimal* model passes the rule in
-10 of 10 runs (both splits, five noise draws). With one more ingredient, individual neurons taking part
-in the slow states to their own degree, it is inside the real worm-to-worm range on all nine
-statistics at once in 7 of 10 runs. Both splits had been seen by then, so this is **not confirmed on
-unseen worms**.
+emulator"). Corrected by review 8 and a bug fix:
 
-What the passing model needs, from the ablations (`docs/figures/emulator_ablations.png`):
-- **slow, brain-wide states that interact** (about 70% of real activity is slow, timescale about 40 s;
-  the lead-lag order worms share lives there), without which correlations, timescales and echo size fail;
-- **individual variation**, between animals and between single neurons within an animal (a neuron's
-  timescale belongs mostly to that neuron in that worm, not to its type: test-retest r = 0.39 within
-  a recording against 0.15 across worms);
-- **causal links learned from pokes**, without which the echo pattern fails in every pool;
-- **being observed neuron by neuron**, as real neurons are (a correction to how models had been scored:
-  class-level read-outs inflated simulated echoes).
+- The registered attempt **failed narrowly** on the independent split (rest 4 of 6, pokes 3 of 3).
+- The *minimal* model (two unneeded parts dropped, plus each neuron class's own degree of slow
+  participation), with a corrected neuron-level readout, passes the rule in **10 of 10 runs** on the atlas
+  (two splits of the same 113 worms, five noise draws; fitting is the same in each draw). But several
+  passes are within worm-to-worm variation rather than exact: echo size sits further from real worms
+  than real worms sit from each other in 30 of 30 pool-runs, and so does lead and lag.
+- **On worms it was not built on, it does not hold up.** Refitted from scratch on unc-31 mutants it
+  passes in 3 of 5 seeds (the registered bar was 4 of 5). On freely moving worms from another lab it
+  fails clearly; there, coupling between neuron types (dropped as unnecessary in the atlas) is needed,
+  and real activity is skewed in a way no Gaussian model reproduces.
 
-What it does **not** need: coupling between neuron types in the fast dynamics, or shared fast noise.
+What the ablations on the atlas say a passing model needs (`docs/figures/emulator_ablations.png`):
+- **slow, brain-wide states that interact**: about 70% of real activity is slow, timescale about 40 s.
+  This is the most robust gain. Earlier models were 74 to 85% too high-dimensional; the emulator is
+  within about 10%.
+- **individual variation between animals**: without it, timescales and correlations are too typical.
+- **causal links learned from pokes**: without them the echo pattern fails in every pool.
+- **being observed neuron by neuron**, as real neurons are.
+
+A neuron's timescale agrees more within a recording than across worms, but that cannot be separated
+from recording conditions (review 8).
 
 ## Conclusion: what separates real neural networks from artificial ones
 
@@ -216,12 +221,13 @@ This is the project's answer to its main question, as of 8 Nov 2026, with how st
    and drifting rules over a recording (worms and human cortex drift, networks without slow processes
    do not). *Each is moderate evidence from mostly one species.*
 
-5. **Constructive answer (8 Nov, night):** an artificial network passes as a worm brain on this
-   benchmark once it has slow interacting brain-wide states, individuality down to single neurons, and
-   causal knowledge from perturbation; fine-grained fast coupling between neuron types is not needed.
-   This fits point 2 (the decisive state is slow and not visible in moment-to-moment activity) and
-   makes it testable. *Passes 10 of 10 runs on the rule, all nine statistics in 7 of 10; tuned and
-   evaluated on worms already seen, so not yet confirmed.*
+5. **Constructive answer (8 Nov, night), limited:** on the immobilised, light-stimulated atlas worms, an
+   artificial network passes this benchmark once it has slow interacting brain-wide states, individual
+   variation and causal knowledge from perturbation; fast coupling between neuron types was not needed
+   there. This fits point 2 (the decisive state is slow and not visible in moment-to-moment activity).
+   *It did not transfer: 3 of 5 seeds on unc-31 worms (bar 4 of 5), a clear fail on freely moving worms
+   where fast coupling matters. Tuned and evaluated on worms already seen; several passes are within
+   worm-to-worm variation rather than exact.*
 
 **Is any of this noteworthy?** Two things are, modestly: the benchmark result that looking right at rest
 says nothing about being right under perturbation (packaged as a preprint draft), and the repeat-
