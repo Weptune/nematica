@@ -18,6 +18,7 @@ CACHES = {"cv3": "results/emulator_select", "blocks1": "results/emulator_confirm
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("spec"); ap.add_argument("name"); ap.add_argument("--out"); ap.add_argument("--seeds", type=int, default=5)
+    ap.add_argument("--note", default=None, help="a caveat shown with the copy on the leaderboard")
     a = ap.parse_args()
     rows = []
     for split, cache in CACHES.items():
@@ -29,10 +30,10 @@ def main():
                     raise FileNotFoundError(p)
                 for r in pd.read_csv(p).to_dict("records"):
                     r = {k: (None if isinstance(v, float) and v != v else v) for k, v in r.items()}
-                    r.update(split=split, seed=s, fold=f, system=a.name)
+                    r.update(split=split, seed=s, fold=f, n_folds=3, system=a.name)
                     rows.append(r)
     out = write_report(a.name, rows, a.out or f"results/scores/reference/{a.spec}.json",
-                       meta={"date": "2026-11-08", "worms": 113, "command": f"scripts/run_same_worms.py, spec {a.spec}"})
+                       meta={"date": "2026-11-08", "command": f"scripts/run_same_worms.py, spec {a.spec}", "note": a.note})
     print(out)
 
 

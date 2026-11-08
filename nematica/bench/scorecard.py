@@ -72,14 +72,25 @@ class FoldRuler:
               refit: bool = True) -> list[dict]:
         """Fit `model` (fit(train, val) -> self; simulate(rec, rng) -> PumpProbe) and score it.
         refit=False reuses the model fitted by the previous call (further noise seeds)."""
-        if refit or not hasattr(self, "_fitted"):
-            self._fitted = model.fit(self.train, self.val)
-        m = self._fitted
+        fitted = getattr(self, "_fitted", {})
+        if refit or id(model) not in fitted:
+            fitted = {id(model): model.fit(self.train, self.val)}          # one copy's fit at a time
+            self._fitted = fitted
+        m = fitted[id(model)]
         sims = []
+        coverage = []
+        scored = set(self.classes)
         for i, r in enumerate(self.pool):
-            sims.append(m.simulate(r, np.random.default_rng(seed_base + i)))
+            s_ = m.simulate(r, np.random.default_rng(seed_base + i))
+            if np.isinf(np.asarray(s_.x, float)).any():
+                raise ValueError(f"{name}: infinite values in the simulation of worm {r.uid}")
+            want = scored & {c for c in r.classes if c}
+            have = {c for c, row in zip(s_.classes, np.asarray(s_.x, float)) if c and np.isfinite(row).any()}
+            coverage.append(len(want & have) / max(len(want), 1))
+            sims.append(s_)
             if progress:
                 progress(f"simulated {i + 1}/{len(self.pool)}")
+        cov_med, cov_min = float(np.median(coverage)), float(np.min(coverage))
         rows: list[dict] = []
         sim_b = [bench_sample(s, self.classes, f"{name}:{r.uid}", r.uid) for s, r in zip(sims, self.pool)]
         for row in score_system(name, sim_b, self.real_b, self.ref):
@@ -90,11 +101,8 @@ class FoldRuler:
             rs = response_set(s, f"{name}:{r.uid}")
             rs.group = r.uid
             sim_c.append(rs)
-        if not hasattr(self, "tolerances"):
-            self.tolerances = poke_tolerances(self.pool, self.real_c)
         for row in score_sets(name, sim_c, self.real_c):
-            tol = self.tolerances.get(row["metric"], {}).get("tolerance")
-            rows.append({"kind": "causal", **row, "tolerance": tol, "equivalence": equivalence(row, tol)})
+            rows.append({"kind": "causal", **row})
         if self.pci:
             sim_p = []
             for s, r in zip(sims, self.pool):
@@ -107,6 +115,7 @@ class FoldRuler:
                              "median_spread": round(float(np.median(med)), 4) if med.size else None})
         for r in rows:
             r["system"] = name
+            r["coverage"], r["coverage_min"] = round(cov_med, 3), round(cov_min, 3)
         return rows
 
 

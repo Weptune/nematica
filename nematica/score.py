@@ -101,6 +101,27 @@ def template_of(rec: PumpProbe) -> Template:
     return Template(rec.uid, tuple(rec.names), rec.n_frames, rec.dt, tuple(pokes))
 
 
+def validate_rows(x: np.ndarray, tpl: "Template", where: str) -> None:
+    """A copy's output: finite numbers, and each neuron either modelled for the whole run or not at
+    all (a NaN row)."""
+    if np.isinf(x).any():
+        raise ValueError(f"{where}: infinite values")
+    fin = np.isfinite(x)
+    partial = [tpl.names[j] or f"row {j}" for j in range(len(x)) if fin[j].any() and not fin[j].all()]
+    if partial:
+        raise ValueError(f"{where}: rows with some NaN frames ({', '.join(partial[:3])}"
+                         f"{'...' if len(partial) > 3 else ''}); a neuron is modelled for the whole run or not at all")
+
+
+def _as_model(copy):
+    """A BrainCopy goes through the adapter; anything else must offer fit(train, val) and simulate."""
+    if isinstance(copy, BrainCopy):
+        return CopyAdapter(copy)
+    if hasattr(copy, "simulate") and hasattr(copy, "fit"):
+        return copy
+    raise TypeError(f"{type(copy).__name__} is neither a BrainCopy nor a model with fit(train, val) and simulate(rec, rng)")
+
+
 class CopyAdapter:
     """Turns a BrainCopy into the fit / simulate pair the ruler calls."""
 
@@ -117,6 +138,7 @@ class CopyAdapter:
         if x.shape != (len(tpl.names), tpl.n_frames):
             raise ValueError(f"{self.copy.name}.run returned shape {x.shape}; expected "
                              f"({len(tpl.names)}, {tpl.n_frames}) for worm {tpl.uid}")
+        validate_rows(x, tpl, f"{self.copy.name}.run, worm {tpl.uid}")
         keep = [j for j, n in enumerate(tpl.names) if neuron_class(n) and np.isfinite(x[j]).any()]
         row = {j: i for i, j in enumerate(keep)}
         stims = [(row[p.index], p.frame) for p in tpl.pokes if p.index in row]
@@ -152,10 +174,14 @@ def score(factory, data: str | Path | Sequence[PumpProbe], splits: Sequence[str]
             else {r.uid: r for r in data})
     if not recs:
         raise FileNotFoundError(f"no pumpprobe_*.npz recordings in {data}")
+    if seeds < 1:
+        raise ValueError("seeds must be at least 1")
     paths = split_files or {s: SPLITS_DIR / SPLITS[s] for s in splits}
     rows = []
     for split in (split_files or splits):
         all_folds = load_folds(paths[split])["folds"]
+        if folds is not None and any(not 0 <= f < len(all_folds) for f in folds):
+            raise ValueError(f"split {split} has folds 0 to {len(all_folds) - 1}; asked for {sorted(folds)}")
         missing = sorted({u for f in all_folds for u in f} - set(recs))
         if missing:
             raise FileNotFoundError(f"{len(missing)} worms of split {split} are missing from {data}, e.g. {missing[0]}")
@@ -165,14 +191,16 @@ def score(factory, data: str | Path | Sequence[PumpProbe], splits: Sequence[str]
             log(f"[{split} fold {fi}] building the real-worm ruler")
             ruler = FoldRuler(*fold_parts(recs, all_folds, fi), pci=pci)
             copy = factory()
-            model = copy if hasattr(copy, "simulate") else CopyAdapter(copy)
+            model = _as_model(copy)
             name = getattr(copy, "name", "copy")
             log(f"[{split} fold {fi}] fitting and running {name} on {len(ruler.pool)} held-out worms")
             for sd in range(seeds):
                 for r in ruler.score(name, model, seed_base=1000 * fi + 100000 * sd, refit=sd == 0):
-                    rows.append({"split": split, "fold": fi, "seed": sd, **r})
+                    rows.append({"split": split, "fold": fi, "n_folds": len(all_folds), "pool_size": len(ruler.pool), "seed": sd, **r})
                 if seeds > 1:
                     log(f"[{split} fold {fi}] seed {sd + 1}/{seeds} done")
+    if not rows:
+        raise ValueError("nothing was scored (check --split and --fold)")
     return rows
 
 
@@ -188,18 +216,20 @@ def score_many(factories: dict, data, splits: Sequence[str] = ("cv3", "blocks1")
     out: dict[str, list[dict]] = {k: [] for k in factories}
     for split in (split_files or splits):
         all_folds = load_folds(paths[split])["folds"]
+        missing = sorted({u for f in all_folds for u in f} - set(recs))
+        if missing:
+            raise FileNotFoundError(f"{len(missing)} worms of split {split} are missing, e.g. {missing[0]}")
         for fi in range(len(all_folds)):
             if folds is not None and fi not in folds:
                 continue
             log(f"[{split} fold {fi}] building the real-worm ruler")
             ruler = FoldRuler(*fold_parts(recs, all_folds, fi), pci=pci)
             for name, factory in factories.items():
-                copy = factory()
-                model = copy if hasattr(copy, "simulate") else CopyAdapter(copy)
+                model = _as_model(factory())
                 log(f"[{split} fold {fi}] {name}")
                 for sd in range(seeds):
                     for r in ruler.score(name, model, seed_base=1000 * fi + 100000 * sd, refit=sd == 0):
-                        out[name].append({"split": split, "fold": fi, "seed": sd, **r})
+                        out[name].append({"split": split, "fold": fi, "n_folds": len(all_folds), "pool_size": len(ruler.pool), "seed": sd, **r})
     return out
 
 
@@ -242,10 +272,15 @@ def format_answers(name: str, rows: Sequence[dict]) -> str:
     out = [f"NEMATICA benchmark: {name}", rule_text(), ""]
     for split, d in a.items():
         n = d["seeds"]
-        out.append(f"Split {split} ({d['pools']} held-out pools, {n} noise seed{'s' if n > 1 else ''}): "
-                   f"passes at rest in {d['rest_pass_seeds']}/{n}, when poked in {d['poke_pass_seeds']}/{n}, "
-                   f"both in {d['both_pass_seeds']}/{n}; every level in {d['all_nine_seeds']}/{n}")
-        out.append(f"  {'level':24s} {'verdicts by seed':22s} {'excess distance (median, range over pools)'}")
+        cov = f"; models {d['coverage']:.0%} of scored classes (median)" if d.get("coverage") is not None else ""
+        if d["judged"]:
+            out.append(f"Split {split} ({d['pools']} held-out pools, {n} noise seed{'s' if n > 1 else ''}{cov}): "
+                       f"passes at rest in {d['rest_pass_seeds']}/{n}, when poked in {d['poke_pass_seeds']}/{n}, "
+                       f"both in {d['both_pass_seeds']}/{n}; all nine rule levels in {d['all_nine_seeds']}/{n}")
+        else:
+            out.append(f"Split {split}: NOT JUDGED ({'; '.join(d['not_judged_because'])}). Letters and distances "
+                       f"below are a look, not a verdict{cov}.")
+        out.append(f"  {'level':24s} {'verdicts by seed':22s} {'excess distance (median, range over pools and seeds)'}")
         for group, lvls in (("at rest", REST_LEVELS), ("when poked", POKE_RULE_LEVELS), ("not in the rule", OTHER_LEVELS)):
             out.append(f"  {group}")
             for lv in lvls:
@@ -282,7 +317,7 @@ def write_report(name: str, rows: Sequence[dict], out: str | Path, meta: dict | 
     meta = dict(meta or {})
     if not meta.get("worms"):
         meta.pop("worms", None)
-    doc = {"copy": name, "meta": meta, "answers": answers(rows), "summary": summary(rows), "rows": list(rows)}
+    doc = {"copy": name, "meta": meta, "answers": answers(rows), "rows": list(rows)}
     out.write_text(json.dumps(doc, indent=1, default=_json_default), encoding="utf-8")
     return out
 
@@ -297,10 +332,12 @@ def _json_default(v):
     return str(v)
 
 
-def check(factory, data, log: Callable[[str], None] = print) -> list[str]:
-    """A fast contract check before a full run: fits the copy on a few training worms, runs it on one
-    held-out worm, and reports problems (shape, rows left empty, poked neurons ignoring their drive)
-    and the expected time of a full run. Returns the problems found (empty when none)."""
+def check(factory, data, log: Callable[[str], None] = print, seeds: int = 3) -> list[str]:
+    """A fast contract check before a full run: fits the copy on fold 0's training worms of split cv3,
+    runs it on three held-out worms, and returns the problems found (empty when none): wrong shape,
+    infinite values, partly-NaN rows, too few neurons modelled, noise that ignores `rng`. Warnings
+    (printed, not returned): poked neurons that do not follow their drive (allowed if the copy uses
+    the drive as an input), and the expected time of a full run with `seeds` noise seeds."""
     import time
     from .bench.scorecard import fold_parts
     if isinstance(data, (str, Path)):
@@ -312,49 +349,64 @@ def check(factory, data, log: Callable[[str], None] = print) -> list[str]:
         folds = [u[k::3] for k in range(3)]
     train, val, pool = fold_parts(recs, folds, 0)
     copy = factory()
-    problems = []
+    problems, warnings_ = [], []
     t0 = time.time()
-    if hasattr(copy, "simulate"):
-        copy.fit(train, val)
-    else:
-        copy.fit(list(train) + list(val))
+    model = _as_model(copy)
+    model.fit(train, val)
     t_fit = time.time() - t0
-    rec = pool[0]
-    tpl = template_of(rec)
-    t1 = time.time()
-    if hasattr(copy, "simulate"):
-        log("low-level copy (simulate): only timing is checked")
-        copy.simulate(rec, np.random.default_rng(0))
-        x = None
-    else:
-        x = np.asarray(copy.run(tpl, np.random.default_rng(0)), float)
-    t_run = time.time() - t1
-    if x is not None:
+    low_level = not isinstance(copy, BrainCopy)
+    t_runs = []
+    for rec in pool[:3]:
+        tpl = template_of(rec)
+        t1 = time.time()
+        if low_level:
+            a = np.asarray(model.simulate(rec, np.random.default_rng(1)).x, float)
+            b = np.asarray(model.simulate(rec, np.random.default_rng(2)).x, float)
+            t_runs.append((time.time() - t1) / 2)
+            if a.shape == b.shape and np.array_equal(a, b, equal_nan=True):
+                problems.append("two different rng seeds gave identical simulations: the copy ignores rng")
+            continue
+        try:
+            x = np.asarray(copy.run(tpl, np.random.default_rng(1)), float)
+            x2 = np.asarray(copy.run(tpl, np.random.default_rng(2)), float)
+            x1b = np.asarray(copy.run(tpl, np.random.default_rng(1)), float)
+        except Exception as e:                                   # noqa: BLE001
+            problems.append(f"run() raised {type(e).__name__}: {e}")
+            break
+        t_runs.append((time.time() - t1) / 3)
         if x.shape != (len(tpl.names), tpl.n_frames):
             problems.append(f"run() returned {x.shape}; expected ({len(tpl.names)}, {tpl.n_frames})")
-        else:
-            named = [j for j, n in enumerate(tpl.names) if neuron_class(n)]
-            modelled = [j for j in named if np.isfinite(x[j]).any()]
-            if len(modelled) < 0.5 * len(named):
-                problems.append(f"only {len(modelled)} of {len(named)} identified neurons have activity")
-            if any(np.isfinite(x[j]).mean() < 0.95 for j in modelled):
-                problems.append("some modelled rows contain NaN frames; a neuron is either modelled for the whole run or not at all")
-            if modelled and np.nanmax(np.abs(x[modelled])) > 1e3:
-                problems.append("values above 1e3: activity is z-scored before scoring, but check for instability")
-            follow = []
-            for p in tpl.pokes:
-                if p.index in modelled:
-                    n = min(len(p.drive), tpl.n_frames - p.frame)
-                    a, b = x[p.index, p.frame:p.frame + n], p.drive[:n]
-                    ok = np.isfinite(a) & np.isfinite(b)
-                    if ok.sum() > 5 and np.std(a[ok]) > 0 and np.std(b[ok]) > 0:
-                        follow.append(np.corrcoef(a[ok], b[ok])[0, 1])
-            if follow and np.median(follow) < 0.3:
-                problems.append(f"poked neurons barely follow their drive (median correlation {np.median(follow):.2f}); "
-                                "the benchmark assumes the poked neuron does what it did in the real worm")
-    per_fold = t_fit + t_run * len(pool)
-    log(f"fit {t_fit:.1f} s, one worm {t_run:.1f} s; a full run (6 folds) needs about "
-        f"{6 * per_fold / 60:.0f} min plus about 3 min of scoring per fold and seed")
+            break
+        try:
+            validate_rows(x, tpl, f"worm {tpl.uid}")
+        except ValueError as e:
+            problems.append(str(e))
+        if np.array_equal(x, x2, equal_nan=True):
+            problems.append("two different rng seeds gave identical output: use the rng you are given for all noise")
+        elif not np.array_equal(x, x1b, equal_nan=True):
+            problems.append("the same rng seed gave different output: use only the rng you are given (no global random state)")
+        named = [j for j, n in enumerate(tpl.names) if neuron_class(n)]
+        modelled = [j for j in named if np.isfinite(x[j]).all()]
+        if len(modelled) < 0.8 * len(named):
+            problems.append(f"only {len(modelled)} of {len(named)} identified neurons modelled (at least 80% needed)")
+        follow = []
+        for p in tpl.pokes:
+            if p.index in modelled:
+                n = min(len(p.drive), tpl.n_frames - p.frame)
+                a_, b_ = x[p.index, p.frame:p.frame + n], p.drive[:n]
+                ok = np.isfinite(a_) & np.isfinite(b_)
+                if ok.sum() > 5 and np.std(a_[ok]) > 0 and np.std(b_[ok]) > 0:
+                    follow.append(np.corrcoef(a_[ok], b_[ok])[0, 1])
+        if follow and np.median(follow) < 0.3:
+            warnings_.append(f"poked neurons barely follow their drive (median correlation {np.median(follow):.2f}); fine "
+                             "if your copy uses the drive as an input, but the real neuron did follow it")
+    problems = list(dict.fromkeys(problems))
+    if t_runs:
+        per_fold = t_fit + np.mean(t_runs) * len(pool) * seeds
+        log(f"fit {t_fit:.1f} s, one worm {np.mean(t_runs):.2f} s; a full run with {seeds} seeds needs about "
+            f"{6 * per_fold / 60:.0f} min of your copy's time plus about 3 min of scoring per fold and seed")
+    for w in dict.fromkeys(warnings_):
+        log("WARNING: " + w)
     for p_ in problems:
         log("PROBLEM: " + p_)
     if not problems:

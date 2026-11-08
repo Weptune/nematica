@@ -28,13 +28,20 @@ def _commit() -> str | None:
         return None
 
 
-def _finish(name, rows, out, html, compare, t0, command, data=None):
+def _slug(name: str) -> str:
+    """A safe file name from a copy's name."""
+    import re
+    return re.sub(r"[^A-Za-z0-9._-]+", "_", name).strip("._") or "copy"
+
+
+def _finish(name, rows, out, html, compare, t0, command, data=None, extra_meta=None):
     from .report_html import write_html
     from .score import format_answers, write_report
-    meta = {"date": _dt.date.today().isoformat(), "commit": _commit(), "command": command,
+    meta = {**(extra_meta or {}), "date": _dt.date.today().isoformat(), "commit": _commit(), "command": command,
             "seconds": round(time.time() - t0),
-            "worms": len(list(Path(data).glob("pumpprobe_*.npz"))) if data else None}
-    path = write_report(name, rows, out or f"results/scores/{name}.json", meta=meta)
+            }
+    suffix = ".quick" if (extra_meta or {}).get("quick") else ""
+    path = write_report(name, rows, out or f"results/scores/{_slug(name)}{suffix}.json", meta=meta)
     print(format_answers(name, rows))
     print(f"\nReport: {path}  ({time.time() - t0:.0f} s)")
     if html:
@@ -52,7 +59,8 @@ def main(argv=None) -> int:
     sc.add_argument("--fold", type=int, action="append", help="score only this fold (repeatable)")
     sc.add_argument("--seeds", type=int, default=1, help="noise seeds per held-out worm (3 recommended for claims)")
     sc.add_argument("--quick", action="store_true", help="split cv3, fold 0, one seed (a first look, not a verdict)")
-    sc.add_argument("--no-pci", action="store_true", help="skip the complexity levels (then the poke rule cannot be judged)")
+    sc.add_argument("--no-pci", action="store_true",
+                    help="skip echo spread and complexity (faster; the poke half is then not judged)")
     sc.add_argument("--out", default=None, help="JSON report path (default results/scores/<name>.json)")
     sc.add_argument("--no-html", action="store_true", help="do not write the HTML report")
     sc.add_argument("--compare", nargs="*", default=[], help="other reports to mark on the charts")
@@ -82,6 +90,7 @@ def main(argv=None) -> int:
     sf.add_argument("--out", default=None)
     sf.add_argument("--no-html", action="store_true")
     sf.add_argument("--compare", nargs="*", default=[])
+    sf.add_argument("--kit", default=None, help="the kit folder: checks that the data matches the kit's manifest")
 
     args = ap.parse_args(argv)
     warnings.filterwarnings("ignore", category=RuntimeWarning)   # NaN-heavy recordings: expected
@@ -95,9 +104,12 @@ def main(argv=None) -> int:
         splits = ("cv3",) if args.quick else ("cv3", "blocks1") if args.split == "both" else (args.split,)
         folds = [0] if args.quick else args.fold
         seeds = 1 if args.quick else args.seeds
+        if seeds < 1:
+            ap.error("--seeds must be at least 1")
         name = getattr(factory(), "name", "copy")
         rows = score(factory, args.data, splits=splits, folds=folds, pci=not args.no_pci, seeds=seeds, log=log)
-        _finish(name, rows, args.out, not args.no_html, args.compare, t0, command, args.data)
+        _finish(name, rows, args.out, not args.no_html, args.compare, t0, command, args.data,
+                {"quick": bool(args.quick), "folds": folds, "seeds": seeds, "splits": list(splits)})
     elif args.cmd == "check":
         from .score import check, load_copy
         return 1 if check(load_copy(args.copy), args.data, log=print) else 0
@@ -110,7 +122,10 @@ def main(argv=None) -> int:
         reps = {}
         for p in args.reports:
             d = json.loads(Path(p).read_text(encoding="utf-8"))
-            reps[d.get("copy", Path(p).stem)] = d
+            k = d.get("copy", Path(p).stem)
+            if k in reps:
+                k = f"{k} ({Path(p).name})"
+            reps[k] = d
         Path(args.out).parent.mkdir(parents=True, exist_ok=True)
         Path(args.out).write_text(render_leaderboard(reps), encoding="utf-8")
         print(args.out)
@@ -119,7 +134,12 @@ def main(argv=None) -> int:
         out = export(args.data, args.out)
         print(f"Kit written to {out} (templates are derived from your local copy of the atlas: do not redistribute)")
     elif args.cmd == "score-files":
-        from .kit import score_files
+        from .kit import score_files, verify_data
+        if args.kit:
+            bad = verify_data(args.kit, args.data)
+            if bad:
+                print(f"the data in {args.data} does not match the kit: {', '.join(bad[:3])}", file=sys.stderr)
+                return 2
         rows = score_files(args.sims, args.data, args.name, pci=not args.no_pci, log=log)
         _finish(args.name, rows, args.out, not args.no_html, args.compare, t0, command, args.data)
     return 0

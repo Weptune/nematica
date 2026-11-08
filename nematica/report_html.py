@@ -31,7 +31,7 @@ ABOUT = {
     "C3.kinetics": "the time course of the strongest answers",
     "P1.complexity": "how compressible the pattern of significant answers is",
 }
-LETTER = {"I": "inside", "O": "outside", "T": "too typical", "-": "not scored"}
+LETTER = {"I": "inside", "O": "outside", "T": "too typical", "-": "not scored", ".": "not scored"}
 LO, HI = -0.6, 1.2                                  # excess axis; values beyond are drawn at the edge
 
 
@@ -56,9 +56,10 @@ def excess_chart(a: dict, split: str, compare: dict[str, dict]) -> str:
     n_rows = sum(len(g) for _, g in groups) + sum(1 for _, g in groups if g)
     H = top + n_rows * row_h + 40
     W = left + width + right
-    out = [f'<svg viewBox="0 0 {W} {H}" width="100%" role="img" aria-labelledby="t-{split}" '
+    sid = "".join(ch if ch.isalnum() else "-" for ch in str(split))
+    out = [f'<svg viewBox="0 0 {W} {H}" width="100%" role="img" aria-labelledby="t-{sid}" '
            f'style="max-width:{W}px;font:13px/1.3 system-ui,-apple-system,Segoe UI,sans-serif">',
-           f'<title id="t-{split}">Excess distance from real worms by level, split {_esc(split)}</title>']
+           f'<title id="t-{sid}">Excess distance from real worms by level, split {_esc(split)}</title>']
     for t in (-0.5, 0, 0.5, 1.0):
         x = _x(t, left, width)
         out.append(f'<line x1="{x:.1f}" x2="{x:.1f}" y1="{top - 8}" y2="{H - 34}" stroke="{INK if t == 0 else RULE}" '
@@ -80,7 +81,7 @@ def excess_chart(a: dict, split: str, compare: dict[str, dict]) -> str:
             out.append(f'<line x1="{left}" x2="{left + width}" y1="{cy:.1f}" y2="{cy:.1f}" stroke="#f0f1f2"/>')
             runs = [r for r in L["per_run"] if r["excess"] is not None]
             for k, r in enumerate(runs):
-                jitter = ((k % 5) - 2) * 2.2
+                jitter = ((k % 7) - 3) * 1.6
                 cx = _x(r["excess"], left, width)
                 if r["excess"] > HI or r["excess"] < LO:          # off the axis: an arrow at the edge
                     sgn = 1 if r["excess"] > HI else -1
@@ -92,12 +93,15 @@ def excess_chart(a: dict, split: str, compare: dict[str, dict]) -> str:
                            f'stroke="#fff" stroke-width="1.2"><title>{_esc(tip)}</title></circle>')
             if L["excess_median"] is not None:
                 mx = _x(L["excess_median"], left, width)
+                if not LO <= L["excess_median"] <= HI:
+                    out.append(f'<text x="{mx + (8 if L["excess_median"] > HI else -8):.1f}" y="{cy - 12:.1f}" text-anchor="middle" '
+                               f'fill="{MUTED}" font-size="11">{L["excess_median"]:+.1f}</text>')
                 out.append(f'<line x1="{mx:.1f}" x2="{mx:.1f}" y1="{cy - 10:.1f}" y2="{cy + 10:.1f}" stroke="{INK}" '
                            f'stroke-width="2.5"><title>{_esc(L["label"])}: median excess {L["excess_median"]:+.3f}</title></line>')
             for name, ca in compare.items():
                 CL = ca.get(split, {}).get("levels", {}).get(lv)
                 if CL and CL["excess_median"] is not None:
-                    bx = _x(CL["excess_median"], left, width) + (6 if CL["excess_median"] > HI else 0)
+                    bx = _x(CL["excess_median"], left, width) + (6 if CL["excess_median"] > HI else -6 if CL["excess_median"] < LO else 0)
                     out.append(f'<path d="M{bx:.1f},{cy - 6:.1f} l5,6 l-5,6 l-5,-6 z" fill="none" stroke="{MUTED}" '
                                f'stroke-width="1.3"><title>{_esc(name)}: median excess {CL["excess_median"]:+.3f}</title></path>')
             y += row_h
@@ -122,9 +126,10 @@ def verdict_grid(a: dict, split: str) -> str:
                 chips = "".join(f"<span class='chip' style='background:{FILL[LETTER.get(c, 'not scored')]};"
                                 f"color:{COL[LETTER.get(c, 'not scored')]}' title='pool {i + 1}: {LETTER.get(c, 'not scored')}'>{c}</span>"
                                 for i, c in enumerate(letters))
-                ok = letters.count("I") >= 2 and len(letters) >= 3
+                ok = letters.count("I") >= 2 and "." not in letters
                 cells.append(f"<td class='{'pass' if ok else 'fail'}'>{chips}<span class='sr'>{'passes' if ok else 'fails'}</span></td>")
-            rows.append(f"<tr><th scope='row'>{_esc(L['label'])}</th>{''.join(cells)}<td class='num'>{L['passes']}/{len(seeds)}</td></tr>")
+            passes = "not judged" if L["passes"] is None else f"{L['passes']}/{len(seeds)}"
+            rows.append(f"<tr><th scope='row'>{_esc(L['label'])}</th>{''.join(cells)}<td class='num'>{passes}</td></tr>")
     return (f"<table class='grid'><thead><tr><th scope='col'>Level</th>{head}<th scope='col'>Seeds passing</th></tr></thead>"
             f"<tbody>{''.join(rows)}</tbody></table>")
 
@@ -163,15 +168,17 @@ footer{{margin-top:56px;color:{MUTED};font-size:13px;border-top:1px solid {RULE}
 
 
 def _sentence(a: dict) -> str:
-    parts = []
-    for s, d in a.items():
-        n = d["seeds"]
-        parts.append(f"{d['both_pass_seeds']} of {n} seed{'s' if n > 1 else ''} on split {s}")
-    full = all(d["both_pass_seeds"] == d["seeds"] for d in a.values())
-    none = all(d["both_pass_seeds"] == 0 for d in a.values())
-    head = ("Passes the full test, at rest and when poked" if full else
-            "Does not pass the full test" if none else "Passes the full test, at rest and when poked, in some runs")
-    return f"{head}: {'; '.join(parts)}."
+    judged = {s: d for s, d in a.items() if d["judged"]}
+    if not judged:
+        return ("Not judged: " + "; ".join(f"split {s}: {', '.join(d['not_judged_because'])}" for s, d in a.items())
+                + ". The letters and distances below are a look, not a verdict.")
+    parts = [f"{d['both_pass_seeds']} of {d['seeds']} seed{'s' if d['seeds'] > 1 else ''} on split {s}" for s, d in judged.items()]
+    full = all(d["both_pass_seeds"] == d["seeds"] for d in judged.values())
+    none = all(d["both_pass_seeds"] == 0 for d in judged.values())
+    head = ("Passes at rest and when poked" if full else "Does not pass at rest and when poked" if none
+            else "Passes at rest and when poked in some runs")
+    extra = "" if len(judged) == len(a) else " Other splits were not judged."
+    return f"{head}: {'; '.join(parts)}.{extra}"
 
 
 def render(report: dict, compare: dict[str, dict] | None = None) -> str:
@@ -187,10 +194,14 @@ def render(report: dict, compare: dict[str, dict] | None = None) -> str:
         n = d["seeds"]
         def cell(k):
             v = d[k]
+            if v is None:
+                return "<td>not judged</td>"
             return f"<td class='{'yes' if v == n else 'no' if v == 0 else ''}'>{v} of {n} seed{'s' if n > 1 else ''}</td>"
         ans_rows.append(f"<tr><th scope='row'>{_esc(s)}</th>{cell('rest_pass_seeds')}{cell('poke_pass_seeds')}{cell('all_nine_seeds')}</tr>")
-    meta_bits = [f"{meta['worms']} real worms" if meta.get("worms") else None,
-                 f"{len(splits)} split{'s' if len(splits) > 1 else ''} of 3 held-out pools",
+    first = a[splits[0]] if splits else {}
+    meta_bits = [f"{first['held_out_worms']} held-out worms per split" if first.get("held_out_worms") else None,
+                 f"{len(splits)} split{'s' if len(splits) > 1 else ''} of {first.get('pools', '?')} held-out pools",
+                 "quick look" if meta.get("quick") else None,
                  f"{a[splits[0]]['seeds']} noise seed{'s' if a[splits[0]]['seeds'] > 1 else ''}" if splits else None,
                  f"scored {meta['date']}" if meta.get("date") else None,
                  f"code {meta['commit']}" if meta.get("commit") else None]
@@ -216,7 +227,7 @@ def render(report: dict, compare: dict[str, dict] | None = None) -> str:
             cells = []
             for s_ in splits:
                 d_ = ca.get(s_)
-                cells.append("<td>not scored</td>" if not d_ else
+                cells.append("<td>not scored</td>" if not d_ else "<td>not judged</td>" if not d_["judged"] else
                              f"<td>{d_['rest_pass_seeds']}/{d_['seeds']}, {d_['poke_pass_seeds']}/{d_['seeds']}</td>")
             lb.append(f"<tr><th scope='row'>{_esc(nm)}{' (this report)' if nm == name else ''}</th>{''.join(cells)}</tr>")
         lb.append("</tbody></table><p>Seeds passing at rest and when poked, per split. Open diamonds on the charts below "
@@ -224,10 +235,11 @@ def render(report: dict, compare: dict[str, dict] | None = None) -> str:
         body += lb
     for s in splits:
         body += [f"<h2>How far from real worms, split {_esc(s)}</h2>",
-                 "<p>For each level, the excess distance compares the copy's worms with real worms: 0 means they are as "
-                 "different from real worms as real worms are from each other; +0.5 means 50% further; negative means "
-                 "closer than real worms ever are to each other. Each dot is one held-out pool under one noise seed. "
-                 "Hover a dot for its interval.</p>",
+                 "<p>For each level, the excess distance compares the copy's worms with real worms: 0 means they are, on "
+                 "median, as different from real worms as real worms are from each other; +0.5 means 50% further; "
+                 "negative means closer on median (the verdict too typical needs the whole interval below zero). Each dot "
+                 "is one held-out pool under one noise seed, coloured by that pool's verdict; hover a dot for its interval. "
+                 "Levels are on different scales: compare a level across copies, not levels with each other.</p>",
                  excess_chart(a, s, comp), legend,
                  f"<h3>Verdicts, split {_esc(s)}</h3>", verdict_grid(a, s)]
     body += ["<h2>What each level measures</h2><table class='answer'><tbody>"
@@ -269,47 +281,64 @@ def write_html(report_path: str | Path, out: str | Path | None = None, compare: 
     return out
 
 
-def _excess_fill(v: float | None) -> str:
-    """Background for an excess value: white near 0, red when too different, amber when too typical."""
-    if v is None or not np.isfinite(v):
+def _pass_fill(frac: float | None) -> str:
+    """Cell colour from the share of judged split-seeds in which the level passes: green when it always
+    passes, red when it never does, grey when not judged."""
+    if frac is None:
         return "#eceef0"
-    t = min(abs(v) / 0.6, 1.0)
-    base = (184, 68, 63) if v > 0 else (183, 134, 43)
-    r, g, b = (round(255 + (c - 255) * t * 0.55) for c in base)
+    good, bad = (227, 241, 231), (246, 225, 223)
+    r, g, b = (round(bad[k] + (good[k] - bad[k]) * frac) for k in range(3))
     return f"rgb({r},{g},{b})"
 
 
 def render_leaderboard(reports: dict[str, dict], title: str = "NEMATICA worm benchmark: reference copies") -> str:
-    """One table: each copy's passes per split, and its median excess distance on every level (cell
-    colour: white = like real worms, red = too different, amber = too typical)."""
+    """One table: each copy's passes per split, and per level its median excess distance (number) and how
+    often the level passes over judged split-seeds (cell colour: green always, red never, grey not judged)."""
     ans = {k: answers(v["rows"]) for k, v in reports.items()}
+    notes = {k: v.get("meta", {}).get("note") for k, v in reports.items()}
     splits = list(dict.fromkeys(s for a in ans.values() for s in a))
-    order = sorted(ans, key=lambda k: -sum(a["both_pass_seeds"] / max(a["seeds"], 1) for a in ans[k].values()))
+
+    def score_key(k):
+        vals = [d["both_pass_seeds"] / d["seeds"] for d in ans[k].values() if d["judged"]]
+        return -(np.mean(vals) if vals else -1)
+    order = sorted(ans, key=score_key)
     head = ("<tr><th scope='col'>Copy</th>" + "".join(f"<th scope='col'>{_esc(s)}: rest, poked</th>" for s in splits)
             + "".join(f"<th scope='col' class='lv' title='{_esc(ABOUT[lv])}'>{_esc(LABELS[lv])}</th>" for lv in ALL_LEVELS) + "</tr>")
-    body = []
+    body, foot = [], []
     for k in order:
         a = ans[k]
         cells = []
         for s in splits:
             d = a.get(s)
-            cells.append("<td>-</td>" if not d else f"<td>{d['rest_pass_seeds']}/{d['seeds']}, {d['poke_pass_seeds']}/{d['seeds']}</td>")
+            cells.append("<td>-</td>" if not d else "<td>not judged</td>" if not d["judged"] else
+                         f"<td>{d['rest_pass_seeds']}/{d['seeds']}, {d['poke_pass_seeds']}/{d['seeds']}</td>")
         for lv in ALL_LEVELS:
             vals = [a[s]["levels"][lv]["excess_median"] for s in splits if s in a and lv in a[s]["levels"]
                     and a[s]["levels"][lv]["excess_median"] is not None]
+            passes = [(a[s]["levels"][lv]["passes"], a[s]["seeds"]) for s in splits if s in a and lv in a[s]["levels"]
+                      and a[s]["judged"]]
+            frac = (sum(p for p, _ in passes) / sum(n for _, n in passes)) if passes else None
             v = float(np.mean(vals)) if vals else None
-            cells.append(f"<td class='num' style='background:{_excess_fill(v)}'>{'' if v is None else f'{v:+.2f}'}</td>")
-        body.append(f"<tr><th scope='row'>{_esc(k)}</th>{''.join(cells)}</tr>")
+            tip = f"passes in {sum(p for p, _ in passes)} of {sum(n for _, n in passes)} judged split-seeds" if passes else "not judged"
+            cells.append(f"<td class='num' style='background:{_pass_fill(frac)}' title='{_esc(tip)}'>"
+                         f"{'' if v is None else f'{v:+.2f}'}</td>")
+        mark = ""
+        if notes.get(k):
+            foot.append(notes[k])
+            mark = f"<sup>{len(foot)}</sup>"
+        body.append(f"<tr><th scope='row'>{_esc(k)}{mark}</th>{''.join(cells)}</tr>")
     css = CSS + ".lb{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}" \
                 ".lb th,.lb td{padding:7px 9px;border-bottom:1px solid #e6e8ea;text-align:left}" \
                 ".lb th.lv{writing-mode:vertical-rl;transform:rotate(180deg);font-weight:400;color:#5b636b;height:150px}" \
-                ".lb td.num{text-align:right} main.wide{max-width:1200px}"
+                ".lb td.num{text-align:right} main.wide{max-width:1200px} ol.notes{font-size:14px;color:#5b636b}"
     return ("<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
             f"<title>{_esc(title)}</title><style>{css}</style></head><body><main class='wide'>"
             f"<h1>{_esc(title)}</h1>"
-            f"<p>{_esc(rule_text())} Each cell on the right is the copy's median excess distance on that level, "
-            "averaged over splits: 0 means as different from real worms as real worms are from each other, positive "
-            "too different (red), negative too typical (amber).</p>"
+            f"<p>{_esc(rule_text())} Each level's cell shows the copy's median excess distance (0 = as different from "
+            "real worms as real worms are from each other), averaged over splits; its colour shows how often the level "
+            "passes: green always, red never, grey not judged. Levels are on different scales, so compare down a column, "
+            "not across a row.</p>"
             f"<div style='overflow-x:auto'><table class='lb'><thead>{head}</thead><tbody>{''.join(body)}</tbody></table></div>"
-            "<footer>Scores only; the recordings (Randi et al. 2023, CC BY 4.0) are not included. See docs/BENCHMARK.md.</footer>"
+            + (f"<ol class='notes'>{''.join(f'<li>{_esc(n)}</li>' for n in foot)}</ol>" if foot else "")
+            + "<footer>Scores only; the recordings (Randi et al. 2023, CC BY 4.0) are not included. See docs/BENCHMARK.md.</footer>"
             "</main></body></html>")

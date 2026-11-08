@@ -151,9 +151,22 @@ def test_check_flags_a_copy_that_ignores_its_drive(worms):
         def run(self, w, rng):
             return np.zeros((3, 3))
 
+    class Global(BrainCopy):
+        def run(self, w, rng):
+            return np.random.standard_normal((len(w.names), w.n_frames))
+
+    class Patchy(Echo):
+        def run(self, w, rng):
+            x = super().run(w, rng)
+            x[0, :10] = np.nan
+            return x
+
+    msgs = []
     assert check(Echo, worms, log=lambda m: None) == []
-    assert any("drive" in p for p in check(Deaf, worms, log=lambda m: None))
+    assert check(Deaf, worms, log=msgs.append) == [] and any("drive" in m for m in msgs)    # a warning only
     assert any("expected" in p for p in check(Short, worms, log=lambda m: None))
+    assert any("global" in p for p in check(Global, worms, log=lambda m: None))
+    assert any("whole run" in p for p in check(Patchy, worms, log=lambda m: None))
 
 
 def test_leaderboard(scored):
@@ -167,3 +180,71 @@ def test_score_many_matches_score(worms, split_file):
     many = score_many({"echo": Echo}, worms, split_files=split_file, folds=[1], pci=False, log=lambda m: None)["echo"]
     one = score(Echo, worms, split_files=split_file, folds=[1], pci=False, log=lambda m: None)
     assert [(r["metric"], r["system_median"]) for r in many] == [(r["metric"], r["system_median"]) for r in one]
+
+
+def test_partial_runs_are_not_judged(scored):
+    from nematica.report_html import render
+    one_pool = [r for r in scored if r["fold"] == 0 and r["seed"] == 0]
+    a = answers(one_pool)["synth"]
+    assert not a["judged"] and "1 of 3 pools" in a["not_judged_because"][0]
+    assert a["rest_pass_seeds"] is None and "NOT JUDGED" in format_answers("x", one_pool)
+    assert "Not judged" in render({"copy": "x", "rows": one_pool})
+
+
+def test_duplicated_rows_are_refused(scored):
+    from nematica.bench.verdicts import RowsError
+    with pytest.raises(RowsError, match="two rows"):
+        answers(scored + [dict(scored[0])])
+
+
+def test_poke_rule_needs_echo_spread(scored):
+    no_p2 = [r for r in scored if r["metric"] != "P2.spread"]
+    a = answers(no_p2)["synth"]
+    assert not a["judged"] and any("spread" in p for p in a["not_judged_because"])
+
+
+def test_low_coverage_is_not_judged(worms, split_file):
+    class Few(Echo):
+        name = "few"
+
+        def run(self, w, rng):
+            x = super().run(w, rng)
+            x[4:] = np.nan                                   # models only four neurons
+            return x
+
+    rows = score(Few, worms, split_files=split_file, pci=False, log=lambda m: None)
+    a = answers(rows)["synth"]
+    assert a["coverage"] < 0.8 and any("classes" in p for p in a["not_judged_because"])
+
+
+def test_bad_folds_and_seeds_are_errors(worms, split_file):
+    with pytest.raises(ValueError, match="folds"):
+        score(Echo, worms, split_files=split_file, folds=[7], log=lambda m: None)
+    with pytest.raises(ValueError, match="seeds"):
+        score(Echo, worms, split_files=split_file, seeds=0, log=lambda m: None)
+
+
+def test_files_structure_errors(worms, split_file, tmp_path):
+    (tmp_path / "synth" / "fold_0").mkdir(parents=True)
+    with pytest.raises(ValueError, match="fold0"):
+        score_files(tmp_path, worms, "x", split_files=split_file, log=lambda m: None)
+    (tmp_path / "synth" / "fold_0").rmdir()
+    (tmp_path / "synth" / "fold0" / "seed0").mkdir(parents=True)
+    (tmp_path / "synth" / "fold1" / "seed1").mkdir(parents=True)
+    with pytest.raises(ValueError, match="different seeds"):
+        score_files(tmp_path, worms, "x", split_files=split_file, log=lambda m: None)
+
+
+def test_low_level_models_cannot_be_mistaken_for_copies():
+    from nematica.score import _as_model
+
+    class Helper(BrainCopy):
+        def simulate(self, *a):                               # a helper that happens to be called simulate
+            raise AssertionError
+
+        def run(self, w, rng):
+            return np.zeros((len(w.names), w.n_frames))
+
+    assert type(_as_model(Helper())).__name__ == "CopyAdapter"
+    with pytest.raises(TypeError):
+        _as_model(object())

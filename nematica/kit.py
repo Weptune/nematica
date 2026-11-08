@@ -37,7 +37,7 @@ import numpy as np
 from .bench.scorecard import SPLITS, SPLITS_DIR, FoldRuler, fold_parts, set_norm
 from .data.pumpprobe import PumpProbe, load_pumpprobe_dir, neuron_class
 from .data.splits import load_folds
-from .score import template_of
+from .score import template_of, validate_rows
 
 KIT_VERSION = 1
 
@@ -79,6 +79,14 @@ def export(data: str | Path, out: str | Path, splits=("cv3", "blocks1")) -> Path
     return out
 
 
+def verify_data(kit: str | Path, data: str | Path) -> list[str]:
+    """Files whose hash differs from the kit's manifest (the kit was made from other data)."""
+    man = json.loads((Path(kit) / "manifest.json").read_text(encoding="utf-8"))
+    if man.get("kit_version") != KIT_VERSION:
+        return [f"kit version {man.get('kit_version')}, this tool expects {KIT_VERSION}"]
+    return [f for f, h in man["data_files"].items() if not (Path(data) / f).exists() or _sha(Path(data) / f) != h]
+
+
 class FileModel:
     """A 'model' whose simulations are read from files written by the user's own program."""
 
@@ -98,6 +106,7 @@ class FileModel:
         if x.shape != (len(tpl.names), tpl.n_frames):
             raise ValueError(f"{p}: shape {x.shape}, expected ({len(tpl.names)}, {tpl.n_frames}) "
                              f"(one row per neuron of the real worm, one column per frame)")
+        validate_rows(x, tpl, str(p))
         keep = [j for j, n in enumerate(tpl.names) if neuron_class(n) and np.isfinite(x[j]).any()]
         row = {j: i for i, j in enumerate(keep)}
         stims = [(row[p_.index], p_.frame) for p_ in tpl.pokes if p_.index in row]
@@ -116,23 +125,42 @@ def score_files(sims: str | Path, data, name: str, pci: bool = True, norm: str =
             else {r.uid: r for r in data})
     paths = split_files or {k: SPLITS_DIR / v for k, v in SPLITS.items()}
     rows = []
+    from .bench.verdicts import FOLD_DIR, SEED_DIR
     for split in sorted(p.name for p in sims.iterdir() if p.is_dir() and p.name in paths):
         folds = load_folds(paths[split])["folds"]
-        for fdir in sorted((sims / split).glob("fold*")):
-            fi = int(fdir.name[4:])
+        fdirs = {}
+        for d in (sims / split).iterdir():
+            m = FOLD_DIR.match(d.name)
+            if not d.is_dir() or not m:
+                raise ValueError(f"unexpected entry {d} (folders must be named fold0, fold1, ...)")
+            fi = int(m.group(1))
+            if fi in fdirs or not 0 <= fi < len(folds):
+                raise ValueError(f"{d}: fold {fi} is duplicated or out of range (split {split} has {len(folds)} folds)")
+            fdirs[fi] = d
+        seed_sets = {}
+        for fi, d in fdirs.items():
+            ss = {}
+            for sd in d.iterdir():
+                m = SEED_DIR.match(sd.name)
+                if not sd.is_dir() or not m:
+                    raise ValueError(f"unexpected entry {sd} (folders must be named seed0, seed1, ...)")
+                ss[int(m.group(1))] = sd
+            seed_sets[fi] = ss
+        if len({frozenset(v) for v in seed_sets.values()}) > 1:
+            raise ValueError(f"split {split}: folds have different seeds: "
+                             + ", ".join(f"fold{k}: {sorted(v)}" for k, v in sorted(seed_sets.items())))
+        if len(fdirs) < len(folds):
+            log(f"WARNING: split {split} has {len(fdirs)} of {len(folds)} folds: it will be shown but not judged")
+        for fi in sorted(fdirs):
             ruler = FoldRuler(*fold_parts(recs, folds, fi), pci=pci)
-            missing_all = []
-            for sdir in sorted(fdir.glob("seed*")):
-                missing = [r.uid for r in ruler.pool if not (sdir / f"{r.uid}.npz").exists()]
-                if missing:
-                    missing_all += [f"{sdir}/{u}.npz" for u in missing]
-                    continue
-                sd = int(sdir.name[4:])
-                log(f"[{split} fold {fi} seed {sd}] scoring {len(ruler.pool)} simulated worms")
-                for r in ruler.score(name, FileModel(sdir, name)):
-                    rows.append({"split": split, "fold": fi, "seed": sd, **r})
+            missing_all = [f"{sdir}/{r.uid}.npz" for sdir in seed_sets[fi].values() for r in ruler.pool
+                           if not (sdir / f"{r.uid}.npz").exists()]
             if missing_all:
                 raise FileNotFoundError(f"{len(missing_all)} simulations missing, e.g. {missing_all[0]}")
+            for sd, sdir in sorted(seed_sets[fi].items()):
+                log(f"[{split} fold {fi} seed {sd}] scoring {len(ruler.pool)} simulated worms")
+                for r in ruler.score(name, FileModel(sdir, name)):
+                    rows.append({"split": split, "fold": fi, "n_folds": len(folds), "pool_size": len(ruler.pool), "seed": sd, **r})
     if not rows:
         raise FileNotFoundError(f"no simulations found under {sims} (expected <split>/fold<k>/seed<s>/<uid>.npz)")
     return rows

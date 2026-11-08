@@ -7,18 +7,25 @@ The rule (fixed 8 Nov 2026 with the emulator pre-registration, README "A worm em
 * a copy passes WHEN POKED when echo pattern (C1), echo size (C2) and echo spread (P2) all pass;
 * with several noise seeds, each seed is judged on its own and the report gives how many pass.
 
+A split is JUDGED only when every one of its pools was scored, each exactly once per seed, and the copy
+covered enough of the neurons scored (COVERAGE_FLOOR). Otherwise its letters and distances are shown
+but no pass or fail is given: a quick look at one pool is not a verdict.
+
 Verdicts are binary and can sit on a knife edge (review 8 found passes resting on bootstrap bounds a
 hair below zero). So every level also gets a continuous EXCESS DISTANCE per pool:
 
     excess = (median copy-to-real distance - median real-to-real distance) / median real-to-real distance
 
-0 means the copy's worms are as far from real worms as real worms are from each other; +0.5 means
-50% further (too different); negative means closer than real worms ever are to each other (too
-typical, an "average worm"). Its interval is the verdict's bootstrap interval on the same scale.
+0 means the copy's worms are as far from real worms (by that pool's median) as real worms are from
+each other; +0.5 means 50% further. A negative excess means closer on median; the verdict "too typical"
+needs the whole bootstrap interval below zero. Distances are on different scales on different levels
+(lead and lag is 1 minus a correlation near 0.03, so real-to-real is about 0.97 and every copy sits
+near 0), so compare a level's excess across copies, not across levels.
 """
 
 from __future__ import annotations
 
+import re
 from collections import defaultdict
 from typing import Sequence
 
@@ -29,6 +36,8 @@ POKE_RULE_LEVELS = ("C1.pattern", "C2.magnitude", "P2.spread")
 OTHER_LEVELS = ("C3.kinetics", "P1.complexity")
 ALL_LEVELS = REST_LEVELS + POKE_RULE_LEVELS + OTHER_LEVELS
 REST_NEEDED = 5
+POOLS_NEEDED = 2                      # of the split's pools (3 in both frozen splits)
+COVERAGE_FLOOR = 0.8                  # median share of the scored neuron classes a copy must model
 
 LABELS = {
     "L1.distribution": "activity distribution", "L1.timescale": "timescale", "L2.correlation": "correlation pattern",
@@ -39,12 +48,15 @@ LABELS = {
 SHORT = {"inside": "I", "outside": "O", "too typical": "T"}
 
 
+class RowsError(ValueError):
+    """Rows that cannot be judged as they stand (duplicates, unknown structure)."""
+
+
 def _f(v):
     try:
-        v = float(v)
+        return float(v)
     except (TypeError, ValueError):
         return float("nan")
-    return v
 
 
 def excess(row: dict) -> tuple[float, float, float]:
@@ -55,25 +67,17 @@ def excess(row: dict) -> tuple[float, float, float]:
     return ((s - b) / b, _f(row.get("shift_lo")) / b, _f(row.get("shift_hi")) / b)
 
 
-def level_passes(letters: str) -> bool:
-    return len(letters) >= 3 and letters.count("I") >= 2
+def level_passes(letters: str, n_pools: int = 3) -> bool:
+    return len(letters) == n_pools and letters.count("I") >= POOLS_NEEDED
 
 
-def tables(rows: Sequence[dict]) -> dict:
-    """{split: {seed: {level: letters over pools in fold order}}} and per-row excess."""
-    acc: dict = defaultdict(lambda: defaultdict(dict))
-    for r in sorted(rows, key=lambda r: (r["split"], r.get("seed", 0), r["fold"])):
-        lv = r.get("metric")
-        if lv not in ALL_LEVELS:
-            continue
-        d = acc[r["split"]][r.get("seed", 0)]
-        d[lv] = d.get(lv, "") + SHORT.get(r.get("verdict"), "-")
-    return {s: {sd: dict(v) for sd, v in d.items()} for s, d in acc.items()}
+def _letters(rows_by_fold: dict, folds: list) -> str:
+    return "".join(SHORT.get(rows_by_fold[f].get("verdict"), "-") if f in rows_by_fold else "." for f in folds)
 
 
-def judge(letters_by_level: dict) -> dict:
-    rest = [lv for lv in REST_LEVELS if level_passes(letters_by_level.get(lv, ""))]
-    poke = [lv for lv in POKE_RULE_LEVELS if level_passes(letters_by_level.get(lv, ""))]
+def judge(letters_by_level: dict, n_pools: int = 3) -> dict:
+    rest = [lv for lv in REST_LEVELS if level_passes(letters_by_level.get(lv, ""), n_pools)]
+    poke = [lv for lv in POKE_RULE_LEVELS if level_passes(letters_by_level.get(lv, ""), n_pools)]
     scored_poke = all(lv in letters_by_level for lv in POKE_RULE_LEVELS)
     return {"rest_levels_passing": len(rest), "rest_pass": len(rest) >= REST_NEEDED,
             "poke_levels_passing": len(poke), "poke_scored": scored_poke,
@@ -82,50 +86,90 @@ def judge(letters_by_level: dict) -> dict:
 
 
 def answers(rows: Sequence[dict]) -> dict:
-    """Per split: the rule applied seed by seed, and per level: letters, passes and excess."""
-    t = tables(rows)
+    """Per split: whether it can be judged, the rule applied seed by seed, and per level: letters
+    (one per pool, in fold order; '.' = pool not scored), passes and excess distances."""
     order = list(dict.fromkeys(r["split"] for r in rows))
+    idx: dict = defaultdict(dict)                         # (split, seed, level) -> {fold: row}
+    for r in rows:
+        lv = r.get("metric")
+        if lv not in ALL_LEVELS:
+            continue
+        key = (r["split"], int(r.get("seed", 0)), lv)
+        f = int(r["fold"])
+        if f in idx[key]:
+            raise RowsError(f"two rows for split {r['split']}, seed {key[1]}, fold {f}, level {lv}: "
+                            "merged or duplicated results cannot be judged")
+        idx[key][f] = r
     out = {}
     for split in order:
-        by_seed = t.get(split)
-        if by_seed is None:
-            continue
-        seeds = sorted(by_seed)
-        judged = {sd: judge(by_seed[sd]) for sd in seeds}
+        srows = [r for r in rows if r["split"] == split]
+        n_folds = max((int(r.get("n_folds", 0) or 0) for r in srows), default=0)
+        seen_folds = sorted({int(r["fold"]) for r in srows})
+        folds = list(range(n_folds)) if n_folds else seen_folds
+        seeds = sorted({int(r.get("seed", 0)) for r in srows})
+        sizes = {int(r["fold"]): int(r["pool_size"]) for r in srows if r.get("pool_size") not in (None, "")
+                 and np.isfinite(_f(r.get("pool_size")))}
+        cov = [_f(r.get("coverage")) for r in srows if np.isfinite(_f(r.get("coverage")))]
+        coverage = float(np.median(cov)) if cov else None
+        problems = []
+        if set(seen_folds) != set(folds):
+            problems.append(f"{len(seen_folds)} of {len(folds)} pools scored")
+        for sd in seeds:
+            done = {f for lv in ALL_LEVELS for f in idx.get((split, sd, lv), {})}
+            if done and done != set(seen_folds):
+                problems.append(f"seed {sd} misses pools")
+                break
+        if not any(lv in POKE_RULE_LEVELS and (split, sd, lv) in idx for sd in seeds for lv in POKE_RULE_LEVELS):
+            problems.append("poke levels not scored")
+        elif any((split, sd, "P2.spread") not in idx for sd in seeds):
+            problems.append("echo spread not scored (run with the complexity levels on)")
+        if coverage is not None and coverage < COVERAGE_FLOOR:
+            problems.append(f"the copy models a median {coverage:.0%} of the scored neuron classes "
+                            f"(at least {COVERAGE_FLOOR:.0%} needed)")
+        judged_ok = not problems
+        letters = {sd: {lv: _letters(idx[(split, sd, lv)], folds) for lv in ALL_LEVELS if (split, sd, lv) in idx}
+                   for sd in seeds}
+        judged = {sd: judge(letters[sd], len(folds)) for sd in seeds} if judged_ok else {}
         levels = {}
         for lv in ALL_LEVELS:
-            rr = [r for r in rows if r["split"] == split and r.get("metric") == lv]
+            rr = [r for r in srows if r.get("metric") == lv]
             if not rr:
                 continue
             ex = np.array([excess(r) for r in rr])
             ok = np.isfinite(ex[:, 0])
             levels[lv] = {
                 "label": LABELS[lv],
-                "letters": {sd: by_seed[sd].get(lv, "") for sd in seeds},
-                "passes": sum(level_passes(by_seed[sd].get(lv, "")) for sd in seeds),
+                "letters": {sd: letters[sd].get(lv, "") for sd in seeds},
+                "passes": sum(level_passes(letters[sd].get(lv, ""), len(folds)) for sd in seeds) if judged_ok else None,
                 "excess_median": float(np.median(ex[ok, 0])) if ok.any() else None,
                 "excess_min": float(np.min(ex[ok, 0])) if ok.any() else None,
                 "excess_max": float(np.max(ex[ok, 0])) if ok.any() else None,
                 "runs_further": int(np.sum(ex[ok, 0] > 0)), "runs_closer": int(np.sum(ex[ok, 0] < 0)),
                 "runs": int(ok.sum()),
-                "per_run": [{"fold": r["fold"], "seed": r.get("seed", 0), "verdict": r.get("verdict"),
+                "per_run": [{"fold": int(r["fold"]), "seed": int(r.get("seed", 0)), "verdict": r.get("verdict"),
+                             "self_spread_ratio": None if not np.isfinite(_f(r.get("self_spread_ratio"))) else round(_f(r.get("self_spread_ratio")), 3),
                              "excess": None if not np.isfinite(e[0]) else round(float(e[0]), 4),
                              "low": None if not np.isfinite(e[1]) else round(float(e[1]), 4),
                              "high": None if not np.isfinite(e[2]) else round(float(e[2]), 4)}
                             for r, e in zip(rr, ex)],
             }
         out[split] = {
-            "seeds": len(seeds),
-            "pools": max((len(v) for d in by_seed.values() for v in d.values()), default=0),
-            "rest_pass_seeds": sum(j["rest_pass"] for j in judged.values()),
-            "poke_pass_seeds": sum(j["poke_pass"] for j in judged.values()),
-            "both_pass_seeds": sum(j["rest_pass"] and j["poke_pass"] for j in judged.values()),
-            "all_nine_seeds": sum(j["all_nine"] for j in judged.values()),
+            "judged": judged_ok, "not_judged_because": problems,
+            "seeds": len(seeds), "pools": len(folds), "pools_scored": len(seen_folds), "coverage": coverage,
+            "held_out_worms": sum(sizes.values()) if sizes else None,
+            "rest_pass_seeds": sum(j["rest_pass"] for j in judged.values()) if judged_ok else None,
+            "poke_pass_seeds": sum(j["poke_pass"] for j in judged.values()) if judged_ok else None,
+            "both_pass_seeds": sum(j["rest_pass"] and j["poke_pass"] for j in judged.values()) if judged_ok else None,
+            "all_nine_seeds": sum(j["all_nine"] for j in judged.values()) if judged_ok else None,
             "by_seed": judged, "levels": levels,
         }
     return out
 
 
 def rule_text() -> str:
-    return ("A level passes when it is inside in at least 2 of 3 held-out pools. Rest: at least 5 of the 6 "
-            "activity levels pass. Poked: echo pattern, echo size and echo spread all pass.")
+    return ("A level passes when it is inside in at least 2 of a split's 3 held-out pools. At rest: at least 5 of "
+            "the 6 activity levels pass. When poked: echo pattern, echo size and echo spread all pass.")
+
+
+FOLD_DIR = re.compile(r"fold(\d+)$")
+SEED_DIR = re.compile(r"seed(\d+)$")
