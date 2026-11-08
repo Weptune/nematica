@@ -4170,6 +4170,47 @@ magnitude, spread and kinetics on an independent split with a background that al
 dimension (2 of 3), lead-lag (2 of 3) and dwell. The best previous model, on its own selection split,
 had rest 4 and pokes 3 but failed dimension in every pool.
 
+**Ablations on the confirmation split (same run).** Rest and pokes count levels passing the rule.
+
+| model | dist | time | corr | dim | lead-lag | dwell | pattern | magn | spread | rest | pokes |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| frozen emulator | III | ITT | OIT | IOI | OII | III | III | III | III | 4 | 3 |
+| no correlated shocks | III | ITT | OII | III | OII | III | III | III | III | **5** | **3** |
+| no individuality | III | TTT | TTT | ITT | OII | III | III | III | III | 3 | 3 |
+| no causal kernels | III | ITT | OII | IOI | OOI | III | **OOO** | ITT | III | 4 | 1 |
+| no slow latent | III | III | **TTT** | ITT | OII | III | III | **OOO** | IOI | 4 | 2 |
+| slow factors without interactions | III | TTT | OTT | IIT | OOI | III | III | III | OII | 3 | 3 |
+| no coupling between classes (diagonal fast VAR) | III | ITT | OII | IOI | OII | III | III | III | III | **5** | **3** |
+| observed class by class | III | ITT | OII | IOI | OII | III | III | **OOO** | **OOO** | 5 | 1 |
+
+What this says, read against the near miss rather than as registered necessity (the full model did not
+pass, so "necessary" in the registered sense is undefined):
+- **Causal kernels from pokes**: without them the echo pattern fails in every pool. Watching does not
+  supply cause and effect, the project's earlier result, again.
+- **Slow brain-wide states**: without them correlations become too typical everywhere and echo
+  magnitude fails everywhere.
+- **Interactions among the slow states**: without them timescales are too typical in every pool and
+  lead-lag fails in two.
+- **Individuality**: without it timescale and correlation are too typical in every pool.
+- **Neuron-level observation** (measurement, not biology): without it magnitude and spread fail
+  everywhere.
+- **Not needed**: coupling between neuron classes in the fast dynamics, and common factors in the fast
+  shocks. Removing either *improves* the rest score to 5 of 6. The expectation that correlated shocks
+  would be necessary was wrong: once slow shared states exist, they supply the shared input.
+
+Two ablated models pass the rule on this split, but they were picked out after seeing it, so neither
+counts as a confirmed emulator. The near-identical scores of the frozen model and its two ablations also
+show that verdicts at the margin (correlation in pools 0 and 2) move with small changes.
+
+**Amendment 2 (8 Nov 2026, written before running): the minimal model and a robustness test.** No unseen
+wild-type atlas worms remain, so no clean confirmation is possible. What can still be tested is whether
+the conclusion is robust to simulation noise. The *minimal model* removes both unneeded ingredients:
+`hybrid_kernels_slow6d_indivslow1_hp_mem_diag` (slow interacting states, individuality, causal kernels,
+neuron-level observation; no coupling and no common fast shocks). It and the frozen model are each run
+with five simulation seeds (offsets 0 to 4) on both splits. **A model is called robust if it passes the
+rule in at least 4 of 5 seeds on each split.** Because both splits have now been seen, a robust pass
+will be reported as "passes on both splits under five noise draws, not confirmed on unseen worms".
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of
