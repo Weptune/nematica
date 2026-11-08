@@ -1,27 +1,40 @@
-                 split   model  seed distri timesc correl dimens leadla dwell patter magnit spread  rest  poke  pass
-       cv3 (selection) minimal     0    III    TTT    III    TII    IIO   III    III    III    III     5     3  True
-       cv3 (selection) minimal     1    III    TTT    III    TII    IIO   III    III    III    III     5     3  True
-       cv3 (selection) minimal     2    III    ITT    III    TII    IIO   III    III    III    III     5     3  True
-       cv3 (selection) minimal     3    III    TTT    III    TII    IIO   III    III    III    III     5     3  True
-       cv3 (selection) minimal     4    III    TTT    III    III    IIO   III    III    III    III     5     3  True
-       cv3 (selection)  frozen     0    III    TTT    TII    III    IIO   III    III    III    III     5     3  True
-       cv3 (selection)  frozen     1    III    ITT    III    III    IIO   III    III    III    III     5     3  True
-       cv3 (selection)  frozen     2    III    TTT    TTT    III    III   III    III    III    III     4     3 False
-       cv3 (selection)  frozen     3    III    TTT    TII    III    IIO   III    III    III    III     5     3  True
-       cv3 (selection)  frozen     4    III    TTT    TTI    III    IIO   III    III    III    III     4     3 False
-blocks1 (confirmation) minimal     0    III    ITT    OII    III    OII   III    III    III    III     5     3  True
-blocks1 (confirmation) minimal     1    III    ITT    OII    III    OII   III    ITI    III    III     5     3  True
-blocks1 (confirmation) minimal     2    III    ITT    OII    III    OII   III    III    III    III     5     3  True
-blocks1 (confirmation) minimal     3    III    ITT    OII    III    OII   III    III    III    III     5     3  True
-blocks1 (confirmation) minimal     4    III    ITT    OII    III    OII   III    III    III    III     5     3  True
-blocks1 (confirmation)  frozen     0    III    ITT    OIT    IOI    OII   III    III    III    III     4     3 False
-blocks1 (confirmation)  frozen     1    III    ITT    IIT    IOI    OII   III    III    III    III     5     3  True
-blocks1 (confirmation)  frozen     2    III    ITT    III    III    III   III    III    III    III     5     3  True
-blocks1 (confirmation)  frozen     3    III    TTT    III    III    OII   III    III    III    III     5     3  True
-blocks1 (confirmation)  frozen     4    III    ITT    IIT    III    OII   III    III    III    III     5     3  True
-                                sum  count
-model   split                             
-frozen  blocks1 (confirmation)    4      5
-        cv3 (selection)           3      5
-minimal blocks1 (confirmation)    5      5
-        cv3 (selection)           5      5
+                 split        model  seed distri timesc correl dimens leadla dwell patter magnit spread  rest  poke  pass  full
+       cv3 (selection)      minimal     0    III    TTT    III    TII    IIO   III    III    III    III     5     3  True False
+       cv3 (selection)      minimal     1    III    TTT    III    TII    IIO   III    III    III    III     5     3  True False
+       cv3 (selection)      minimal     2    III    ITT    III    TII    IIO   III    III    III    III     5     3  True False
+       cv3 (selection)      minimal     3    III    TTT    III    TII    IIO   III    III    III    III     5     3  True False
+       cv3 (selection)      minimal     4    III    TTT    III    III    IIO   III    III    III    III     5     3  True False
+       cv3 (selection) minimal+hsd1     0    III    ITI    III    TII    IIO   III    III    III    III     6     3  True  True
+       cv3 (selection) minimal+hsd1     1    III    ITI    III    TII    IIO   III    III    III    III     6     3  True  True
+       cv3 (selection) minimal+hsd1     2    III    ITT    III    TII    IIO   III    TII    III    III     5     3  True False
+       cv3 (selection) minimal+hsd1     3    III    ITT    III    TII    IIO   III    III    III    III     5     3  True False
+       cv3 (selection) minimal+hsd1     4    III    ITI    III    III    IIO   III    III    III    III     6     3  True  True
+       cv3 (selection)       frozen     0    III    TTT    TII    III    IIO   III    III    III    III     5     3  True False
+       cv3 (selection)       frozen     1    III    ITT    III    III    IIO   III    III    III    III     5     3  True False
+       cv3 (selection)       frozen     2    III    TTT    TTT    III    III   III    III    III    III     4     3 False False
+       cv3 (selection)       frozen     3    III    TTT    TII    III    IIO   III    III    III    III     5     3  True False
+       cv3 (selection)       frozen     4    III    TTT    TTI    III    IIO   III    III    III    III     4     3 False False
+blocks1 (confirmation)      minimal     0    III    ITT    OII    III    OII   III    III    III    III     5     3  True False
+blocks1 (confirmation)      minimal     1    III    ITT    OII    III    OII   III    ITI    III    III     5     3  True False
+blocks1 (confirmation)      minimal     2    III    ITT    OII    III    OII   III    III    III    III     5     3  True False
+blocks1 (confirmation)      minimal     3    III    ITT    OII    III    OII   III    III    III    III     5     3  True False
+blocks1 (confirmation)      minimal     4    III    ITT    OII    III    OII   III    III    III    III     5     3  True False
+blocks1 (confirmation) minimal+hsd1     0    III    ITI    OII    III    OII   III    III    III    III     6     3  True  True
+blocks1 (confirmation) minimal+hsd1     1    III    ITI    OII    III    OII   III    III    III    III     6     3  True  True
+blocks1 (confirmation) minimal+hsd1     2    III    ITI    OII    IIT    OII   III    III    III    III     6     3  True  True
+blocks1 (confirmation) minimal+hsd1     3    III    ITI    OII    IIT    OOI   III    III    III    III     5     3  True False
+blocks1 (confirmation) minimal+hsd1     4    III    III    OII    III    OII   III    III    III    III     6     3  True  True
+blocks1 (confirmation)       frozen     0    III    ITT    OIT    IOI    OII   III    III    III    III     4     3 False False
+blocks1 (confirmation)       frozen     1    III    ITT    IIT    IOI    OII   III    III    III    III     5     3  True False
+blocks1 (confirmation)       frozen     2    III    ITT    III    III    III   III    III    III    III     5     3  True False
+blocks1 (confirmation)       frozen     3    III    TTT    III    III    OII   III    III    III    III     5     3  True False
+blocks1 (confirmation)       frozen     4    III    ITT    IIT    III    OII   III    III    III    III     5     3  True False
+                                    pass       full      
+                                     sum count  sum count
+model        split                                       
+frozen       blocks1 (confirmation)    4     5    0     5
+             cv3 (selection)           3     5    0     5
+minimal      blocks1 (confirmation)    5     5    0     5
+             cv3 (selection)           5     5    0     5
+minimal+hsd1 blocks1 (confirmation)    5     5    4     5
+             cv3 (selection)           5     5    3     5

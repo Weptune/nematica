@@ -4255,6 +4255,21 @@ and both splits have been seen. Test: `hybrid_kernels_slow6d_indivslow1_hp_mem_d
 both splits. Reported: passes of the rule per split, and *full passes* (all 6 rest levels and all 3
 poke levels inside in at least 2 of 3 pools).
 
+**Amendment 3 result (`docs/figures/emulator_robustness.txt`, figure `docs/figures/emulator_ablations.png`).**
+
+| model | rule passes, cv3 | rule passes, blocks1 | full passes (all 9 levels), cv3 + blocks1 |
+|---|---|---|---|
+| frozen | 3 of 5 | 4 of 5 | 0 of 10 |
+| minimal | 5 of 5 | 5 of 5 | 0 of 10 |
+| minimal + neuron-level slow participation | **5 of 5** | **5 of 5** | **7 of 10** |
+
+With each neuron class in each simulated worm taking part in the slow states to its own degree, the
+timescale level passes in 7 of 10 runs (it never did before), and nothing else is lost: the three
+remaining non-full runs each miss one level (timescale twice, lead-lag once). This is the first model in
+the project that is inside the real worm-to-worm range on every rest and poke statistic at once, in most
+noise draws, on both splits. Its one tuned number was chosen with the ruler in view and both splits have
+been seen, so the claim stays: **not confirmed on unseen worms.**
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of

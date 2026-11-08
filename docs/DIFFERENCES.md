@@ -166,6 +166,29 @@ follows activity.
 calibration (at worm recording length, neither model predicts 20 to 40 s ahead on held-out data), so
 the test stopped before any brain data was read, as registered.
 
+## Update, 8 Nov 2026 (night): a model that passes, and what it needed
+
+The question was turned around: build one artificial network that held-out real worms cannot be told
+apart from, at rest and when single neurons are poked, then remove one part at a time (README "A worm
+emulator"). The registered attempt **failed narrowly** on the independent split (rest 4 of 6, pokes 3 of
+3). Ablations showed two of its parts were unnecessary. The resulting *minimal* model passes the rule in
+10 of 10 runs (both splits, five noise draws). With one more ingredient, individual neurons taking part
+in the slow states to their own degree, it is inside the real worm-to-worm range on all nine
+statistics at once in 7 of 10 runs. Both splits had been seen by then, so this is **not confirmed on
+unseen worms**.
+
+What the passing model needs, from the ablations (`docs/figures/emulator_ablations.png`):
+- **slow, brain-wide states that interact** (about 70% of real activity is slow, timescale about 40 s;
+  the lead-lag order worms share lives there), without which correlations, timescales and echo size fail;
+- **individual variation**, between animals and between single neurons within an animal (a neuron's
+  timescale belongs mostly to that neuron in that worm, not to its type: test-retest r = 0.39 within
+  a recording against 0.15 across worms);
+- **causal links learned from pokes**, without which the echo pattern fails in every pool;
+- **being observed neuron by neuron**, as real neurons are (a correction to how models had been scored:
+  class-level read-outs inflated simulated echoes).
+
+What it does **not** need: coupling between neuron types in the fast dynamics, or shared fast noise.
+
 ## Conclusion: what separates real neural networks from artificial ones
 
 This is the project's answer to its main question, as of 8 Nov 2026, with how strong each part is.
@@ -183,13 +206,22 @@ This is the project's answer to its main question, as of 8 Nov 2026, with how st
    state, and when they are, they acquire the brain's properties. *This is a synthesis across results,
    not a single test; it fits every row of the table and was not predicted in advance.*
 3. **The consequence that matters most in practice:** realism at rest does not predict realism under
-   perturbation (rho -0.06 across 88 model-pool scores), and individual worms have causal fingerprints
-   invisible at rest. A copy of a brain cannot be certified by watching it. *Strong, pre-registered,
+   perturbation (rho -0.12 across 30 models, recomputed per model after review 7), and individual worms
+   appear to have causal fingerprints invisible at rest (*downgraded 8 Nov: possibly partly off-target
+   stimulation of neighbouring neurons; see README "Do worms with the same wiring route signals
+   differently"*). A copy of a brain cannot be certified by watching it. *Strong, pre-registered,
    checked by reviews; the independence caveat in review 7 does not change a null.*
 4. **What survives as a measured difference, by degree:** tiring with use (part probably the tool,
    part probably the neuron), the worm's kind of state dependence (poke-specific, -0.093, p = 0.0008),
    and drifting rules over a recording (worms and human cortex drift, networks without slow processes
    do not). *Each is moderate evidence from mostly one species.*
+
+5. **Constructive answer (8 Nov, night):** an artificial network passes as a worm brain on this
+   benchmark once it has slow interacting brain-wide states, individuality down to single neurons, and
+   causal knowledge from perturbation; fine-grained fast coupling between neuron types is not needed.
+   This fits point 2 (the decisive state is slow and not visible in moment-to-moment activity) and
+   makes it testable. *Passes 10 of 10 runs on the rule, all nine statistics in 7 of 10; tuned and
+   evaluated on worms already seen, so not yet confirmed.*
 
 **Is any of this noteworthy?** Two things are, modestly: the benchmark result that looking right at rest
 says nothing about being right under perturbation (packaged as a preprint draft), and the repeat-
