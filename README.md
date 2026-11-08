@@ -4179,7 +4179,7 @@ had rest 4 and pokes 3 but failed dimension in every pool.
 | no individuality | III | TTT | TTT | ITT | OII | III | III | III | III | 3 | 3 |
 | no causal kernels | III | ITT | OII | IOI | OOI | III | **OOO** | ITT | III | 4 | 1 |
 | no slow latent | III | III | **TTT** | ITT | OII | III | III | **OOO** | IOI | 4 | 2 |
-| slow factors without interactions | III | TTT | OTT | IIT | OOI | III | III | III | OII | 3 | 3 |
+| slow factors without interactions (*review 8: also changes the donor path and the loadings*) | III | TTT | OTT | IIT | OOI | III | III | III | OII | 3 | 3 |
 | no coupling between classes (diagonal fast VAR) | III | ITT | OII | IOI | OII | III | III | III | III | **5** | **3** |
 | observed class by class | III | ITT | OII | IOI | OII | III | III | **OOO** | **OOO** | 5 | 1 |
 
@@ -4222,7 +4222,7 @@ runs.**
 In every one of the 10 minimal-model runs, the poke half passes (pattern, magnitude, spread), and so do
 distribution, dimension, lead-lag and dwell. Correlation passes in all 10, though it is outside in pool 0
 of blocks1 every time. Timescale is the one rest level that fails, too typical in at least two pools in 9
-of 10 runs. The frozen model's registered confirmation (seed 0) was one of its unlucky draws: it passes
+of 10 runs **[corrected, review 8: in all 10]**. The frozen model's registered confirmation (seed 0) was one of its unlucky draws: it passes
 in 4 of 5 seeds on blocks1 and 3 of 5 on cv3. The frozen model stays the registered result (a fail).
 The minimal model, wording as fixed in amendment 2: **passes the causal Turing test on both splits under
 five noise draws, not confirmed on unseen worms.**
@@ -4240,7 +4240,9 @@ The same neuron class in the same worm agrees between halves (log timescale r = 
 0.43), but the same class in a different worm barely agrees (r = 0.15, 0.06 to 0.17). After removing
 class and worm averages, a stable neuron-in-this-worm part remains (r = 0.25, 0.22 to 0.28), and the
 worm's overall timescale is stable too (r = 0.57). So in real worms how slow a neuron is belongs mostly to
-the individual neuron in the individual animal, not to its type. Every model here sets timescales by
+the individual neuron in the individual animal, not to its type. **[Qualified, review 8: the "different worms" pairing (np.roll) pairs neighbours in
+recording order; random pairings give r = 0.10 (95% 0.055 to 0.146), and neighbouring recordings agree more, a session effect that is
+also inside the within-recording 0.39. Individual neuron and recording conditions cannot be separated here.]** Every model here sets timescales by
 neuron type (plus a donor worm's slow structure), so its neurons are too alike. Caveats: the halves share
 the recording's measurement conditions (indicator expression, tracking quality), and both halves contain
 pokes, so part of this "individual" component may be measurement or the worm's own poke schedule, not
@@ -4264,10 +4266,13 @@ poke levels inside in at least 2 of 3 pools).
 | minimal + neuron-level slow participation | **5 of 5** | **5 of 5** | **7 of 10** |
 
 With each neuron class in each simulated worm taking part in the slow states to its own degree, the
-timescale level passes in 7 of 10 runs (it never did before), and nothing else is lost: the three
-remaining non-full runs each miss one level (timescale twice, lead-lag once). This is the first model in
+timescale level passes in 7 of 10 runs **[corrected, review 8: 8 of 10]** (it never did before), and nothing else is lost **[corrected:
+lead-lag drops to OOI in blocks1 seed 3]**: the three remaining non-full runs each miss one level (timescale twice, lead-lag once). This is the first model in
 the project that is inside the real worm-to-worm range on every rest and poke statistic at once, in most
-noise draws, on both splits. Its one tuned number was chosen with the ruler in view and both splits have
+noise draws, on both splits. **[Qualified, review 8: "inside" is often knife-edge. For lead-lag the model's median distance is above the
+real worm-to-worm distance in 30 of 30 pool-runs, called inside in 19 only because the lower bound sits just below 0 (within 0.002 in 7 of
+15 cv3 cases); timescale is on the too-typical side in 25 of 30. The model is consistently, if not significantly, off in the same
+directions. The five seeds resample simulation noise only: fitting and donor choice are deterministic.]** Its one tuned number was chosen with the ruler in view and both splits have
 been seen, so the claim stays: **not confirmed on unseen worms.**
 
 ## Testing the emulator recipe on data it was not built on (pre-registered 8 Nov 2026, evening)
@@ -4296,7 +4301,9 @@ fails.** The rule left 102 wild-type worms (not 113 as written: 11 lack identiti
 1000 frames) and 13 unc-31 worms. Slow share, class-matched unc-31 minus wild type: **+0.011** [95%
 -0.056, +0.054], permutation p = 0.75 (58 classes; medians 0.80 and 0.78). Shared slow variance: 0.313
 against 0.319, p = 0.66. Without dense-core-vesicle neuropeptide release, worms keep as much slow,
-brain-wide activity as wild type, so on this evidence neuropeptides do not carry the slow states. The
+brain-wide activity as wild type, so on this evidence neuropeptides do not carry the slow states. **[Qualified, review 8: the
+measure is censored (26% of worm-class values at the 0.95 cap, 8.5% forced to 0, unlike the emulator's caps), so the honest
+statement is "no detectable reduction on this measure"; the timescale bootstrap for 13 worms is unreliable.]** The
 secondary timescale measure leans the other way (unc-31 slow parts about 9 s longer, permutation p =
 0.010, but the worm bootstrap interval -3.9 to +14.3 s includes zero): not a finding. This agrees with
 the earlier unc-31 results (arc 4, the reverse test, watching): removing peptide release changes little
@@ -4315,14 +4322,17 @@ informative.** Both controls fail in 5 of 5 seeds (`var3_spontaneous`: rest 2 to
 `hybrid_kernels`: rest 4 to 5, pokes 1). The frozen recipe, refitted from scratch on unc-31 worms, passes
 in **4 of 5** seeds (rest 5 of 6 in four seeds, 4 in one; pokes 3 of 3 in all five). Its failing rest levels
 are reversal-bout timing (OIT or OTT in every seed) and, in one seed, correlation. This is the first
-emulator result on worms that played no part in designing it: success by the registered rule. Caveats:
+emulator result on worms that played no part in designing it: success by the registered rule. **[Superseded,
+review 8: with the corrected readout (`memfix`) the recipe passes in 3 of 5 seeds on unc-31 worms, failing
+on correlation (OIT) in seeds 0 and 4. Below the registered 4 of 5: test U fails.]** Caveats:
 pools of 4 to 5 worms, so the real worm-to-worm range is wide; the controls fail mostly on echo size and
 spread, the levels the neuron-level readout fixes, so what is confirmed is the recipe as a whole, readout
 included; unc-31 worms are mutants, so this confirms the recipe generalises to a related nervous system,
 not to more wild-type worms.
 
 **T. The rest half on another lab's freely moving worms** (Atanas et al. 2023, 30 worms with neuron
-names, no pokes, frames of about 0.6 s, existing split `configs/splits/atanas2023_cv3.yaml`). The recipe
+names, no pokes **[corrected, review 8: no optogenetic pokes, but 16 of 30 worms get a heat pulse at frame about 802, and the adapter splices
+out the invalid frames around it]**, frames of about 0.6 s, existing split `configs/splits/atanas2023_cv3.yaml`). The recipe
 is fitted on the training worms (without pokes it has no causal links to learn) and scored on the six
 activity levels, five seeds. *Control:* `var3_spontaneous`. Same informativeness rule. *Success:* at
 least 5 of 6 rest levels pass in at least 4 of 5 seeds. *Caveat:* frame-based constants mean slightly
@@ -4366,10 +4376,28 @@ and BAG against the reversal circuit (RIM, AVJ, AVD): a feeding-against-locomoti
 smaller mixtures. (`MERGE`, rows the atlas could not split into single neurons, loads on several and is
 not interpreted.) In the slow band, sensory neurons and first interneurons (ADL, AWA, ASG, ASI, AIZ,
 AVH) tend to lead and pharyngeal and head neurons (M2, M3, NSM, MC, IL1, URY) to follow by about 10 s.
-**That order does not hold in Atanas worms** (freely moving, never stimulated; Spearman r = -0.04 over 50
+**That order does not hold in Atanas worms** (freely moving, never optogenetically stimulated, 16 of 30 heat-pulsed; Spearman r = -0.04 over 50
 shared classes, permutation p = 0.79, `scripts/explore/slow_lead_atanas.py`), so it may belong to the
 atlas conditions (immobilised, light every 30 s) rather than to worms in general. The two main factors
 are descriptive; they were not tested against the other dataset.
+
+## Review 8 (8 Nov 2026, evening): the emulator work
+
+An independent reviewer (a separate agent that had not seen the work being done) recomputed the numbers
+from the caches. Corrections are marked in place above. In short:
+1. **Test U fails under the corrected readout** (3 of 5 seeds; registered threshold 4 of 5).
+2. **"Inside on all nine" is knife-edge**: lead-lag sits above the real-to-real distance in 30 of 30
+   pool-runs and timescale on the too-typical side in 25 of 30; passes depend on bootstrap bounds a hair
+   below zero.
+3. **The seeds resample simulation noise only**; both splits are the same 113 worms.
+4. **Atanas worms are not all unstimulated** (16 of 30 heat-pulsed; frames spliced around the pulse).
+5. **The "without interactions" ablation changes more than interactions** (donor path, loadings).
+6. **The timescale-individuality numbers** are inflated by neighbour pairing and confounded with session.
+7. **Test N's measure is censored**; the null should read "no detectable reduction".
+8. Three counts in the amendment write-ups were wrong (fixed in place).
+
+Checked and found correct: the slow-dynamics fit and draw, the Procrustes step, NaN handling, no leakage
+of pool worms into fitting, distinct seeds, cache globs, and the pass-rule summaries.
 
 ## Paper draft and outreach (8 Nov 2026)
 
