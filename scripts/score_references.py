@@ -13,6 +13,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from nematica.score import load_copy, score_many, write_report  # noqa: E402
 
+NOTES = {"VAR(3) from rest": "Reads out one row per neuron class, which inflates echo size and spread (README, emulator step 5).",
+         "first hybrid": "Reads out one row per neuron class, which inflates echo size and spread (README, emulator step 5)."}
 COPIES = {"silent (independent noise)": "examples/copies/silent.py:Silent",
           "linear model from rest": "examples/copies/linear_rest.py:LinearRest",
           "VAR(3) from rest": "examples/copies/reference.py:Var3Rest",
@@ -27,4 +29,5 @@ if __name__ == "__main__":
     for name, rows in res.items():
         slug = name.split(" (")[0].lower().replace(" ", "_").replace("(", "").replace(")", "")
         print(write_report(name, rows, f"results/scores/reference/{slug}.json",
-                           meta={"date": datetime.date.today().isoformat(), "worms": 113, "command": f"scripts/score_references.py ({COPIES[name]})"}))
+                           meta={"date": datetime.date.today().isoformat(), "command": f"scripts/score_references.py ({COPIES[name]})",
+                                 "note": NOTES.get(name)}))
