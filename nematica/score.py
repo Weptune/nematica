@@ -176,6 +176,33 @@ def score(factory, data: str | Path | Sequence[PumpProbe], splits: Sequence[str]
     return rows
 
 
+def score_many(factories: dict, data, splits: Sequence[str] = ("cv3", "blocks1"), folds=None, pci: bool = True,
+               norm: str = "fluct", log: Callable[[str], None] = print, seeds: int = 1,
+               split_files: dict | None = None) -> dict[str, list[dict]]:
+    """Several copies on the same held-out pools: the real side of each fold is built once and shared
+    (identical rows to scoring each copy alone). {name: factory} -> {name: rows}."""
+    set_norm(norm)
+    recs = ({r.uid: r for r in load_pumpprobe_dir(data)} if isinstance(data, (str, Path))
+            else {r.uid: r for r in data})
+    paths = split_files or {s: SPLITS_DIR / SPLITS[s] for s in splits}
+    out: dict[str, list[dict]] = {k: [] for k in factories}
+    for split in (split_files or splits):
+        all_folds = load_folds(paths[split])["folds"]
+        for fi in range(len(all_folds)):
+            if folds is not None and fi not in folds:
+                continue
+            log(f"[{split} fold {fi}] building the real-worm ruler")
+            ruler = FoldRuler(*fold_parts(recs, all_folds, fi), pci=pci)
+            for name, factory in factories.items():
+                copy = factory()
+                model = copy if hasattr(copy, "simulate") else CopyAdapter(copy)
+                log(f"[{split} fold {fi}] {name}")
+                for sd in range(seeds):
+                    for r in ruler.score(name, model, seed_base=1000 * fi + 100000 * sd, refit=sd == 0):
+                        out[name].append({"split": split, "fold": fi, "seed": sd, **r})
+    return out
+
+
 def echo_agreement(rows: Sequence[dict], key: str = "system_median") -> float:
     """Correlation of echo patterns (1 minus the median C1 distance), averaged over pools:
     with key="system_median", copy against real worms; with "bio_median", real worms against

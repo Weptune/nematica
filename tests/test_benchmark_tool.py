@@ -160,3 +160,10 @@ def test_leaderboard(scored):
     from nematica.report_html import render_leaderboard
     html = render_leaderboard({"a": {"rows": scored}, "b": {"rows": scored}})
     assert html.count("<tr>") >= 3 and "echo pattern" in html
+
+
+def test_score_many_matches_score(worms, split_file):
+    from nematica.score import score_many
+    many = score_many({"echo": Echo}, worms, split_files=split_file, folds=[1], pci=False, log=lambda m: None)["echo"]
+    one = score(Echo, worms, split_files=split_file, folds=[1], pci=False, log=lambda m: None)
+    assert [(r["metric"], r["system_median"]) for r in many] == [(r["metric"], r["system_median"]) for r in one]
