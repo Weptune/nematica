@@ -57,6 +57,9 @@ Split cv3 (3 held-out pools, 3 noise seeds): passes at rest in 3/3, when poked i
 
 ## Write a copy (Python)
 
+The quickest start is [`examples/copies/template.py`](../examples/copies/template.py): a complete, deliberately
+weak copy with the two parts to replace marked. The contract in brief:
+
 ```python
 import numpy as np
 from nematica.score import BrainCopy

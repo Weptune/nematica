@@ -248,3 +248,10 @@ def test_low_level_models_cannot_be_mistaken_for_copies():
     assert type(_as_model(Helper())).__name__ == "CopyAdapter"
     with pytest.raises(TypeError):
         _as_model(object())
+
+
+def test_template_copy_passes_the_contract_check(worms):
+    from nematica.score import check, load_copy
+    from pathlib import Path
+    tpl = Path(__file__).resolve().parents[1] / "examples" / "copies" / "template.py"
+    assert check(load_copy(f"{tpl}:Template"), worms, log=lambda m: None) == []
