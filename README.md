@@ -4328,6 +4328,26 @@ activity levels, five seeds. *Control:* `var3_spontaneous`. Same informativeness
 least 5 of 6 rest levels pass in at least 4 of 5 seeds. *Caveat:* frame-based constants mean slightly
 longer windows in seconds (0.6 against 0.5 s per frame); they are kept as frozen.
 
+**T result (`results/emulator_atanas`): the recipe fails on freely moving worms.** The control fails too
+(rest 3 of 6 in every seed), so the test is informative, and the recipe does *worse* than the control:
+rest 1 of 6 in all five seeds (distribution, timescale, correlation and lead-lag outside in most pools;
+only reversal-bout timing passes). The recipe, frozen as designed on immobilised, stimulated worms, does
+not transfer to another lab's freely moving, unstimulated worms. Diagnosis below is exploratory.
+
+**Correction (8 Nov 2026, evening): a bug in the neuron-level readout.** The Atanas diagnosis
+(`scripts/explore/atanas_diag.py`) showed simulated left/right partners correlating at 0.35 where the
+training worms gave 0.59. In `_simulate_members` each member's own part had variance sig^2 where the
+formula assumed sig^2 (1 - 1/m), so partners came out less correlated than the target: at the atlas
+median target of 0.25 they were *anticorrelated* (-0.09; checked by simulation). Every emulator result
+with `mem` (selection, confirmation, amendments 2 and 3, test U) used the bug. The neuron-level readout
+was still right in kind (members were separate and partly independent) but overshot in degree, and the
+echo-size and spread passes may partly rest on that.
+
+**Re-run registered before running:** the corrected recipe (`memfix` in place of `mem`:
+`hybrid_kernels_slow6d_indivslow1_hp_memfix_diag_hsd1`), five seeds, on the two atlas splits, the unc-31
+worms (test U, same controls and rule) and the Atanas worms (test T). The earlier results stand as
+recorded but are superseded by these if they differ.
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of

@@ -744,6 +744,7 @@ class HybridKernel:
         self.coupling = "full"           # "diagonal": each class driven only by its own past
         self.members = False             # observed neuron by neuron, members of a class separate
         self.member_rho, self.member_rho_default = {}, 0.25
+        self.member_fix = False
         self.innov = innov               # > 0: the VAR's shocks share this many common factors
         self.indiv_shock = False         # individual backgrounds: only the shock structure
         self.lags, self.shrink, self.mask, self.seed = lags, shrink, mask, seed
@@ -1078,7 +1079,10 @@ class HybridKernel:
             for t in range(1, T + 200):
                 w[:, t] = phi * w[:, t - 1] + np.sqrt(1 - phi ** 2) * w[:, t]
             w = w[:, 200:]
-            y[mem] += sig * (w - w.mean(axis=0, keepdims=True)) * np.sqrt(m / (m - 1))
+            fix = 1.0 if getattr(self, "member_fix", False) else np.sqrt(m / (m - 1))
+            # without the fix the own parts have variance sig^2 instead of sig^2 (1 - 1/m), so
+            # members end up less correlated than the target (bug found 8 Nov, evening) [A]
+            y[mem] += sig * (w - w.mean(axis=0, keepdims=True)) * fix
         pos = {j: n for n, j in enumerate(nrn)}
         stims = [(k, f) for k, f in rec.stims if k in pos and f - npre >= 0 and f + npost <= T]
         devs = [[] for _ in range(len(y))]
