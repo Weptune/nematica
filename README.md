@@ -4211,6 +4211,18 @@ with five simulation seeds (offsets 0 to 4) on both splits. **A model is called 
 rule in at least 4 of 5 seeds on each split.** Because both splits have now been seen, a robust pass
 will be reported as "passes on both splits under five noise draws, not confirmed on unseen worms".
 
+**Why timescales stay too typical (exploratory, `scripts/explore/tau_reliability.py`, all 113 worms).**
+Each class's half-decay time was measured separately in the first and second half of every recording.
+The same neuron class in the same worm agrees between halves (log timescale r = 0.39, 95% CI 0.36 to
+0.43), but the same class in a different worm barely agrees (r = 0.15, 0.06 to 0.17). After removing
+class and worm averages, a stable neuron-in-this-worm part remains (r = 0.25, 0.22 to 0.28), and the
+worm's overall timescale is stable too (r = 0.57). So in real worms how slow a neuron is belongs mostly to
+the individual neuron in the individual animal, not to its type. Every model here sets timescales by
+neuron type (plus a donor worm's slow structure), so its neurons are too alike. Caveats: the halves share
+the recording's measurement conditions (indicator expression, tracking quality), and both halves contain
+pokes, so part of this "individual" component may be measurement or the worm's own poke schedule, not
+biology.
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of

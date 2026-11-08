@@ -7,8 +7,10 @@ from run_same_worms import bench_sample
 from nematica.systems.causal_models import ClassVAR
 from nematica.data.pumpprobe import load_pumpprobe_dir
 from nematica.bench.levels import half_decay_time
+from collections import Counter
 recs = load_pumpprobe_dir("data/raw/randi2023_wt_npz")
-classes = ClassVAR(3, "all").fit(recs[:80], recs[80:]).classes
+cnt = Counter(c for r in recs for c in set(r.classes) if c)
+classes = sorted(c for c, n in cnt.items() if n >= 0.3 * len(recs))
 A, B = [], []                       # rows: worm, cols: class; log tau in halves
 for r in recs:
     b = bench_sample(r, classes, "r", r.uid)
@@ -44,3 +46,20 @@ print("worm median log tau, half 1 vs half 2: r = %.2f" % np.corrcoef(wa, wb)[0,
 dA2 = dA - np.nanmedian(dA, 1, keepdims=True); dB2 = dB - np.nanmedian(dB, 1, keepdims=True)
 m4 = np.isfinite(dA2) & np.isfinite(dB2)
 print("after removing class and worm effects: same worm-neuron r = %.2f" % np.corrcoef(dA2[m4], dB2[m4])[0, 1])
+okw = np.isfinite(wa) & np.isfinite(wb)
+print("worm median log tau, half 1 vs half 2 (fixed): r = %.2f (n=%d)" % (np.corrcoef(wa[okw], wb[okw])[0, 1], okw.sum()))
+rng = np.random.default_rng(0)
+def stats(idx):
+    a, b = A[idx], B[idx]
+    da = a - np.nanmean(a, 0, keepdims=True); db = b - np.nanmean(b, 0, keepdims=True)
+    da = da - np.nanmedian(da, 1, keepdims=True); db = db - np.nanmedian(db, 1, keepdims=True)
+    m = np.isfinite(da) & np.isfinite(db)
+    within = np.corrcoef(da[m], db[m])[0, 1]
+    br = np.roll(b, 1, 0); m3 = np.isfinite(a) & np.isfinite(br)
+    raw_b = np.corrcoef(a[m3], br[m3])[0, 1]
+    m1 = np.isfinite(a) & np.isfinite(b)
+    raw_w = np.corrcoef(a[m1], b[m1])[0, 1]
+    return within, raw_w, raw_b
+bs = np.array([stats(rng.integers(0, len(A), len(A))) for _ in range(500)])
+for name, col in zip(("neuron-in-worm part, two halves", "raw, same worm two halves", "raw, same class other worm"), bs.T):
+    print("%-34s 95%% CI %.2f to %.2f" % (name, *np.percentile(col, [2.5, 97.5])))
