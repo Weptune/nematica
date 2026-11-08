@@ -152,10 +152,11 @@ def fig_what_a_copy_needs(out):
 def fig_brainlike(out):
     from nematica.brainlike.signatures import LABELS, SIGNATURES
     d = ROOT / "nematica/brainlike/calibration"
-    worms = [json.loads((d / f"held-out-real-worms-group-{i}.json").read_text())["result"] for i in (1, 2, 3)]
+    worms = [json.loads((d / f"real-worms-held-out-of-the-reference-group-{i}.json").read_text())["result"] for i in (1, 2, 3)]
     nets = [(json.loads((d / f"{f}.json").read_text())["result"], lab, c, m) for f, lab, c, m in (
-        ("random-tanh-rnn", "Random tanh RNN", RED, "s"), ("random-gru", "Random GRU", ORANGE, "D"),
-        ("lab-network-slow-drives-share-0-4", "Network with fast hidden drives", NAVY, "^"))]
+        ("worm-emulator-minimal-recipe-group-3", "Worm emulator fitted to the atlas", NAVY, "D"),
+        ("artificial-lab-network-with-40-s-hidden-drives", "Network with slow hidden drives (40 s)", ORANGE, "^"),
+        ("random-tanh-rnn-120-units", "Random tanh RNN", RED, "s"))]
     fig, ax = plt.subplots(figsize=(11, 6))
     n = len(SIGNATURES)
     ax.axvspan(-1, 1, color=BAND, lw=0)
@@ -169,21 +170,27 @@ def fig_brainlike(out):
         y = n - 1 - i
         ax.axhline(y, color=GRID, lw=0.8, zorder=0)
         for j, w in enumerate(worms):
-            ax.plot(X(w["signatures"][k]["distance"]), y + 0.12 - j * 0.06, "o", color=GREEN, ms=8, mec="white",
-                    mew=1.2, label="Real worm groups the reference never saw" if (i == 0 and j == 0) else None, zorder=3)
+            v = w["signatures"][k]["distance"]
+            if v is not None:
+                ax.plot(X(v), y + 0.12 - j * 0.06, "o", color=GREEN, ms=8, mec="white", mew=1.2,
+                        label="Real worm groups the reference never saw" if (i == 0 and j == 0) else None, zorder=3)
         for j, (r, lab, c, m) in enumerate(nets):
             v = r["signatures"][k]["distance"]
-            ax.plot(X(v), y - 0.12 - j * 0.06, m, color=c, ms=8, mec="white", mew=1.2,
-                    label=lab if i == 0 else None, zorder=3)
+            yy = y - 0.12 - j * 0.06
+            if v is None:
+                ax.text(clip + 0.3, yy, "not read", color=c, fontsize=8, va="center")
+                continue
+            ax.plot(X(v), yy, m, color=c, ms=8, mec="white", mew=1.2, label=lab if i == 0 else None, zorder=3)
     ax.set_yticks(range(n), [LABELS[k] for k in reversed(SIGNATURES)])
-    ax.set_xlim(-clip - 0.5, clip + 0.5)
+    ax.set_xlim(-clip - 0.5, clip + 1.6)
     ax.set_ylim(-0.95, n - 0.6)
     ax.set_xticks([-8, -4, -1, 0, 1, 4, 8], ["-8 or less", "-4", "-1", "0", "+1", "+4", "+8 or more"])
     ax.set_xlabel("Distance from the real-worm median, in units of the real-worm range")
     ax.set_title("A brain-likeness test any system can take", loc="left")
     ax.grid(axis="y", visible=False)
-    ax.legend(loc="lower left", fontsize=9.5, bbox_to_anchor=(0.0, -0.27), ncol=2)
-    fig.text(0.5, -0.04, "Scores: real worm groups 7, 6 and 7 of 8 signatures inside; every untrained network 0 of 8.",
+    ax.legend(loc="lower left", fontsize=9.5, bbox_to_anchor=(0.0, -0.33), ncol=2)
+    fig.text(0.5, -0.06, "Average distance: real worm groups 0.29 to 0.60; worm emulator 0.84 to 1.04; slow-drive network 2.32; "
+             "random tanh RNN 4.88.",
              ha="center", color=MUTED, fontsize=9.5)
     fig.tight_layout()
     fig.savefig(out / "fig-brainlike.png", bbox_inches="tight")
