@@ -4246,6 +4246,15 @@ the recording's measurement conditions (indicator expression, tracking quality),
 pokes, so part of this "individual" component may be measurement or the worm's own poke schedule, not
 biology.
 
+**Amendment 3 (8 Nov 2026, before running): single-neuron individuality.** Following the timescale
+reliability result, one ingredient is added to the minimal model: each class in each simulated worm
+takes part in the slow states to its own degree (logit of its slow share plus a normal deviation of SD
+`h_sd`, option `hsd`). `h_sd = 1` was chosen on cv3 pool 0 by matching the timescale distance to real
+worms (0.847 against 0.854 real to real; 2 overshoots at 0.929), so this is tuned with the ruler in view
+and both splits have been seen. Test: `hybrid_kernels_slow6d_indivslow1_hp_mem_diag_hsd1`, five seeds on
+both splits. Reported: passes of the rule per split, and *full passes* (all 6 rest levels and all 3
+poke levels inside in at least 2 of 3 pools).
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of

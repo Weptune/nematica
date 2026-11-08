@@ -735,6 +735,8 @@ class HybridKernel:
         self.highpass = False
         self.slow_own_rho = False
         self.no_kernels = False
+        self.kin_sd, self.kin_med = 0.0, 1.0
+        self.h_sd = 0.0
         self.slow_drift = False
         self.slow_drift_pool = False
         self.drift_gain = 1.0     # each row draws its drift from training worm-class rows          # donors' ultra-slow drifts (minutes), class by class
@@ -1164,7 +1166,14 @@ class HybridKernel:
             sl = sm.draw(x.shape[1] + 400, rng)[rows, 400:]
             h = sm.h[rows][:, None]
             sdb = x.std(axis=1, keepdims=True)
-            x = x * np.sqrt(1 - h) + sl * sdb
+            if self.h_sd:
+                # each class in this worm takes part in the slow states to its own degree:
+                # logit(share) + N(0, h_sd) [A]
+                hc = np.clip(h, 0.02, 0.98)
+                h2 = 1 / (1 + np.exp(-(np.log(hc / (1 - hc)) + self.h_sd * rng.standard_normal(h.shape))))
+                sl = sl * np.sqrt(h2 / hc)
+                h = h2
+            x = x * np.sqrt(1 - np.clip(h, 0, 0.98)) + sl * sdb
         if self.obs_noise:
             ci = {c: i for i, c in enumerate(self.var.classes)}
             f = np.array([self.noise_frac[ci[c]] for c in bg.classes])
@@ -1175,6 +1184,17 @@ class HybridKernel:
                 for t in range(1, w.shape[1]):
                     w[:, t] = phi * w[:, t - 1] + np.sqrt(1 - phi ** 2) * w[:, t]
             x = x + w * sdx * np.sqrt(f / np.clip(1 - f, 0.2, None))[:, None]
+        if self.kin_sd:
+            # each class in this worm gets its own read-out kinetics: an exponential filter with a
+            # time constant drawn log-normally (median kin_med frames), size kept [A]; motivated by
+            # timescales being mostly individual (scripts/explore/tau_reliability.py)
+            tau = self.kin_med * np.exp(self.kin_sd * rng.standard_normal(len(x)))
+            phi = np.exp(-1.0 / tau)
+            sd0 = x.std(axis=1)
+            y = x.copy()
+            for t in range(1, x.shape[1]):
+                y[:, t] = phi * y[:, t - 1] + (1 - phi) * x[:, t]
+            x = y * (sd0 / np.maximum(y.std(axis=1), 1e-9))[:, None]
         if self.members:
             return self._simulate_members(rec, bg, x, rng)
         T = x.shape[1]
