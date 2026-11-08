@@ -222,7 +222,7 @@ def render(report: dict, compare: dict[str, dict] | None = None) -> str:
             "<h2>The answer</h2>",
             f"<p class='lead'>{_esc(_sentence(a))}</p>",
             *([f"<p class='note'><b>Note.</b> {_esc(meta['note'])}</p>"] if meta.get("note") else []),
-            *([f"<p class='note'>{_esc(d['coverage_note'])}.</p>" for d in list(a.values())[:1] if d.get("coverage_note")]),
+            *([f"<p class='note'>{_esc(d['coverage_note'][:1].upper() + d['coverage_note'][1:])}.</p>" for d in list(a.values())[:1] if d.get("coverage_note")]),
             "<table class='answer'><thead><tr><th>Split</th><th>Passes at rest</th><th>Passes when poked</th>"
             "<th>All nine rule levels pass</th></tr></thead><tbody>" + "".join(ans_rows) + "</tbody></table>",
             f"<p>{_esc(rule_text())} Each noise seed is judged on its own.</p>"]
