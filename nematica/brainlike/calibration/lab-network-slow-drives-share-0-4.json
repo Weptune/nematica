@@ -1,5 +1,5 @@
 {
- "name": "lab network (slow drives share 0.4)",
+ "name": "Artificial-lab network with 5 s hidden drives",
  "description": "The project's artificial-lab network: 120 tanh units, sparse random weights, plus slow hidden drives no recording sees (share 0.4, time constant 5 s). A baseline.",
  "result": {
   "signatures": {

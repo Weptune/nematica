@@ -1,5 +1,5 @@
 {
- "name": "random GRU",
+ "name": "Random GRU, 120 units (ONNX)",
  "description": "A PyTorch GRU cell with 120 units and random weights, exported to ONNX. A baseline.",
  "result": {
   "signatures": {

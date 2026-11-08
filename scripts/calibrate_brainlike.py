@@ -82,7 +82,7 @@ def worms():
         res = score(m, ref)
         print(f"held-out group {h}: {res['score']} of 8 inside", {k: v["inside"] for k, v in res["signatures"].items()}, flush=True)
         res["how"] = "30 real worms held out of the reference (scored against the other 83)"
-        save_full(f"held-out real worms, group {h + 1}", res,
+        save_full(f"Real worms held out of the reference, group {h + 1}", res,
                   "30 real C. elegans recordings from the atlas, held out of the reference: the reference ranges "
                   "here come from the other 83 worms. Shows what a real nervous system scores.")
         out.append({"score": res["score"], "signatures": {k: {"value": v["value"], "inside": v["inside"],
@@ -145,7 +145,7 @@ def gru():
     res = run_test(net, log=lambda m: print("  ", m, flush=True))
     print(f"random GRU (ONNX): score {res['score']} valid {res['valid']} ({time.time() - t:.0f} s)", flush=True)
     save("random GRU (ONNX)", short(res))
-    save_full("random GRU", res, GRU_ABOUT)
+    save_full("Random GRU, 120 units (ONNX)", res, GRU_ABOUT)
 
 
 GRU_ABOUT = "A PyTorch GRU cell with 120 units and random weights, exported to ONNX. A baseline."
@@ -160,7 +160,7 @@ def systems():
         res = run_test(net, log=lambda m: print("  ", m, flush=True))
         print(f"{name}: score {res['score']} valid {res['valid']} ({time.time() - t:.0f} s)", flush=True)
         save(name, short(res))
-        save_full("random tanh RNN", res, "120 tanh units, sparse random weights (spectral radius 1.3), leak 0.5, "
+        save_full("Random tanh RNN, 120 units", res, "120 tanh units, sparse random weights (spectral radius 1.3), leak 0.5, "
                   "input noise 0.6 per step. A baseline: an untrained recurrent network.")
     for share in (0.0, 0.4):
         sysm = LabBrain(share=share)
@@ -168,7 +168,7 @@ def systems():
         res = run_python(sysm, log=lambda m: None)
         print(f"{sysm.name}: score {res['score']} valid {res['valid']} ({time.time() - t:.0f} s)", flush=True)
         save(sysm.name, short(res))
-        save_full(sysm.name, res, "The project's artificial-lab network: 120 tanh units, sparse random weights"
+        save_full("Artificial-lab network with 5 s hidden drives" if share else "Artificial-lab network, plain", res, "The project's artificial-lab network: 120 tanh units, sparse random weights"
                   + (", plus slow hidden drives no recording sees (share 0.4, time constant 5 s)" if share else "") + ". A baseline.")
     p = gru_onnx(Path("/tmp/random_gru.onnx"))
     net = load_network(p, "random GRU (ONNX)")
@@ -176,7 +176,7 @@ def systems():
     res = run_test(net, log=lambda m: print("  ", m, flush=True))
     print(f"random GRU (ONNX): score {res['score']} valid {res['valid']} ({time.time() - t:.0f} s)", flush=True)
     save("random GRU (ONNX)", short(res))
-    save_full("random GRU", res, GRU_ABOUT)
+    save_full("Random GRU, 120 units (ONNX)", res, GRU_ABOUT)
 
 
 if __name__ == "__main__":

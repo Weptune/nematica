@@ -136,7 +136,8 @@ def _board(limit: int | None = None):
     return [dict(r) for r in rows]
 
 
-EXAMPLES = (("held-out", "Real worms the test never saw", "#2e7d4f"), ("random-tanh", "Random recurrent network", "#b8443f"))
+EXAMPLES = (("real-worms-held-out", "Real worms the test never saw", "#2e7d4f"),
+            ("random-tanh", "Random recurrent network", "#b8443f"))
 
 
 def _examples():
@@ -226,7 +227,7 @@ async def submit(request: Request, mode: str = Form(...), name: str = Form(...),
 
 
 def _job(job_id: str):
-    if not re.fullmatch(r"[\w-]{6,40}", job_id):
+    if not re.fullmatch(r"[\w-]{6,80}", job_id):
         raise HTTPException(404)
     with db() as c:
         row = c.execute("select * from jobs where id=?", (job_id,)).fetchone()
@@ -264,7 +265,7 @@ def leaderboard_json():
 
 def add_reference(name: str, result: dict, author: str = "NEMATICA reference", description: str = "") -> str:
     """Put a reference result (held-out worms, baseline networks) on the board."""
-    job_id = "ref-" + re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")[:30]
+    job_id = "ref-" + re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")[:60]
     d = DATA / "jobs" / job_id
     d.mkdir(parents=True, exist_ok=True)
     (d / "result.json").write_text(json.dumps(result, default=float))

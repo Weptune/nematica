@@ -1,5 +1,5 @@
 {
- "name": "lab network (slow drives share 0.0)",
+ "name": "Artificial-lab network, plain",
  "description": "The project's artificial-lab network: 120 tanh units, sparse random weights. A baseline.",
  "result": {
   "signatures": {

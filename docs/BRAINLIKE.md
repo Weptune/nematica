@@ -19,14 +19,14 @@ an organoid on a multi-electrode array or a whole-brain emulation can all take i
 
 | Signature | What it is |
 |---|---|
-| Ongoing dimension | How many independent patterns ongoing activity spreads over |
-| Slow activity | Share of ongoing variance in slow fluctuations |
-| Correlation | Average absolute correlation between units at rest |
-| Timescale | How long ongoing activity remembers itself |
-| Echo breadth | How widely one push spreads to the other recorded units |
-| Evoked share | How much of the response to a push is explained by the push |
-| Tiring | Whether responses to repeated pushes weaken |
-| Watch share | How much the response to a push is predictable from activity before it |
+| Few patterns at rest | Share of resting variance in the 3 strongest patterns: how few patterns the activity uses. |
+| Slow activity | Share of each unit's activity that is slow (still correlated 10 to 40 s later). |
+| Units move together | Mean absolute correlation between units at rest. |
+| Timescale | Median time for a unit's activity to become half-forgotten (autocorrelation 0.5), in seconds. |
+| Push spread | Share of units that a single push moves by more than 1 SD. |
+| Push stands out | How much of the change after a push is caused by the push, against moments with no push. |
+| Tiring on a second push | Log change in a unit's own response when it is pushed a second time, against matched controls. Negative = it answers less. |
+| Copyable by watching | How well a linear model fitted only to resting activity predicts the push responses, as a share of how well runs agree with each other. Real worms: poorly. |
 
 (The exact definitions are in `nematica/brainlike/signatures.py`; they are the research code's, checked to give
 identical numbers on the atlas.)

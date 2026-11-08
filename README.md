@@ -4446,9 +4446,9 @@ full results in `nematica/brainlike/calibration/`).**
 
 | system | inside, of 8 | misses |
 |---|---|---|
-| held-out worms, group 1 | **7** | echo breadth |
+| held-out worms, group 1 | **7** | push spread |
 | held-out worms, group 2 | **6** | slow activity, timescale |
-| held-out worms, group 3 | **7** | echo breadth |
+| held-out worms, group 3 | **7** | push spread |
 | random tanh RNN (npz) | 0 | all |
 | lab network, no slow drives | 0 | all |
 | lab network, slow drives share 0.4 | 0 | all |
@@ -4471,7 +4471,9 @@ use: `python -m nematica brainlike <file>`.
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of
   *C. elegans*"), written as a Claude Doc: https://claude.ai/artifact/SB2WgGBuQ3giXQJCu81ZZu (private
   until shared). It packages arcs 1 and 4, the watching results and the repeat-stimulation recovery
-  curve, with the corrections from all reviews. Not submitted.
+  curve, with the corrections from all reviews. Not submitted. *Updated 8 Nov (night): Result 4 rewritten around the emulator and its two failed
+  tests on new data (plus the neuropeptide null), a new Result 6 on the brain-likeness test, review 8 and
+  the failed calibrations added to the limits.*
 - **Showcase page** (private until shared): https://claude.ai/artifact/G4R7Y4BTqtrL7JKXpaBzGT, built by
   `scripts/build_showcase.py` from `scripts/showcase_template.html`: a "which brain is real?" game on a held-out
   atlas worm, a poke explorer (real worms against a watching model and a poke-trained model; the poke-trained one
