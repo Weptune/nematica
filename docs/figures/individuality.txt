@@ -1,0 +1,30 @@
+CALIBRATION (pre-registered: (i) identical individuals with per-individual spillover, excluded: routing interval includes 0; (ii) connections varying 30%: routing interval above 0)
+  (i) sigma 0, spillover excluded raw      : excess +0.0652 [95%: +0.0312, +0.0817]; within 0.127, between 0.068; worms 60, share > 0: 0.75
+  (i) sigma 0, spillover excluded source   : excess +0.1344 [95%: +0.0441, +0.2093]; within 0.157, between 0.013; worms 60, share > 0: 0.65
+  (i) sigma 0, spillover excluded responder: excess +0.0504 [95%: -0.0189, +0.0888]; within 0.275, between 0.248; worms 60, share > 0: 0.60
+  (i) sigma 0, spillover excluded routing  : excess +0.0682 [95%: +0.0359, +0.0892]; within 0.119, between 0.056; worms 60, share > 0: 0.73
+  (iii) sigma 0, spillover NOT excluded raw      : excess +0.0802 [95%: +0.0560, +0.1053]; within 0.147, between 0.068; worms 60, share > 0: 0.77
+  (iii) sigma 0, spillover NOT excluded source   : excess +0.1146 [95%: +0.0798, +0.2236]; within 0.158, between 0.020; worms 60, share > 0: 0.67
+  (iii) sigma 0, spillover NOT excluded responder: excess +0.0426 [95%: -0.0070, +0.0911]; within 0.319, between 0.270; worms 60, share > 0: 0.60
+  (iii) sigma 0, spillover NOT excluded routing  : excess +0.0893 [95%: +0.0683, +0.1201]; within 0.148, between 0.054; worms 60, share > 0: 0.77
+  (ii) sigma 0.3, spillover excluded raw      : excess +0.0756 [95%: +0.0450, +0.1285]; within 0.115, between 0.046; worms 60, share > 0: 0.78
+  (ii) sigma 0.3, spillover excluded source   : excess +0.1664 [95%: -0.0183, +0.2552]; within 0.183, between 0.024; worms 60, share > 0: 0.62
+  (ii) sigma 0.3, spillover excluded responder: excess +0.0731 [95%: +0.0052, +0.1411]; within 0.211, between 0.130; worms 60, share > 0: 0.63
+  (ii) sigma 0.3, spillover excluded routing  : excess +0.0703 [95%: +0.0394, +0.1054]; within 0.108, between 0.038; worms 60, share > 0: 0.75
+CALIBRATION result: (i) FAIL, (ii) pass -> FAIL
+EXPLORATORY fingerprint source, identical wiring, rho 0.5, alternate: routing excess +0.0075 [-0.0065, +0.0255]; within 0.013; share of |activity| > 0.9: 0.010
+EXPLORATORY fingerprint source, identical wiring, rho 0.5, time: routing excess +0.0067 [-0.0120, +0.0163]; within 0.008; share of |activity| > 0.9: 0.010
+EXPLORATORY fingerprint source, identical wiring, rho 0.9, alternate: routing excess +0.0210 [+0.0132, +0.0391]; within 0.057; share of |activity| > 0.9: 0.024
+EXPLORATORY fingerprint source, identical wiring, rho 0.9, time: routing excess +0.0197 [+0.0060, +0.0432]; within 0.046; share of |activity| > 0.9: 0.024
+EXPLORATORY fingerprint source, identical wiring, rho 1.3, alternate: routing excess +0.0682 [+0.0359, +0.0902]; within 0.119; share of |activity| > 0.9: 0.069
+EXPLORATORY fingerprint source, identical wiring, rho 1.3, time: routing excess +0.0500 [+0.0344, +0.0796]; within 0.105; share of |activity| > 0.9: 0.069
+EXPLORATORY fingerprint source, identical wiring, rho 1.8, alternate: routing excess +0.0246 [+0.0057, +0.0731]; within 0.082; share of |activity| > 0.9: 0.187
+EXPLORATORY fingerprint source, identical wiring, rho 1.8, time: routing excess +0.0424 [+0.0129, +0.0766]; within 0.086; share of |activity| > 0.9: 0.187
+EXPLORATORY fingerprint source, identical wiring rho 1.3, fixed obs and schedule, alternate, raw: excess +0.0475 [+0.0007, +0.0717]; within 0.195
+EXPLORATORY fingerprint source, identical wiring rho 1.3, fixed obs and schedule, alternate, routing: excess +0.0461 [+0.0219, +0.0909]; within 0.160
+EXPLORATORY fingerprint source, identical wiring rho 1.3, fixed obs and schedule, time, raw: excess +0.0562 [+0.0348, +0.0926]; within 0.111
+EXPLORATORY fingerprint source, identical wiring rho 1.3, fixed obs and schedule, time, routing: excess +0.0579 [+0.0376, +0.0868]; within 0.095
+EXPLORATORY fingerprint source, identical wiring rho 1.3, fixed obs and schedule, NO spillover, alternate, raw: excess +0.0102 [-0.0216, +0.0424]; within 0.149
+EXPLORATORY fingerprint source, identical wiring rho 1.3, fixed obs and schedule, NO spillover, alternate, routing: excess +0.0028 [-0.0257, +0.0235]; within 0.126
+EXPLORATORY fingerprint source, identical wiring rho 1.3, fixed obs and schedule, NO spillover, time, raw: excess +0.0058 [-0.0258, +0.0294]; within 0.039
+EXPLORATORY fingerprint source, identical wiring rho 1.3, fixed obs and schedule, NO spillover, time, routing: excess -0.0078 [-0.0246, +0.0242]; within 0.031

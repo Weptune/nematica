@@ -3935,7 +3935,7 @@ above the 25th percentile; otherwise inconclusive. *Prediction:* peptide-depende
 
 **Q3: where does routing individuality live?** Per class pair with at least 8 wild-type worms measuring it in
 both halves: between-worm variance of the routing residual minus its within-worm (half-to-half) variance,
-divided by the total. Compared between pairs directly wired at class level (Kunert et al. connectome,
+divided by the total. *(Clarified 8 Nov before running: the share is the standard variance-component estimate, worm variance (variance of a worm's two-half mean minus half the within-worm variance) divided by worm plus within-worm variance.)* Compared between pairs directly wired at class level (Kunert et al. connectome,
 chemical or electrical, either direction) and unwired pairs: difference of medians with a 95% bootstrap
 interval over pairs. *Prediction:* unwired pairs (more often extrasynaptic) are more individual. Decision:
 supported if the interval lies above 0.
@@ -3946,6 +3946,41 @@ a brain's invisible state lives, from public data. A null on Q2 with a positive 
 individual routing as a property of real nervous systems that standard artificial networks lack.
 
 Code: `nematica/individuality.py`, `scripts/run_individuality.py`; output `docs/figures/individuality.txt`.
+
+**Calibration result (8 Nov 2026; `docs/figures/individuality.txt`). FAIL: Q1 to Q3 are not read as
+written; no worm data was touched.** (i) Identical individuals with spillover, neighbours excluded: routing
+excess +0.068 [+0.036, +0.089] (must include 0); (ii) individuals varying 30%: +0.070 [+0.039, +0.105]
+(passes); (iii) without the exclusion: +0.089. Identical networks produced a fingerprint as large as
+genuinely different ones.
+
+*Exploratory, lab networks only (`scripts/explore_fingerprint_source.py`), to find out why.* With identical
+wiring, the same recorded units and the same poke schedule, the fingerprint persists (+0.046 alternate,
++0.058 first against second half). **With spillover switched off it vanishes** (routing +0.003 [-0.026,
++0.024]; time split -0.008). A nearly linear network (rho 0.5) shows none either. So in the lab the fake
+fingerprint is light spillover: a neighbour that is switched on drives its own partners, and since each
+individual's neighbours differ, its echo pattern is individual. Excluding the neighbours' own responses does
+not remove that second step. **This applies to the worms too: their neighbours differ from worm to worm, so
+the project's "causal fingerprint" (36 of 43 worms; halves 0.15 to 0.17 against 0.08 to 0.09) could be
+partly or wholly a spillover artefact.**
+
+**Amendment 1 (8 Nov 2026, before any worm data entered this section).**
+
+*Q0 (new, primary): does spillover shape worm echoes?* For every pair of worms and every neuron class poked
+in both, *row agreement* = correlation of the two worms' mean responses to pokes of that class across
+responding classes measured in both (at least 8; spillover neighbours and the target's class excluded in
+each worm), and *neighbour overlap* = Jaccard overlap of the classes of the target's three nearest positioned
+neurons in the two worms (union over that class's pokes in each worm). Statistic: slope of row agreement on
+neighbour overlap with a fixed effect for the poked class; p by permuting overlap among worm pairs within
+class (2,000). **Decision:** spillover shapes echoes if the slope is positive with p < 0.01; no detectable
+effect if p > 0.1 and the slope's 95% bootstrap interval (over worms) has upper end below a third of the lab
+spillover slope; otherwise inconclusive.
+*Calibration (lab, first):* units on a ring, each individual's two spillover neighbours drawn from the six
+ring-nearest units, so overlap between individuals varies; identical wiring. With spillover (strength 0.3)
+the slope must be positive with p < 0.01; without spillover p must exceed 0.1. Otherwise Q0 is not read.
+
+*Q1 to Q3* are read only if Q0 finds no detectable effect; if Q0 finds that spillover shapes echoes, the
+fingerprint claim is corrected wherever it appears (README, synthesis, paper, site) and the next step is a
+spillover-corrected individuality test, registered separately.
 
 ## Paper draft and outreach (8 Nov 2026)
 
