@@ -320,6 +320,11 @@ Raw data is not in this repository. Download it into `data/raw/`:
 
 ## Score your own brain copy
 
+**The full guide is [`docs/BENCHMARK.md`](docs/BENCHMARK.md)** (8 Nov 2026): the registered pass rule,
+excess distances with intervals, noise seeds (`--seeds 3`), a self-contained HTML report, a file
+interface for copies written in other languages (`python -m nematica export`, `score-files`), reference
+copies (`examples/copies/reference.py`) and the benchmark's limits. The older description follows.
+
 A copy is any program that, given a worm's neurons and a schedule of single-neuron pokes,
 produces their activity. Subclass `nematica.score.BrainCopy` and implement `run(worm, rng)`
 (and optionally `fit(worms)`); the docstring in `nematica/score.py` gives the contract. Then

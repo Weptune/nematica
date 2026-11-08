@@ -18,6 +18,19 @@ from .bench.verdicts import ALL_LEVELS, LABELS, OTHER_LEVELS, POKE_RULE_LEVELS, 
 INK, MUTED, RULE = "#1f2328", "#5b636b", "#d6d9dc"
 COL = {"inside": "#2e7d4f", "outside": "#b8443f", "too typical": "#b7862b", "not scored": "#9aa0a6"}
 FILL = {"inside": "#e3f1e7", "outside": "#f6e1df", "too typical": "#f5ead3", "not scored": "#eceef0"}
+ABOUT = {
+    "L1.distribution": "how each neuron class's activity values are distributed",
+    "L1.timescale": "how long each class's activity takes to forget itself (autocorrelation half-life)",
+    "L2.correlation": "which classes rise and fall together",
+    "L2.dimension": "how many independent patterns the activity spreads over",
+    "L4.leadlag": "which classes tend to lead and which to follow, at about 2 and 6 s",
+    "L4.dwell": "how long the reversal command neuron AVA stays high",
+    "C1.pattern": "which classes answer a poke of which, and with what sign",
+    "C2.magnitude": "how strongly neurons answer pokes",
+    "P2.spread": "how much of the brain is significantly moved by a single poke",
+    "C3.kinetics": "the time course of the strongest answers",
+    "P1.complexity": "how compressible the pattern of significant answers is",
+}
 LETTER = {"I": "inside", "O": "outside", "T": "too typical", "-": "not scored"}
 LO, HI = -0.6, 1.2                                  # excess axis; values beyond are drawn at the edge
 
@@ -63,12 +76,15 @@ def excess_chart(a: dict, split: str, compare: dict[str, dict]) -> str:
         for lv in lv_list:
             L = d["levels"][lv]
             cy = y + row_h / 2
-            out.append(f'<text x="12" y="{cy + 4:.1f}" fill="{INK}">{_esc(L["label"])}</text>')
+            out.append(f'<text x="12" y="{cy + 4:.1f}" fill="{INK}">{_esc(L["label"])}<title>{_esc(ABOUT.get(lv, ""))}</title></text>')
             out.append(f'<line x1="{left}" x2="{left + width}" y1="{cy:.1f}" y2="{cy:.1f}" stroke="#f0f1f2"/>')
             runs = [r for r in L["per_run"] if r["excess"] is not None]
             for k, r in enumerate(runs):
                 jitter = ((k % 5) - 2) * 2.2
                 cx = _x(r["excess"], left, width)
+                if r["excess"] > HI or r["excess"] < LO:          # off the axis: an arrow at the edge
+                    sgn = 1 if r["excess"] > HI else -1
+                    out.append(f'<path d="M{cx + sgn * 9:.1f},{cy + jitter:.1f} l{-sgn * 6},-4 l0,8 z" fill="{MUTED}"/>')
                 v = r["verdict"] if r["verdict"] in COL else "not scored"
                 tip = (f'{L["label"]}, pool {r["fold"] + 1}, seed {r["seed"]}: {v}; excess {r["excess"]:+.3f}'
                        + (f' (interval {r["low"]:+.3f} to {r["high"]:+.3f})' if r["low"] is not None else ""))
@@ -81,7 +97,7 @@ def excess_chart(a: dict, split: str, compare: dict[str, dict]) -> str:
             for name, ca in compare.items():
                 CL = ca.get(split, {}).get("levels", {}).get(lv)
                 if CL and CL["excess_median"] is not None:
-                    bx = _x(CL["excess_median"], left, width)
+                    bx = _x(CL["excess_median"], left, width) + (6 if CL["excess_median"] > HI else 0)
                     out.append(f'<path d="M{bx:.1f},{cy - 6:.1f} l5,6 l-5,6 l-5,-6 z" fill="none" stroke="{MUTED}" '
                                f'stroke-width="1.3"><title>{_esc(name)}: median excess {CL["excess_median"]:+.3f}</title></path>')
             y += row_h
@@ -178,6 +194,20 @@ def render(report: dict, compare: dict[str, dict] | None = None) -> str:
             "<table class='answer'><thead><tr><th>Split</th><th>Passes at rest</th><th>Passes when poked</th>"
             "<th>Inside on every level</th></tr></thead><tbody>" + "".join(ans_rows) + "</tbody></table>",
             f"<p>{_esc(rule_text())} Each noise seed is judged on its own.</p>"]
+    if comp:
+        lb = ["<h2>Compared with other copies</h2>",
+              "<table class='answer'><thead><tr><th>Copy</th>" + "".join(f"<th>{_esc(s_)}: rest, poked</th>" for s_ in splits)
+              + "</tr></thead><tbody>"]
+        for nm, ca in [(name, a)] + list(comp.items()):
+            cells = []
+            for s_ in splits:
+                d_ = ca.get(s_)
+                cells.append("<td>not scored</td>" if not d_ else
+                             f"<td>{d_['rest_pass_seeds']}/{d_['seeds']}, {d_['poke_pass_seeds']}/{d_['seeds']}</td>")
+            lb.append(f"<tr><th scope='row'>{_esc(nm)}{' (this report)' if nm == name else ''}</th>{''.join(cells)}</tr>")
+        lb.append("</tbody></table><p>Seeds passing at rest and when poked, per split. Open diamonds on the charts below "
+                  "mark these copies' median excess distance.</p>")
+        body += lb
     for s in splits:
         body += [f"<h2>How far from real worms, split {_esc(s)}</h2>",
                  "<p>For each level, the excess distance compares the copy's worms with real worms: 0 means they are as "
@@ -186,6 +216,10 @@ def render(report: dict, compare: dict[str, dict] | None = None) -> str:
                  "Hover a dot for its interval.</p>",
                  excess_chart(a, s, comp), legend,
                  f"<h3>Verdicts, split {_esc(s)}</h3>", verdict_grid(a, s)]
+    body += ["<h2>What each level measures</h2><table class='answer'><tbody>"
+             + "".join(f"<tr><th scope='row'>{_esc(LABELS[lv])}</th><td>{_esc(ABOUT[lv])}</td></tr>" for lv in ALL_LEVELS)
+             + "</tbody></table><p>Every level is a distance between two worms, computed the same way for real and "
+               "simulated worms, on neuron classes both have.</p>"]
     body += ["<h2>How to read this</h2><ul>",
              "<li><b>Inside is not agreement.</b> It means no difference from real worm-to-worm variation was detected "
              "in that pool. With 3 held-out pools of about 37 worms, small but consistent differences can pass. Look at "
