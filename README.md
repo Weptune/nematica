@@ -3891,6 +3891,12 @@ repeat decline) is another alternative to measurement quirks.
   *C. elegans*"), written as a Claude Doc: https://claude.ai/artifact/SB2WgGBuQ3giXQJCu81ZZu (private
   until shared). It packages arcs 1 and 4, the watching results and the repeat-stimulation recovery
   curve, with the corrections from all reviews. Not submitted.
+- **Showcase page** (private until shared): https://claude.ai/artifact/G4R7Y4BTqtrL7JKXpaBzGT, built by
+  `scripts/build_showcase.py` from `scripts/showcase_template.html`: a "which brain is real?" game on a held-out
+  atlas worm, a poke explorer (real worms against a watching model and a poke-trained model; the poke-trained one
+  agrees better for 49 of 54 neuron classes, median 0.38 against 0.07), and the result figures
+  (`scripts/plot_showcase.py`). It embeds derived atlas data (CC BY 4.0, attributed), so the built page is not
+  committed. Videos for the write-up: `scripts/render_videos.py`.
 - **Draft email to the atlas authors** (`docs/outreach/atlas_authors_email_DRAFT.md`): the recovery
   curve and a request about the light-free experiment. Not sent; needs the project owner's go-ahead.
 
