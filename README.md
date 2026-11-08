@@ -4386,6 +4386,16 @@ shared classes, permutation p = 0.79, `scripts/explore/slow_lead_atanas.py`), so
 atlas conditions (immobilised, light every 30 s) rather than to worms in general. The two main factors
 are descriptive; they were not tested against the other dataset.
 
+**Corrected re-run result (8 Nov 2026, night; `memfix`, five seeds).** On the atlas the corrected
+recipe passes the rule in **10 of 10** runs (cv3 5 of 5, blocks1 5 of 5) and is inside on all nine rule
+levels in 6 of 10. But the bug had been hiding a real excess: echo size is now further from real worms
+than real worms are from each other in 30 of 30 pool-runs (median excess +0.16 and +0.18) and echo spread
+in 30 of 30 (+0.10 and +0.09). They pass because the excess is within worm-to-worm variation, not
+because it is absent. On unc-31 worms (test U) the corrected recipe passes in 3 of 5 seeds: below the
+registered 4 of 5, so **test U fails**. On Atanas worms (test T) nothing changes (no pokes, so the readout
+does not touch the rest levels): fail. Report: `results/scores/reference/emulator.json` (and `.html`,
+`python -m nematica report`).
+
 ## Review 8 (8 Nov 2026, evening): the emulator work
 
 An independent reviewer (a separate agent that had not seen the work being done) recomputed the numbers
