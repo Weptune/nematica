@@ -4123,6 +4123,33 @@ typical (real worms have a long tail of very slow neurons: 10% of class timescal
 in the model) and correlation passes narrowly. Before freezing: a second simulation seed, and one
 attempt at the timescale tail (ultra-slow drifts drawn from training worms' neurons, `driftpool`).
 
+Both checks: with a second simulation seed the candidate passes again (timescale ITT, correlation III);
+the drift variant also passes but its dimension slips (IIO) and it adds a fitted gain, so it is not taken.
+
+**Frozen (8 Nov 2026, code at commit aca6e78):** `hybrid_kernels_indivshock_innov6_slow6d_indivslow1_hp_mem`.
+In words: a fast class-level VAR(3) learned from high-passed stimulation-free activity, driven by
+shocks with 6 common factors whose structure comes from a donor training worm; plus 6 slow brain-wide
+factors that interact (lead and lag) and a private slow part per class, sized from the donor worm's own
+slow covariance; plus causal kernels learned from the training worms' pokes; observed neuron by neuron.
+
+**Amendment 1 (8 Nov 2026, before any confirmation run): the ablation list, matched to the frozen
+model's ingredients.** Regimes and measurement noise are not in the frozen model, so their ablations
+do not apply. The ablations are:
+
+| ablation | spec |
+|---|---|
+| no correlated shocks | `hybrid_kernels_slow6d_indivslow1_hp_mem` |
+| no individuality (pooled shocks and slow structure) | `hybrid_kernels_innov6_slow6d_hp_mem` |
+| no causal kernels | `..._mem_nokernels` |
+| no slow latent (and so no high-pass) | `hybrid_kernels_indivshock_innov6_mem` |
+| slow factors without interactions | `hybrid_kernels_indivshock_innov6_slow6_indivslow1_hp_mem` |
+| no coupling between classes in the fast VAR | `..._mem_diag` |
+| observed class by class (measurement, not biology) | `hybrid_kernels_indivshock_innov6_slow6d_indivslow1_hp` |
+
+Each is scored on the confirmation split with the same rule; an ingredient is necessary if the model
+without it fails. Expectations: correlated shocks, slow latent and causal kernels necessary; coupling
+not necessary; individuality necessary at rest (correlation too typical without it).
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of
