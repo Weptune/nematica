@@ -4466,6 +4466,50 @@ recordings, a model (npz or ONNX) or, on a sandboxed server only, Python; queue 
 and time limits; result pages and a leaderboard seeded with the calibration systems as references. Local
 use: `python -m nematica brainlike <file>`.
 
+**Amendment 1 (9 Nov 2026, written before any of the runs it describes).** A review of the first version
+(by me, against the atlas) found two problems, and the test has only been shown to work at the extremes.
+
+*(a) Rest was not matched.* The rest signatures use only frames with no push in the previous 30 s. Atlas
+worms have a median of 345 such frames (IQR 269 to 460; first push at a median frame 43; recordings a median
+3,804 frames), because some push slots are empty. The version 1 schedule pushed every 30 s from 30 s
+onward, so a system had about 60 such frames per run, and "push stands out" took its no-push baseline from
+the same thin window. **Protocol version 2:** runs of 31.7 minutes (3,804 frames at 0.5 s), first push at
+20 s, then every 30 s, with 5 push slots per run left empty at random positions (not adjacent, fixed by the
+schedule seed), giving about 340 rest frames per run, as in the atlas. Everything else is unchanged.
+
+*(b) Push spread was not specific to the push.* The project withdrew its per-event echo measures after
+matched no-push moments gave nearly the same values (README "Matched shams"). "Push spread" is such a
+measure. **New definition:** the median share of units moved by more than 1 SD after a push, *minus* the
+same share at clean no-push moments (windows with no push within 30 s before or during, the moments
+"push stands out" already uses). The reference is rebuilt with it.
+
+*Recalibration (both changes):* the three held-out worm groups (expected at least 6 of 8 each, as before)
+and the four untrained networks (expected at most 4 of 8 each, as before), rerun under version 2.
+
+*(c) Middle-ground calibration: does the test grade systems, or only separate worms from noise?*
+Systems, chosen now:
+
+| | system | how it takes the test | expectation |
+|---|---|---|---|
+| M1 | the worm emulator (minimal recipe, corrected readout), fitted per cv3 fold on training worms | simulated on held-out atlas worm templates, measured exactly as worms | at least 5 of 8 (it was built on these worms: not independent) |
+| M2 | VAR(3) fitted to stimulation-free frames (the watching copy) | as M1 | 2 to 5; misses at least one push signature |
+| M3 | lab network with hidden slow drives at the worm's timescale (40 s, share 0.4) | generic schedule | more than the 5 s version (0); 1 to 3, gaining slow activity |
+| M4, M5 | RNN trained on a 3-bit flip-flop task; the same network before training | generic schedule | trained at least the untrained; both at most 3 |
+| M6, M7 | RNN trained on context-dependent integration; before training | generic schedule | as M4, M5 |
+| M8, M9 | spiking network, plain (S0) and with spike-frequency adaptation (S1) | generic schedule, its own fixed push | at most 2; S1 at least S0 |
+| M10, M11 | small transformer trained on the synthetic language; untrained | generic schedule, one token per step, residual stream of block 2 recorded, push added to the residual stream | trained at least untrained; both at most 2 |
+
+Groups of 30 runs, as for every system; M1 and M2 in three groups of 30 drawn from their 113 simulated
+worms, reported separately. **The test grades** if (i) M1 scores at least 5, (ii) at least three of M2 to M11
+score between 1 and 5, and (iii) no untrained control (M5, M7, M11, the four version-1 networks) scores above
+M1 or M2. If (ii) fails, the test is reported as nearly binary for current artificial systems.
+
+*(d) Against gaming (no calibration, reported as features):* every result shows the score on the six
+signatures that do not depend on the declared step length; models the server runs are also scored at half
+and double their declared noise, and the result shows all three; submitters state whether they tuned
+against this test, shown on the leaderboard; uploaded recordings are labelled "recordings supplied by the
+owner" on the leaderboard.
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of
