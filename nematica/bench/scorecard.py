@@ -68,9 +68,13 @@ class FoldRuler:
         self.real_c = [response_set(r) for r in pool]
         self.real_p = [pci_set(r) for r in pool] if pci else None
 
-    def score(self, name: str, model, seed_base: int = 0, progress: Callable[[str], None] | None = None) -> list[dict]:
-        """Fit `model` (fit(train, val) -> self; simulate(rec, rng) -> PumpProbe) and score it."""
-        m = model.fit(self.train, self.val)
+    def score(self, name: str, model, seed_base: int = 0, progress: Callable[[str], None] | None = None,
+              refit: bool = True) -> list[dict]:
+        """Fit `model` (fit(train, val) -> self; simulate(rec, rng) -> PumpProbe) and score it.
+        refit=False reuses the model fitted by the previous call (further noise seeds)."""
+        if refit or not hasattr(self, "_fitted"):
+            self._fitted = model.fit(self.train, self.val)
+        m = self._fitted
         sims = []
         for i, r in enumerate(self.pool):
             sims.append(m.simulate(r, np.random.default_rng(seed_base + i)))

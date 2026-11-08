@@ -138,16 +138,24 @@ def load_copy(spec: str) -> Callable[[], BrainCopy]:
     return getattr(mod, cls)
 
 
-def score(factory, data: str | Path, splits: Sequence[str] = ("cv3", "blocks1"), folds=None,
-          pci: bool = True, norm: str = "fluct", log: Callable[[str], None] = print) -> list[dict]:
-    """Every (split, fold, level) verdict for the copy made by `factory()`."""
+def score(factory, data: str | Path | Sequence[PumpProbe], splits: Sequence[str] = ("cv3", "blocks1"), folds=None,
+          pci: bool = True, norm: str = "fluct", log: Callable[[str], None] = print, seeds: int = 1,
+          split_files: dict | None = None) -> list[dict]:
+    """Every (split, fold, seed, level) verdict for the copy made by `factory()`.
+
+    `data`: a folder of converted recordings, or the recordings themselves. `seeds`: how many
+    times each held-out worm is simulated with fresh noise (the copy is fitted once per fold;
+    seed s uses rng seeds 1000 * fold + worm + 100000 * s, so seed 0 matches the research runs).
+    `split_files`: {name: path to a folds YAML}, in place of the two frozen atlas splits."""
     set_norm(norm)
-    recs = {r.uid: r for r in load_pumpprobe_dir(data)}
+    recs = ({r.uid: r for r in load_pumpprobe_dir(data)} if isinstance(data, (str, Path))
+            else {r.uid: r for r in data})
     if not recs:
         raise FileNotFoundError(f"no pumpprobe_*.npz recordings in {data}")
+    paths = split_files or {s: SPLITS_DIR / SPLITS[s] for s in splits}
     rows = []
-    for split in splits:
-        all_folds = load_folds(SPLITS_DIR / SPLITS[split])["folds"]
+    for split in (split_files or splits):
+        all_folds = load_folds(paths[split])["folds"]
         missing = sorted({u for f in all_folds for u in f} - set(recs))
         if missing:
             raise FileNotFoundError(f"{len(missing)} worms of split {split} are missing from {data}, e.g. {missing[0]}")
@@ -160,8 +168,11 @@ def score(factory, data: str | Path, splits: Sequence[str] = ("cv3", "blocks1"),
             model = copy if hasattr(copy, "simulate") else CopyAdapter(copy)
             name = getattr(copy, "name", "copy")
             log(f"[{split} fold {fi}] fitting and running {name} on {len(ruler.pool)} held-out worms")
-            for r in ruler.score(name, model, seed_base=1000 * fi):
-                rows.append({"split": split, "fold": fi, **r})
+            for sd in range(seeds):
+                for r in ruler.score(name, model, seed_base=1000 * fi + 100000 * sd, refit=sd == 0):
+                    rows.append({"split": split, "fold": fi, "seed": sd, **r})
+                if seeds > 1:
+                    log(f"[{split} fold {fi}] seed {sd + 1}/{seeds} done")
     return rows
 
 
@@ -196,6 +207,34 @@ def summary(rows: Sequence[dict]) -> dict:
             "echo_agreement_real": round(echo_agreement(rows, "bio_median"), 3)}
 
 
+def format_answers(name: str, rows: Sequence[dict]) -> str:
+    """The benchmark's answer in plain text: the rule per split and seed, then each level's verdict
+    letters and excess distance (0 = as far from real worms as real worms are from each other)."""
+    from .bench.verdicts import REST_LEVELS, POKE_RULE_LEVELS, OTHER_LEVELS, answers, rule_text
+    a = answers(rows)
+    out = [f"NEMATICA benchmark: {name}", rule_text(), ""]
+    for split, d in a.items():
+        n = d["seeds"]
+        out.append(f"Split {split} ({d['pools']} held-out pools, {n} noise seed{'s' if n > 1 else ''}): "
+                   f"passes at rest in {d['rest_pass_seeds']}/{n}, when poked in {d['poke_pass_seeds']}/{n}, "
+                   f"both in {d['both_pass_seeds']}/{n}; every level in {d['all_nine_seeds']}/{n}")
+        out.append(f"  {'level':24s} {'verdicts by seed':22s} {'excess distance (median, range over pools)'}")
+        for group, lvls in (("at rest", REST_LEVELS), ("when poked", POKE_RULE_LEVELS), ("not in the rule", OTHER_LEVELS)):
+            out.append(f"  {group}")
+            for lv in lvls:
+                L = d["levels"].get(lv)
+                if not L:
+                    continue
+                letters = " ".join(L["letters"].values())
+                ex = (f"{L['excess_median']:+.2f} ({L['excess_min']:+.2f} to {L['excess_max']:+.2f}); further than real "
+                      f"in {L['runs_further']}/{L['runs']}") if L["excess_median"] is not None else "not scored"
+                out.append(f"    {L['label']:22s} {letters:22s} {ex}")
+        out.append("")
+    out.append("Letters: one per held-out pool. I inside (no difference from real worm-to-worm variation detected), "
+               "O outside (too different), T too typical (closer to real worms than they are to each other).")
+    return "\n".join(out)
+
+
 def format_summary(name: str, s: dict) -> str:
     lines = [f"NEMATICA scorecard: {name}  ({s['pools']} held-out pools)", ""]
     for title, key in (("Watching", "watching"), ("Poking", "poking"), ("Complexity", "complexity")):
@@ -209,9 +248,23 @@ def format_summary(name: str, s: dict) -> str:
     return "\n".join(lines)
 
 
-def write_report(name: str, rows: Sequence[dict], out: str | Path) -> Path:
+def write_report(name: str, rows: Sequence[dict], out: str | Path, meta: dict | None = None) -> Path:
+    from .bench.verdicts import answers
     out = Path(out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps({"copy": name, "summary": summary(rows), "rows": list(rows)}, indent=1, default=float),
-                   encoding="utf-8")
+    meta = dict(meta or {})
+    if not meta.get("worms"):
+        meta.pop("worms", None)
+    doc = {"copy": name, "meta": meta, "answers": answers(rows), "summary": summary(rows), "rows": list(rows)}
+    out.write_text(json.dumps(doc, indent=1, default=_json_default), encoding="utf-8")
     return out
+
+
+def _json_default(v):
+    if isinstance(v, (np.integer,)):
+        return int(v)
+    if isinstance(v, (np.floating,)):
+        return float(v)
+    if isinstance(v, np.bool_):
+        return bool(v)
+    return str(v)
