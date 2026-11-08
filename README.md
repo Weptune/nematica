@@ -4150,6 +4150,26 @@ Each is scored on the confirmation split with the same rule; an ingredient is ne
 without it fails. Expectations: correlated shocks, slow latent and causal kernels necessary; coupling
 not necessary; individuality necessary at rest (correlation too typical without it).
 
+**Confirmation result (8 Nov 2026, `results/emulator_confirm`): the frozen emulator fails the rule
+at rest and passes the pokes.**
+
+| level | pools | | level | pools |
+|---|---|---|---|---|
+| L1.distribution | III | | C1.pattern | III |
+| L1.timescale | I T T | | C2.magnitude | III |
+| L2.correlation | O I T | | P2.spread | III |
+| L2.dimension | I O I | | C3.kinetics (not in the rule) | III |
+| L4.lead-lag | O I I | | | |
+| L4.dwell | III | | | |
+
+Rest 4 of 6 (needs 5), pokes 3 of 3: **not an emulator by the registered rule.** The two rest failures
+are timescale (too typical in two pools, as on the selection split) and correlation, which misses by
+hair-thin margins in opposite directions: outside in pool 0 (bootstrap shift 0.001 to 0.048) and too
+typical in pool 2 (-0.043 to -0.001). The poke half is the first model in the project to pass pattern,
+magnitude, spread and kinetics on an independent split with a background that also passes distribution,
+dimension (2 of 3), lead-lag (2 of 3) and dwell. The best previous model, on its own selection split,
+had rest 4 and pokes 3 but failed dimension in every pool.
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of
