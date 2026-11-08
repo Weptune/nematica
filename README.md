@@ -3885,6 +3885,68 @@ are about 30 brains in 3 pools, so p = 0.56 assumes independence the data lacks 
 the fingerprint's odd and even halves interleave in time, so shared slow state within a worm (including the
 repeat decline) is another alternative to measurement quirks.
 
+## Do worms with the same wiring route signals differently, and do neuropeptides carry it? (pre-registered 8 Nov 2026)
+
+**Why.** The project's reading of its main question is that brains carry state outside their neurons'
+activity. Two findings point that way: each worm answers pokes in its own repeatable way (a "causal
+fingerprint", 36 of 43 worms; halves of a worm agree at 0.15 to 0.17 against 0.08 to 0.09 between worms),
+and the worm's background state steers where a poke spreads. Every *C. elegans* has essentially the same
+wiring diagram, so stable individual routing would be state or physiology, not anatomy. The obvious
+carrier is neuropeptide signalling, and the atlas includes unc-31 mutants with strongly reduced
+dense-core-vesicle release. Already known before this section: state steering is present in unc-31
+(-0.080, p = 0.033, the registered replication set), so it does not need UNC-31-dependent release. This
+section asks the same of individuality, after removing the confounds that could fake it. Written before
+computing anything below; the 1 Nov exploratory hint that unc-31 worms agree with wild type slightly more
+than wild-type worms agree with each other was seen before this.
+
+**Confounds removed.** (a) *Light spillover:* a poke also raises its target's nearest neighbours by about
+a third; neighbours are fixed within a worm but differ between worms, so spillover alone could make a
+fingerprint. Responses of neurons among the target's three nearest positioned neurons, or with the target
+among theirs, are dropped (positions and z scaling 4 as in the neighbour tests), and so are responses of
+the target's own class. (b) *Per-neuron sensitivity:* a worm whose AVA responds more to everything makes its
+own halves agree for a dull reason. Each half-map (stimulated class x responding class, amplitude = mean
+response over the first 15 s in units of pre-stimulus fluctuations, averaged over that half's pokes) is
+decomposed by least squares into a responder effect, a source effect and a pair-specific **routing**
+residual; individuality is tested on each part.
+
+**Data.** Wild-type atlas worms and unc-31 recordings with at least 20 pokes; pokes split into alternate
+halves (primary) and first against second half of the recording (secondary).
+
+**Q1 (primary): individual routing in wild type.** For each worm, *within* = correlation of its two halves'
+routing residuals over shared pairs (at least 15); *between* = the median correlation of its first half with
+other worms' second halves. Per-worm excess = within minus between. **Decision:** individual routing if the
+median excess's 95% bootstrap interval (over worms) lies above 0; individuality only in per-neuron
+sensitivity or drive if the raw-amplitude excess is above 0 but the routing excess's interval includes 0
+with upper end below 0.02; otherwise inconclusive. Raw, responder and source parts are reported alongside.
+
+*Calibration first, on lab networks with known truth* (the `annlab` tanh networks recorded like the atlas):
+(i) identical individuals (sigma = 0) with stimulation spreading to two random neighbours that differ per
+individual, neighbours excluded as in the worms: the routing excess's interval must include 0; (ii)
+individuals whose connections vary by 30%: the routing excess's interval must lie above 0. (iii) The same as
+(i) without the exclusion, reported to show how much spillover alone would fake. If (i) or (ii) fails, the
+method is declared unable and Q1 to Q3 are not read.
+
+**Q2: carried by neuropeptides?** Individuality index I = 1 - median(between) / median(within), routing
+part, computed with every worm reduced to exactly 40 randomly chosen pokes (20 per half; 20 draws averaged),
+for the unc-31 recordings and for 1,000 random subsets of the same number of wild-type worms. The ratio
+discounts any loss of signal common to within and between. **Decision:** peptide-dependent if unc-31's I
+lies below the 5th percentile of the wild-type distribution; not detectably peptide-dependent if it lies
+above the 25th percentile; otherwise inconclusive. *Prediction:* peptide-dependent (from the 1 Nov hint).
+
+**Q3: where does routing individuality live?** Per class pair with at least 8 wild-type worms measuring it in
+both halves: between-worm variance of the routing residual minus its within-worm (half-to-half) variance,
+divided by the total. Compared between pairs directly wired at class level (Kunert et al. connectome,
+chemical or electrical, either direction) and unwired pairs: difference of medians with a 95% bootstrap
+interval over pairs. *Prediction:* unwired pairs (more often extrasynaptic) are more individual. Decision:
+supported if the interval lies above 0.
+
+**What would make this noteworthy.** "Worms with the same wiring diagram route signals reproducibly
+differently, and this individuality depends on neuropeptide release" would be a mechanistic answer to where
+a brain's invisible state lives, from public data. A null on Q2 with a positive Q1 still establishes
+individual routing as a property of real nervous systems that standard artificial networks lack.
+
+Code: `nematica/individuality.py`, `scripts/run_individuality.py`; output `docs/figures/individuality.txt`.
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of
