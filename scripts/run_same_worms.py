@@ -52,7 +52,7 @@ def make_model(spec: str):
     if base.startswith("hybrid_kernels"):
         parts = [p for p in base.replace("hybrid_kernels", "").split("_") if p]
         bg = next((p[2:] for p in parts if p.startswith("bg")), "spontaneous")
-        mask = next((p for p in parts if not p.startswith("bg") and p not in ("obs", "heavy", "regimes", "obsfit", "classquiet", "quietfit", "quietobsfit", "indiv", "indivshock", "hp", "mem") and not p.startswith("indivslow") and not p.startswith("lowrank") and not p.startswith("smooth")
+        mask = next((p for p in parts if not p.startswith("bg") and p not in ("obs", "heavy", "regimes", "obsfit", "classquiet", "quietfit", "quietobsfit", "indiv", "indivshock", "hp", "mem", "ownrho") and not p.startswith("indivslow") and not p.startswith("lowrank") and not p.startswith("smooth")
                      and not p.startswith("gru") and not p.startswith("innov") and not p.startswith("slow")), None)
         hk = HybridKernel(mask=mask, background=bg, obs_noise="obs" in parts, heavy="heavy" in parts,
                             regimes="regimes" in parts, obs_fit="obsfit" in parts,
@@ -71,6 +71,9 @@ def make_model(spec: str):
         hk.indiv_shock = "indivshock" in parts
         hk.highpass = "hp" in parts
         hk.members = "mem" in parts
+        hk.slow_own_rho = "ownrho" in parts
+        if hk.slow_own_rho:
+            hk.name += "_ownrho"
         if hk.members:
             hk.name += "_mem"
         if hk.highpass:

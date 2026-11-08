@@ -243,6 +243,15 @@ class SlowLatent:
         m.load = Lw
         m.priv = np.sqrt(np.clip(tot - (Lw ** 2).sum(1), 0, None))
         m.h = (m.load ** 2).sum(1) + m.priv ** 2
+        if getattr(self, "own_rho", False):
+            # the donor's own timescale for each class's private slow part (lags 20 to 80)
+            D = np.array([np.diag(lagged_cov([rec], self.classes, L, min_n=200)) for L in self.lags]).T
+            rp = self.rho_p.copy()
+            for i in range(len(self.classes)):
+                d = D[i]
+                if np.isfinite(d).all() and (d > 0).all():
+                    rp[i] = float(np.clip(np.exp(np.polyfit(self.lags, np.log(d), 1)[0]), 0.9, 0.9995))
+            m.rho_p = rp
         return m
 
     def draw(self, T: int, rng: np.random.Generator) -> np.ndarray:
@@ -653,6 +662,7 @@ class HybridKernel:
         self.slow_dyn = False
         self.slow_w_own = 0.5
         self.highpass = False
+        self.slow_own_rho = False
         self.members = False             # observed neuron by neuron, members of a class separate
         self.member_rho, self.member_rho_default = {}, 0.25
         self.innov = innov               # > 0: the VAR's shocks share this many common factors
@@ -808,6 +818,7 @@ class HybridKernel:
             self.slow_model = SlowLatent(self.slow, dyn=self.slow_dyn).fit(list(train) + list(val), self.var.classes)
             if self.indiv_slow:
                 self.slow_model.w_own = self.slow_w_own
+                self.slow_model.own_rho = self.slow_own_rho
                 self.slow_indiv = [self.slow_model.individual(r) for r in train]
         if self.members:
             self.member_rho = self._member_corrs(list(train) + list(val))
