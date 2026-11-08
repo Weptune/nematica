@@ -33,6 +33,7 @@ every 30 seconds or so, while the whole head is imaged.
 pip install -e .                        # Python 3.11+, numpy, scipy, pyyaml
 # data: download exported_data.tar.gz from https://osf.io/e2syt/ (Randi et al. 2023), unpack, then
 python scripts/convert_pumpprobe.py --src path/to/exported_data --out data/raw/randi2023_wt_npz
+python -m nematica check path/to/my_copy.py:MyCopy                                # contract check, about a minute
 python -m nematica score examples/copies/linear_rest.py:LinearRest --quick       # a first look, minutes
 python -m nematica score path/to/my_copy.py:MyCopy --seeds 3                      # the full test
 ```

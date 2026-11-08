@@ -268,3 +268,68 @@ def _json_default(v):
     if isinstance(v, np.bool_):
         return bool(v)
     return str(v)
+
+
+def check(factory, data, log: Callable[[str], None] = print) -> list[str]:
+    """A fast contract check before a full run: fits the copy on a few training worms, runs it on one
+    held-out worm, and reports problems (shape, rows left empty, poked neurons ignoring their drive)
+    and the expected time of a full run. Returns the problems found (empty when none)."""
+    import time
+    from .bench.scorecard import fold_parts
+    if isinstance(data, (str, Path)):
+        recs = {r.uid: r for r in load_pumpprobe_dir(data)}
+        folds = load_folds(SPLITS_DIR / SPLITS["cv3"])["folds"]
+    else:
+        recs = {r.uid: r for r in data}
+        u = sorted(recs)
+        folds = [u[k::3] for k in range(3)]
+    train, val, pool = fold_parts(recs, folds, 0)
+    copy = factory()
+    problems = []
+    t0 = time.time()
+    if hasattr(copy, "simulate"):
+        copy.fit(train, val)
+    else:
+        copy.fit(list(train) + list(val))
+    t_fit = time.time() - t0
+    rec = pool[0]
+    tpl = template_of(rec)
+    t1 = time.time()
+    if hasattr(copy, "simulate"):
+        log("low-level copy (simulate): only timing is checked")
+        copy.simulate(rec, np.random.default_rng(0))
+        x = None
+    else:
+        x = np.asarray(copy.run(tpl, np.random.default_rng(0)), float)
+    t_run = time.time() - t1
+    if x is not None:
+        if x.shape != (len(tpl.names), tpl.n_frames):
+            problems.append(f"run() returned {x.shape}; expected ({len(tpl.names)}, {tpl.n_frames})")
+        else:
+            named = [j for j, n in enumerate(tpl.names) if neuron_class(n)]
+            modelled = [j for j in named if np.isfinite(x[j]).any()]
+            if len(modelled) < 0.5 * len(named):
+                problems.append(f"only {len(modelled)} of {len(named)} identified neurons have activity")
+            if any(np.isfinite(x[j]).mean() < 0.95 for j in modelled):
+                problems.append("some modelled rows contain NaN frames; a neuron is either modelled for the whole run or not at all")
+            if modelled and np.nanmax(np.abs(x[modelled])) > 1e3:
+                problems.append("values above 1e3: activity is z-scored before scoring, but check for instability")
+            follow = []
+            for p in tpl.pokes:
+                if p.index in modelled:
+                    n = min(len(p.drive), tpl.n_frames - p.frame)
+                    a, b = x[p.index, p.frame:p.frame + n], p.drive[:n]
+                    ok = np.isfinite(a) & np.isfinite(b)
+                    if ok.sum() > 5 and np.std(a[ok]) > 0 and np.std(b[ok]) > 0:
+                        follow.append(np.corrcoef(a[ok], b[ok])[0, 1])
+            if follow and np.median(follow) < 0.3:
+                problems.append(f"poked neurons barely follow their drive (median correlation {np.median(follow):.2f}); "
+                                "the benchmark assumes the poked neuron does what it did in the real worm")
+    per_fold = t_fit + t_run * len(pool)
+    log(f"fit {t_fit:.1f} s, one worm {t_run:.1f} s; a full run (6 folds) needs about "
+        f"{6 * per_fold / 60:.0f} min plus about 3 min of scoring per fold and seed")
+    for p_ in problems:
+        log("PROBLEM: " + p_)
+    if not problems:
+        log("contract check passed")
+    return problems

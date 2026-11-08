@@ -138,3 +138,19 @@ def test_files_missing_worm_is_an_error(worms, split_file, tmp_path):
     (tmp_path / "synth" / "fold0" / "seed0").mkdir(parents=True)
     with pytest.raises(FileNotFoundError, match="missing"):
         score_files(tmp_path, worms, "x", split_files=split_file, log=lambda m: None)
+
+
+def test_check_flags_a_copy_that_ignores_its_drive(worms):
+    from nematica.score import check
+
+    class Deaf(BrainCopy):
+        def run(self, w, rng):
+            return rng.standard_normal((len(w.names), w.n_frames))
+
+    class Short(BrainCopy):
+        def run(self, w, rng):
+            return np.zeros((3, 3))
+
+    assert check(Echo, worms, log=lambda m: None) == []
+    assert any("drive" in p for p in check(Deaf, worms, log=lambda m: None))
+    assert any("expected" in p for p in check(Short, worms, log=lambda m: None))

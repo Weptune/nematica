@@ -1,5 +1,6 @@
 """Command line for the NEMATICA worm benchmark.
 
+    python -m nematica check path/to/copy.py:ClassName        (a fast contract check, about a minute)
     python -m nematica score path/to/copy.py:ClassName [--seeds 3] [--quick]
     python -m nematica report results/scores/<name>.json [--compare other.json ...]
     python -m nematica export --out kit/                      (for copies written in other languages)
@@ -56,6 +57,10 @@ def main(argv=None) -> int:
     sc.add_argument("--no-html", action="store_true", help="do not write the HTML report")
     sc.add_argument("--compare", nargs="*", default=[], help="other reports to mark on the charts")
 
+    ck = sub.add_parser("check", help="a fast contract check of a copy before a full run")
+    ck.add_argument("copy")
+    ck.add_argument("--data", default=DATA)
+
     rp = sub.add_parser("report", help="write the HTML report for a saved JSON report")
     rp.add_argument("report")
     rp.add_argument("--compare", nargs="*", default=[])
@@ -89,6 +94,9 @@ def main(argv=None) -> int:
         name = getattr(factory(), "name", "copy")
         rows = score(factory, args.data, splits=splits, folds=folds, pci=not args.no_pci, seeds=seeds, log=log)
         _finish(name, rows, args.out, not args.no_html, args.compare, t0, command, args.data)
+    elif args.cmd == "check":
+        from .score import check, load_copy
+        return 1 if check(load_copy(args.copy), args.data, log=print) else 0
     elif args.cmd == "report":
         from .report_html import write_html
         print(write_html(args.report, args.out, compare=args.compare))
