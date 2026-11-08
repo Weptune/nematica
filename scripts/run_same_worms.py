@@ -52,7 +52,7 @@ def make_model(spec: str):
     if base.startswith("hybrid_kernels"):
         parts = [p for p in base.replace("hybrid_kernels", "").split("_") if p]
         bg = next((p[2:] for p in parts if p.startswith("bg")), "spontaneous")
-        mask = next((p for p in parts if not p.startswith("bg") and p not in ("obs", "heavy", "regimes", "obsfit", "classquiet", "quietfit", "quietobsfit", "indiv", "indivshock") and not p.startswith("lowrank") and not p.startswith("smooth")
+        mask = next((p for p in parts if not p.startswith("bg") and p not in ("obs", "heavy", "regimes", "obsfit", "classquiet", "quietfit", "quietobsfit", "indiv", "indivshock", "hp") and not p.startswith("indivslow") and not p.startswith("lowrank") and not p.startswith("smooth")
                      and not p.startswith("gru") and not p.startswith("innov") and not p.startswith("slow")), None)
         hk = HybridKernel(mask=mask, background=bg, obs_noise="obs" in parts, heavy="heavy" in parts,
                             regimes="regimes" in parts, obs_fit="obsfit" in parts,
@@ -64,8 +64,19 @@ def make_model(spec: str):
                             gru_sampled=any(p.startswith("gru") and p.endswith("ss") for p in parts),
                             gru_steps=3000 if any(p.startswith("gru") and p.endswith("ss") for p in parts) else 1500,
                             innov=next((int(p[5:]) for p in parts if p.startswith("innov")), 0),
-                            slow=next((int(p[4:]) for p in parts if p.startswith("slow")), 0))
+                            slow=next((int(p[4:].replace("d", "")) for p in parts if p.startswith("slow")), 0))
+        hk.slow_dyn = any(p.startswith("slow") and p.endswith("d") for p in parts)
+        if hk.slow_dyn:
+            hk.name = hk.name.replace(f"_slow{hk.slow}", f"_slow{hk.slow}d")
         hk.indiv_shock = "indivshock" in parts
+        hk.highpass = "hp" in parts
+        if hk.highpass:
+            hk.name += "_hp"
+        isl = next((p for p in parts if p.startswith("indivslow")), None)
+        hk.indiv_slow = isl is not None
+        if hk.indiv_slow:
+            hk.slow_w_own = float(isl[9:]) if len(isl) > 9 else 0.5
+            hk.name += "_" + isl
         if hk.indiv_shock:
             hk.name = hk.name.replace("_indiv", "_indivshock")
         return hk
