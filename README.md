@@ -4270,6 +4270,42 @@ the project that is inside the real worm-to-worm range on every rest and poke st
 noise draws, on both splits. Its one tuned number was chosen with the ruler in view and both splits have
 been seen, so the claim stays: **not confirmed on unseen worms.**
 
+## Testing the emulator recipe on data it was not built on (pre-registered 8 Nov 2026, evening)
+
+The emulator was designed and tuned on the 113 wild-type atlas worms, so its passes there are not a
+confirmation. Two datasets played no part in building it. Here the **recipe** is frozen (code at commit
+`2cbf342`, spec `hybrid_kernels_slow6d_indivslow1_hp_mem_diag_hsd1`, every constant as it is, including
+frame-based ones) and refitted from scratch on new data.
+
+**N. Do neuropeptides carry the slow states?** The emulator's most important ingredient is slow,
+brain-wide states. Neuropeptides are the classic slow, extrasynaptic, brain-wide signal, and unc-31
+worms cannot release them from dense-core vesicles. *Data:* unc-31 atlas worms with neuron identities and
+at least 1000 frames (13 worms) against the 113 wild-type worms (same rule). *Measure:* each class's
+slow share in each worm, estimated exactly as the emulator does (autocovariance at 20, 40 and 80 frames,
+log-linear fit extrapolated to lag 0, clipped to 0 to 0.95). *Primary statistic:* class-matched
+difference, the median over classes seen in at least 5 worms of each strain of (unc-31 median minus
+wild-type median). *Inference:* permutation of strain labels across worms (10,000), two-sided; worm
+bootstrap 95% interval. *Secondary:* the same for the slow timescale (fitted AR coefficient as seconds),
+and the shared slow variance (top 6 eigenvalues of the lag-40 correlation matrix over shared classes, as
+a share of the class count). *Prediction:* unc-31 worms have a smaller slow share (difference < 0, p <
+0.05). *Caveats written now:* the strains were recorded on different dates, and all frames include
+pokes, whose echoes differ between strains; a difference could come from either.
+
+**U. The recipe on unc-31 worms.** Same 13 worms, three pools in recording order (5, 4, 4; split file
+`configs/splits/unc31_cv3.yaml`, written before any scoring), the recipe fitted on the other two pools and
+scored as before, five simulation seeds. *Controls:* two models known to fail on wild type,
+`var3_spontaneous` (rest only, no causal links) and `hybrid_kernels` (the first watching-plus-poking
+hybrid). *Informativeness rule:* with pools of 4 to 5 worms the ruler may be too weak to fail anything;
+the test counts only if at least one control fails the emulator rule in at least 4 of 5 seeds. *Success:*
+the recipe passes the rule (rest at least 5 of 6, the three poke levels) in at least 4 of 5 seeds.
+
+**T. The rest half on another lab's freely moving worms** (Atanas et al. 2023, 30 worms with neuron
+names, no pokes, frames of about 0.6 s, existing split `configs/splits/atanas2023_cv3.yaml`). The recipe
+is fitted on the training worms (without pokes it has no causal links to learn) and scored on the six
+activity levels, five seeds. *Control:* `var3_spontaneous`. Same informativeness rule. *Success:* at
+least 5 of 6 rest levels pass in at least 4 of 5 seeds. *Caveat:* frame-based constants mean slightly
+longer windows in seconds (0.6 against 0.5 s per frame); they are kept as frozen.
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of
