@@ -186,7 +186,7 @@ emulator"). Corrected by review 8 and a bug fix:
 What the ablations on the atlas say a passing model needs (`docs/figures/emulator_ablations.png`):
 - **slow, brain-wide states that interact**: about 70% of real activity is slow, timescale about 40 s.
   This is the most robust gain. Earlier models were 74 to 85% too high-dimensional; the emulator is
-  within about 10%.
+  within 9 to 16% (median excess -0.09 on one split, +0.16 on the other).
 - **individual variation between animals**: without it, timescales and correlations are too typical.
 - **causal links learned from pokes**: without them the echo pattern fails in every pool.
 - **being observed neuron by neuron**, as real neurons are.
