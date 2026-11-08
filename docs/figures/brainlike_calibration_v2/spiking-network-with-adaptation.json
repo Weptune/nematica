@@ -1,0 +1,120 @@
+{
+ "name": "Spiking network with adaptation",
+ "description": "120 leaky integrate-and-fire neurons (96 excitatory, 24 inhibitory), 5 ms steps, read out through a calcium-like filter at 0.5 s; variant S1 (spike-frequency adaptation decaying over 10 min). Pushed with its own fixed current for 2 s.",
+ "result": {
+  "signatures": {
+   "rest_dim": {
+    "value": 0.19176857416990856,
+    "distance": -16.18063685049565,
+    "inside": false,
+    "worm_median": 0.42631258588362686,
+    "worm_low": 0.4118172348117972,
+    "worm_high": 0.4536907735833076,
+    "label": "few patterns at rest",
+    "about": "Share of resting variance in the 3 strongest patterns: how few patterns the activity uses."
+   },
+   "slow_share": {
+    "value": 0.03948009790791319,
+    "distance": -12.832767149803493,
+    "inside": false,
+    "worm_median": 0.7622162310373167,
+    "worm_low": 0.7058966450359085,
+    "worm_high": 0.8135464248281847,
+    "label": "slow activity",
+    "about": "Share of each unit's activity that is slow (still correlated 10 to 40 s later)."
+   },
+   "correlation": {
+    "value": 0.08731380655062687,
+    "distance": -6.168324820771491,
+    "inside": false,
+    "worm_median": 0.2151845668683251,
+    "worm_low": 0.194454342045031,
+    "worm_high": 0.23235721650313526,
+    "label": "units move together",
+    "about": "Mean absolute correlation between units at rest."
+   },
+   "timescale": {
+    "value": 0.5,
+    "distance": -5.570743742150412,
+    "inside": false,
+    "worm_median": 13.5,
+    "worm_low": 11.166379822565352,
+    "worm_high": 14.97309773700562,
+    "label": "timescale",
+    "about": "Median time for a unit's activity to become half-forgotten (autocorrelation 0.5), in seconds."
+   },
+   "echo_breadth": {
+    "value": 0.0,
+    "distance": -2.0135548012010283,
+    "inside": false,
+    "worm_median": 0.031985513346662456,
+    "worm_low": 0.01610041633932796,
+    "worm_high": 0.048450855891177036,
+    "label": "push spread",
+    "about": "Share of units that a single push moves by more than 1 SD, minus the same share at moments with no push."
+   },
+   "evoked_share": {
+    "value": 0.028581243429999372,
+    "distance": -4.220020490237634,
+    "inside": false,
+    "worm_median": 0.4163005605897083,
+    "worm_low": 0.32442439125436084,
+    "worm_high": 0.4925407672067573,
+    "label": "push stands out",
+    "about": "How much of the change after a push is caused by the push, against moments with no push."
+   },
+   "tiring": {
+    "value": -0.028991376273594775,
+    "distance": 1.6356877738857791,
+    "inside": false,
+    "worm_median": -0.40090918047026525,
+    "worm_low": -0.6443600570017478,
+    "worm_high": -0.1735321650432112,
+    "label": "tiring on a second push",
+    "about": "Log change in a unit's own response when it is pushed a second time, against matched controls. Negative = it answers less."
+   },
+   "watch_share": {
+    "value": 0.5979454809059108,
+    "distance": 0.5360724222710788,
+    "inside": true,
+    "worm_median": 0.3904590957684039,
+    "worm_low": 0.16203106957184338,
+    "worm_high": 0.7775082639731173,
+    "label": "copyable by watching",
+    "about": "How well a linear model fitted only to resting activity predicts the push responses, as a share of how well runs agree with each other. Real worms: poorly."
+   }
+  },
+  "valid": true,
+  "problems": [],
+  "notes": [],
+  "score": 1,
+  "out_of": 8,
+  "score_step_free": 1,
+  "out_of_step_free": 6,
+  "mean_abs_distance": 5.018050506314678,
+  "measured": {
+   "rest_dim": 0.19176857416990856,
+   "slow_share": 0.03948009790791319,
+   "correlation": 0.08731380655062687,
+   "timescale": 0.5,
+   "echo_breadth": 0.0,
+   "echo_breadth_push": 0.0,
+   "echo_breadth_nopush": 0.0,
+   "evoked_share": 0.028581243429999372,
+   "tiring": -0.028991376273594775,
+   "watch_share": 0.5979454809059108,
+   "reliability": 0.037162717369212936,
+   "poked_response": 1.8054274703078872,
+   "n_runs": 30,
+   "n_pushes": 1710,
+   "units_per_run": 45.0
+  },
+  "how": "system run by the test (batched)",
+  "schedule": "9cb2bddcdbf71467",
+  "n_units": 120,
+  "step_seconds": 0.5,
+  "push_strength": 1.0,
+  "seconds": 317.0,
+  "variant": "S1"
+ }
+}

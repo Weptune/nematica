@@ -56,7 +56,7 @@ def page(title: str, body: str, refresh: int | None = None) -> str:
             "<meta name='viewport' content='width=device-width,initial-scale=1'>" + meta +
             f"<title>{_e(title)}</title><style>{CSS}</style></head><body><main>{nav()}{body}"
             "<footer>Reference data: Randi et al. 2023, signal propagation atlas of <i>C. elegans</i> (CC BY 4.0), "
-            "summary numbers only. Protocol version 2 (9 Nov 2026).</footer></main></body></html>")
+            "summary numbers only. Protocol version 3 (9 Nov 2026).</footer></main></body></html>")
 
 
 def with_nav(report_html: str) -> str:
@@ -126,7 +126,7 @@ def _board_rows(rows) -> str:
         return "<p>No public results yet. Submit the first one.</p>"
     out = ["<table class='board'><thead><tr><th>#</th><th>System</th>"
            "<th title='Average distance from the real-worm median over the eight signatures, in units of the real-worm "
-           "range (each capped at 10). Real worm groups: 0.36 to 0.65.'>Distance from real worms</th>"
+           "range (each capped at 10). Real worm groups: 0.29 to 0.60.'>Distance from real worms</th>"
            "<th>Signatures inside</th></tr></thead><tbody>"]
     for i, r in enumerate(rows, 1):
         tags = [r["author"]] if r.get("author") else []
@@ -208,7 +208,7 @@ only on how many units your system has and how long one step is.</p>
 def leaderboard(board: list[dict]) -> str:
     body = ("<h1>Leaderboard</h1><p>Valid public results, ranked by distance from real worms: the average, over the "
             "eight signatures, of how far the system sits from the real-worm median in units of the real-worm range. "
-            "Groups of real worms the reference never saw sit at 0.36 to 0.65. The number of signatures inside "
+            "Groups of real worms the reference never saw sit at 0.29 to 0.60. The number of signatures inside "
             "the range is shown too; it is coarser, and a score of 1 can happen by chance. Entries marked as NEMATICA "
             "references are calibration systems: real worm groups held out of the reference, and baseline networks."
             "</p>" + _board_rows(board) +
@@ -322,10 +322,10 @@ strength. On your own machine, <code>python -m nematica brainlike my_system.py</
 <ul>
 <li>The reference is one animal, immobilised <i>C. elegans</i>, probed with light every 30 seconds. A system inside
 on all eight signatures is worm-like under these conditions. It is not shown to be brain-like in general.</li>
-<li>Calibration: groups of real worms held out of the reference sit at a distance of 0.36 to 0.65 (6 to 8 signatures
-inside); a worm emulator fitted to the atlas at 0.86 to 1.08; a network with hidden slow drives at the worm's
-timescale at 2.37 and a small trained transformer at 2.48; untrained recurrent, spiking, gated and transformer
-networks at 3.8 to 5.4. The count of signatures inside is coarse: untrained networks often reach 1 by chance.</li>
+<li>Calibration: groups of real worms held out of the reference sit at a distance of 0.29 to 0.60 (6 to 8 signatures
+inside); a worm emulator fitted to the atlas at 0.84 to 1.04; a network with hidden slow drives at the worm's
+timescale at 2.32 and a small trained transformer at 3.25; untrained recurrent, spiking, gated and transformer
+networks at 4.4 to 6.6. The count of signatures inside is coarse: untrained networks often reach 1 by chance.</li>
 <li>Being inside means no difference from real worm groups was detected with 30 runs, not that the system is the same.</li>
 <li>Your choices of noise and step length shape the result. Report them with your score.</li>
 </ul>

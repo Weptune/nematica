@@ -109,8 +109,8 @@ def render(res: dict, name: str, meta: dict | None = None) -> str:
     desc_flags = "".join(f"<p class='note'>{_e(f)}</p>" for f in flags)
     dist = res.get("mean_abs_distance")
     dline = (f"<p class='meta'>Distance from real worms: <b>{float(dist):.2f}</b>. For comparison: groups of real worms the "
-             "reference never saw 0.36 to 0.65; a worm emulator fitted to the atlas 0.86 to 1.08; untrained recurrent, "
-             "spiking, gated and transformer networks 3.8 to 5.4.</p>") if dist is not None else ""
+             "reference never saw 0.29 to 0.60; a worm emulator fitted to the atlas 0.84 to 1.04; untrained recurrent, "
+             "spiking, gated and transformer networks 4.4 to 6.6.</p>") if dist is not None else ""
     head = (f"<p class='big'>{int(res['score']) if res['valid'] else ''}<small> of {int(res['out_of'])} signatures inside the real-worm range</small></p>"
             + dline + sub + desc_flags if res["valid"] else
             "<p class='warn'><b>Not scored.</b> " + _e("; ".join(res["problems"])) + ". The signatures below are shown for "
@@ -137,14 +137,14 @@ def render(res: dict, name: str, meta: dict | None = None) -> str:
             f"<tbody>{rows}</tbody></table>",
             "<h2>What each signature means</h2><ul>" + "".join(f"<li><b>{_e(LABELS[k])}.</b> {_e(ABOUT[k])}</li>" for k in SIGNATURES) + "</ul>",
             "<h2>Limits</h2><ul>"
-            "<li>One reference animal: immobilised <i>C. elegans</i> under light pushes every 30 s. A system that matches it is "
+            "<li>One reference animal: immobilised <i>C. elegans</i> under light pushes about every 30 s. A system that matches it is "
             "worm-like in these conditions, not brain-like in general.</li>"
             "<li>Ranges are for groups of 30 runs. With 30 runs of your system, being inside means no difference from real "
             "worm groups was detected, not that the system is the same.</li>"
             "<li>Two signatures depend on the time scale you declared (step_seconds): slow activity and timescale.</li>"
             "<li>The noise you run with shapes ongoing activity; a system with no ongoing activity cannot match a brain at rest.</li>"
             "</ul>",
-            "<footer>Brain-likeness test, protocol version 2 (9 Nov 2026). Reference: Randi et al. 2023 signal propagation atlas "
+            "<footer>Brain-likeness test, protocol version 3 (9 Nov 2026). Reference: Randi et al. 2023 signal propagation atlas "
             "(CC BY 4.0), summary numbers only.</footer>"]
     return ("<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
             f"<title>{_e(name)}: brain-likeness</title><style>{CSS}</style></head><body><main>" + "\n".join(body) + "</main></body></html>")

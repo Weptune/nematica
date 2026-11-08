@@ -1,0 +1,117 @@
+{
+ "name": "Artificial-lab network with 5 s hidden drives",
+ "description": "The project's artificial-lab network: 120 tanh units, sparse random weights, plus slow hidden drives no recording sees (share 0.4, time constant 5 s). A baseline.",
+ "result": {
+  "signatures": {
+   "rest_dim": {
+    "value": 0.5558091987377662,
+    "distance": 4.729919097444474,
+    "inside": false,
+    "worm_median": 0.42631258588362686,
+    "worm_low": 0.4118172348117972,
+    "worm_high": 0.4536907735833076,
+    "label": "few patterns at rest",
+    "about": "Share of resting variance in the 3 strongest patterns: how few patterns the activity uses."
+   },
+   "slow_share": {
+    "value": 0.0,
+    "distance": -13.53376835934587,
+    "inside": false,
+    "worm_median": 0.7622162310373167,
+    "worm_low": 0.7058966450359085,
+    "worm_high": 0.8135464248281847,
+    "label": "slow activity",
+    "about": "Share of each unit's activity that is slow (still correlated 10 to 40 s later)."
+   },
+   "correlation": {
+    "value": 0.26804699571089313,
+    "distance": 3.0782919332036096,
+    "inside": false,
+    "worm_median": 0.2151845668683251,
+    "worm_low": 0.194454342045031,
+    "worm_high": 0.23235721650313526,
+    "label": "units move together",
+    "about": "Mean absolute correlation between units at rest."
+   },
+   "timescale": {
+    "value": 4.0,
+    "distance": -4.070928119263763,
+    "inside": false,
+    "worm_median": 13.5,
+    "worm_low": 11.166379822565352,
+    "worm_high": 14.97309773700562,
+    "label": "timescale",
+    "about": "Median time for a unit's activity to become half-forgotten (autocorrelation 0.5), in seconds."
+   },
+   "echo_breadth": {
+    "value": 0.004545454545454547,
+    "distance": -1.7274089537217328,
+    "inside": false,
+    "worm_median": 0.031985513346662456,
+    "worm_low": 0.01610041633932796,
+    "worm_high": 0.048450855891177036,
+    "label": "push spread",
+    "about": "Share of units that a single push moves by more than 1 SD, minus the same share at moments with no push."
+   },
+   "evoked_share": {
+    "value": 0.03122925946833461,
+    "distance": -4.191198913788686,
+    "inside": false,
+    "worm_median": 0.4163005605897083,
+    "worm_low": 0.32442439125436084,
+    "worm_high": 0.4925407672067573,
+    "label": "push stands out",
+    "about": "How much of the change after a push is caused by the push, against moments with no push."
+   },
+   "tiring": {
+    "value": -0.07874623832938726,
+    "distance": 1.4168667907607078,
+    "inside": false,
+    "worm_median": -0.40090918047026525,
+    "worm_low": -0.6443600570017478,
+    "worm_high": -0.1735321650432112,
+    "label": "tiring on a second push",
+    "about": "Log change in a unit's own response when it is pushed a second time, against matched controls. Negative = it answers less."
+   },
+   "watch_share": {
+    "value": 0.8353633103172733,
+    "distance": 1.1494772527545025,
+    "inside": false,
+    "worm_median": 0.3904590957684039,
+    "worm_low": 0.16203106957184338,
+    "worm_high": 0.7775082639731173,
+    "label": "copyable by watching",
+    "about": "How well a linear model fitted only to resting activity predicts the push responses, as a share of how well runs agree with each other. Real worms: poorly."
+   }
+  },
+  "valid": true,
+  "problems": [],
+  "notes": [],
+  "score": 0,
+  "out_of": 8,
+  "mean_abs_distance": 3.795511382617184,
+  "measured": {
+   "rest_dim": 0.5558091987377662,
+   "slow_share": 0.0,
+   "correlation": 0.26804699571089313,
+   "timescale": 4.0,
+   "echo_breadth": 0.004545454545454547,
+   "echo_breadth_push": 0.20454545454545456,
+   "echo_breadth_nopush": 0.2,
+   "evoked_share": 0.03122925946833461,
+   "tiring": -0.07874623832938726,
+   "watch_share": 0.8353633103172733,
+   "reliability": 0.04852998720386792,
+   "poked_response": 1.1330242403176738,
+   "n_runs": 30,
+   "n_pushes": 1710,
+   "units_per_run": 45.0
+  },
+  "how": "Python system run by the test",
+  "schedule": "9cb2bddcdbf71467",
+  "n_units": 120,
+  "step_seconds": 0.5,
+  "seconds": 7.6,
+  "push_strength": 10219.381035869417
+ }
+}

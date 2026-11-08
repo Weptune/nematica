@@ -4621,6 +4621,53 @@ held-out worm groups, the four version 1 networks (with the rebuilt GRU) and M1 
 above are superseded by the rerun where they differ. Every signature also gets a step-free distance (the six
 signatures not read in seconds), reported beside the full one.
 
+**Amendment 3 results (9 Nov 2026; supersede amendment 1's where they differ; amendment 1's files in
+`docs/figures/brainlike_calibration_v2/`).** Reference from 200 groups: ranges barely change (largest: watching
+share median 0.43, [0.19, 0.78]; push stands out [0.31, 0.50]); worm groups' run-to-run reliability 0.096
+[0.073, 0.130]; pushed-unit change 1.58, its excess over the other units 1.56. Every system below is valid: every
+pushed unit moved at least 0.95 SD and at least 0.97 SD more than the others (the rebuilt GRU 1.53 and 1.54).
+
+| system | inside, of 8 (step-free, of 6) | distance (step-free) | reliability |
+|---|---|---|---|
+| real worms held out of the reference, groups 1, 2, 3 | **8, 6, 8** (6, 6, 6) | 0.29, 0.60, 0.34 (0.26 to 0.29) | |
+| M1 worm emulator, groups 1, 2, 3 | 5, 4, 5 (3, 2, 3) | 0.84, 1.04, 0.88 (0.86 to 1.20) | 0.15 to 0.18 |
+| M3 lab network, hidden drives at 40 s | 1 (0) | 2.32 (2.73) | 0.07 |
+| M10 transformer, trained | 3 (3) | 3.25 (2.50) | -0.01 |
+| M5 RNN before training on a flip-flop task | 1 (1) | 4.37 (3.06) | 0.30 |
+| M4 RNN trained on a flip-flop task | 1 (1) | 4.71 (4.56) | 0.07 |
+| M7 RNN before training on context-dependent integration | 0 | 4.81 (3.69) | 0.07 |
+| random tanh RNN (version 1 system) | 1 (1) | 4.88 (3.75) | 0.16 |
+| lab network, plain (version 1 system) | 1 (1) | 4.90 (3.72) | 0.23 |
+| lab network, hidden drives at 5 s (version 1 system) | 0 | 4.91 (4.02) | 0.04 |
+| M6 RNN trained on context-dependent integration | 0 | 5.16 (4.64) | 0.04 |
+| M2 watching copy, groups 1, 2, 3 | 0, 1, 0 | 5.28, 5.21, 5.34 (4.47 to 4.60) | 0.01 |
+| M11 transformer, untrained | 0 | 5.73 (4.78) | 0.00 |
+| M9 spiking network with adaptation | 0 | 6.32 (5.57) | 0.05 |
+| random GRU, ONNX, rebuilt (version 1 system) | 1 (1) | 6.38 (5.70) | 0.01 |
+| M8 spiking network, plain | 0 | 6.62 (5.96) | 0.06 |
+
+Recalibration: held-out worm groups 8, 6, 8 (expected at least 6: met); the four version 1 networks 0 to 1
+(expected at most 4: met).
+
+**By the registered rule the test still does not grade.** (i) M1 at least 5: met in 2 of 3 groups (5, 4, 5).
+(ii) At least three of M2 to M11 between 1 and 5: met, but only M10 (3) is above 1; M3, M4, M5 and one watching-
+copy group reach 1. (iii) No untrained control above M1 or M2: **not met** (four untrained controls score 1,
+the watching copy 0 in two groups). Individual expectations: M1 met in 2 of 3 groups; M2 not met (0 to 1); M3
+met (1 against 0 for the 5 s version) but not through slow activity (timescale is its one signature inside);
+M4 to M7 met as worded (trained at least untrained: 1 and 1, 0 and 0; all at most 3); M8 and M9 met; M10 and
+M11: trained at least untrained met (3 against 0), at most 2 not met (3).
+
+**What holds, read after seeing (exploratory, as amendment 2's ranking):** the distance separates real worm
+groups (0.29 to 0.60) from the worm emulator (0.84 to 1.04), from the network with slow drives at the worm's
+timescale (2.32) and the trained transformer (3.25), from every other system (4.37 to 6.62). The count of
+signatures inside reaches 1 by chance for many untrained networks, so it does not grade below about 3. Unlike
+amendment 1, training on the two recurrent tasks moves the networks slightly *away* from worms (flip-flop 4.71
+against 4.37, integration 5.16 against 4.81, on all eight and on the six step-free signatures), while training
+the transformer moves it much closer (3.25 against 5.73). Most artificial systems' runs agree with each other
+less than any group of real worms (reliability below 0.073), so "copyable by watching" cannot be read for them
+and counts as outside: this is a real difference, not noise in the test, since a system whose own runs do not
+agree about push responses is unlike worms in that respect too.
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of

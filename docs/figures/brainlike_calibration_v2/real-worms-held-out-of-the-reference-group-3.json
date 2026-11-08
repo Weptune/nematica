@@ -1,0 +1,95 @@
+{
+ "name": "Real worms held out of the reference, group 3",
+ "description": "30 real C. elegans recordings from the atlas, held out of the reference: the reference ranges here come from the other 83 worms. Shows what a real nervous system scores.",
+ "result": {
+  "signatures": {
+   "rest_dim": {
+    "value": 0.4204572193523147,
+    "distance": -0.6764598580401707,
+    "inside": true,
+    "worm_median": 0.43217101439189987,
+    "worm_low": 0.4148546948788364,
+    "worm_high": 0.45900506503727895,
+    "label": "few patterns at rest",
+    "about": "Share of resting variance in the 3 strongest patterns: how few patterns the activity uses."
+   },
+   "slow_share": {
+    "value": 0.7800180348674516,
+    "distance": 0.45021575376609946,
+    "inside": true,
+    "worm_median": 0.7551046538371491,
+    "worm_low": 0.6959350349107538,
+    "worm_high": 0.8104411915346854,
+    "label": "slow activity",
+    "about": "Share of each unit's activity that is slow (still correlated 10 to 40 s later)."
+   },
+   "correlation": {
+    "value": 0.21056008883606028,
+    "distance": -0.23367409838927575,
+    "inside": true,
+    "worm_median": 0.21556093759813377,
+    "worm_low": 0.1941599830355848,
+    "worm_high": 0.23908531045090686,
+    "label": "units move together",
+    "about": "Mean absolute correlation between units at rest."
+   },
+   "timescale": {
+    "value": 14.0,
+    "distance": 0.5297873202036482,
+    "inside": true,
+    "worm_median": 12.5,
+    "worm_low": 11.248585705751665,
+    "worm_high": 15.331324840736857,
+    "label": "timescale",
+    "about": "Median time for a unit's activity to become half-forgotten (autocorrelation 0.5), in seconds."
+   },
+   "echo_breadth": {
+    "value": 0.03809523809523809,
+    "distance": 0.5061788565667684,
+    "inside": true,
+    "worm_median": 0.03190075321222863,
+    "worm_low": 0.009132616241163176,
+    "worm_high": 0.04413849250664416,
+    "label": "push spread",
+    "about": "Share of units that a single push moves by more than 1 SD, minus the same share at moments with no push."
+   },
+   "evoked_share": {
+    "value": 0.3921767050260543,
+    "distance": -0.13716682947300263,
+    "inside": true,
+    "worm_median": 0.41074443601595756,
+    "worm_low": 0.27537839262747343,
+    "worm_high": 0.5191985736564747,
+    "label": "push stands out",
+    "about": "How much of the change after a push is caused by the push, against moments with no push."
+   },
+   "tiring": {
+    "value": -0.40016801936831,
+    "distance": 0.1321571841393919,
+    "inside": true,
+    "worm_median": -0.42991154742418125,
+    "worm_low": -0.6706403926942012,
+    "worm_high": -0.20484979047497534,
+    "label": "tiring on a second push",
+    "about": "Log change in a unit's own response when it is pushed a second time, against matched controls. Negative = it answers less."
+   },
+   "watch_share": {
+    "value": 0.48854925480710526,
+    "distance": 0.3008242052441007,
+    "inside": true,
+    "worm_median": 0.3987722855346705,
+    "worm_low": 0.1207778205901176,
+    "worm_high": 0.6972089395917673,
+    "label": "copyable by watching",
+    "about": "How well a linear model fitted only to resting activity predicts the push responses, as a share of how well runs agree with each other. Real worms: poorly."
+   }
+  },
+  "valid": true,
+  "problems": [],
+  "notes": [],
+  "score": 8,
+  "out_of": 8,
+  "mean_abs_distance": 0.3708080132278072,
+  "how": "30 real worms held out of the reference (scored against the other 83)"
+ }
+}

@@ -50,34 +50,39 @@ identical numbers on the atlas.)
   itself it chooses the push strength that moves a pushed unit about 1.6 SD, or, if none does, the smallest
   strength that reaches 90% of the best response.
 
-## Calibration (registered before it ran; README "Brain-likeness test for any artificial system", amendment 1)
+## Calibration (registered before it ran; README "Brain-likeness test for any artificial system", amendments 1 and 3)
 
 *Distance* is the mean, over the eight signatures, of how far a system sits from the real-worm median in units
-of the real-worm range (each capped at 10). The leaderboard ranks by it.
+of the real-worm range (each capped at 10; a signature that cannot be measured counts as 10). The leaderboard
+ranks by it. The step-free distance leaves out the two signatures read in seconds.
 
-| System | Inside, of 8 | Distance |
+| System | Inside, of 8 | Distance (step-free) |
 |---|---|---|
-| Real worms, held out of the reference (3 groups of 30, scored against the other 83) | 8, 6, 8 | 0.36 to 0.65 |
-| Worm emulator fitted to the atlas (3 groups; built on these worms, not independent) | 6, 4, 4 | 0.86 to 1.08 |
-| Artificial-lab network with hidden slow drives at the worm's timescale (40 s) | 3 | 2.37 |
-| Small transformer trained on a synthetic language | 2 | 2.48 |
-| The same lab network with drives at 5 s | 0 | 3.80 |
-| RNNs trained on memory or integration tasks, and the same before training | 0 to 2 | 3.80 to 4.45 |
-| Random tanh RNN, random GRU (ONNX), plain lab network, untrained transformer | 0 to 1 | 4.68 to 4.90 |
-| Spiking networks (plain, with adaptation) | 0 to 1 | 5.02 to 5.36 |
-| Linear model fitted to the worms' resting activity (3 groups) | 0 to 1 | 5.39 to 5.51 |
+| Real worms, held out of the reference (3 groups of 30, scored against the other 83) | 8, 6, 8 | 0.29 to 0.60 (0.26 to 0.29) |
+| Worm emulator fitted to the atlas (3 groups; built on these worms, not independent) | 5, 4, 5 | 0.84 to 1.04 (0.86 to 1.20) |
+| Artificial-lab network with hidden slow drives at the worm's timescale (40 s) | 1 | 2.32 (2.73) |
+| Small transformer trained on a synthetic language | 3 | 3.25 (2.50) |
+| RNNs trained on memory or integration tasks, and the same before training | 0 to 1 | 4.37 to 5.16 |
+| Random tanh RNN, plain lab network, lab network with 5 s drives | 0 to 1 | 4.88 to 4.91 |
+| Linear model fitted to the worms' resting activity (3 groups) | 0 to 1 | 5.21 to 5.34 |
+| Untrained transformer, spiking networks, random GRU | 0 to 1 | 5.73 to 6.62 |
 
 What this shows:
 
-- **The distance grades; the count is coarse.** Untrained networks often reach 1 of 8 by chance, so a count of 1
-  says little. By the rule registered beforehand the count does not grade (the emulator reached 5 in one of three
-  groups, and untrained controls scored above the resting-activity model), so the distance ranking is a post hoc
-  choice, and the first systems submitted are its first real test.
-- **Slow state matters.** Hidden drives at the worm's timescale bring a network much closer (2.37) than the same
-  drives at 5 s (3.80). Training moved networks closer in two of three pairs.
-- **Watching is not enough.** A linear model fitted to the worms' own resting activity is as far from them as random
-  networks: it has no slow activity, its activity spreads over far too many patterns, and its push responses are
-  exactly predictable from watching, unlike a worm's.
+- **The distance grades; the count is coarse.** Untrained networks often reach 1 of 8 by chance, so counts below
+  about 3 say little. By the rule registered beforehand the count does not grade (untrained controls scored above
+  the resting-activity model), so ranking by distance is a choice made after seeing the calibration, and the
+  first systems submitted are its first real test.
+- **Slow state helps.** Hidden drives at the worm's timescale bring a network much closer (2.32) than the same
+  drives at 5 s (4.91).
+- **Training is not enough by itself.** Training a small transformer moved it much closer (3.25 against 5.73);
+  training recurrent networks on a memory or an integration task moved them slightly further away.
+- **Watching is not enough.** A linear model fitted to the worms' own resting activity is as far from them as
+  random networks: it has no slow activity, its activity spreads over far too many patterns, and its runs barely
+  agree with each other about push responses.
+- **Most artificial systems' runs disagree.** Real worm groups agree with each other about push responses at
+  0.07 to 0.13; most artificial systems tested agree less, so "copyable by watching" cannot be read for them and
+  counts as outside.
 
 ## Three ways in
 
