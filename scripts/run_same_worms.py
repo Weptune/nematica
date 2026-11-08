@@ -53,7 +53,7 @@ def make_model(spec: str):
         parts = [p for p in base.replace("hybrid_kernels", "").split("_") if p]
         bg = next((p[2:] for p in parts if p.startswith("bg")), "spontaneous")
         mask = next((p for p in parts if not p.startswith("bg") and p not in ("obs", "heavy", "regimes", "obsfit", "classquiet", "quietfit", "quietobsfit", "indiv") and not p.startswith("lowrank") and not p.startswith("smooth")
-                     and not p.startswith("gru")), None)
+                     and not p.startswith("gru") and not p.startswith("innov")), None)
         return HybridKernel(mask=mask, background=bg, obs_noise="obs" in parts, heavy="heavy" in parts,
                             regimes="regimes" in parts, obs_fit="obsfit" in parts,
                             lowrank=next((int(p[7:]) for p in parts if p.startswith("lowrank")), 0),
@@ -62,7 +62,8 @@ def make_model(spec: str):
                             quiet_obs_fit="quietobsfit" in parts, individual="indiv" in parts,
                             gru=next((int(p[3:].replace("ss", "")) for p in parts if p.startswith("gru")), 0),
                             gru_sampled=any(p.startswith("gru") and p.endswith("ss") for p in parts),
-                            gru_steps=3000 if any(p.startswith("gru") and p.endswith("ss") for p in parts) else 1500)
+                            gru_steps=3000 if any(p.startswith("gru") and p.endswith("ss") for p in parts) else 1500,
+                            innov=next((int(p[5:]) for p in parts if p.startswith("innov")), 0))
     if base.startswith("creamer2024_"):
         return CreamerCausal(base.replace("creamer2024_", ""), protocol=protocol)
     parts = base[3:].split("_")

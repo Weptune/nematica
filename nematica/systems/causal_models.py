@@ -47,13 +47,54 @@ def spontaneous_mask(rec: PumpProbe) -> np.ndarray:
     return m
 
 
+def pairwise_cov(R: np.ndarray, min_n: int = 200) -> np.ndarray:
+    """Covariance of the columns of R (rows = frames) using frames where both are finite."""
+    ok = np.isfinite(R).astype(float)
+    Z = np.nan_to_num(R)
+    n = ok.T @ ok
+    with np.errstate(invalid="ignore", divide="ignore"):
+        m = (Z.T @ ok) / n                 # mean of column i over frames where j is also seen
+        S = (Z.T @ Z) / n - m * m.T
+    S[n < min_n] = np.nan
+    return S
+
+
+def factor_fit(S: np.ndarray, k: int, iters: int = 200):
+    """Loadings L (C x k) and specific variances psi with L L' + diag(psi) close to S, by
+    iterated principal factors on the correlation scale; missing entries of S are filled from
+    the current fit (EM-style). Returns loadings in the original units [A]."""
+    d = np.sqrt(np.clip(np.diag(S), 1e-9, None))
+    Rm = S / np.outer(d, d)
+    miss = ~np.isfinite(Rm)
+    Rm = np.where(miss, 0.0, Rm)
+    np.fill_diagonal(Rm, 1.0)
+    h = np.full(len(d), 0.5)
+    for _ in range(iters):
+        A = Rm.copy()
+        np.fill_diagonal(A, h)
+        w, V = np.linalg.eigh(A)
+        w, V = w[::-1][:k], V[:, ::-1][:, :k]
+        Lc = V * np.sqrt(np.clip(w, 0, None))
+        fit = Lc @ Lc.T
+        Rm = np.where(miss, fit, Rm)
+        np.fill_diagonal(Rm, 1.0)
+        h = np.clip((Lc ** 2).sum(1), 0.0, 0.98)
+    Lc = Lc * np.sqrt(h / np.maximum((Lc ** 2).sum(1), 1e-12))[:, None]
+    return Lc * d[:, None], (1 - h) * d ** 2
+
+
 class ClassVAR:
     def __init__(self, lags: int = 3, frames: str = "spontaneous", min_fraction: float = 0.3,
                  ridges=(1.0, 10.0, 100.0, 1000.0, 10000.0), max_radius: float = 0.99,
                  protocol: str = "clamp", fixed_ridge: float | None = None, coupling: str = "full",
                  features: str = "linear", penalty: str = "ridge", theta: float = 1.0,
-                 innovations: str = "gaussian"):
+                 innovations: str = "gaussian", innov_k: int = 0):
         self.lags, self.frames, self.min_fraction, self.ridges = lags, frames, min_fraction, ridges
+        self.innov_k = innov_k                        # > 0: shocks share innov_k common factors
+                                                      # (fitted to the residual covariance) instead
+                                                      # of being independent across classes [A]
+        self.innov_L = None
+        self.innov_n0 = 2000.0                        # pooled-covariance weight for one worm [A]
         self.max_radius, self.protocol, self.fixed_ridge = max_radius, protocol, fixed_ridge
         self.coupling = coupling       # "full", or "diagonal": each class driven only by its own past
         self.features = features       # "linear", or "relu": plus rectified copies of the last frame,
@@ -129,7 +170,24 @@ class ClassVAR:
         R = Y - X @ m.W
         sd = np.sqrt(np.nanmean(R ** 2, axis=0))
         m.noise_sd = np.where(np.isfinite(sd) & (sd > 0), sd, self.noise_sd)
+        if self.innov_k:
+            m._fit_innov(R, prior=self.innov_S, n0=self.innov_n0)
         return m
+
+    def _fit_innov(self, R, prior=None, n0: float = 0.0):
+        """Common-factor structure of the shocks. With `prior` (a pooled covariance), the
+        worm's own covariance is shrunk toward it: (n S + n0 prior) / (n + n0), n = frames [L]."""
+        S = pairwise_cov(R, min_n=100 if prior is not None else 200)
+        if prior is not None:
+            n = float(np.isfinite(R).any(1).sum())
+            S = np.where(np.isfinite(S), (n * S + n0 * prior) / (n + n0), prior)
+        else:
+            self.innov_S = S
+        L, psi = factor_fit(S, self.innov_k)
+        tot = np.sqrt((L ** 2).sum(1) + psi)
+        scale = self.noise_sd / np.maximum(tot, 1e-9)        # keep each class's shock size
+        self.innov_L = L * scale[:, None]
+        self.innov_psi = np.sqrt(np.clip(psi, 0, None)) * scale
 
     def fit(self, train, val):
         from collections import Counter
@@ -163,6 +221,8 @@ class ClassVAR:
             k = np.nanmean(R ** 4, axis=0) / np.nanmean(R ** 2, axis=0) ** 2 - 3.0
         # Student-t degrees of freedom matching each class's residual excess kurtosis (6 / (nu - 4))
         self.nu = np.where(np.isfinite(k) & (k > 0.2), np.clip(4.0 + 6.0 / np.maximum(k, 1e-6), 4.1, 30.0), 30.0)
+        if self.innov_k:
+            self._fit_innov(R)
         self.radius = self.spectral_radius()
         self.info = {"radius": round(self.radius, 4), "ridge": best[0], "median_nu": round(float(np.median(self.nu)), 2), "val_r2": round(float(best[1]), 4), "classes": len(self.classes),
                      "rows": int(X.shape[0])}
@@ -258,7 +318,11 @@ class ClassVAR:
         base = {}
         for t in range(p, T + burn):
             nxt = self._step(z, t, A, b)
-            nxt += self.noise_sd * self._shock(rng, C) * (1.0 if noise_gain is None else noise_gain[t])
+            if self.innov_L is not None:
+                shock = self.innov_L @ rng.standard_normal(self.innov_k) + self.innov_psi * rng.standard_normal(C)
+            else:
+                shock = self.noise_sd * self._shock(rng, C)
+            nxt += shock * (1.0 if noise_gain is None else noise_gain[t])
             if quiet is not None:
                 q = quiet[:, t]
                 if q.any():
@@ -383,7 +447,9 @@ class HybridKernel:
                  background: str = "spontaneous", obs_noise: bool = False, heavy: bool = False,
                  regimes: bool = False, obs_fit: bool = False, lowrank: int = 0, obs_smooth: float = 0.0,
                  class_quiet: bool = False, quiet_fit: bool = False, quiet_obs_fit: bool = False,
-                 individual: bool = False, gru: int = 0, gru_sampled: bool = False, gru_steps: int = 1500):
+                 individual: bool = False, gru: int = 0, gru_sampled: bool = False, gru_steps: int = 1500,
+                 innov: int = 0):
+        self.innov = innov               # > 0: the VAR's shocks share this many common factors
         self.lags, self.shrink, self.mask, self.seed = lags, shrink, mask, seed
         self.background = background     # which frames the ongoing-dynamics VAR learns from
         self.obs_noise = obs_noise       # split each class's variability into slow dynamics and
@@ -411,7 +477,7 @@ class HybridKernel:
         self.name = ("hybrid_kernels" + (f"_{mask}" if mask else "") + ("" if background == "spontaneous" else f"_bg{background}")
                      + ("_obs" if obs_noise else "") + ("_heavy" if heavy else "") + ("_regimes" if regimes else "")
                      + ("_obsfit" if obs_fit else "") + (f"_lowrank{lowrank}" if lowrank else "")
-                     + (f"_smooth{obs_smooth:g}" if obs_smooth else "") + ("_classquiet" if class_quiet else "") + ("_quietfit" if quiet_fit else "") + ("_quietobsfit" if quiet_obs_fit else "") + ("_indiv" if individual else "") + (f"_gru{gru}" + ("ss" if gru_sampled else "") if gru else ""))
+                     + (f"_smooth{obs_smooth:g}" if obs_smooth else "") + ("_classquiet" if class_quiet else "") + ("_quietfit" if quiet_fit else "") + ("_quietobsfit" if quiet_obs_fit else "") + ("_indiv" if individual else "") + (f"_gru{gru}" + ("ss" if gru_sampled else "") if gru else "") + (f"_innov{innov}" if innov else ""))
 
     def _gain(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """A two-state Markov chain (quiet, active) with the calibrated share of quiet time and
@@ -524,7 +590,7 @@ class HybridKernel:
             self.var = LowRankVAR(k=self.lowrank, lags=self.lags, frames=self.background).fit(train, val)
         else:
             self.var = ClassVAR(lags=self.lags, frames=self.background,
-                                innovations="student" if self.heavy else "gaussian").fit(train, val)
+                                innovations="student" if self.heavy else "gaussian", innov_k=self.innov).fit(train, val)
         if self.obs_noise:
             self.noise_frac = self._noise_fractions(list(train) + list(val), self.var.classes)
         acc: dict = {}

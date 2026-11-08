@@ -4052,6 +4052,47 @@ spontaneous rises; and (Q0) it propagates downstream at about a fifth of what la
 produces. Mis-targeting or a stimulation-tied tracking artefact fit; ordinary bleed-through and lagged
 synaptic activation do not. The share of each atlas connection due to it is not measured.
 
+## A worm emulator: one model that passes at rest and when poked (pre-registered 8 Nov 2026)
+
+**Question.** No model so far passes both halves of the causal Turing test on held-out worms:
+the best poke model (`hybrid_kernels_regimes_obsfit`) passes the poke levels but fails at rest,
+and the best rest model fails the pokes. If one model can pass both, removing one ingredient
+at a time says what an artificial network must have to be indistinguishable from a worm on
+this ruler, which is the project's main question (what separates real from artificial networks)
+asked constructively.
+
+**Diagnosis that motivates the attempt (exploratory, cv3 pool 0, before this registration).**
+Simulated worms are far too high-dimensional: median participation ratio 26.7 classes for the
+best poke model and 25.3 for VAR(3) from rest, against 15.7 in the real pool worms (IQR 10.5 to
+17.9). Every model so far drives its classes with independent shocks, so neurons only become
+correlated through the fitted coupling, which is weak. Real worms share large common inputs. A
+first fix, shocks that share a few common factors fitted to the residual covariance
+(`innov{k}`), brings the median down to 18 to 20 in that pool.
+
+**Protocol.**
+1. *Selection (exploratory)* on the cv3 split (`configs/splits/pumpprobe_cv3.yaml`), any number of
+   candidates, cache `results/emulator_select`. Ingredients on offer: correlated shocks,
+   individual backgrounds (each simulated worm gets one training worm's own VAR and shock
+   structure, shrunk toward the pooled one), quiet and active regimes, a fitted measurement-noise
+   share, causal kernels from pokes.
+2. *Freeze* one model, by name and code commit, recorded here before step 3.
+3. *Confirmation* on the independently drawn split (`configs/splits/pumpprobe_cv3_blocks1.yaml`),
+   fluct units, perturbational levels on, cache `results/emulator_confirm`. This model has never been
+   scored on that split.
+4. *Ablations* on the same confirmation split: the frozen model minus one ingredient at a time
+   (correlated shocks; individual backgrounds; causal kernels; regimes; measurement noise;
+   coupling between classes in the background, i.e. a diagonal VAR).
+
+**Pass rule (fixed now).** A level passes if its verdict is inside in at least 2 of 3 pools. The
+model passes at rest if at least 5 of the 6 activity levels pass; it passes the pokes if
+C1.pattern, C2.magnitude and P2.spread all pass. **Emulator = passes both on the confirmation
+split.** An ingredient is *necessary* if the model without it fails the rule there.
+
+**Expectations, written down now.** Correlated shocks necessary for rest (dimensionality); causal
+kernels necessary for the pokes (pattern); coupling between classes not necessary for either
+(earlier work found frame-to-frame interactions do not generalise). If nothing passes on
+confirmation, that is reported as the result, with the levels that fail.
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of
