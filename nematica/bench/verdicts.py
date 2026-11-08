@@ -67,8 +67,13 @@ def excess(row: dict) -> tuple[float, float, float]:
     return ((s - b) / b, _f(row.get("shift_lo")) / b, _f(row.get("shift_hi")) / b)
 
 
+def pools_needed(n_pools: int) -> int:
+    """2 of 3 in the frozen splits; two thirds, rounded up, for other numbers of pools."""
+    return -(-2 * n_pools // 3)
+
+
 def level_passes(letters: str, n_pools: int = 3) -> bool:
-    return len(letters) == n_pools and letters.count("I") >= POOLS_NEEDED
+    return len(letters) == n_pools and "." not in letters and letters.count("I") >= pools_needed(n_pools)
 
 
 def _letters(rows_by_fold: dict, folds: list) -> str:
@@ -103,7 +108,8 @@ def answers(rows: Sequence[dict]) -> dict:
     out = {}
     for split in order:
         srows = [r for r in rows if r["split"] == split]
-        n_folds = max((int(r.get("n_folds", 0) or 0) for r in srows), default=0)
+        nf = {int(_f(r.get("n_folds"))) for r in srows if np.isfinite(_f(r.get("n_folds")))}
+        n_folds = max(nf) if nf else 0
         seen_folds = sorted({int(r["fold"]) for r in srows})
         folds = list(range(n_folds)) if n_folds else seen_folds
         seeds = sorted({int(r.get("seed", 0)) for r in srows})
@@ -112,20 +118,28 @@ def answers(rows: Sequence[dict]) -> dict:
         cov = [_f(r.get("coverage")) for r in srows if np.isfinite(_f(r.get("coverage")))]
         coverage = float(np.median(cov)) if cov else None
         problems = []
-        if set(seen_folds) != set(folds):
+        if not nf:
+            problems.append("the number of pools in the split was not recorded")
+        elif len(nf) > 1 or any(f not in range(n_folds) for f in seen_folds):
+            problems.append("inconsistent pool numbering")
+        elif set(seen_folds) != set(folds):
             problems.append(f"{len(seen_folds)} of {len(folds)} pools scored")
-        for sd in seeds:
-            done = {f for lv in ALL_LEVELS for f in idx.get((split, sd, lv), {})}
-            if done and done != set(seen_folds):
-                problems.append(f"seed {sd} misses pools")
-                break
-        if not any(lv in POKE_RULE_LEVELS and (split, sd, lv) in idx for sd in seeds for lv in POKE_RULE_LEVELS):
+        if any((split, sd, "P2.spread") not in idx for sd in seeds) and \
+                not any((split, sd, lv) in idx for sd in seeds for lv in ("C1.pattern", "C2.magnitude")):
             problems.append("poke levels not scored")
         elif any((split, sd, "P2.spread") not in idx for sd in seeds):
             problems.append("echo spread not scored (run with the complexity levels on)")
+        incomplete = sorted({(sd, LABELS[lv]) for sd in seeds for lv in REST_LEVELS + POKE_RULE_LEVELS
+                             if (split, sd, lv) in idx and set(idx[(split, sd, lv)]) != set(folds)
+                             or (split, sd, lv) not in idx})
+        if incomplete and not problems:
+            problems.append(f"seed {incomplete[0][0]}: {incomplete[0][1]} not scored in every pool")
+        cmin = [_f(r.get("coverage_min")) for r in srows if np.isfinite(_f(r.get("coverage_min")))]
         if coverage is not None and coverage < COVERAGE_FLOOR:
             problems.append(f"the copy models a median {coverage:.0%} of the scored neuron classes "
                             f"(at least {COVERAGE_FLOOR:.0%} needed)")
+        elif cmin and min(cmin) < 0.5:
+            problems.append(f"in one held-out worm the copy models only {min(cmin):.0%} of the scored neuron classes")
         judged_ok = not problems
         letters = {sd: {lv: _letters(idx[(split, sd, lv)], folds) for lv in ALL_LEVELS if (split, sd, lv) in idx}
                    for sd in seeds}
@@ -157,6 +171,7 @@ def answers(rows: Sequence[dict]) -> dict:
             "judged": judged_ok, "not_judged_because": problems,
             "seeds": len(seeds), "pools": len(folds), "pools_scored": len(seen_folds), "coverage": coverage,
             "held_out_worms": sum(sizes.values()) if sizes else None,
+            "coverage_note": None if coverage is not None else "coverage not recorded (results converted from research runs)",
             "rest_pass_seeds": sum(j["rest_pass"] for j in judged.values()) if judged_ok else None,
             "poke_pass_seeds": sum(j["poke_pass"] for j in judged.values()) if judged_ok else None,
             "both_pass_seeds": sum(j["rest_pass"] and j["poke_pass"] for j in judged.values()) if judged_ok else None,
@@ -167,7 +182,8 @@ def answers(rows: Sequence[dict]) -> dict:
 
 
 def rule_text() -> str:
-    return ("A level passes when it is inside in at least 2 of a split's 3 held-out pools. At rest: at least 5 of "
+    return ("A level passes when it is inside in at least 2 of a split's 3 held-out pools (two thirds when a split has "
+            "another number of pools). At rest: at least 5 of "
             "the 6 activity levels pass. When poked: echo pattern, echo size and echo spread all pass.")
 
 

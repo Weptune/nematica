@@ -72,7 +72,7 @@ def main() -> int:
                 todo = [m for m in args.models.split(",") if (cond, str(rep), str(fi), m) not in done]
                 if not todo:
                     continue
-                ruler = FoldRuler(*fold_parts(data[cond], folds, fi), pci=False)
+                ruler = FoldRuler(*fold_parts(data[cond], folds, fi), pci=False, equivalence=True)
                 for spec in todo:
                     res = ruler.score(spec, make_model(spec), seed_base=1000 * rep + 100 * fi)
                     c1 = next(r for r in res if r["metric"] == "C1.pattern")

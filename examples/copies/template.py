@@ -4,9 +4,9 @@ Copy this file, then replace the two marked parts with your model.
     python -m nematica check examples/copies/template.py:Template      # contract check, about a minute
     python -m nematica score examples/copies/template.py:Template --seeds 3
 
-This template is a deliberately weak copy: each neuron class is an independent slow random process
-with the size of its fluctuations taken from the training worms, poked neurons follow their drive,
-and nothing else responds. It passes the contract check and fails the benchmark, as it should.
+This template is a deliberately weak copy: every identified neuron is an independent AR(1) process whose
+coefficient (how slowly it changes) is the median over the training worms' neurons, poked neurons follow
+their drive, and nothing else responds. It passes the contract check and fails the benchmark, as it should.
 """
 
 import numpy as np

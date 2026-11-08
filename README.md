@@ -344,7 +344,8 @@ all eleven verdicts and values match when both use the same
 response units (`score` uses `fluct`; pass `--norm fluct` to the runner).
 
 **Inside is not agreement.** A verdict of inside means no difference was detected. For the
-poke levels the report also gives an equivalence verdict, with a rule fixed on 1 Nov 2026
+poke levels the research scripts (`run_gallery.py`, `annotate_equivalence.py`; not `nematica score`
+since 8 Nov 2026) also give an equivalence verdict, with a rule fixed on 1 Nov 2026
 before any copy was checked against it: a copy *agrees* when the whole 90% bootstrap
 interval of its shift lies within plus or minus half the shift of a known-wrong control
 built from the same held-out worms (targets permuted for the pattern, responses tripled for

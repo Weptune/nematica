@@ -67,7 +67,7 @@ def main() -> int:
         todo = [f for f in args.families.split(",") if not (cache / f"{args.split}_f{fi}_{f}.csv").exists()]
         if not todo:
             continue
-        ruler = FoldRuler(*fold_parts(recs, folds, fi), pci=args.pci)
+        ruler = FoldRuler(*fold_parts(recs, folds, fi), pci=args.pci, equivalence=True)
         for fam in todo:
             t0 = time.time()
             m = family(fam)

@@ -42,7 +42,7 @@ def _finish(name, rows, out, html, compare, t0, command, data=None, extra_meta=N
             }
     suffix = ".quick" if (extra_meta or {}).get("quick") else ""
     path = write_report(name, rows, out or f"results/scores/{_slug(name)}{suffix}.json", meta=meta)
-    print(format_answers(name, rows))
+    print(format_answers(name, rows, note=(extra_meta or {}).get("note")))
     print(f"\nReport: {path}  ({time.time() - t0:.0f} s)")
     if html:
         print(f"HTML:   {write_html(path, compare=compare or [])}")
@@ -100,6 +100,8 @@ def main(argv=None) -> int:
 
     if args.cmd == "score":
         from .score import load_copy, score
+        if args.quick and (args.fold or args.seeds != 1 or args.split != "both"):
+            ap.error("--quick is split cv3, fold 0, one seed: do not combine it with --split, --fold or --seeds")
         factory = load_copy(args.copy)
         splits = ("cv3",) if args.quick else ("cv3", "blocks1") if args.split == "both" else (args.split,)
         folds = [0] if args.quick else args.fold

@@ -126,8 +126,14 @@ def score_files(sims: str | Path, data, name: str, pci: bool = True, norm: str =
     paths = split_files or {k: SPLITS_DIR / v for k, v in SPLITS.items()}
     rows = []
     from .bench.verdicts import FOLD_DIR, SEED_DIR
-    for split in sorted(p.name for p in sims.iterdir() if p.is_dir() and p.name in paths):
+    unknown = [p.name for p in sims.iterdir() if p.name not in paths]
+    if unknown:
+        raise ValueError(f"unknown entries in {sims}: {unknown[:3]} (expected split folders: {sorted(paths)})")
+    for split in sorted(p.name for p in sims.iterdir() if p.is_dir()):
         folds = load_folds(paths[split])["folds"]
+        missing = sorted({u for f in folds for u in f} - set(recs))
+        if missing:
+            raise FileNotFoundError(f"{len(missing)} worms of split {split} are missing from the data, e.g. {missing[0]}")
         fdirs = {}
         for d in (sims / split).iterdir():
             m = FOLD_DIR.match(d.name)

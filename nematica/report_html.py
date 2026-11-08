@@ -126,8 +126,12 @@ def verdict_grid(a: dict, split: str) -> str:
                 chips = "".join(f"<span class='chip' style='background:{FILL[LETTER.get(c, 'not scored')]};"
                                 f"color:{COL[LETTER.get(c, 'not scored')]}' title='pool {i + 1}: {LETTER.get(c, 'not scored')}'>{c}</span>"
                                 for i, c in enumerate(letters))
-                ok = letters.count("I") >= 2 and "." not in letters
-                cells.append(f"<td class='{'pass' if ok else 'fail'}'>{chips}<span class='sr'>{'passes' if ok else 'fails'}</span></td>")
+                if L["passes"] is None:
+                    state, word = "nj", "not judged"
+                else:
+                    ok = letters.count("I") >= -(-2 * len(letters) // 3) and "." not in letters
+                    state, word = ("pass", "passes") if ok else ("fail", "fails")
+                cells.append(f"<td class='{state}'>{chips}<span class='sr'>{word}</span></td>")
             passes = "not judged" if L["passes"] is None else f"{L['passes']}/{len(seeds)}"
             rows.append(f"<tr><th scope='row'>{_esc(L['label'])}</th>{''.join(cells)}<td class='num'>{passes}</td></tr>")
     return (f"<table class='grid'><thead><tr><th scope='col'>Level</th>{head}<th scope='col'>Seeds passing</th></tr></thead>"
@@ -144,6 +148,7 @@ h2{{font:600 21px/1.3 Georgia,"Iowan Old Style",serif;margin:44px 0 10px}}
 h3{{font-size:16px;margin:26px 0 6px}}
 p{{margin:0 0 12px;max-width:68ch}}
 .lead{{font-size:19px;line-height:1.45;margin:4px 0 14px}}
+.note{{background:#f6f7f8;border-left:3px solid {RULE};padding:8px 12px;font-size:15px}}
 .meta{{color:{MUTED};font-size:14px;margin-bottom:28px}}
 .answer{{border-collapse:collapse;margin:8px 0 8px;font-variant-numeric:tabular-nums}}
 .answer th,.answer td{{padding:8px 14px 8px 0;text-align:left;border-bottom:1px solid {RULE}}}
@@ -216,6 +221,8 @@ def render(report: dict, compare: dict[str, dict] | None = None) -> str:
             f"<p class='meta'>{' · '.join(b for b in meta_bits if b)}</p>",
             "<h2>The answer</h2>",
             f"<p class='lead'>{_esc(_sentence(a))}</p>",
+            *([f"<p class='note'><b>Note.</b> {_esc(meta['note'])}</p>"] if meta.get("note") else []),
+            *([f"<p class='note'>{_esc(d['coverage_note'])}.</p>" for d in list(a.values())[:1] if d.get("coverage_note")]),
             "<table class='answer'><thead><tr><th>Split</th><th>Passes at rest</th><th>Passes when poked</th>"
             "<th>All nine rule levels pass</th></tr></thead><tbody>" + "".join(ans_rows) + "</tbody></table>",
             f"<p>{_esc(rule_text())} Each noise seed is judged on its own.</p>"]
@@ -248,7 +255,7 @@ def render(report: dict, compare: dict[str, dict] | None = None) -> str:
                "simulated worms, on neuron classes both have.</p>"]
     body += ["<h2>How to read this</h2><ul>",
              "<li><b>Inside is not agreement.</b> It means no difference from real worm-to-worm variation was detected "
-             "in that pool. With 3 held-out pools of about 37 worms, small but consistent differences can pass. Look at "
+             "in that pool. With a few held-out pools of a few dozen worms, small but consistent differences can pass. Look at "
              "the dots: a level whose dots all sit on one side of zero is consistently off, even when it passes.</li>",
              "<li><b>Too typical</b> is a failure too: the copy's worms are closer to real worms than real worms are to "
              "each other, as an average worm would be. Real worms differ from each other, and a good copy should too.</li>",
@@ -256,8 +263,8 @@ def render(report: dict, compare: dict[str, dict] | None = None) -> str:
              "about 0.03), so most copies sit near zero.</li>",
              "<li><b>Echo time course and echo complexity</b> are reported but are not part of the rule. Echo complexity "
              "mostly measures ongoing activity, not the poke (README, sham checks), and fails for every model tried.</li>",
-             "<li>Both splits use the same 113 worms, arranged differently; noise seeds resample only the simulation, not "
-             "the fit. Passing both splits under several seeds shows robustness, not confirmation on new animals.</li>",
+             "<li>The splits rearrange the same worms; noise seeds resample only the simulation, not the fit. Passing "
+             "several splits under several seeds shows robustness, not confirmation on new animals.</li>",
              "</ul>",
              "<h2>Reproduce</h2>",
              f"<p><code>{_esc(meta.get('command', 'python -m nematica score path/to/copy.py:ClassName'))}</code></p>",

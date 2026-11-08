@@ -59,9 +59,10 @@ def fold_parts(recs: dict, folds: Sequence[Sequence[str]], fi: int):
 class FoldRuler:
     """The real side of one fold, built once and reused for every copy scored on it."""
 
-    def __init__(self, train, val, pool, pci: bool = True):
+    def __init__(self, train, val, pool, pci: bool = True, equivalence: bool = False):
         from ..systems.causal_models import ClassVAR
         self.train, self.val, self.pool, self.pci = train, val, pool, pci
+        self.with_equivalence = equivalence     # research scripts: poke-level equivalence columns (x3 rule)
         self.classes = ClassVAR(3, "all").fit(train, val).classes        # one class index per fold
         self.real_b = [bench_sample(r, self.classes, f"real:{r.uid}", r.uid) for r in pool]
         self.ref = build_reference(self.real_b, metrics=ACTIVITY_LEVELS)
@@ -78,21 +79,22 @@ class FoldRuler:
             self._fitted = fitted
         m = fitted[id(model)]
         sims = []
-        coverage = []
-        scored = set(self.classes)
         for i, r in enumerate(self.pool):
             s_ = m.simulate(r, np.random.default_rng(seed_base + i))
             if np.isinf(np.asarray(s_.x, float)).any():
                 raise ValueError(f"{name}: infinite values in the simulation of worm {r.uid}")
-            want = scored & {c for c in r.classes if c}
-            have = {c for c, row in zip(s_.classes, np.asarray(s_.x, float)) if c and np.isfinite(row).any()}
-            coverage.append(len(want & have) / max(len(want), 1))
             sims.append(s_)
             if progress:
                 progress(f"simulated {i + 1}/{len(self.pool)}")
-        cov_med, cov_min = float(np.median(coverage)), float(np.min(coverage))
         rows: list[dict] = []
         sim_b = [bench_sample(s, self.classes, f"{name}:{r.uid}", r.uid) for s, r in zip(sims, self.pool)]
+        # coverage: of the classes scored in each real worm, the share the copy's worm also has scored
+        # (a class with more than 5% missing frames is not scored, for real and simulated worms alike)
+        coverage = []
+        for sb, rb in zip(sim_b, self.real_b):
+            want = rb.observed
+            coverage.append(float((sb.observed & want).sum() / max(want.sum(), 1)))
+        cov_med, cov_min = float(np.median(coverage)), float(np.min(coverage))
         for row in score_system(name, sim_b, self.real_b, self.ref):
             if row["metric"] in ACTIVITY_LEVELS:
                 rows.append({"kind": "activity", **row})
@@ -101,7 +103,12 @@ class FoldRuler:
             rs = response_set(s, f"{name}:{r.uid}")
             rs.group = r.uid
             sim_c.append(rs)
+        if self.with_equivalence and not hasattr(self, "tolerances"):
+            self.tolerances = poke_tolerances(self.pool, self.real_c)
         for row in score_sets(name, sim_c, self.real_c):
+            if self.with_equivalence:
+                tol = self.tolerances.get(row["metric"], {}).get("tolerance")
+                row = {**row, "tolerance": tol, "equivalence": equivalence(row, tol)}
             rows.append({"kind": "causal", **row})
         if self.pci:
             sim_p = []

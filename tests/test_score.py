@@ -3,7 +3,7 @@ import pytest
 
 from nematica.bench.causal import window
 from nematica.data.pumpprobe import PumpProbe, neuron_class
-from nematica.score import BrainCopy, CopyAdapter, load_copy, summary, template_of
+from nematica.score import BrainCopy, CopyAdapter, echo_agreement, load_copy, template_of
 
 
 def worm(T=400, seed=0):
@@ -59,10 +59,7 @@ def test_load_copy(tmp_path):
     assert load_copy(f"{p}:C")().name == "c"
 
 
-def test_summary_counts():
+def test_echo_agreement():
     rows = [{"split": "cv3", "fold": 0, "metric": m, "verdict": v, "system_median": 0.9, "bio_median": 0.9}
             for m, v in (("L1.distribution", "inside"), ("C1.pattern", "outside"))]
-    s = summary(rows)
-    assert s["watching"]["L1.distribution"] == "1/1 inside"
-    assert s["pools_passing_all_poking"] == 0
-    assert s["echo_agreement"] == pytest.approx(0.1)
+    assert echo_agreement(rows) == pytest.approx(0.1)

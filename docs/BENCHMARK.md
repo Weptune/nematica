@@ -48,10 +48,11 @@ writes `<name>.quick.json`, so it never replaces a full report). `python -m nema
 results/scores/*.json` puts several copies in one table. The terminal shows the answer:
 
 ```
-Split cv3 (3 held-out pools, 3 noise seeds): passes at rest in 3/3, when poked in 3/3, both in 3/3
-  level                    verdicts by seed       excess distance (median, range over pools)
+Split cv3 (3 held-out pools, 3 noise seeds; models 100% of scored classes (median)): passes at rest in 3/3,
+when poked in 3/3, both in 3/3; all nine rule levels in 1/3
+  level                    verdicts by seed       excess distance (median, range over pools and seeds)
   at rest
-    activity distribution  III III III            +0.01 (-0.00 to +0.03); further than real in 6/9
+    activity distribution  III III III            +0.03 (+0.01 to +0.04); further than real in 9/9
     ...
 ```
 
@@ -89,8 +90,10 @@ like a real worm's tracking gaps (gaps up to 5% of frames interpolated, longer o
 from the worm's scores and lower the copy's coverage). Infinite values are errors.
 
 What the copy is told, and what it is not:
-- Pokes whose target was unidentified, untracked, or within 5 s of the start or 30 s of the end are left
-  out of the templates. The light still fired in the real worm, so a copy cannot reproduce their echoes.
+- Pokes whose target was untracked, or within 5 s of the start or 30 s of the end, are left out of the
+  templates. The light still fired in the real worm, so a copy cannot reproduce their echoes. Pokes of
+  unidentified neurons are given (with an empty name); their echoes do not enter the poke scores, which
+  are keyed by the poked neuron's class.
 - The drive is 30 s of the held-out worm's own recorded activity for each poked neuron. That is a small
   amount of real activity handed to the copy, by design: the benchmark tests what the rest of the brain
   does, not how a neuron answers light.

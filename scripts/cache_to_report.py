@@ -18,7 +18,8 @@ CACHES = {"cv3": "results/emulator_select", "blocks1": "results/emulator_confirm
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("spec"); ap.add_argument("name"); ap.add_argument("--out"); ap.add_argument("--seeds", type=int, default=5)
-    ap.add_argument("--note", default=None, help="a caveat shown with the copy on the leaderboard")
+    ap.add_argument("--note", default=None, help="a caveat shown with the copy in its report and on the leaderboard")
+    ap.add_argument("--command", default=None, help="the equivalent nematica command, shown under Reproduce")
     a = ap.parse_args()
     rows = []
     for split, cache in CACHES.items():
@@ -33,7 +34,7 @@ def main():
                     r.update(split=split, seed=s, fold=f, n_folds=3, system=a.name)
                     rows.append(r)
     out = write_report(a.name, rows, a.out or f"results/scores/reference/{a.spec}.json",
-                       meta={"date": "2026-11-08", "command": f"scripts/run_same_worms.py, spec {a.spec}", "note": a.note})
+                       meta={"date": "2026-11-08", "command": a.command or f"python scripts/run_same_worms.py --models {a.spec} --norm fluct --pci (per split, fold and seed)", "note": a.note})
     print(out)
 
 

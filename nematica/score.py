@@ -211,8 +211,12 @@ def score_many(factories: dict, data, splits: Sequence[str] = ("cv3", "blocks1")
     """Several copies on the same held-out pools: the real side of each fold is built once and shared
     (identical rows to scoring each copy alone). {name: factory} -> {name: rows}."""
     set_norm(norm)
+    if seeds < 1:
+        raise ValueError("seeds must be at least 1")
     recs = ({r.uid: r for r in load_pumpprobe_dir(data)} if isinstance(data, (str, Path))
             else {r.uid: r for r in data})
+    if not recs:
+        raise FileNotFoundError(f"no recordings in {data}")
     paths = split_files or {s: SPLITS_DIR / SPLITS[s] for s in splits}
     out: dict[str, list[dict]] = {k: [] for k in factories}
     for split in (split_files or splits):
@@ -220,6 +224,8 @@ def score_many(factories: dict, data, splits: Sequence[str] = ("cv3", "blocks1")
         missing = sorted({u for f in all_folds for u in f} - set(recs))
         if missing:
             raise FileNotFoundError(f"{len(missing)} worms of split {split} are missing, e.g. {missing[0]}")
+        if folds is not None and any(not 0 <= f < len(all_folds) for f in folds):
+            raise ValueError(f"split {split} has folds 0 to {len(all_folds) - 1}; asked for {sorted(folds)}")
         for fi in range(len(all_folds)):
             if folds is not None and fi not in folds:
                 continue
@@ -231,6 +237,8 @@ def score_many(factories: dict, data, splits: Sequence[str] = ("cv3", "blocks1")
                 for sd in range(seeds):
                     for r in ruler.score(name, model, seed_base=1000 * fi + 100000 * sd, refit=sd == 0):
                         out[name].append({"split": split, "fold": fi, "n_folds": len(all_folds), "pool_size": len(ruler.pool), "seed": sd, **r})
+    if not any(out.values()):
+        raise ValueError("nothing was scored (check splits and folds)")
     return out
 
 
@@ -242,38 +250,16 @@ def echo_agreement(rows: Sequence[dict], key: str = "system_median") -> float:
     return float(np.mean(v)) if v else float("nan")
 
 
-def summary(rows: Sequence[dict]) -> dict:
-    by_level: dict = {}
-    for r in rows:
-        by_level.setdefault(r["metric"], []).append(r["verdict"])
-    def tally(levels):
-        cells = [(lv, by_level.get(lv, [])) for lv in levels]
-        return {lv: f"{sum(v == 'inside' for v in vs)}/{len(vs)} inside" for lv, vs in cells if vs}
-    n_pools = len({(r["split"], r["fold"]) for r in rows})
-    watch_all = sum(all(r["verdict"] == "inside" for r in rows if (r["split"], r["fold"]) == key and r["metric"] in ACTIVITY_LEVELS)
-                    for key in {(r["split"], r["fold"]) for r in rows})
-    poke_all = sum(all(r["verdict"] == "inside" for r in rows if (r["split"], r["fold"]) == key and r["metric"] in POKE_LEVELS)
-                   for key in {(r["split"], r["fold"]) for r in rows})
-    agree = {}
-    for r in rows:
-        if r.get("metric") in POKE_LEVELS and "equivalence" in r:
-            agree.setdefault(r["metric"], []).append(r["equivalence"] == "agrees")
-    return {"pools": n_pools, "watching": tally(ACTIVITY_LEVELS), "poking": tally(POKE_LEVELS),
-            "poking_agrees": {lv: f"{sum(v)}/{len(v)} agree within tolerance" for lv, v in agree.items()},
-            "complexity": tally(PCI), "pools_passing_all_watching": watch_all,
-            "pools_passing_all_poking": poke_all, "echo_agreement": round(echo_agreement(rows), 3),
-            "echo_agreement_real": round(echo_agreement(rows, "bio_median"), 3)}
-
-
-def format_answers(name: str, rows: Sequence[dict]) -> str:
+def format_answers(name: str, rows: Sequence[dict], note: str | None = None) -> str:
     """The benchmark's answer in plain text: the rule per split and seed, then each level's verdict
     letters and excess distance (0 = as far from real worms as real worms are from each other)."""
     from .bench.verdicts import REST_LEVELS, POKE_RULE_LEVELS, OTHER_LEVELS, answers, rule_text
     a = answers(rows)
-    out = [f"NEMATICA benchmark: {name}", rule_text(), ""]
+    out = [f"NEMATICA benchmark: {name}", rule_text()] + ([f"Note: {note}"] if note else []) + [""]
     for split, d in a.items():
         n = d["seeds"]
-        cov = f"; models {d['coverage']:.0%} of scored classes (median)" if d.get("coverage") is not None else ""
+        cov = (f"; models {d['coverage']:.0%} of scored classes (median)" if d.get("coverage") is not None
+               else f"; {d['coverage_note']}" if d.get("coverage_note") else "")
         if d["judged"]:
             out.append(f"Split {split} ({d['pools']} held-out pools, {n} noise seed{'s' if n > 1 else ''}{cov}): "
                        f"passes at rest in {d['rest_pass_seeds']}/{n}, when poked in {d['poke_pass_seeds']}/{n}, "
@@ -296,19 +282,6 @@ def format_answers(name: str, rows: Sequence[dict]) -> str:
     out.append("Letters: one per held-out pool. I inside (no difference from real worm-to-worm variation detected), "
                "O outside (too different), T too typical (closer to real worms than they are to each other).")
     return "\n".join(out)
-
-
-def format_summary(name: str, s: dict) -> str:
-    lines = [f"NEMATICA scorecard: {name}  ({s['pools']} held-out pools)", ""]
-    for title, key in (("Watching", "watching"), ("Poking", "poking"), ("Complexity", "complexity")):
-        if s[key]:
-            lines.append(title)
-            lines += [f"  {lv:16s} {v}" + (f"; {s['poking_agrees'][lv]}" if key == "poking" and lv in s.get("poking_agrees", {}) else "")
-                      for lv, v in s[key].items()]
-    lines += ["", f"Pools passing every watching test: {s['pools_passing_all_watching']}/{s['pools']}",
-              f"Pools passing every poking test:   {s['pools_passing_all_poking']}/{s['pools']}",
-              f"Echo agreement with real worms:    {s['echo_agreement']}  (real worms with each other: {s['echo_agreement_real']})"]
-    return "\n".join(lines)
 
 
 def write_report(name: str, rows: Sequence[dict], out: str | Path, meta: dict | None = None) -> Path:
@@ -391,7 +364,7 @@ def check(factory, data, log: Callable[[str], None] = print, seeds: int = 3) -> 
         elif not np.array_equal(x, x1b, equal_nan=True):
             problems.append("the same rng seed gave different output: use only the rng you are given (no global random state)")
         named = [j for j, n in enumerate(tpl.names) if neuron_class(n)]
-        modelled = [j for j in named if np.isfinite(x[j]).all()]
+        modelled = [j for j in named if np.isfinite(x[j]).mean() >= 0.95]
         if len(modelled) < 0.8 * len(named):
             problems.append(f"only {len(modelled)} of {len(named)} identified neurons modelled (at least 80% needed)")
         follow = []

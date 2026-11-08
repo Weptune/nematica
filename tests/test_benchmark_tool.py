@@ -263,3 +263,37 @@ def test_template_copy_passes_the_contract_check(worms):
     from pathlib import Path
     tpl = Path(__file__).resolve().parents[1] / "examples" / "copies" / "template.py"
     assert check(load_copy(f"{tpl}:Template"), worms, log=lambda m: None) == []
+
+
+def test_a_level_missing_one_pool_is_not_judged(scored):
+    rows = [r for r in scored if not (r["metric"] == "C1.pattern" and r["fold"] == 2)]
+    assert not answers(rows)["synth"]["judged"]
+    rows = [r for r in scored if not (r["metric"] == "C1.pattern" and r["seed"] == 1)]
+    assert not answers(rows)["synth"]["judged"]
+    rows = [{k: v for k, v in r.items() if k != "n_folds"} for r in scored]
+    assert not answers(rows)["synth"]["judged"]
+
+
+def test_coverage_counts_only_scored_rows(worms, split_file):
+    class Gappy(Echo):
+        name = "gappy"
+
+        def run(self, w, rng):
+            x = super().run(w, rng)
+            x[2:, ::8] = np.nan                               # 12.5% gaps: these classes are not scored
+            return x
+
+    rows = score(Gappy, worms, split_files=split_file, folds=[0], pci=False, log=lambda m: None)
+    assert rows[0]["coverage"] < 0.5
+
+
+def test_check_accepts_a_burn_in_gap(worms):
+    from nematica.score import check
+
+    class BurnIn(Echo):
+        def run(self, w, rng):
+            x = super().run(w, rng)
+            x[:, 0] = np.nan
+            return x
+
+    assert check(BurnIn, worms, log=lambda m: None) == []
