@@ -4415,6 +4415,32 @@ from the caches. Corrections are marked in place above. In short:
 Checked and found correct: the slow-dynamics fit and draw, the Procrustes step, NaN handling, no leakage
 of pool worms into fitting, distinct seeds, cache globs, and the pass-rule summaries.
 
+## Brain-likeness test for any artificial system (pre-registered 8 Nov 2026, night)
+
+**What it is.** A test anyone can put an artificial brain through (`nematica/brainlike`): any system whose
+units can be recorded over time and given a brief push. It can be run by the server from an uploaded
+model (rate-RNN weights or ONNX), run from Python, or run by the owner on their own system following a
+published schedule, uploading only the recordings. The test reruns the atlas experiment on it: 30 runs
+of 37 minutes, 45 recorded units per run, a 2 s push to one unit every 30 s. It then measures 8
+signatures the project has measured in worms (`signatures.py`, the research definitions; on all 113
+worms they reproduce the research values: rest dimensionality 0.428, push spread 0.085, tiring -0.423,
+watching share 0.607).
+
+**Reference.** Each signature on 60 random groups of 30 atlas worms (`reference.json`, summary numbers
+only); a system's value is *inside* when it falls within the 2.5th to 97.5th percentile of those groups,
+widened by the finite-population correction 1/sqrt(1 - 30/113). **Score = signatures inside, of 8.**
+Valid only if the pushes moved the pushed units (median at least 0.75 SD), at least 300 usable pushes, and
+at least 10 units per run. Models run by the server get a push strength calibrated to the atlas's median
+pushed-unit change (1.6 SD).
+
+**Calibration, registered before running.** (1) *Held-out worms:* reference rebuilt from 83 worms, scored
+on the disjoint 30 (three different held-out groups). Expected: at least 6 of 8 inside in each. If not,
+the test is too strict for real worms and is not usable as worded. (2) *A random tanh RNN* (the lab's base
+network, 120 units, spectral radius 1.3), (3) *the lab network with slow hidden drives* (share 0.4), (4) *a
+random GRU* exported to ONNX. Expected: (2) and (4) score at most 4 of 8; (3) scores higher than (2) (slow
+drives are the ingredient the emulator work found decisive). If a plain random network scores 6 or more,
+the test does not separate brains from arbitrary networks and is reported as such.
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of
