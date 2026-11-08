@@ -1,0 +1,9 @@
+112 worms, 59 classes
+factor: share 0.37, timescale 50 s: MERGE +0.26, RMD +0.21, URY +0.18, IL1 +0.18, RIM +0.17, AVA +0.17, OLL +0.17, SAA +0.17, OLQ +0.17, AWB +0.16
+factor: share 0.19, timescale 31 s: M3 +0.26, BAG +0.24, NSM +0.23, RIM -0.22, OLQ +0.21, IL1 +0.21, AVJ -0.19, I3 +0.19, AVD -0.18, ASE -0.18
+factor: share 0.14, timescale 36 s: AQR +0.31, AIZ +0.29, AVE -0.29, AIM +0.27, FLP +0.25, VB02 +0.24, AFD -0.22, AVA -0.20, ADA +0.20, ASK -0.18
+factor: share 0.11, timescale 41 s: AVE +0.29, RME -0.25, AVG +0.25, AVH -0.25, ADA +0.22, AVA +0.21, RIG +0.20, MERGE +0.19, AIN -0.19, AVK +0.19
+factor: share 0.10, timescale 34 s: MERGE +0.45, I4 +0.28, URB -0.25, NSM +0.23, RME -0.23, RIG -0.20, RIA -0.20, RIV +0.18, ASI +0.18, SMB -0.18
+factor: share 0.09, timescale 37 s: AVE +0.25, MC +0.23, MI +0.22, RIG -0.22, MERGE -0.22, AIZ -0.22, FLP +0.22, M2 +0.21, ASG -0.20, AVG -0.19
+slow-band leaders (10 s ahead): ADL +1.31, AVH +0.88, AWA +0.82, ASG +0.72, AIZ +0.71, ASI +0.71, AVJ +0.62, AIM +0.57
+slow-band followers: M2 -1.39, M3 -1.10, NSM -0.91, IL1 -0.88, MC -0.73, URY -0.64, I2 -0.64, CEP -0.62

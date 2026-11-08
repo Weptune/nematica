@@ -1,0 +1,4 @@
+50 shared classes; Spearman r between atlas and Atanas lead scores = -0.04 (p = 0.794)
+atlas leaders: ADL, AVH, AWA, AIZ, ASG, AIM, ASI, AVJ; followers: CEP, OLL, I2, URY, MC, IL1, NSM, M3
+Atanas leaders: RIM, AVE, AVA, AIN, SMD, I1, URA, MI; followers: I6, BAG, AQR, AIZ, CEP, RIA, I3, IL1
+permutation p (two-sided) = 0.7902

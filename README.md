@@ -4348,6 +4348,19 @@ echo-size and spread passes may partly rest on that.
 worms (test U, same controls and rule) and the Atanas worms (test T). The earlier results stand as
 recorded but are superseded by these if they differ.
 
+**What the slow states are (exploratory, `scripts/explore/slow_states.py`, `docs/figures/slow_states.txt`).**
+Six slow factors fitted on all wild-type atlas worms. The largest (37% of the shared slow variance,
+timescale about 50 s) loads with one sign on most head neurons (RMD, URY, IL1, RIM, AVA, OLL, SAA,
+OLQ): a brain-wide up-and-down state. The second (19%, about 31 s) sets pharyngeal neurons (M3, NSM, I3)
+and BAG against the reversal circuit (RIM, AVJ, AVD): a feeding-against-locomotion axis. The rest are
+smaller mixtures. (`MERGE`, rows the atlas could not split into single neurons, loads on several and is
+not interpreted.) In the slow band, sensory neurons and first interneurons (ADL, AWA, ASG, ASI, AIZ,
+AVH) tend to lead and pharyngeal and head neurons (M2, M3, NSM, MC, IL1, URY) to follow by about 10 s.
+**That order does not hold in Atanas worms** (freely moving, never stimulated; Spearman r = -0.04 over 50
+shared classes, permutation p = 0.79, `scripts/explore/slow_lead_atanas.py`), so it may belong to the
+atlas conditions (immobilised, light every 30 s) rather than to worms in general. The two main factors
+are descriptive; they were not tested against the other dataset.
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of
