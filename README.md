@@ -4291,6 +4291,17 @@ a share of the class count). *Prediction:* unc-31 worms have a smaller slow shar
 0.05). *Caveats written now:* the strains were recorded on different dates, and all frames include
 pokes, whose echoes differ between strains; a difference could come from either.
 
+**N result (`docs/figures/neuropeptide_slow.txt`, `scripts/run_neuropeptide_slow.py`): the prediction
+fails.** The rule left 102 wild-type worms (not 113 as written: 11 lack identities or are shorter than
+1000 frames) and 13 unc-31 worms. Slow share, class-matched unc-31 minus wild type: **+0.011** [95%
+-0.056, +0.054], permutation p = 0.75 (58 classes; medians 0.80 and 0.78). Shared slow variance: 0.313
+against 0.319, p = 0.66. Without dense-core-vesicle neuropeptide release, worms keep as much slow,
+brain-wide activity as wild type, so on this evidence neuropeptides do not carry the slow states. The
+secondary timescale measure leans the other way (unc-31 slow parts about 9 s longer, permutation p =
+0.010, but the worm bootstrap interval -3.9 to +14.3 s includes zero): not a finding. This agrees with
+the earlier unc-31 results (arc 4, the reverse test, watching): removing peptide release changes little
+that this atlas can see.
+
 **U. The recipe on unc-31 worms.** Same 13 worms, three pools in recording order (5, 4, 4; split file
 `configs/splits/unc31_cv3.yaml`, written before any scoring), the recipe fitted on the other two pools and
 scored as before, five simulation seeds. *Controls:* two models known to fail on wild type,

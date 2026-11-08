@@ -1,0 +1,4 @@
+worms: wild type 102, unc-31 13; classes 88
+slow share: unc-31 minus wild type, class-matched median +0.0107 [95% -0.0564, +0.0535], permutation p = 0.7486, 58 classes; medians wt 0.781, unc-31 0.802
+slow timescale (s): unc-31 minus wild type, class-matched median +9.3158 [95% -3.9059, +14.3067], permutation p = 0.0100, 55 classes; medians wt 39.007, unc-31 43.524
+shared slow variance: unc-31 0.313 vs wild type 0.319, difference -0.0064, permutation p = 0.6630
