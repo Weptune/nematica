@@ -131,13 +131,18 @@ def main() -> int:
     ap.add_argument("--cache", default="results/same_worms")
     ap.add_argument("--tag", default="")
     ap.add_argument("--fold", type=int, default=None)
+    ap.add_argument("--atanas", action="store_true", help="data is the Atanas 2023 WormWideWeb JSON folder (no pokes)")
     ap.add_argument("--seed-offset", type=int, default=0, help="different simulation noise (cache names get _s<offset>)")
     ap.add_argument("--pci", action="store_true", help="also score perturbational complexity (P1, P2)")
     args = ap.parse_args()
     causal.NORM = args.norm
     cache = Path(args.cache)
     cache.mkdir(parents=True, exist_ok=True)
-    recs = {r.uid: r for r in load_pumpprobe_dir(args.data)}
+    if args.atanas:
+        from nematica.data.atanas_pp import load_atanas_pp_dir
+        recs = {r.uid: r for r in load_atanas_pp_dir(args.data)}
+    else:
+        recs = {r.uid: r for r in load_pumpprobe_dir(args.data)}
     folds = load_folds(args.folds)["folds"]
     rows = []
     for fi, pool_uids in enumerate(folds):
