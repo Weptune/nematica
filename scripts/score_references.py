@@ -22,12 +22,16 @@ COPIES = {"silent (independent noise)": "examples/copies/silent.py:Silent",
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("--seeds", type=int, default=3)
+    ap.add_argument("--split", choices=("cv3", "blocks1"), action="append", help="score only this split (repeatable); "
+                    "reports from separate runs are merged by scripts/merge_reports.py")
     a = ap.parse_args()
     warnings.filterwarnings("ignore", category=RuntimeWarning)
+    splits = tuple(a.split) if a.split else ("cv3", "blocks1")
     res = score_many({k: load_copy(v) for k, v in COPIES.items()}, "data/raw/randi2023_wt_npz", seeds=a.seeds,
-                     log=lambda m: print(m, flush=True))
+                     splits=splits, log=lambda m: print(m, flush=True))
+    tag = "" if len(splits) == 2 else "." + splits[0]
     for name, rows in res.items():
         slug = name.split(" (")[0].lower().replace(" ", "_").replace("(", "").replace(")", "")
-        print(write_report(name, rows, f"results/scores/reference/{slug}.json",
+        print(write_report(name, rows, f"results/scores/reference/{slug}{tag}.json",
                            meta={"date": datetime.date.today().isoformat(), "command": f"scripts/score_references.py ({COPIES[name]})",
                                  "note": NOTES.get(name)}))
