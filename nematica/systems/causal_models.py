@@ -509,7 +509,13 @@ class ClassVAR:
         for t in range(p, T + burn):
             nxt = self._step(z, t, A, b)
             if self.innov_L is not None:
-                shock = self.innov_L @ rng.standard_normal(self.innov_k) + self.innov_psi * rng.standard_normal(C)
+                if self.innovations == "student":
+                    # heavy-tailed common and private shocks (unit variance), as for _shock [A]
+                    nu_c = float(np.median(self.nu))
+                    fz = rng.standard_t(nu_c, self.innov_k) * np.sqrt((nu_c - 2) / nu_c)
+                    shock = self.innov_L @ fz + self.innov_psi * self._shock(rng, C)
+                else:
+                    shock = self.innov_L @ rng.standard_normal(self.innov_k) + self.innov_psi * rng.standard_normal(C)
             else:
                 shock = self.noise_sd * self._shock(rng, C)
             nxt += shock * (1.0 if noise_gain is None else noise_gain[t])
@@ -647,6 +653,8 @@ class HybridKernel:
         self.slow_dyn = False
         self.slow_w_own = 0.5
         self.highpass = False
+        self.members = False             # observed neuron by neuron, members of a class separate
+        self.member_rho, self.member_rho_default = {}, 0.25
         self.innov = innov               # > 0: the VAR's shocks share this many common factors
         self.indiv_shock = False         # individual backgrounds: only the shock structure
         self.lags, self.shrink, self.mask, self.seed = lags, shrink, mask, seed
@@ -801,6 +809,10 @@ class HybridKernel:
             if self.indiv_slow:
                 self.slow_model.w_own = self.slow_w_own
                 self.slow_indiv = [self.slow_model.individual(r) for r in train]
+        if self.members:
+            self.member_rho = self._member_corrs(list(train) + list(val))
+            if self.member_rho:
+                self.member_rho_default = float(np.median(list(self.member_rho.values())))
         if self.obs_noise:
             self.noise_frac = self._noise_fractions(list(train) + list(val), self.var.classes)
         acc: dict = {}
@@ -927,6 +939,74 @@ class HybridKernel:
                           "quiet_target": np.round(target, 3).tolist(), "quiet_model": np.round(best[4], 3).tolist()})
         return self
 
+    @staticmethod
+    def _member_corrs(recs) -> dict:
+        """Median correlation between two members of a class (e.g. left and right), per class."""
+        from collections import defaultdict
+        rho = defaultdict(list)
+        for r in recs:
+            by = defaultdict(list)
+            for j, c in enumerate(r.classes):
+                if c:
+                    by[c].append(j)
+            for c, js in by.items():
+                if len(js) < 2:
+                    continue
+                a, b = r.x[js[0]], r.x[js[1]]
+                ok = np.isfinite(a) & np.isfinite(b)
+                if ok.sum() >= 500:
+                    rho[c].append(float(np.corrcoef(a[ok], b[ok])[0, 1]))
+        return {c: float(np.clip(np.median(v), 0.0, 0.95)) for c, v in rho.items() if len(v) >= 3}
+
+    def _simulate_members(self, rec, bg, x, rng, phi: float = 0.95):
+        """Observed like a real worm: one row per named neuron of the worm, members of a class
+        sharing the class activity plus their own part (zero across members, so the class
+        average is unchanged), sized to the training worms' member correlation; responses are
+        then in each neuron's own fluctuation units, as for real neurons [A]."""
+        npre, npost = window(rec.dt)
+        T = x.shape[1]
+        row = {c: i for i, c in enumerate(bg.classes)}
+        nrn = [j for j, c in enumerate(rec.classes) if c in row]
+        cls = [rec.classes[j] for j in nrn]
+        y = np.vstack([x[row[c]] for c in cls])
+        for c in set(cls):
+            mem = [n for n, cc in enumerate(cls) if cc == c]
+            m = len(mem)
+            if m < 2:
+                continue
+            V = np.var(x[row[c]])
+            rho = self.member_rho.get(c, self.member_rho_default)
+            sig = np.sqrt(V * (1 - rho) / (rho * (1 - 1 / m) + 1 / m))
+            w = rng.standard_normal((m, T + 200))
+            for t in range(1, T + 200):
+                w[:, t] = phi * w[:, t - 1] + np.sqrt(1 - phi ** 2) * w[:, t]
+            w = w[:, 200:]
+            y[mem] += sig * (w - w.mean(axis=0, keepdims=True)) * np.sqrt(m / (m - 1))
+        pos = {j: n for n, j in enumerate(nrn)}
+        stims = [(k, f) for k, f in rec.stims if k in pos and f - npre >= 0 and f + npost <= T]
+        devs = [[] for _ in range(len(y))]
+        for _, f in stims:
+            pre = y[:, f - npre:f]
+            d = pre - pre.mean(axis=1, keepdims=True)
+            for n in range(len(y)):
+                devs[n].append(d[n])
+        fl = np.array([np.std(np.concatenate(d)) if d else 1.0 for d in devs])
+        sd = np.nanstd(rec.x, axis=1)
+        out_stims = []
+        for k, f in stims:
+            ci, i = rec.classes[k], pos[k]
+            if not sd[k] > 0:
+                continue
+            own = (rec.x[k, f:f + npost] - np.nanmean(rec.x[k, f - npre:f])) / sd[k]
+            y[i, f:f + npost] = y[i, f - 1] + np.nan_to_num(own) * np.std(y[i])
+            for n, cj in enumerate(cls):
+                h = self.kernels.get((ci, cj))
+                if h is not None and n != i:
+                    y[n, f:f + npost] += h[:npost] * fl[n]
+            out_stims.append((i, f))
+        return PumpProbe(uid=rec.uid, x=y, names=[rec.names[j] for j in nrn], classes=cls, stims=out_stims,
+                         dt=rec.dt, all_stim_frames=list(rec.all_stim_frames))
+
     def calibrate_obs(self, train, n_worms: int = 6, seed: int = 0, grid=(0.0, 0.1, 0.2, 0.3, 0.4, 0.5)):
         """Choose one measurement-noise share for all classes so that 'spread' at random moments
         matches the training worms (5th, 50th, 95th percentiles) [L]."""
@@ -1000,6 +1080,8 @@ class HybridKernel:
                 for t in range(1, w.shape[1]):
                     w[:, t] = phi * w[:, t - 1] + np.sqrt(1 - phi ** 2) * w[:, t]
             x = x + w * sdx * np.sqrt(f / np.clip(1 - f, 0.2, None))[:, None]
+        if self.members:
+            return self._simulate_members(rec, bg, x, rng)
         T = x.shape[1]
         row = {c: i for i, c in enumerate(bg.classes)}
         stims = [(k, f) for k, f in rec.stims if rec.classes[k] in row and f - npre >= 0 and f + npost <= T]
