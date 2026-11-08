@@ -1,4 +1,5 @@
 dataset: randi2023_unc31
+hash: 862c4f99ac7151cf
 k: 3
 scheme: 'unc-31 worms with neuron identities and >= 1000 frames, in recording order:
   5, 4, 4'
