@@ -115,6 +115,36 @@ def highpass_rec(rec: PumpProbe, w: int = 80) -> PumpProbe:
     return replace(rec, x=np.where(ok, x - lo, np.nan))
 
 
+def drift_params(recs, classes, lags=(240, 480), min_n: int = 200):
+    """Per class, an ultra-slow part (minutes): share and per-frame AR coefficient from the
+    autocovariance at 2 and 4 minutes, by a log-linear fit; NaN where not estimable [A]."""
+    D = np.array([np.diag(lagged_cov(recs, classes, L, min_n=min_n)) for L in lags]).T
+    share = np.full(len(classes), np.nan)
+    rho = np.full(len(classes), np.nan)
+    for i in range(len(classes)):
+        d = D[i]
+        if np.isfinite(d).all() and (d > 0.01).all():
+            sl, ic = np.polyfit(lags, np.log(d), 1)
+            rho[i] = float(np.clip(np.exp(sl), 0.995, 0.99995))
+            share[i] = float(np.clip(np.exp(ic), 0, 0.8))
+    return share, rho
+
+
+def drift_pool(recs, classes) -> tuple[dict, list]:
+    """Per class, the (share, AR coefficient) of the ultra-slow part in every training worm
+    that shows the class."""
+    pool, allv = {}, []
+    for r in recs:
+        sh, rh = drift_params([r], classes)
+        seen = set(r.classes)
+        for i, c in enumerate(classes):
+            if c in seen:
+                v = (float(sh[i]) if np.isfinite(sh[i]) else 0.0, float(rh[i]) if np.isfinite(rh[i]) else 0.999)
+                pool.setdefault(c, []).append(v)
+                allv.append(v)
+    return pool, allv
+
+
 class SlowLatent:
     """A few slow brain-wide factors, each an AR(1) with its own timescale, read out by every
     class. Fitted from lagged covariances (lags 20 to 80 frames), which white measurement noise
@@ -243,6 +273,15 @@ class SlowLatent:
         m.load = Lw
         m.priv = np.sqrt(np.clip(tot - (Lw ** 2).sum(1), 0, None))
         m.h = (m.load ** 2).sum(1) + m.priv ** 2
+        if getattr(self, "drift", False) and getattr(self, "drift_pool", None) is None:
+            sh, rh = drift_params([rec], self.classes)
+            m.drift_share = np.where(np.isfinite(sh), sh, 0.0)
+            m.drift_rho = np.where(np.isfinite(rh), rh, 0.999)
+            # the drift's share comes out of the private slow part, total kept at most 0.95
+            m.priv = np.sqrt(np.clip(m.priv ** 2 - m.drift_share, 0, None))
+            over = (m.load ** 2).sum(1) + m.priv ** 2 + m.drift_share - 0.95
+            m.drift_share = np.clip(m.drift_share - np.clip(over, 0, None), 0, None)
+            m.h = (m.load ** 2).sum(1) + m.priv ** 2 + m.drift_share
         if getattr(self, "own_rho", False):
             # the donor's own timescale for each class's private slow part (lags 20 to 80)
             D = np.array([np.diag(lagged_cov([rec], self.classes, L, min_n=200)) for L in self.lags]).T
@@ -271,9 +310,41 @@ class SlowLatent:
         g = np.zeros((len(self.priv), T))
         g[:, 0] = rng.standard_normal(len(self.priv))
         ep = np.sqrt(1 - self.rho_p ** 2)
+        nu = getattr(self, "burst_nu", 0.0)
         for t in range(1, T):
-            g[:, t] = self.rho_p * g[:, t - 1] + ep * rng.standard_normal(len(self.priv))
-        return self.load @ f + self.priv[:, None] * g        # classes x T, z units
+            if nu:
+                # sparse, heavy-tailed kicks (unit variance): rare long excursions [A]
+                e = rng.standard_t(nu, len(self.priv)) * np.sqrt((nu - 2) / nu)
+            else:
+                e = rng.standard_normal(len(self.priv))
+            g[:, t] = self.rho_p * g[:, t - 1] + ep * e
+        g /= max(float(np.std(g)), 1e-9) if nu else 1.0
+        out = self.load @ f + self.priv[:, None] * g
+        ds = getattr(self, "drift_share", None)
+        if getattr(self, "drift_pool", None) is not None:
+            # each class row draws its ultra-slow part from what training worms showed for
+            # that class (worm-class rows; shares of rows with no estimate count as zero) [A]
+            ds, dr = np.zeros(len(self.classes)), np.full(len(self.classes), 0.999)
+            for i, c in enumerate(self.classes):
+                vals = self.drift_pool.get(c) or self.drift_pool_all
+                sh, rh = vals[int(rng.integers(len(vals)))]
+                ds[i], dr[i] = sh, rh
+            ds = ds * getattr(self, "drift_gain", 1.0)   # finite recordings understate minutes-long
+                                                          # variance; gain chosen on the selection split [L]
+            room = np.clip(0.95 - (self.load ** 2).sum(1), 0, None)
+            ds = np.minimum(ds, room)
+            self.drift_rho = dr
+            pr = np.sqrt(np.clip(self.priv ** 2 - ds, 0, None))
+            out = self.load @ f + pr[:, None] * g
+        if ds is not None and ds.any():
+            u = np.zeros((len(ds), T))
+            u[:, 0] = rng.standard_normal(len(ds))
+            ed = np.sqrt(1 - self.drift_rho ** 2)
+            for t in range(1, T):
+                u[:, t] = self.drift_rho * u[:, t - 1] + ed * rng.standard_normal(len(ds))
+            out = out + np.sqrt(ds)[:, None] * u
+        return out
+        # classes x T, z units
 
 
 class ClassVAR:
@@ -663,6 +734,12 @@ class HybridKernel:
         self.slow_w_own = 0.5
         self.highpass = False
         self.slow_own_rho = False
+        self.no_kernels = False
+        self.slow_drift = False
+        self.slow_drift_pool = False
+        self.drift_gain = 1.0     # each row draws its drift from training worm-class rows          # donors' ultra-slow drifts (minutes), class by class
+        self.burst_nu = 0.0              # > 2: private slow parts driven by heavy-tailed kicks
+        self.coupling = "full"           # "diagonal": each class driven only by its own past
         self.members = False             # observed neuron by neuron, members of a class separate
         self.member_rho, self.member_rho_default = {}, 0.25
         self.innov = innov               # > 0: the VAR's shocks share this many common factors
@@ -812,13 +889,18 @@ class HybridKernel:
                 # the fast part only: the VAR learns from activity with its slow part removed [A]
                 vt, vv = [highpass_rec(r) for r in train], [highpass_rec(r) for r in val]
                 self._hp_train = vt
-            self.var = ClassVAR(lags=self.lags, frames=self.background,
+            self.var = ClassVAR(lags=self.lags, frames=self.background, coupling=self.coupling,
                                 innovations="student" if self.heavy else "gaussian", innov_k=self.innov).fit(vt, vv)
         if self.slow:
             self.slow_model = SlowLatent(self.slow, dyn=self.slow_dyn).fit(list(train) + list(val), self.var.classes)
+            self.slow_model.burst_nu = self.burst_nu
+            if self.slow_drift_pool:
+                self.slow_model.drift_pool, self.slow_model.drift_pool_all = drift_pool(list(train), self.var.classes)
+                self.slow_model.drift_gain = self.drift_gain
             if self.indiv_slow:
                 self.slow_model.w_own = self.slow_w_own
                 self.slow_model.own_rho = self.slow_own_rho
+                self.slow_model.drift = self.slow_drift
                 self.slow_indiv = [self.slow_model.individual(r) for r in train]
         if self.members:
             self.member_rho = self._member_corrs(list(train) + list(val))
@@ -887,6 +969,8 @@ class HybridKernel:
                 keep = set(keep) | {k for k in self.kernels if k[0] == k[1]}
                 self.kernels = {k: v for k, v in self.kernels.items() if k in keep}
                 self.info_mask = {"wired": len(wired), "unwired": len(unwired)}
+        if self.no_kernels:                  # ablation: no causal knowledge from pokes
+            self.kernels = {}
         self.info = {**self.var.info, "kernels": len(self.kernels), **getattr(self, "info_mask", {}), **(self.slow_model.info if self.slow_model is not None else {})}
         if self.individual and isinstance(self.var, ClassVAR):
             self.indiv = [self.var.individual(r, shock_only=self.indiv_shock)

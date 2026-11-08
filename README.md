@@ -4093,6 +4093,36 @@ kernels necessary for the pokes (pattern); coupling between classes not necessar
 (earlier work found frame-to-frame interactions do not generalise). If nothing passes on
 confirmation, that is reported as the result, with the levels that fail.
 
+**Selection log (cv3, exploratory; `results/emulator_select`, table by `scripts/explore/emu_table.py`).**
+Each step was found by looking at a direction-of-failure diagnostic (`scripts/explore/emu_*.py`), not by
+blind search; letters are the three pools (I inside, O outside, T too typical).
+
+| step | what changed | why (diagnostic) | rest | pokes |
+|---|---|---|---|---|
+| 0 | best previous poke model (`hybrid_kernels_regimes_obsfit`) | | 4 | 3 |
+| 1 | shocks share 6 common factors (`innov6`) | simulated worms far too high-dimensional (PR 27 vs 16) | 4 to 5 | 1 to 2 |
+| 2 | slow brain-wide factors (`slow6`) | simulated autocorrelation gone by 16 s; real still 0.44 at 16 s and 0.12 at 64 s (about 70% of real variance is slow, timescale about 40 s) | 2 | 1 to 3 |
+| 3 | slow factors interact (`slow6d`, a 6 x 6 VAR fitted from lagged covariances) | the lead-lag that real worms share lives at 8 s and slower (between-worm agreement r = 0.032 slow, 0.005 fast) | lead-lag passes | |
+| 4 | the fast VAR learns from activity with the slow part removed (`hp`); donor worms' own slow covariance (`indivslow1`) | autocorrelation at 1 to 4 s too high; correlations, dimension and timescales too typical | 5 | 1 |
+| 5 | **simulated worms observed neuron by neuron** (`mem`): members of a class (e.g. left and right) share the class activity plus their own part, sized to the training worms' member correlation (median 0.25) | see below | 4 to 5 | **3** |
+| 6 | the factor structure of the shocks from a donor worm (`indivshock`) | correlations too typical | **5** | **3** |
+
+Step 5 is a correction to the benchmark's use, not only an ingredient. Real responses are measured
+neuron by neuron, each in its own fluctuation units, and then averaged over a class's members; every
+model so far produced one row per class. Averaging partly independent members makes real class
+responses less noisy relative to single-neuron fluctuations, so model echoes were systematically too
+large in these units (background alone: random-moment |response| 0.91 in the model vs 0.67 in the real
+pool; spread 0.21 vs 0.15). The measurement-noise fits of earlier poke models (`obsfit`) were partly
+compensating for this. With neuron-level observation, magnitude and spread pass with no fitted noise.
+Earlier magnitude and spread verdicts for class-level models should be read with this in mind.
+
+The candidate after step 6, `hybrid_kernels_indivshock_innov6_slow6d_indivslow1_hp_mem`, passes the rule on
+the selection split: distribution III, timescale TTT (too typical), correlation TII, dimension III, lead-lag
+IIO, dwell III; pattern III, magnitude III, spread III (kinetics III). Its weak points: timescales are too
+typical (real worms have a long tail of very slow neurons: 10% of class timescales above 41 s against 26 s
+in the model) and correlation passes narrowly. Before freezing: a second simulation seed, and one
+attempt at the timescale tail (ultra-slow drifts drawn from training worms' neurons, `driftpool`).
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of

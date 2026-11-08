@@ -52,7 +52,7 @@ def make_model(spec: str):
     if base.startswith("hybrid_kernels"):
         parts = [p for p in base.replace("hybrid_kernels", "").split("_") if p]
         bg = next((p[2:] for p in parts if p.startswith("bg")), "spontaneous")
-        mask = next((p for p in parts if not p.startswith("bg") and p not in ("obs", "heavy", "regimes", "obsfit", "classquiet", "quietfit", "quietobsfit", "indiv", "indivshock", "hp", "mem", "ownrho") and not p.startswith("indivslow") and not p.startswith("lowrank") and not p.startswith("smooth")
+        mask = next((p for p in parts if not p.startswith("bg") and p not in ("obs", "heavy", "regimes", "obsfit", "classquiet", "quietfit", "quietobsfit", "indiv", "indivshock", "hp", "mem", "ownrho", "nokernels", "diag", "drift", "driftpool") and not p.startswith("burst") and not p.startswith("driftpool") and not p.startswith("indivslow") and not p.startswith("lowrank") and not p.startswith("smooth")
                      and not p.startswith("gru") and not p.startswith("innov") and not p.startswith("slow")), None)
         hk = HybridKernel(mask=mask, background=bg, obs_noise="obs" in parts, heavy="heavy" in parts,
                             regimes="regimes" in parts, obs_fit="obsfit" in parts,
@@ -72,6 +72,22 @@ def make_model(spec: str):
         hk.highpass = "hp" in parts
         hk.members = "mem" in parts
         hk.slow_own_rho = "ownrho" in parts
+        hk.no_kernels = "nokernels" in parts
+        hk.coupling = "diagonal" if "diag" in parts else "full"
+        hk.slow_drift = "drift" in parts
+        bu = next((p for p in parts if p.startswith("burst")), None)
+        if bu:
+            hk.burst_nu = float(bu[5:])
+            hk.name += "_" + bu
+        hk.slow_drift = "drift" in parts
+        dp = next((p for p in parts if p.startswith("driftpool")), None)
+        hk.slow_drift_pool = dp is not None
+        if dp:
+            hk.drift_gain = float(dp[9:]) if len(dp) > 9 else 1.0
+            hk.name += "_" + dp
+        for flag in ("nokernels", "diag", "drift"):
+            if flag in parts:
+                hk.name += "_" + flag
         if hk.slow_own_rho:
             hk.name += "_ownrho"
         if hk.members:
@@ -106,6 +122,7 @@ def main() -> int:
     ap.add_argument("--cache", default="results/same_worms")
     ap.add_argument("--tag", default="")
     ap.add_argument("--fold", type=int, default=None)
+    ap.add_argument("--seed-offset", type=int, default=0, help="different simulation noise (cache names get _s<offset>)")
     ap.add_argument("--pci", action="store_true", help="also score perturbational complexity (P1, P2)")
     args = ap.parse_args()
     causal.NORM = args.norm
@@ -117,7 +134,8 @@ def main() -> int:
     for fi, pool_uids in enumerate(folds):
         if args.fold is not None and fi != args.fold:
             continue
-        todo = [n for n in args.models.split(",") if not (cache / f"{args.norm}_f{fi}_{n}.csv").exists()]
+        sfx = f"_s{args.seed_offset}" if args.seed_offset else ""
+        todo = [n for n in args.models.split(",") if not (cache / f"{args.norm}_f{fi}_{n}{sfx}.csv").exists()]
         if not todo:
             continue
         t0 = time.time()
@@ -134,7 +152,7 @@ def main() -> int:
         for name in todo:
             m = make_model(name).fit(train, val)
             n_before = len(rows)
-            sims = [m.simulate(r, np.random.default_rng(1000 * fi + i)) for i, r in enumerate(pool)]
+            sims = [m.simulate(r, np.random.default_rng(1000 * fi + i + 100000 * args.seed_offset)) for i, r in enumerate(pool)]
             sim_b = [bench_sample(s, classes, f"{name}:{r.uid}", r.uid) for s, r in zip(sims, pool)]
             for b, r in zip(sim_b, pool):
                 b.name = f"{name}:{r.uid}"
@@ -159,9 +177,9 @@ def main() -> int:
                     rows.append({"fold": fi, "kind": "complexity", **row,
                                  "median_spread": round(float(np.median(med)), 4) if med.size else None})
             mine = [r for r in rows if r["fold"] == fi and r["system"] == name]
-            for r in mine:
-                r["system"] = name
-            with (cache / f"{args.norm}_f{fi}_{name}.csv").open("w", newline="", encoding="utf-8") as fh:
+            for r in rows[n_before:]:
+                r["system"] = name + sfx
+            with (cache / f"{args.norm}_f{fi}_{name}{sfx}.csv").open("w", newline="", encoding="utf-8") as fh:
                 w = csv.DictWriter(fh, fieldnames=list(dict.fromkeys(k for r in rows[n_before:] for k in r)))
                 w.writeheader()
                 w.writerows(rows[n_before:])
