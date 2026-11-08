@@ -201,44 +201,51 @@
   <ul class="ledger">
     <li class="s-found">
       <span class="status">Found</span>
-      <p><b>In worms, watching misses what poking finds.</b> Copies built only by watching agree with real worms' echoes at 4% to 16% of the agreement between worms (0.004 to 0.014, against 0.087 to 0.121); copies that also learned from pokes reach the real-worm level. A nonlinear watcher, one that learns the worm's calm and active stretches, fails the same way. Part of this gap comes from the experiment itself (below).</p>
+      <p><b>Looking right at rest says nothing about answering a poke.</b> We scored 30 model brains on the same atlas worms twice: how real their resting activity looks, and how real their answers to single-neuron pokes are. The two scores are unrelated (rank correlation -0.12, p = 0.54). A linear model fitted to rest is indistinguishable from real worms on five of six activity statistics and answers pokes almost at random. A copy of a brain cannot be certified by watching it.</p>
     </li>
     <li class="s-found">
       <span class="status">Found</span>
-      <p><b>The artificial networks we tested can largely be copied by watching.</b> Recorded and scored like worms, random networks reach 51% to 82% of the agreement between their individuals, and networks trained on memory and decision tasks 75% to 91%.</p>
+      <p><b>Each worm answers pokes in its own way, and its resting activity does not show it.</b> A worm's responses to half of its pokes resemble its responses to the other half more than other worms' (36 of 43 worms, p = 5e-6). A model fitted to that worm's own rest predicts its responses no better than other worms' models do.</p>
     </li>
     <li class="s-found">
       <span class="status">Found</span>
-      <p><b>Worm neurons answer less when asked twice.</b> Stimulated a second time, a worm neuron responds about a quarter less; artificial networks answer the same way every time. Compared with itself, a worm neuron also answers less after being driven by other neurons, with no light on it, so activity itself may tire it, though part of the larger drop after a direct poke could be the light-activated channel. In 74 people stimulated electrically, the wider network's responses do not tire across ten pulses five seconds apart; the stimulated tissue itself could not be measured. (Corrected 6 Nov: an earlier version of this page said the drop was the tool.)</p>
+      <p><b>In worms, watching misses what poking finds.</b> Copies built only by watching agree with real worms' echoes at 4% to 16% of the agreement between worms; copies that also learned from pokes reach the real-worm level. The strongest watcher we could build, a latent network fitted by maximum likelihood, does no better.</p>
     </li>
     <li class="s-found">
       <span class="status">Found</span>
-      <p><b>The worm's background state changes where a poke goes.</b> Along the main pattern of a worm's resting activity, the same poke spreads differently in different states. Found in the atlas worms, then replicated, as written down beforehand, in a second set of 15 worms never used for this test. In artificial networks it appears when slow background signals are strong; our closest network shows it in one of two versions, more weakly than worms. (Judged by AVA, a neuron that marks reversing, no change was detected.) Beyond the worm it is not established: mouse touch cortex leans the same way without reaching significance, and in 74 people no change was detected, with a different measure of state.</p>
+      <p><b>But being hard to copy by watching is not a brain-only property.</b> Random and trained recurrent networks can largely be copied by watching (51% to 91%), yet networks given slow signals no recording sees fall to about 19%, near the worm, and trained transformers hide their cause and effect in the units that compute.</p>
     </li>
     <li class="s-found">
       <span class="status">Found</span>
-      <p><b>Being hard to copy by watching is not a brain-only property.</b> Trained transformers hide their cause and effect too. Through their layers, correlations recover 0.31 to 0.71 of the true effects, and only 0.05 to 0.47 in the units that compute; training lowers it, in small transformers and in a real language model. So this separates worms from simple artificial networks, not biology from artificial networks.</p>
+      <p><b>A worm neuron poked again soon answers about half as strongly.</b> 0.6 to 2 minutes after its previous poke, a neuron's response is about half; after 2 to 5 minutes about two thirds; after 5 to 10 minutes it is not detectably weaker. Artificial networks answer the same way every time. The light-activated tool and the neuron cannot be separated in this dataset, but activity without light also lowers the next response a little, so part is probably the neuron. It persists in worms with reduced neuropeptide release. About 9% of the atlas's pokes are affected.</p>
     </li>
-    <li class="s-open">
-      <span class="status">Open</span>
-      <p><b>The worm's echo is narrow and lasting at once.</b> After a poke, a worm's responses last about twice as long as any artificial network's, even read through the same slow calcium signal, while reaching fewer neurons. A mix of known ingredients brings echoes close to the worm's narrowness, and units that settle slowly make them last longer, though not as long. But slow units also spread echoes twice as wide and make individuals answer more alike. No network we built has a worm-like echo without losing other worm properties.</p>
+    <li class="s-found">
+      <span class="status">Found</span>
+      <p><b>The worm's background state changes where a poke goes.</b> Along the main pattern of a worm's resting activity, the same poke spreads differently in different states; replicated in a second set of worms and absent at matched moments without a poke. Artificial networks show it only with strong slow background signals. Beyond the worm it is not established.</p>
+    </li>
+    <li class="s-part">
+      <span class="status">By degree</span>
+      <p><b>Brains change their rules over a recording; plain networks do not.</b> How each unit's activity predicts the next moment drifts between the start and end of a recording in worms and in human cortex. Networks without slow processes, rate or spiking, keep exactly the same rules. Slow hidden signals or fatigue make networks drift too, but less than worms.</p>
+    </li>
+    <li class="s-none">
+      <span class="status">Withdrawn</span>
+      <p><b>An echo that is narrow and lasting at once.</b> This looked like the worm's most distinctive property until a control without any poke gave nearly the same values: the measure was reading the slow pace of ongoing activity. Against clean quiet moments, pokes lengthen responses in worms and networks alike.</p>
     </li>
     <li class="s-part">
       <span class="status">Partly explained</span>
-      <p><b>Part of the worm gap is the experiment.</b> Stimulating one worm neuron also raises its nearest neighbours, by about a third of its own response. Built into artificial networks at that strength, it roughly halves what watching recovers. A gap remains. Whether the neighbours are really activated or the light leaks into their recordings, our test could not tell.</p>
+      <p><b>Part of the worm gap is the experiment.</b> Stimulating one worm neuron also raises its nearest neighbours, by about a third of its own response. Built into artificial networks at that strength, it roughly halves what watching recovers. A gap remains.</p>
     </li>
     <li class="s-open">
-      <span class="status">Open</span>
-      <p><b>What explains the rest.</b> We added five biological ingredients to artificial networks in every combination and measured six properties beside the worms. Slow background signals that no recording sees do most to defeat watching; links that stay silent at rest, like the second network in step 2, make individuals' echoes as reproducible as worms'. No single ingredient does it. A search over their strengths found networks that are roughly as hard to copy by watching as a worm on the full test, and within about a fifth of the worm on average across five properties, but only with strong background signals, individuals that differ far more than in our default networks, and many units that stay quiet unless strongly driven. That shows what is sufficient, not what the worm has.</p>
+      <span class="status">Our reading</span>
+      <p><b>The difference is what a system carries outside its units' activity.</b> Every difference we found traces back to state a recording does not show: slow signals no neuron carries, changes left behind by use, switching between calm and active stretches. An ordinary artificial network's state is its units' activity; a brain's is more. Give a network that kind of hidden state and it acquires the worm's properties. This is a reading across the results, not yet a direct test.</p>
     </li>
-
     <li class="s-none">
       <span class="status">Not detected</span>
       <p><b>Sensory neurons are not harder to copy by watching.</b> We predicted they would be; the shares for sensory neurons, interneurons and motor neurons are too noisy to rank.</p>
     </li>
     <li class="s-open">
       <span class="status">Open</span>
-      <p><b>Whether it holds beyond the worm.</b> Mouse hippocampus is inconclusive. In 74 people, re-measured with the stimulation pulse removed, a watching copy of the cortex predicts its responses worse than distance alone (0.30 against 0.45) and worse than other people's responses (0.35). That fits the worm, but the copy is a simple linear one.</p>
+      <p><b>Whether it holds beyond the worm.</b> In 74 people, a watching copy of the cortex predicts its responses worse than distance alone (0.30 against 0.45), which fits the worm; mouse data was inconclusive.</p>
     </li>
   </ul>
 </section>
@@ -246,9 +253,9 @@
 <section class="next" aria-labelledby="next-title">
   <h2 id="next-title">What would settle it</h2>
   <ol class="settle">
-    <li><b>Long, complete recordings, then pokes.</b> Thirty minutes or more of a worm's whole brain at rest, every neuron identified, then stimulation of the same worm.</li>
-    <li><b>The same neuron at several strengths.</b> Silent links predict a threshold at the edge of a neuron's resting range.</li>
-    <li><b>The cause of the neighbour effect, and of tiring.</b> Measure how far the light reaches, and poke the same neuron repeatedly at matched strength. The atlas has too few repeats to tell a tiring neuron from a tiring light-activated channel, or real activation from a leak.</li>
+    <li><b>Tire a neuron without light.</b> Drive a worm neuron hard through its inputs, then poke it with light, against light followed by light at matched activity. That separates a tiring neuron from a tiring tool.</li>
+    <li><b>Long, complete recordings, then pokes.</b> Our calibration shows 16 minutes of rest is too short to measure slow hidden state; recordings of an hour or more, then stimulation of the same worm.</li>
+    <li><b>The same neuron at several strengths.</b> Links that stay silent at rest predict a threshold at the edge of a neuron's resting range.</li>
   </ol>
   <p class="more"><a href="findings.html">The evidence</a><a href="method.html">The method in detail</a><a href="sim.html">Simulations</a><a href="log.html">Research log</a><a href="https://github.com/Weptune/nematica">Code and full record on GitHub</a></p>
 </section>
@@ -257,7 +264,7 @@
 <footer class="foot">
   <nav aria-label="Footer"><a href="#question">Question</a><a href="#approach">Approach</a><a href="#found">What we found</a><a href="findings.html">Evidence</a><a href="method.html">Method</a><a href="sim.html">Simulations</a><a href="log.html">Research log</a><a href="https://github.com/Weptune/nematica">GitHub</a></nav>
   <p>NEMATICA is an open project. Predictions are written down before experiments run, independent reviews are reported with the results, and results that went against us are kept.</p>
-  <p class="credits">Worm data: Randi et al. 2023 (OSF e2syt). Mouse data: Bocchio, Vorobyev et al. (Zenodo 11500028); Dalgleish et al. 2020. Human data: van Blooijs et al. 2023 (OpenNeuro ds004080). Code: MIT licence.</p>
+  <p class="credits">Worm data: Randi et al. 2023 (DANDI 001075, CC BY 4.0); Baskoylu et al. (Dryad, CC0); Atanas et al. 2023. Mouse data: Bocchio, Vorobyev et al. (Zenodo 11500028); Dalgleish et al. 2020. Human data: van Blooijs et al. 2023 (OpenNeuro ds004080). Code: MIT licence.</p>
 </footer>
 
 <script src="assets/specimen.js?v=1"></script>
