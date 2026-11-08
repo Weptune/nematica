@@ -4310,6 +4310,17 @@ hybrid). *Informativeness rule:* with pools of 4 to 5 worms the ruler may be too
 the test counts only if at least one control fails the emulator rule in at least 4 of 5 seeds. *Success:*
 the recipe passes the rule (rest at least 5 of 6, the three poke levels) in at least 4 of 5 seeds.
 
+**U result (`results/emulator_unc31`, `scripts/explore/seed_table.py`): the recipe passes; the test is
+informative.** Both controls fail in 5 of 5 seeds (`var3_spontaneous`: rest 2 to 4, pokes 0 to 2;
+`hybrid_kernels`: rest 4 to 5, pokes 1). The frozen recipe, refitted from scratch on unc-31 worms, passes
+in **4 of 5** seeds (rest 5 of 6 in four seeds, 4 in one; pokes 3 of 3 in all five). Its failing rest levels
+are reversal-bout timing (OIT or OTT in every seed) and, in one seed, correlation. This is the first
+emulator result on worms that played no part in designing it: success by the registered rule. Caveats:
+pools of 4 to 5 worms, so the real worm-to-worm range is wide; the controls fail mostly on echo size and
+spread, the levels the neuron-level readout fixes, so what is confirmed is the recipe as a whole, readout
+included; unc-31 worms are mutants, so this confirms the recipe generalises to a related nervous system,
+not to more wild-type worms.
+
 **T. The rest half on another lab's freely moving worms** (Atanas et al. 2023, 30 worms with neuron
 names, no pokes, frames of about 0.6 s, existing split `configs/splits/atanas2023_cv3.yaml`). The recipe
 is fitted on the training worms (without pokes it has no causal links to learn) and scored on the six
