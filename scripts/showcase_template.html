@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Real brain or model?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Schibsted+Grotesk:wght@400;500;600&display=swap">
+<style>
+:root {
+  /* Plan: a pale agar page with one dark "microscope" band where the data glows; everything else quiet ink. */
+  --paper: #eef1ec;
+  --paper-2: #e3e8e1;
+  --ink: #142220;
+  --ink-2: #4d5d5a;
+  --rule: #c9d2cc;
+  --scope: #0b1514;
+  --scope-ink: #d7e4df;
+  --glow: #7cf0a8;
+  --cool: #d36fd0;
+  --accent: #2a4fb8;
+  --display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --ui: "Schibsted Grotesk", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--paper); color: var(--ink); }
+body { font-family: var(--ui); font-size: 16px; line-height: 1.55; }
+a { color: var(--accent); }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+.prose { max-width: 66ch; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.4rem, 5.5vw, 4.4rem); line-height: 1.02; letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.7rem, 3.2vw, 2.5rem); line-height: 1.1; }
+h3 { font-size: 1.35rem; line-height: 1.2; }
+p { margin: 0; }
+.stack { display: grid; gap: 16px; }
+header.top { padding: 40px 0 28px; display: grid; gap: 18px; }
+.kicker { font-size: 0.82rem; color: var(--ink-2); display: flex; gap: 14px; flex-wrap: wrap; }
+.kicker b { color: var(--ink); font-weight: 600; letter-spacing: 0.04em; }
+.lede { font-family: var(--display); font-size: 1.3rem; line-height: 1.45; color: var(--ink-2); max-width: 60ch; }
+
+/* the microscope band */
+.scope { background: var(--scope); color: var(--scope-ink); padding: 36px 0 40px; }
+.scope .q { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+.scope .q h2 { color: #f1f6f3; }
+.scope .q p { color: #9fb3ad; font-size: 0.92rem; max-width: 52ch; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 760px) { .pair { grid-template-columns: 1fr; } }
+.panel { display: grid; gap: 8px; }
+.panel .label { display: flex; justify-content: space-between; font-size: 0.85rem; color: #9fb3ad; }
+.panel .label b { color: #f1f6f3; font-weight: 600; font-size: 1rem; }
+canvas.raster { width: 100%; height: auto; aspect-ratio: 960 / 520; display: block; border-radius: 4px; background: #000; image-rendering: pixelated; }
+.axis { display: flex; justify-content: space-between; font-size: 0.75rem; color: #7f948e; font-variant-numeric: tabular-nums; }
+.choose { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; align-items: center; }
+button { font: inherit; font-weight: 500; border-radius: 999px; padding: 10px 18px; cursor: pointer; border: 1.5px solid currentColor; background: transparent; color: inherit; }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid var(--glow); outline-offset: 2px; }
+.scope button { color: #f1f6f3; }
+.scope button.primary { background: #f1f6f3; color: var(--scope); border-color: #f1f6f3; }
+.reveal { margin-top: 18px; padding: 16px 18px; border-left: 3px solid var(--glow); background: #12201e; color: #dbe7e2; max-width: 80ch; }
+.reveal[hidden] { display: none; }
+.reveal b { color: #fff; }
+.legend-bar { display: flex; align-items: center; gap: 10px; font-size: 0.78rem; color: #7f948e; margin-top: 10px; }
+.legend-bar span.g { width: 120px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, #000, #0d3b26 30%, #2fae66 65%, var(--glow) 85%, #effff4); }
+
+/* poke explorer */
+.poke { padding: 44px 0 30px; }
+.poke-head { display: grid; gap: 12px; margin-bottom: 20px; }
+.controls { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; font-size: 0.92rem; }
+select, input[type=range] { font: inherit; }
+select { padding: 8px 10px; border-radius: 8px; border: 1.5px solid var(--rule); background: #fff; color: var(--ink); }
+input[type=range] { width: 220px; accent-color: var(--accent); }
+.tval { font-variant-numeric: tabular-nums; min-width: 5ch; }
+.poke .btn { color: var(--ink); }
+.heads { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 860px) { .heads { grid-template-columns: 1fr; } }
+.head { background: var(--scope); border-radius: 6px; padding: 14px; color: var(--scope-ink); display: grid; gap: 8px; }
+.head h3 { font-size: 1.1rem; color: #f1f6f3; }
+.head .sub { font-size: 0.82rem; color: #9fb3ad; min-height: 2.6em; }
+.head canvas { width: 100%; height: auto; aspect-ratio: 16 / 7; display: block; }
+.head .score { font-size: 0.88rem; color: #dbe7e2; font-variant-numeric: tabular-nums; }
+.head .score b { color: var(--glow); font-weight: 600; }
+.head.real .score b { color: #f1f6f3; }
+.note { font-size: 0.85rem; color: var(--ink-2); margin-top: 12px; max-width: 80ch; }
+.summary-line { font-family: var(--display); font-size: 1.2rem; margin-top: 18px; max-width: 70ch; }
+
+/* results */
+section.results { padding: 40px 0; border-top: 1px solid var(--rule); }
+.figs { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 24px; margin-top: 22px; }
+@media (max-width: 860px) { .figs { grid-template-columns: 1fr; } }
+figure { margin: 0; display: grid; gap: 10px; align-content: start; }
+figure img { width: 100%; height: auto; background: #fff; border: 1px solid var(--rule); border-radius: 4px; }
+figcaption { font-size: 0.88rem; color: var(--ink-2); }
+figcaption b { color: var(--ink); }
+.ledger { list-style: none; padding: 0; margin: 22px 0 0; display: grid; gap: 0; border-top: 1px solid var(--rule); }
+.ledger li { display: grid; grid-template-columns: 9rem 1fr; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+@media (max-width: 600px) { .ledger li { grid-template-columns: 1fr; gap: 4px; } }
+.tag { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em; color: var(--ink-2); padding-top: 3px; }
+.tag.found { color: var(--accent); }
+.tag.gone { color: #8a5a00; }
+.ledger p b { font-weight: 600; }
+footer { padding: 34px 0 48px; border-top: 1px solid var(--rule); font-size: 0.85rem; color: var(--ink-2); display: grid; gap: 10px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="wrap top">
+  <div class="kicker"><b>NEMATICA</b><span>An open study of what separates real nervous systems from artificial ones</span></div>
+  <h1>Looking like a brain is not the same as working like one.</h1>
+  <p class="lede">We copied the brain of a worm, <i>C. elegans</i>, many different ways and tested every copy twice: does it look real while it rests, and does it answer like a real worm when one neuron is switched on? Try the test yourself below.</p>
+</header>
+
+<section class="scope" aria-labelledby="game-title">
+  <div class="wrap">
+    <div class="q">
+      <h2 id="game-title">Which brain is real?</h2>
+      <p>Each row is one type of neuron in the worm's head; brightness is its calcium signal over eight minutes. One panel is a real worm the models never saw. The other is a model brain learned only from watching other worms at rest.</p>
+    </div>
+    <div class="pair">
+      <div class="panel"><div class="label"><b>Brain A</b><span id="rows-a"></span></div><canvas class="raster" id="ra" width="960" height="520" aria-label="Brain A activity raster"></canvas><div class="axis"><span>0 s</span><span>4 min</span><span>8 min</span></div></div>
+      <div class="panel"><div class="label"><b>Brain B</b><span id="rows-b"></span></div><canvas class="raster" id="rb" width="960" height="520" aria-label="Brain B activity raster"></canvas><div class="axis"><span>0 s</span><span>4 min</span><span>8 min</span></div></div>
+    </div>
+    <div class="legend-bar"><span>low</span><span class="g" aria-hidden="true"></span><span>high activity</span><span>· Ticks above each panel: moments a neuron was switched on with light</span></div>
+    <div class="choose">
+      <button class="primary" id="pick-a" type="button">A is the real worm</button>
+      <button class="primary" id="pick-b" type="button">B is the real worm</button>
+    </div>
+    <div class="reveal" id="reveal" hidden role="status"></div>
+  </div>
+</section>
+
+<section class="poke wrap" id="poke" aria-labelledby="poke-title">
+  <div class="poke-head">
+    <h2 id="poke-title">Now switch on one neuron.</h2>
+    <p class="prose">The real experiment: light switches on one type of neuron, and the signal spreads through the head. Pick a neuron and watch where its echo goes in real worms, in the model that learned only by watching, and in a model that also learned from pokes. Dots are neuron types at their place in the head (nose to the left); green rises, pink falls.</p>
+    <div class="controls">
+      <label for="stim">Switch on</label>
+      <select id="stim"></select>
+      <button class="btn" id="play" type="button">Play</button>
+      <label for="t">Time after the poke</label>
+      <input type="range" id="t" min="0" max="30" step="1" value="6">
+      <span class="tval" id="tval">6 s</span>
+    </div>
+  </div>
+  <div class="heads">
+    <div class="head real"><h3>Real worms</h3><p class="sub" id="sub-real"></p><canvas id="h-real" width="640" height="280"></canvas><p class="score">The reference</p></div>
+    <div class="head"><h3>Learned by watching</h3><p class="sub">A linear brain fitted to other worms' resting activity. It passes five of six tests of real activity.</p><canvas id="h-var" width="640" height="280"></canvas><p class="score" id="s-var"></p></div>
+    <div class="head"><h3>Learned from pokes too</h3><p class="sub">Causal links learned from other worms' pokes, on top of watched dynamics.</p><canvas id="h-hyb" width="640" height="280"></canvas><p class="score" id="s-hyb"></p></div>
+  </div>
+  <p class="summary-line" id="summary"></p>
+  <p class="note">ASH, the worm&rsquo;s pain-sensing neuron, is shown first as a typical case; pick any other, including some where neither model does well. Averages over the held-out worms of one group of the atlas, and over each model run on those same worms with the same pokes. "Agreement" is the correlation, across responding neuron types, between a model's echo and the real one over the first 15 seconds.</p>
+</section>
+
+<section class="results" aria-labelledby="res-title">
+  <div class="wrap">
+    <h2 id="res-title">What the tests found</h2>
+    <p class="prose" style="margin-top:12px">Every prediction was written down before the data was analysed; when one failed, the failure stayed in the record. Seven independent reviews checked the numbers, and two of their corrections changed what is shown here.</p>
+    <div class="figs">
+      <figure><img src="__IMG_RVP__" alt="Thirty models: realism at rest against realism under pokes, with no relation between them."><figcaption><b>Looking right says nothing about answering right.</b> Thirty model brains scored at rest and under pokes on the same worms: the two scores are unrelated. Only models that learned causal links from pokes reach real-worm agreement.</figcaption></figure>
+      <figure><img src="__IMG_FP__" alt="Each worm's echoes resemble its own other half more than other worms' in 36 of 43 worms."><figcaption><b>Each worm has its own causal fingerprint.</b> A worm's answers to half its pokes resemble its answers to the other half more than other worms' (36 of 43). A model of that worm's own resting activity does not capture it.</figcaption></figure>
+      <figure><img src="__IMG_CLS__" alt="Classifier accuracy at telling model activity from real activity falls to chance as model memory grows to 6 seconds."><figcaption><b>At rest, a model can pass as a worm.</b> Given 6 seconds of memory, a model of freely moving worms can no longer be told from the worms it imitates by a trained classifier. Passing that test says nothing about the first figure.</figcaption></figure>
+      <figure><img src="__IMG_REC__" alt="A repeat poke 0.6 to 2 minutes later gets about half the previous response, recovering by 5 to 10 minutes."><figcaption><b>Real neurons tire, briefly.</b> A worm neuron poked again 0.6 to 2 minutes later answers at about half its previous response, and recovers within 5 to 10 minutes. No artificial network we built does this. Part may be the light-activated tool; part is probably the neuron.</figcaption></figure>
+    </div>
+
+    <h2 style="margin-top:44px">So what separates them?</h2>
+    <ul class="ledger">
+      <li><span class="tag found">Found</span><p><b>A copy cannot be checked by watching it.</b> Realism at rest and realism under pokes are unrelated across 30 models (rank correlation -0.12), and each worm's causal fingerprint is invisible in its resting activity.</p></li>
+      <li><span class="tag found">Found</span><p><b>Neurons that tire with use, and a background state that steers where a signal goes.</b> Both are in worms and absent from every ordinary artificial network we tested, rate, spiking or transformer.</p></li>
+      <li><span class="tag">By degree</span><p><b>Brains drift; plain networks keep their rules.</b> Worms and human cortex change how activity predicts the next moment over a recording. Networks drift only when given slow hidden processes, and less.</p></li>
+      <li><span class="tag gone">Withdrawn</span><p><b>An echo that is narrow and lasting at once.</b> It looked like the worm's most distinctive trait until a control without any poke reproduced it: it was the slow pace of ongoing activity.</p></li>
+      <li><span class="tag">Our reading</span><p><b>The difference is what a system carries outside its units' activity.</b> Every difference traces to state that a recording does not show: slow signals no neuron carries, changes left behind by use, switches between calm and active stretches. Give a network that kind of hidden state and it acquires the worm's properties. This is a reading across the results, not yet a direct test.</p></li>
+    </ul>
+  </div>
+</section>
+
+<footer class="wrap">
+  <p>Method, code, every prediction and every correction: <a href="https://github.com/Weptune/nematica">github.com/Weptune/nematica</a> (MIT licence for the code).</p>
+  <p>Data: the neural signal propagation atlas, Randi, Sharma, Dvali and Leifer, <i>Nature</i> 2023 (DANDI 001075, CC BY 4.0), shown here as derived averages and one recording's class traces; freely moving recordings from Baskoylu et al. (Dryad, CC0) and Atanas et al., <i>Cell</i> 2023. Published comparison models: Creamer, Leifer and Pillow 2024.</p>
+  <p>Built from committed result tables on 8 November 2026.</p>
+</footer>
+
+<script>
+const LOCAL = __LOCAL__;
+const ECHO = __ECHO__;
+
+function unpack(b64) { const s = atob(b64); const a = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) a[i] = s.charCodeAt(i); return a; }
+function unpackI8(b64) { const u = unpack(b64); return new Int8Array(u.buffer); }
+
+// fluorescence colormap: black -> deep green -> green -> pale
+const STOPS = [[0, [0, 0, 0]], [0.3, [13, 59, 38]], [0.65, [47, 174, 102]], [0.85, [124, 240, 168]], [1, [239, 255, 244]]];
+function cmap(v) {
+  v = Math.max(0, Math.min(1, v));
+  for (let i = 1; i < STOPS.length; i++) {
+    if (v <= STOPS[i][0]) {
+      const [a, ca] = STOPS[i - 1], [b, cb] = STOPS[i], f = (v - a) / (b - a);
+      return ca.map((c, k) => Math.round(c + f * (cb[k] - c)));
+    }
+  }
+  return STOPS[STOPS.length - 1][1];
+}
+
+function drawRaster(canvas, bytes, nrow, ncol, stims) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, gap = 14;
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  const img = ctx.createImageData(ncol, nrow);
+  for (let r = 0; r < nrow; r++) {
+    for (let c = 0; c < ncol; c++) {
+      const q = bytes[r * ncol + c];
+      const v = q === 0 ? 0 : (q - 1) / 254 * 1.25;   // packed -1.5..3; shown so that ~2 SD saturates
+      const [R, G, B] = cmap(v);
+      const o = (r * ncol + c) * 4; img.data[o] = R; img.data[o + 1] = G; img.data[o + 2] = B; img.data[o + 3] = 255;
+    }
+  }
+  const off = document.createElement('canvas'); off.width = ncol; off.height = nrow;
+  off.getContext('2d').putImageData(img, 0, 0);
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(off, 0, gap, W, H - gap);
+  ctx.fillStyle = '#7cf0a8';
+  for (const s of stims) { const x = s.frame / ncol * W; ctx.fillRect(x - 1, 2, 2, 9); }
+}
+
+// ---------- the game
+const nrow = LOCAL.classes.length, ncol = LOCAL.frames;
+const realBytes = unpack(LOCAL.real), modelBytes = unpack(LOCAL.brains.var3_spontaneous.data);
+const realIsA = Math.random() < 0.5;
+drawRaster(document.getElementById('ra'), realIsA ? realBytes : modelBytes, nrow, ncol, LOCAL.stims);
+drawRaster(document.getElementById('rb'), realIsA ? modelBytes : realBytes, nrow, ncol, LOCAL.stims);
+document.getElementById('rows-a').textContent = nrow + ' neuron types';
+document.getElementById('rows-b').textContent = nrow + ' neuron types';
+function reveal(pickedA) {
+  const right = pickedA === realIsA;
+  const r = document.getElementById('reveal');
+  const real = realIsA ? 'A' : 'B', model = realIsA ? 'B' : 'A';
+  r.innerHTML = (right ? '<b>Right.</b> ' : '<b>Not this time.</b> ') +
+    `Brain ${real} is a real worm the models never saw; brain ${model} is a linear model learned only from other worms' resting activity, run under the same light pokes. ` +
+    "Most people spot the real worm by its slow swings, minutes long, which this model lacks. The standard statistical tests are kinder: scored against real worms, the model passes five of six of them in every held-out group. " +
+    'Neither your eye nor those tests can tell you whether a model answers a poke correctly. <b>So ask both.</b> <a href="#poke" style="color:#7cf0a8">Switch on a neuron</a>';
+  r.hidden = false;
+  document.getElementById('pick-a').disabled = true; document.getElementById('pick-b').disabled = true;
+}
+document.getElementById('pick-a').addEventListener('click', () => reveal(true));
+document.getElementById('pick-b').addEventListener('click', () => reveal(false));
+
+// ---------- the poke explorer
+const S = ECHO.stims, R = ECHO.resp, NT = ECHO.nt, SC = ECHO.scale;
+const sets = { real: unpackI8(ECHO.sets.real), var: unpackI8(ECHO.sets.var3_spontaneous), hyb: unpackI8(ECHO.sets.hybrid_kernels_regimes_obsfit) };
+function val(set, i, j, t) { const q = set[(i * R.length + j) * NT + t]; return q === -128 ? NaN : q / 127 * SC; }
+function window15(set, i) { return R.map((_, j) => { let s = 0, n = 0; for (let t = 0; t < 16 && t < NT; t++) { const v = val(set, i, j, t); if (!isNaN(v)) { s += v; n++; } } return n ? s / n : NaN; }); }
+function corr(a, b) {
+  const xs = [], ys = [];
+  for (let k = 0; k < a.length; k++) if (!isNaN(a[k]) && !isNaN(b[k])) { xs.push(a[k]); ys.push(b[k]); }
+  if (xs.length < 5) return NaN;
+  const mx = xs.reduce((s, v) => s + v, 0) / xs.length, my = ys.reduce((s, v) => s + v, 0) / ys.length;
+  let sxy = 0, sxx = 0, syy = 0;
+  for (let k = 0; k < xs.length; k++) { sxy += (xs[k] - mx) * (ys[k] - my); sxx += (xs[k] - mx) ** 2; syy += (ys[k] - my) ** 2; }
+  return sxx > 0 && syy > 0 ? sxy / Math.sqrt(sxx * syy) : NaN;
+}
+const scores = S.map((_, i) => { const r = window15(sets.real, i); return { v: corr(window15(sets.var, i), r), h: corr(window15(sets.hyb, i), r) }; });
+const med = a => { const b = a.filter(x => !isNaN(x)).sort((p, q) => p - q); return b.length ? b[Math.floor(b.length / 2)] : NaN; };
+const scored = scores.filter(s => !isNaN(s.v) && !isNaN(s.h));
+const medV = med(scored.map(s => s.v)), medH = med(scored.map(s => s.h)), better = scored.filter(s => s.h > s.v).length;
+document.getElementById('summary').textContent =
+  `Across the ${scored.length} neuron types with enough data, the echo of the brain that only watched agrees with real worms at a median of ${medV.toFixed(2)}; the brain that also learned from pokes, ${medH.toFixed(2)}, and it is closer for ${better} of the ${scored.length}.`;
+
+const sel = document.getElementById('stim');
+S.forEach((c, i) => { const o = document.createElement('option'); o.value = i; o.textContent = c; sel.appendChild(o); });
+sel.value = String(Math.max(0, S.indexOf('ASH')));
+const xs = R.map(c => ECHO.pos[c][0]), ys = R.map(c => ECHO.pos[c][1]);
+const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+
+function drawHead(canvas, set, i, t) {
+  const ctx = canvas.getContext('2d'), W = canvas.width, H = canvas.height, pad = 26;
+  ctx.fillStyle = '#0b1514'; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = 'rgba(215,228,223,0.18)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.ellipse(W / 2, H / 2, W / 2 - 8, H / 2 - 8, 0, 0, Math.PI * 2); ctx.stroke();
+  const px = v => pad + (v - x0) / (x1 - x0) * (W - 2 * pad), py = v => pad + (1 - (v - y0) / (y1 - y0)) * (H - 2 * pad);
+  const stimCls = S[i];
+  R.forEach((c, j) => {
+    const v = val(set, i, j, t);
+    const X = px(xs[j]), Y = py(ys[j]);
+    if (isNaN(v)) { ctx.fillStyle = 'rgba(215,228,223,0.12)'; ctx.beginPath(); ctx.arc(X, Y, 3, 0, Math.PI * 2); ctx.fill(); return; }
+    const m = Math.min(1, Math.abs(v) / 1.5);
+    ctx.fillStyle = v >= 0 ? `rgba(124,240,168,${0.18 + 0.82 * m})` : `rgba(211,111,208,${0.18 + 0.82 * m})`;
+    ctx.beginPath(); ctx.arc(X, Y, 3 + 7 * m, 0, Math.PI * 2); ctx.fill();
+  });
+  if (ECHO.pos[stimCls]) {
+    const X = px(ECHO.pos[stimCls][0]), Y = py(ECHO.pos[stimCls][1]);
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(X, Y, 11, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = '#ffffff'; ctx.font = '600 15px "Schibsted Grotesk", system-ui'; ctx.fillText(stimCls, X + 14, Y - 10);
+  }
+}
+function render() {
+  const i = +sel.value, t = +document.getElementById('t').value;
+  document.getElementById('tval').textContent = t + ' s';
+  drawHead(document.getElementById('h-real'), sets.real, i, t);
+  drawHead(document.getElementById('h-var'), sets.var, i, t);
+  drawHead(document.getElementById('h-hyb'), sets.hyb, i, t);
+  document.getElementById('sub-real').textContent = `Average of ${ECHO.nWorms} held-out worms in the atlas when ${S[i]} is switched on.`;
+  const f = x => isNaN(x) ? 'not enough data' : x.toFixed(2);
+  document.getElementById('s-var').innerHTML = `Agreement with real worms for ${S[i]}: <b>${f(scores[i].v)}</b>`;
+  document.getElementById('s-hyb').innerHTML = `Agreement with real worms for ${S[i]}: <b>${f(scores[i].h)}</b>`;
+}
+sel.addEventListener('change', render);
+document.getElementById('t').addEventListener('input', render);
+let timer = null;
+document.getElementById('play').addEventListener('click', () => {
+  const btn = document.getElementById('play'), slider = document.getElementById('t');
+  if (timer) { clearInterval(timer); timer = null; btn.textContent = 'Play'; return; }
+  btn.textContent = 'Pause'; if (+slider.value >= 30) slider.value = 0;
+  timer = setInterval(() => { slider.value = Math.min(30, +slider.value + 1); render(); if (+slider.value >= 30) { clearInterval(timer); timer = null; btn.textContent = 'Play'; } }, 380);
+});
+render();
+</script>
+</body>
+</html>
