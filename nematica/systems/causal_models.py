@@ -83,6 +83,83 @@ def factor_fit(S: np.ndarray, k: int, iters: int = 200):
     return Lc * d[:, None], (1 - h) * d ** 2
 
 
+def lagged_cov(recs, classes, L: int, min_n: int = 500) -> np.ndarray:
+    """Pooled covariance between z-scored class activity at t and t - L (all frames, frames
+    where both classes are seen), symmetrised."""
+    C = len(classes)
+    S = np.zeros((C, C)); N = np.zeros((C, C)); A = np.zeros((C, C)); B = np.zeros((C, C))
+    for r in recs:
+        z = class_matrix(r, classes)
+        z = (z - np.nanmean(z, axis=1, keepdims=True)) / np.nanstd(z, axis=1, keepdims=True)
+        a, b = z[:, L:], z[:, :-L] if L else z
+        oa, ob = np.isfinite(a).astype(float), np.isfinite(b).astype(float)
+        a0, b0 = np.nan_to_num(a), np.nan_to_num(b)
+        S += a0 @ b0.T; N += oa @ ob.T; A += a0 @ ob.T; B += oa @ b0.T
+    with np.errstate(invalid="ignore", divide="ignore"):
+        M = S / N - (A / N) * (B / N)
+    M[N < min_n] = np.nan
+    return (M + M.T) / 2
+
+
+class SlowLatent:
+    """A few slow brain-wide factors, each an AR(1) with its own timescale, read out by every
+    class. Fitted from lagged covariances (lags 20 to 80 frames), which white measurement noise
+    and fast dynamics do not reach [A]: C(L) ~ V diag(c_j rho_j^L) V'."""
+
+    def __init__(self, k: int = 3, lags=(20, 40, 80)):
+        self.k, self.lags = k, lags
+
+    def fit(self, recs, classes):
+        self.classes = list(classes)
+        Cs = {L: lagged_cov(recs, classes, L) for L in self.lags}
+        ref = np.nan_to_num(Cs[self.lags[1]])
+        w, V = np.linalg.eigh(ref)
+        V = V[:, ::-1][:, :self.k]
+        self.rho, c0 = [], []
+        for j in range(self.k):
+            v = V[:, j]
+            ok = np.isfinite(Cs[self.lags[0]]).all(0)
+            cj = [float(v[ok] @ np.nan_to_num(Cs[L])[np.ix_(ok, ok)] @ v[ok]) for L in self.lags]
+            cj = np.clip(cj, 1e-6, None)
+            slope, icpt = np.polyfit(self.lags, np.log(cj), 1)
+            rho = float(np.clip(np.exp(slope), 0.9, 0.9995))
+            self.rho.append(rho)
+            c0.append(float(np.exp(icpt)))
+        self.rho, self.c0, self.V = np.array(self.rho), np.array(c0), V
+        load = V * np.sqrt(self.c0)                         # z units
+        # each class's total slow share, from its own lagged autocovariance; the part the shared
+        # factors do not explain becomes a private slow AR(1) per class
+        D = np.array([[Cs[L][i, i] for L in self.lags] for i in range(len(classes))])
+        tot, rp = np.zeros(len(classes)), np.zeros(len(classes))
+        for i in range(len(classes)):
+            d = np.clip(np.nan_to_num(D[i], nan=1e-6), 1e-6, None)
+            sl, ic = np.polyfit(self.lags, np.log(d), 1)
+            tot[i], rp[i] = min(float(np.exp(ic)), 0.85), float(np.clip(np.exp(sl), 0.9, 0.9995))
+        h = (load ** 2).sum(1)
+        load = load * np.sqrt(np.minimum(h, tot) / np.maximum(h, 1e-12))[:, None]
+        self.load = load
+        self.priv = np.sqrt(np.clip(tot - (load ** 2).sum(1), 0, None))
+        self.rho_p = rp
+        self.h = (self.load ** 2).sum(1) + self.priv ** 2
+        self.info = {"slow_tau_s": [round(-0.5 / np.log(r), 1) for r in self.rho],
+                     "slow_share_median": round(float(np.median(self.h)), 3),
+                     "slow_shared_median": round(float(np.median((self.load ** 2).sum(1))), 3)}
+        return self
+
+    def draw(self, T: int, rng: np.random.Generator) -> np.ndarray:
+        f = np.zeros((self.k, T))
+        f[:, 0] = rng.standard_normal(self.k)
+        e = np.sqrt(1 - self.rho ** 2)
+        for t in range(1, T):
+            f[:, t] = self.rho * f[:, t - 1] + e * rng.standard_normal(self.k)
+        g = np.zeros((len(self.priv), T))
+        g[:, 0] = rng.standard_normal(len(self.priv))
+        ep = np.sqrt(1 - self.rho_p ** 2)
+        for t in range(1, T):
+            g[:, t] = self.rho_p * g[:, t - 1] + ep * rng.standard_normal(len(self.priv))
+        return self.load @ f + self.priv[:, None] * g        # classes x T, z units
+
+
 class ClassVAR:
     def __init__(self, lags: int = 3, frames: str = "spontaneous", min_fraction: float = 0.3,
                  ridges=(1.0, 10.0, 100.0, 1000.0, 10000.0), max_radius: float = 0.99,
@@ -159,13 +236,19 @@ class ClassVAR:
             W[cols, j] = np.linalg.solve(Xm.T @ Xm + np.diag(pen), rhs)
         return W
 
-    def individual(self, rec: PumpProbe, lam: float = 300.0) -> "ClassVAR":
-        """A copy fitted on one worm's frames, shrunk toward this (pooled) model [L]."""
+    def individual(self, rec: PumpProbe, lam: float = 300.0, shock_only: bool = False) -> "ClassVAR":
+        """A copy fitted on one worm's frames, shrunk toward this (pooled) model [L]. With
+        `shock_only`, the pooled dynamics are kept and only the common-factor structure of the
+        shocks is the worm's own [A]."""
         import copy
         m = copy.copy(self)
         X, Y = self._design([rec])
         if X.shape[0] < 100:
             return self
+        if shock_only:
+            if self.innov_k:
+                m._fit_innov(Y - X @ self.W, prior=self.innov_S, n0=self.innov_n0)
+            return m
         m.W = self._solve(X, Y, lam, prior=self.W)
         R = Y - X @ m.W
         sd = np.sqrt(np.nanmean(R ** 2, axis=0))
@@ -448,8 +531,12 @@ class HybridKernel:
                  regimes: bool = False, obs_fit: bool = False, lowrank: int = 0, obs_smooth: float = 0.0,
                  class_quiet: bool = False, quiet_fit: bool = False, quiet_obs_fit: bool = False,
                  individual: bool = False, gru: int = 0, gru_sampled: bool = False, gru_steps: int = 1500,
-                 innov: int = 0):
+                 innov: int = 0, slow: int = 0):
+        self.slow = slow                 # > 0: this many slow brain-wide factors added to the
+                                         # ongoing activity (SlowLatent) [A]
+        self.slow_model = None
         self.innov = innov               # > 0: the VAR's shocks share this many common factors
+        self.indiv_shock = False         # individual backgrounds: only the shock structure
         self.lags, self.shrink, self.mask, self.seed = lags, shrink, mask, seed
         self.background = background     # which frames the ongoing-dynamics VAR learns from
         self.obs_noise = obs_noise       # split each class's variability into slow dynamics and
@@ -477,7 +564,8 @@ class HybridKernel:
         self.name = ("hybrid_kernels" + (f"_{mask}" if mask else "") + ("" if background == "spontaneous" else f"_bg{background}")
                      + ("_obs" if obs_noise else "") + ("_heavy" if heavy else "") + ("_regimes" if regimes else "")
                      + ("_obsfit" if obs_fit else "") + (f"_lowrank{lowrank}" if lowrank else "")
-                     + (f"_smooth{obs_smooth:g}" if obs_smooth else "") + ("_classquiet" if class_quiet else "") + ("_quietfit" if quiet_fit else "") + ("_quietobsfit" if quiet_obs_fit else "") + ("_indiv" if individual else "") + (f"_gru{gru}" + ("ss" if gru_sampled else "") if gru else "") + (f"_innov{innov}" if innov else ""))
+                     + (f"_smooth{obs_smooth:g}" if obs_smooth else "") + ("_classquiet" if class_quiet else "") + ("_quietfit" if quiet_fit else "") + ("_quietobsfit" if quiet_obs_fit else "") + ("_indiv" if individual else "") + (f"_gru{gru}" + ("ss" if gru_sampled else "") if gru else "") + (f"_innov{innov}" if innov else "") + (f"_slow{slow}" if slow else ""))
+        self._base_name = self.name
 
     def _gain(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """A two-state Markov chain (quiet, active) with the calibrated share of quiet time and
@@ -591,6 +679,8 @@ class HybridKernel:
         else:
             self.var = ClassVAR(lags=self.lags, frames=self.background,
                                 innovations="student" if self.heavy else "gaussian", innov_k=self.innov).fit(train, val)
+        if self.slow:
+            self.slow_model = SlowLatent(self.slow).fit(list(train) + list(val), self.var.classes)
         if self.obs_noise:
             self.noise_frac = self._noise_fractions(list(train) + list(val), self.var.classes)
         acc: dict = {}
@@ -654,9 +744,9 @@ class HybridKernel:
                 keep = set(keep) | {k for k in self.kernels if k[0] == k[1]}
                 self.kernels = {k: v for k, v in self.kernels.items() if k in keep}
                 self.info_mask = {"wired": len(wired), "unwired": len(unwired)}
-        self.info = {**self.var.info, "kernels": len(self.kernels), **getattr(self, "info_mask", {})}
+        self.info = {**self.var.info, "kernels": len(self.kernels), **getattr(self, "info_mask", {}), **(self.slow_model.info if self.slow_model is not None else {})}
         if self.individual and isinstance(self.var, ClassVAR):
-            self.indiv = [self.var.individual(r) for r in train]
+            self.indiv = [self.var.individual(r, shock_only=self.indiv_shock) for r in train]
             self.info["individual_backgrounds"] = sum(m is not self.var for m in self.indiv)
         if self.class_quiet or self.quiet_fit or self.quiet_obs_fit:
             self.quiet_share = self._quiet_shares(list(train) + list(val), self.var.classes)
@@ -767,6 +857,15 @@ class HybridKernel:
         else:
             bg = var.simulate(quiet, rng, noise_gain=gain, **kw)   # ongoing activity, no stimulation
         x = bg.x.copy()
+        if self.slow_model is not None:
+            # ongoing activity = fast part (the VAR) with variance share 1 - h, plus the slow
+            # factors with share h, at each class's simulated size
+            ci = {c: i for i, c in enumerate(self.var.classes)}
+            rows = [ci[c] for c in bg.classes]
+            sl = self.slow_model.draw(x.shape[1] + 400, rng)[rows, 400:]
+            h = self.slow_model.h[rows][:, None]
+            sdb = x.std(axis=1, keepdims=True)
+            x = x * np.sqrt(1 - h) + sl * sdb
         if self.obs_noise:
             ci = {c: i for i, c in enumerate(self.var.classes)}
             f = np.array([self.noise_frac[ci[c]] for c in bg.classes])
