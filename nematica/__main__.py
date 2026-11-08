@@ -66,6 +66,10 @@ def main(argv=None) -> int:
     rp.add_argument("--compare", nargs="*", default=[])
     rp.add_argument("--out", default=None)
 
+    lb = sub.add_parser("leaderboard", help="one HTML table of several saved reports")
+    lb.add_argument("reports", nargs="+")
+    lb.add_argument("--out", default="results/scores/leaderboard.html")
+
     ex = sub.add_parser("export", help="write the benchmark kit (templates and fold lists) for other languages")
     ex.add_argument("--data", default=DATA)
     ex.add_argument("--out", default="kit")
@@ -100,6 +104,16 @@ def main(argv=None) -> int:
     elif args.cmd == "report":
         from .report_html import write_html
         print(write_html(args.report, args.out, compare=args.compare))
+    elif args.cmd == "leaderboard":
+        import json
+        from .report_html import render_leaderboard
+        reps = {}
+        for p in args.reports:
+            d = json.loads(Path(p).read_text(encoding="utf-8"))
+            reps[d.get("copy", Path(p).stem)] = d
+        Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.out).write_text(render_leaderboard(reps), encoding="utf-8")
+        print(args.out)
     elif args.cmd == "export":
         from .kit import export
         out = export(args.data, args.out)

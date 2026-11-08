@@ -138,6 +138,7 @@ h1{{font:600 30px/1.2 Georgia,"Iowan Old Style",serif;margin:0 0 6px;letter-spac
 h2{{font:600 21px/1.3 Georgia,"Iowan Old Style",serif;margin:44px 0 10px}}
 h3{{font-size:16px;margin:26px 0 6px}}
 p{{margin:0 0 12px;max-width:68ch}}
+.lead{{font-size:19px;line-height:1.45;margin:4px 0 14px}}
 .meta{{color:{MUTED};font-size:14px;margin-bottom:28px}}
 .answer{{border-collapse:collapse;margin:8px 0 8px;font-variant-numeric:tabular-nums}}
 .answer th,.answer td{{padding:8px 14px 8px 0;text-align:left;border-bottom:1px solid {RULE}}}
@@ -159,6 +160,18 @@ code{{font:14px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:#f3f4
 footer{{margin-top:56px;color:{MUTED};font-size:13px;border-top:1px solid {RULE};padding-top:14px}}
 @media (max-width:640px){{main{{padding:28px 16px}} h1{{font-size:24px}}}}
 """
+
+
+def _sentence(a: dict) -> str:
+    parts = []
+    for s, d in a.items():
+        n = d["seeds"]
+        parts.append(f"{d['both_pass_seeds']} of {n} seed{'s' if n > 1 else ''} on split {s}")
+    full = all(d["both_pass_seeds"] == d["seeds"] for d in a.values())
+    none = all(d["both_pass_seeds"] == 0 for d in a.values())
+    head = ("Passes the full test, at rest and when poked" if full else
+            "Does not pass the full test" if none else "Passes the full test, at rest and when poked, in some runs")
+    return f"{head}: {'; '.join(parts)}."
 
 
 def render(report: dict, compare: dict[str, dict] | None = None) -> str:
@@ -191,8 +204,9 @@ def render(report: dict, compare: dict[str, dict] | None = None) -> str:
     body = [f"<h1>{_esc(name)} on the NEMATICA worm benchmark</h1>",
             f"<p class='meta'>{' · '.join(b for b in meta_bits if b)}</p>",
             "<h2>The answer</h2>",
+            f"<p class='lead'>{_esc(_sentence(a))}</p>",
             "<table class='answer'><thead><tr><th>Split</th><th>Passes at rest</th><th>Passes when poked</th>"
-            "<th>Inside on every level</th></tr></thead><tbody>" + "".join(ans_rows) + "</tbody></table>",
+            "<th>All nine rule levels pass</th></tr></thead><tbody>" + "".join(ans_rows) + "</tbody></table>",
             f"<p>{_esc(rule_text())} Each noise seed is judged on its own.</p>"]
     if comp:
         lb = ["<h2>Compared with other copies</h2>",
@@ -253,3 +267,49 @@ def write_html(report_path: str | Path, out: str | Path | None = None, compare: 
     out = Path(out or Path(report_path).with_suffix(".html"))
     out.write_text(render(report, comp), encoding="utf-8")
     return out
+
+
+def _excess_fill(v: float | None) -> str:
+    """Background for an excess value: white near 0, red when too different, amber when too typical."""
+    if v is None or not np.isfinite(v):
+        return "#eceef0"
+    t = min(abs(v) / 0.6, 1.0)
+    base = (184, 68, 63) if v > 0 else (183, 134, 43)
+    r, g, b = (round(255 + (c - 255) * t * 0.55) for c in base)
+    return f"rgb({r},{g},{b})"
+
+
+def render_leaderboard(reports: dict[str, dict], title: str = "NEMATICA worm benchmark: reference copies") -> str:
+    """One table: each copy's passes per split, and its median excess distance on every level (cell
+    colour: white = like real worms, red = too different, amber = too typical)."""
+    ans = {k: answers(v["rows"]) for k, v in reports.items()}
+    splits = list(dict.fromkeys(s for a in ans.values() for s in a))
+    order = sorted(ans, key=lambda k: -sum(a["both_pass_seeds"] / max(a["seeds"], 1) for a in ans[k].values()))
+    head = ("<tr><th scope='col'>Copy</th>" + "".join(f"<th scope='col'>{_esc(s)}: rest, poked</th>" for s in splits)
+            + "".join(f"<th scope='col' class='lv' title='{_esc(ABOUT[lv])}'>{_esc(LABELS[lv])}</th>" for lv in ALL_LEVELS) + "</tr>")
+    body = []
+    for k in order:
+        a = ans[k]
+        cells = []
+        for s in splits:
+            d = a.get(s)
+            cells.append("<td>-</td>" if not d else f"<td>{d['rest_pass_seeds']}/{d['seeds']}, {d['poke_pass_seeds']}/{d['seeds']}</td>")
+        for lv in ALL_LEVELS:
+            vals = [a[s]["levels"][lv]["excess_median"] for s in splits if s in a and lv in a[s]["levels"]
+                    and a[s]["levels"][lv]["excess_median"] is not None]
+            v = float(np.mean(vals)) if vals else None
+            cells.append(f"<td class='num' style='background:{_excess_fill(v)}'>{'' if v is None else f'{v:+.2f}'}</td>")
+        body.append(f"<tr><th scope='row'>{_esc(k)}</th>{''.join(cells)}</tr>")
+    css = CSS + ".lb{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}" \
+                ".lb th,.lb td{padding:7px 9px;border-bottom:1px solid #e6e8ea;text-align:left}" \
+                ".lb th.lv{writing-mode:vertical-rl;transform:rotate(180deg);font-weight:400;color:#5b636b;height:150px}" \
+                ".lb td.num{text-align:right} main.wide{max-width:1200px}"
+    return ("<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
+            f"<title>{_esc(title)}</title><style>{css}</style></head><body><main class='wide'>"
+            f"<h1>{_esc(title)}</h1>"
+            f"<p>{_esc(rule_text())} Each cell on the right is the copy's median excess distance on that level, "
+            "averaged over splits: 0 means as different from real worms as real worms are from each other, positive "
+            "too different (red), negative too typical (amber).</p>"
+            f"<div style='overflow-x:auto'><table class='lb'><thead>{head}</thead><tbody>{''.join(body)}</tbody></table></div>"
+            "<footer>Scores only; the recordings (Randi et al. 2023, CC BY 4.0) are not included. See docs/BENCHMARK.md.</footer>"
+            "</main></body></html>")

@@ -154,3 +154,9 @@ def test_check_flags_a_copy_that_ignores_its_drive(worms):
     assert check(Echo, worms, log=lambda m: None) == []
     assert any("drive" in p for p in check(Deaf, worms, log=lambda m: None))
     assert any("expected" in p for p in check(Short, worms, log=lambda m: None))
+
+
+def test_leaderboard(scored):
+    from nematica.report_html import render_leaderboard
+    html = render_leaderboard({"a": {"rows": scored}, "b": {"rows": scored}})
+    assert html.count("<tr>") >= 3 and "echo pattern" in html
