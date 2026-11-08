@@ -310,7 +310,7 @@ def q0_stats(T, n_worms, perm=2000, boot=1000, seed=0):
     return s0, p, lo, hi, len(T), float(np.mean(o > 0)), float(np.mean(r[o > 0]) - np.mean(r[o == 0])) if (o > 0).any() and (o == 0).any() else np.nan
 
 
-def lab_ring(spread, n_ind=60, seed=0):
+def lab_ring(spread, n_ind=60, seed=0, sigma=0.0):
     import run_ladder as LD
     br0 = __import__("nematica.annlab", fromlist=["x"]).make_brain(rho=1.3, share=0.0, tau=90.0, seed=seed, q=0.2)
     from nematica import annlab as L
@@ -324,7 +324,7 @@ def lab_ring(spread, n_ind=60, seed=0):
             g = np.random.default_rng(5000 + i)
             neigh = np.array([g.choice([(v + d) % n for d in (-3, -2, -1, 1, 2, 3)], size=2, replace=False) for v in range(n)])
             LD.NEIGH = neigh
-            ind = L.individual(br0, 0.0, 1000 + i)
+            ind = L.individual(br0, sigma, 1000 + i)
             obs = (rng.random(n) < 0.5) & ~hidden
             targets = np.flatnonzero(obs)
             kicks = {f: int(rng.choice(targets)) for f in range(LD.LEAD, L.FRAMES - L.WIN, L.EVERY)}
@@ -379,9 +379,96 @@ def q0(lab_slope):
     log(f"Q0 verdict: {v}")
 
 
+# ---------------------------------------------------------------- amendment 2: neighbour-matched fingerprint
+def half_rows(recs, nears, nbr_fn):
+    """Per worm, two halves: ({stim class: {resp: amp}}, {stim class: neighbour-class set})."""
+    out = []
+    for r, nr in zip(recs, nears):
+        hs = []
+        for st in halves(r.stims, "alternate"):
+            m = IV.half_map(r, st, nr)
+            rows = {}
+            for (ci, cj), a in m.items():
+                rows.setdefault(ci, {})[cj] = a
+            nb = {}
+            for k, _ in st:
+                ci = r.classes[k]
+                if ci:
+                    nb.setdefault(ci, set()).update(nbr_fn(r, nr, k))
+            hs.append((rows, nb))
+        out.append(hs)
+    return out
+
+
+def row_corr(x, y, min_resp=8):
+    ks = [k for k in x if k in y]
+    if len(ks) < min_resp:
+        return np.nan
+    u, v = np.array([x[k] for k in ks]), np.array([y[k] for k in ks])
+    return float(np.corrcoef(u, v)[0, 1]) if u.std() > 0 and v.std() > 0 else np.nan
+
+
+def jacc(a, b):
+    return len(a & b) / len(a | b) if (a or b) else np.nan
+
+
+def matched_fp(H, thr=0.5, boot=2000, seed=0):
+    per = []
+    for w, ((ra, na), (rb, nb)) in enumerate(H):
+        diffs = []
+        for ci in set(ra) & set(rb):
+            if ci not in na or ci not in nb or not (jacc(na[ci], nb[ci]) >= thr):
+                continue
+            wi = row_corr(ra[ci], rb[ci])
+            if not np.isfinite(wi):
+                continue
+            bt = []
+            for v, ((_, _), (rv, nv)) in enumerate(H):
+                if v == w or ci not in rv or ci not in nv:
+                    continue
+                if jacc(na[ci], nv[ci]) >= thr:
+                    c = row_corr(ra[ci], rv[ci])
+                    if np.isfinite(c):
+                        bt.append(c)
+            if bt:
+                diffs.append(wi - np.mean(bt))
+        if diffs:
+            per.append(np.mean(diffs))
+    per = np.array(per)
+    rng = np.random.default_rng(seed)
+    bs = [np.median(per[rng.integers(0, len(per), len(per))]) for _ in range(boot)]
+    lo, hi = np.percentile(bs, [2.5, 97.5])
+    return float(np.median(per)), lo, hi, len(per)
+
+
+def calib2():
+    log("AMENDMENT 2 CALIBRATION (ring lab with spillover: identical wiring must include 0; 30% individual wiring must lie above 0)")
+    res = {}
+    for sigma in (0.0, 0.3):
+        recs, nears, nbrc = lab_ring(0.3, sigma=sigma)
+        H = half_rows(recs, nears, lambda r, nr, k, nb=nbrc[recs.index(r)] if False else None: set())
+        H = []
+        for r, nr, nb in zip(recs, nears, nbrc):
+            H += half_rows([r], [nr], lambda rr, nn, k, nb=nb: nb[rr.classes[k]])
+        m, lo, hi, n = matched_fp(H)
+        res[sigma] = (lo, hi)
+        log(f"  lab sigma {sigma}: matched fingerprint {m:+.4f} [95%: {lo:+.4f}, {hi:+.4f}], worms {n}")
+    ok = res[0.0][0] <= 0 <= res[0.0][1] and res[0.3][0] > 0
+    log(f"AMENDMENT 2 CALIBRATION result: {'PASS' if ok else 'FAIL'}")
+
+
+def matched_worms():
+    recs, nears = worm_set(WT)
+    H = half_rows(recs, nears, lambda r, nr, k: {r.classes[j] for j in (nr[k] or []) if r.classes[j]})
+    m, lo, hi, n = matched_fp(H)
+    log(f"AMENDMENT 2 worms: matched fingerprint {m:+.4f} [95%: {lo:+.4f}, {hi:+.4f}], worms {n}")
+    v = "individuality beyond spillover" if lo > 0 else ("spillover accounts for the fingerprint" if lo <= 0 <= hi and hi < 0.03 else "inconclusive")
+    log(f"AMENDMENT 2 verdict: {v}")
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1]
     if cmd == "q0":
         q0(float(sys.argv[2]))
     else:
-        {"calib": calib, "q1": q1, "q2": q2, "q3": q3, "calib0": calib0}[cmd]()
+        {"calib": calib, "q1": q1, "q2": q2, "q3": q3, "calib0": calib0, "calib2": calib2, "matched": matched_worms}[cmd]()

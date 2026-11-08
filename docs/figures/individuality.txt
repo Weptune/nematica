@@ -34,3 +34,7 @@ Q0 CALIBRATION (amendment 1: ring neighbours, identical wiring; with spillover s
 Q0 CALIBRATION result: PASS (lab spillover slope +0.0951)
 Q0 worms (95): slope +0.0185 [95%: -0.0084, +0.0442], p 0.0020; triples 38968, share with overlap 0.456; agreement with overlap minus without +0.0186
 Q0 verdict: spillover shapes echoes
+AMENDMENT 2 CALIBRATION (ring lab with spillover: identical wiring must include 0; 30% individual wiring must lie above 0)
+  lab sigma 0.0: matched fingerprint -0.0364 [95%: -0.0525, -0.0011], worms 60
+  lab sigma 0.3: matched fingerprint +0.0305 [95%: -0.0207, +0.0717], worms 60
+AMENDMENT 2 CALIBRATION result: FAIL

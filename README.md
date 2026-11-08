@@ -4001,6 +4001,48 @@ fingerprint if it includes 0 with upper end below 0.03; otherwise inconclusive. 
 first):* identical wiring with spillover must include 0; individuals varying 30% with spillover must lie
 above 0. If either fails, this test is not read.
 
+**Amendment 2 calibration (8 Nov 2026). FAIL; not read.** Identical wiring gave -0.036 [-0.053, -0.001]
+(must include 0) and 30% individual wiring +0.031 [-0.021, +0.072] (must lie above 0): biased and too weak
+at this data size. **Where the individuality question stands:** in lab networks a fingerprint can be made
+entirely by spillover (it vanishes without it), and in worms spillover measurably shapes echoes (Q0). The
+project's "causal fingerprint" claim is therefore downgraded to *possibly partly off-target stimulation*,
+and Q1 to Q3 are closed without a reading. This is corrected wherever the fingerprint is cited.
+
+## How much of the signal propagation atlas is off-target stimulation? (pre-registered 8 Nov 2026)
+
+**Why.** Light aimed at one neuron also raises its nearest neighbours by about a third (README "Does
+stimulation in worms reach neighbouring neurons?"), and the neighbour-overlap test above shows that which
+neurons are neighbours shapes the echo downstream. If the neighbours' measured activation is real, it
+propagates, and part of each atlas connection (poked class -> responding class) is really a neighbour's
+connection. If it is imaging crosstalk (light or signal bleeding into neighbouring nuclei), it does not
+propagate. The atlas (Randi et al. 2023) is the field's main perturbation dataset and models are fitted
+to it, so the answer matters beyond this project. Written before computing anything below.
+
+**Estimator.** Population map M(c -> d) = mean over worms of each worm's class-pair mean response (as the
+individuality section: first 15 s, fluctuation units; spillover neighbours and own class excluded),
+leave-one-worm-out. For worm w, poked class i and responding class j (j not a neighbour of the target in
+that poke): r = w's mean response. Two predictors, each averaged over w's pokes of i:
+- *direct:* q = (a_target / A(i)) x M(i -> j), a_target the target's own response in that poke and A(i) the
+  population median own response of class i when poked;
+- *spillover:* p = sum over the target's three nearest positioned neurons n of (a_n / A(c_n)) x M(c_n -> j),
+  a_n that neighbour's measured response in the poke.
+Model r = alpha(i, j) + beta q + gamma p, with a fixed effect for each class pair. **gamma is the share of
+the neighbours' measured activation that propagates like a real poke:** about 1 if real, about 0 if
+crosstalk. 95% interval by resampling worms (1,000).
+
+*Calibration (lab ring networks, first):* (a) real spillover (neighbours kicked at 0.3): gamma's interval
+must lie above 0.5; (b) pure crosstalk (each neighbour's recorded trace gets 0.3 times the target's recorded
+change added, no kick): gamma's interval must include 0 and lie below 0.5. Otherwise the worm estimate is
+not read.
+
+**Decision on worms:** *real off-target activation* if gamma's interval lies above 0.3; *mostly crosstalk*
+if it includes 0 and lies below 0.3; otherwise inconclusive. **Impact** (reported either way): for each
+class pair measured in at least 8 worms, the share of its mean response attributable to spillover, gamma x
+mean(p) / mean(r); how many of the 10% strongest atlas pairs have more than half of their response
+attributable.
+
+Code: `scripts/run_spillover.py`; output `docs/figures/spillover.txt`, `docs/figures/spillover_pairs.csv`.
+
 ## Paper draft and outreach (8 Nov 2026)
 
 - **Preprint draft** ("Looking right is not being right: a calibrated benchmark for whole-brain models of
