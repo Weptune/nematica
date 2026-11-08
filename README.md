@@ -4211,6 +4211,29 @@ with five simulation seeds (offsets 0 to 4) on both splits. **A model is called 
 rule in at least 4 of 5 seeds on each split.** Because both splits have now been seen, a robust pass
 will be reported as "passes on both splits under five noise draws, not confirmed on unseen worms".
 
+**Amendment 2 result (`docs/figures/emulator_robustness.txt`): the minimal model passes in 10 of 10
+runs.**
+
+| model | cv3, passes of 5 seeds | blocks1, passes of 5 seeds | robust (at least 4 of 5 on each) |
+|---|---|---|---|
+| minimal (`hybrid_kernels_slow6d_indivslow1_hp_mem_diag`) | **5** | **5** | **yes** |
+| frozen | 3 | 4 | no |
+
+In every one of the 10 minimal-model runs, the poke half passes (pattern, magnitude, spread), and so do
+distribution, dimension, lead-lag and dwell. Correlation passes in all 10, though it is outside in pool 0
+of blocks1 every time. Timescale is the one rest level that fails, too typical in at least two pools in 9
+of 10 runs. The frozen model's registered confirmation (seed 0) was one of its unlucky draws: it passes
+in 4 of 5 seeds on blocks1 and 3 of 5 on cv3. The frozen model stays the registered result (a fail).
+The minimal model, wording as fixed in amendment 2: **passes the causal Turing test on both splits under
+five noise draws, not confirmed on unseen worms.**
+
+What this answers about the main question. In this benchmark, what separates a worm brain from fitted
+artificial networks is not detailed neuron-to-neuron wiring of fast activity: that can be dropped. It is
+(1) slow, brain-wide, interacting states carrying most of the variance, (2) individual variation
+between animals, (3) causal links that can only be learned by perturbing the system, and, to be judged
+fairly, (4) being observed the way real neurons are. What is still missing is individuality at the level
+of single neurons (next paragraph).
+
 **Why timescales stay too typical (exploratory, `scripts/explore/tau_reliability.py`, all 113 worms).**
 Each class's half-decay time was measured separately in the first and second half of every recording.
 The same neuron class in the same worm agrees between halves (log timescale r = 0.39, 95% CI 0.36 to
