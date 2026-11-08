@@ -737,6 +737,7 @@ class HybridKernel:
         self.no_kernels = False
         self.kin_sd, self.kin_med = 0.0, 1.0
         self.h_sd = 0.0
+        self.qmap, self.class_quantiles = False, {}
         self.slow_drift = False
         self.slow_drift_pool = False
         self.drift_gain = 1.0     # each row draws its drift from training worm-class rows          # donors' ultra-slow drifts (minutes), class by class
@@ -905,6 +906,15 @@ class HybridKernel:
                 self.slow_model.own_rho = self.slow_own_rho
                 self.slow_model.drift = self.slow_drift
                 self.slow_indiv = [self.slow_model.individual(r) for r in train]
+        if self.qmap:
+            qs = {}
+            for r in list(train) + list(val):
+                z = class_matrix(r, self.var.classes)
+                for i, c in enumerate(self.var.classes):
+                    v = z[i][np.isfinite(z[i])]
+                    if v.size > 200:
+                        qs.setdefault(c, []).append((v - v.mean()) / v.std())
+            self.class_quantiles = {c: np.quantile(np.concatenate(v), np.linspace(0, 1, 201)) for c, v in qs.items()}
         if self.members:
             self.member_rho = self._member_corrs(list(train) + list(val))
             if self.member_rho:
@@ -1188,6 +1198,16 @@ class HybridKernel:
                 for t in range(1, w.shape[1]):
                     w[:, t] = phi * w[:, t - 1] + np.sqrt(1 - phi ** 2) * w[:, t]
             x = x + w * sdx * np.sqrt(f / np.clip(1 - f, 0.2, None))[:, None]
+        if self.qmap and self.class_quantiles:
+            # each class's values take the shape of that class's activity distribution in the
+            # training worms (rank-preserving map to pooled z-scored quantiles) [A]
+            for i, c in enumerate(bg.classes):
+                q = self.class_quantiles.get(c)
+                if q is None:
+                    continue
+                sd0, m0 = x[i].std(), x[i].mean()
+                r = np.argsort(np.argsort(x[i])) / max(len(x[i]) - 1, 1)
+                x[i] = m0 + sd0 * np.interp(r, np.linspace(0, 1, len(q)), q)
         if self.kin_sd:
             # each class in this worm gets its own read-out kinetics: an exponential filter with a
             # time constant drawn log-normally (median kin_med frames), size kept [A]; motivated by

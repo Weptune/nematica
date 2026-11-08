@@ -4334,6 +4334,16 @@ rest 1 of 6 in all five seeds (distribution, timescale, correlation and lead-lag
 only reversal-bout timing passes). The recipe, frozen as designed on immobilised, stimulated worms, does
 not transfer to another lab's freely moving, unstimulated worms. Diagnosis below is exploratory.
 
+**Why the recipe fails on Atanas worms (exploratory, seed 0, `results/emulator_atanas_explore`; the
+Atanas worms are now seen, so none of this is a test).** Two differences from the atlas stand out. First,
+*coupling between neuron types matters in freely moving worms*: putting the full fast VAR back (the atlas
+ablations said it could go) turns correlation and lead-lag from outside to inside in all three pools (rest
+4 of 6). Second, *real freely moving activity is skewed* (median skewness 0.83 against about 0 in every
+model), so the distribution level fails for every Gaussian model; mapping each class onto its training
+distribution fixes that level but breaks timescales. No variant tried passes 5 of 6. A reading to test,
+not a result: immobilised worms under light every 30 s may be dominated by slow shared states, while
+moving worms run fast, coupled behavioural sequences with sharp transients.
+
 **Correction (8 Nov 2026, evening): a bug in the neuron-level readout.** The Atanas diagnosis
 (`scripts/explore/atanas_diag.py`) showed simulated left/right partners correlating at 0.35 where the
 training worms gave 0.59. In `_simulate_members` each member's own part had variance sig^2 where the
