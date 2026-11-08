@@ -12,8 +12,11 @@ an organoid on a multi-electrode array or a whole-brain emulation can all take i
 ## The test
 
 - Up to 120 of the system's units are chosen as analysis units (fixed by the system's size).
-- 30 runs of 37 minutes. In each run 45 analysis units are recorded and, every 30 seconds, one recorded unit is
-  pushed for 2 seconds, as the atlas probed real worms with light.
+- 30 runs of 31.7 minutes (the atlas's median recording). In each run 45 analysis units are recorded; from
+  20 s on, every 31 seconds (the atlas's spacing), one recorded unit is pushed for 2 seconds, as the atlas
+  probed real worms with light. Two push slots per run are left empty, so a run has about as much undisturbed
+  activity as an atlas worm (324 frames against a median of 345). Push times are fixed in seconds, so any
+  step length from 0.005 to 2 s gives the same experiment. This is protocol version 3 (9 Nov 2026).
 - The test adds the same measurement noise to every recording (0.1 SD of each unit), resamples to 0.5 s frames
   (the atlas frame) and measures:
 
@@ -23,7 +26,7 @@ an organoid on a multi-electrode array or a whole-brain emulation can all take i
 | Slow activity | Share of each unit's activity that is slow (still correlated 10 to 40 s later). |
 | Units move together | Mean absolute correlation between units at rest. |
 | Timescale | Median time for a unit's activity to become half-forgotten (autocorrelation 0.5), in seconds. |
-| Push spread | Share of units that a single push moves by more than 1 SD. |
+| Push spread | Share of units that a single push moves by more than 1 SD, minus the same share at moments with no push. |
 | Push stands out | How much of the change after a push is caused by the push, against moments with no push. |
 | Tiring on a second push | Log change in a unit's own response when it is pushed a second time, against matched controls. Negative = it answers less. |
 | Copyable by watching | How well a linear model fitted only to resting activity predicts the push responses, as a share of how well runs agree with each other. Real worms: poorly. |
@@ -34,26 +37,47 @@ identical numbers on the atlas.)
 - **Reference.** For each signature, the range spanned by 60 random groups of 30 real worms, widened by the
   finite-population correction because the atlas has only 113 worms. Stored as summary numbers in
   `nematica/brainlike/reference.json`; no recordings are needed to run the test.
-- **Score.** The number of signatures inside the real-worm range, out of 8. The result page also shows how far
-  each signature is from the real-worm median, in units of that range.
-- **Validity.** A result is scored only if the pushes are visible: at least 300 pushes, at least 10 recorded
-  units per run, and pushed units moving on average at least 0.75 SD (real worms: 1.6). When the test runs a
-  model itself it chooses the push strength that moves a pushed unit about 1.6 SD; a model that still responds
-  weakly is scored with a note, since that is a property of the model.
+- **Distance and score.** The distance is the mean, over the signatures, of how far the system sits from the real-worm
+  median in units of the real-worm range; the score is the number of signatures inside the range, out of 8.
+- **Step-free score.** Slow activity and timescale are read in seconds, so they depend on the step length a
+  system declares. Every result also gives the score on the other six signatures.
+- **Noise check.** For models the server runs, the result also gives the score at half and double the declared
+  noise, with the push recalibrated each time.
+- **Validity.** A result is scored only if the pushes are visible and specific: at least 300 pushes, at least 10
+  recorded units per run with resting activity, pushed units moving on average at least 0.75 SD (real worms: 1.6)
+  and at least 0.5 SD more than the other recorded units (real worms: 1.54), and at least 6 of the 8 signatures
+  measurable. A signature that cannot be measured counts as outside, at distance 10. When the test runs a model
+  itself it chooses the push strength that moves a pushed unit about 1.6 SD, or, if none does, the smallest
+  strength that reaches 90% of the best response.
 
-## Calibration (registered before it ran, README "Brain-likeness test for any artificial system")
+## Calibration (registered before it ran; README "Brain-likeness test for any artificial system", amendment 1)
 
-| System | Score |
-|---|---|
-| Real worms, held out of the reference (3 groups of 30, scored against the other 83) | 7, 6, 7 of 8 |
-| Random tanh RNN, 120 units (npz) | 0 of 8 |
-| Artificial-lab network, plain | 0 of 8 |
-| Artificial-lab network with slow hidden drives | 0 of 8 |
-| Random GRU, 120 units (ONNX) | 0 of 8 |
+*Distance* is the mean, over the eight signatures, of how far a system sits from the real-worm median in units
+of the real-worm range (each capped at 10). The leaderboard ranks by it.
 
-Real nervous systems land around 6 to 8; the baselines miss on every signature. The registered expectation that
-slow hidden drives would raise the lab network's score failed: their 5 s time constant is too fast to count as
-slow activity at the atlas's scale.
+| System | Inside, of 8 | Distance |
+|---|---|---|
+| Real worms, held out of the reference (3 groups of 30, scored against the other 83) | 8, 6, 8 | 0.36 to 0.65 |
+| Worm emulator fitted to the atlas (3 groups; built on these worms, not independent) | 6, 4, 4 | 0.86 to 1.08 |
+| Artificial-lab network with hidden slow drives at the worm's timescale (40 s) | 3 | 2.37 |
+| Small transformer trained on a synthetic language | 2 | 2.48 |
+| The same lab network with drives at 5 s | 0 | 3.80 |
+| RNNs trained on memory or integration tasks, and the same before training | 0 to 2 | 3.80 to 4.45 |
+| Random tanh RNN, random GRU (ONNX), plain lab network, untrained transformer | 0 to 1 | 4.68 to 4.90 |
+| Spiking networks (plain, with adaptation) | 0 to 1 | 5.02 to 5.36 |
+| Linear model fitted to the worms' resting activity (3 groups) | 0 to 1 | 5.39 to 5.51 |
+
+What this shows:
+
+- **The distance grades; the count is coarse.** Untrained networks often reach 1 of 8 by chance, so a count of 1
+  says little. By the rule registered beforehand the count does not grade (the emulator reached 5 in one of three
+  groups, and untrained controls scored above the resting-activity model), so the distance ranking is a post hoc
+  choice, and the first systems submitted are its first real test.
+- **Slow state matters.** Hidden drives at the worm's timescale bring a network much closer (2.37) than the same
+  drives at 5 s (3.80). Training moved networks closer in two of three pairs.
+- **Watching is not enough.** A linear model fitted to the worms' own resting activity is as far from them as random
+  networks: it has no slow activity, its activity spreads over far too many patterns, and its push responses are
+  exactly predictable from watching, unlike a worm's.
 
 ## Three ways in
 
@@ -74,7 +98,7 @@ always give the same schedule. Fields:
 | `runs[i].recorded` | positions in `units` to record in run i |
 | `runs[i].pushes` | `[step, position]`: at that step push that unit |
 | `push_steps` | how many steps a push lasts (2 seconds) |
-| `steps_per_run` | 37 minutes at your step length |
+| `steps_per_run` | 31.7 minutes at your step length |
 | `frames_per_run` | the same run in 0.5 s frames |
 
 ```python
@@ -110,23 +134,25 @@ default 1), `nonlinearity` (`tanh`, `relu`, `sigmoid` or `linear`), `noise_sd` (
 **Any recurrent model (.onnx):** one step, with inputs `state` (batch, S) and `input` (batch, N), outputs
 `next_state` (batch, S) and optionally `activity` (batch, N). The state can hold anything (an LSTM's h and c,
 synaptic variables, adaptation); the N units are what `activity` reports, or the state itself without that
-output. The test feeds noise and pushes through `input`, one value per unit. A model exported with a fixed batch
+output. The test feeds noise and pushes through `input`, one value per unit, and checks that a push to
+unit i moves unit i more than the others, so route `input[:, i]` to unit i alone. A model exported with a fixed batch
 of 1 works too (it is run one run at a time). Metadata `noise_sd` and `step_seconds` set those choices.
 
 ```python
 import torch
 
 class Step(torch.nn.Module):
-    def __init__(self, N, H):
+    def __init__(self, H):
         super().__init__()
-        self.H, self.cell, self.readout = H, torch.nn.LSTMCell(N, H), torch.nn.Linear(H, N)
+        self.H, self.cell = H, torch.nn.LSTMCell(1, H)
     def forward(self, state, input):
-        h, c = self.cell(input, (state[:, :self.H], state[:, self.H:]))
-        return torch.cat([h, c], 1), torch.tanh(self.readout(h))       # next_state, activity
+        h, c = self.cell(torch.zeros(len(state), 1), (state[:, :self.H], state[:, self.H:]))
+        h = h + input                                          # input[:, i] reaches hidden unit i, and only it
+        return torch.cat([h, c], 1), h                         # next_state, activity: the H hidden units
 
-N, H = 100, 64
+H = 64
 names = ["state", "input", "next_state", "activity"]
-torch.onnx.export(Step(N, H).eval(), (torch.zeros(1, 2 * H), torch.zeros(1, N)), "model.onnx",
+torch.onnx.export(Step(H).eval(), (torch.zeros(1, 2 * H), torch.zeros(1, H)), "model.onnx",
                   input_names=names[:2], output_names=names[2:],
                   dynamic_axes={k: {0: "batch"} for k in names}, opset_version=17)
 
@@ -137,8 +163,10 @@ for k, v in {"noise_sd": "0.3", "step_seconds": "0.1"}.items():
 onnx.save(m, "model.onnx")
 ```
 
-Up to 4,096 units and 100 MB. Neither format runs uploaded code: npz files are read without pickle, ONNX graphs
-by onnxruntime.
+Up to 4,096 units and 100 MB. Neither format runs Python on the server: npz files are checked from their headers
+and read without pickle; ONNX graphs are parsed by onnxruntime (native code that has had security bugs, so keep
+it updated), loaded from memory so a model cannot point its weights at other files. Models the server runs get a
+secret schedule, so a model cannot know which units are recorded or when pushes come.
 
 ### 3. Python
 
@@ -169,6 +197,8 @@ print(run_python(System())["score"])
 - **Inside means not distinguishable with 30 runs**, not identical.
 - **Your choices count.** Noise level and step length shape ongoing activity and the time-based signatures.
   Report them with your score; the result records them.
+- **Disclose tuning.** The submission form asks whether the system was tuned against this test; the answer is shown
+  with the result. Results from uploaded recordings are marked as supplied by the owner.
 - **Not a training target by accident.** If you tune a system against this test, say so: a tuned system's score
   measures the tuning as much as the system. The reference ranges come from all 113 atlas worms.
 
@@ -199,14 +229,21 @@ BRAINLIKE_DATA=/srv/brainlike uvicorn nematica.brainlike.web.app:app --host 0.0.
 | `BRAINLIKE_MEMORY_MB` | 4096 | memory limit per test |
 | `BRAINLIKE_ALLOW_CODE` | off | `1` accepts Python uploads (see below) |
 | `FORWARDED_ALLOW_IPS` | 127.0.0.1 | addresses of your reverse proxy, so per-visitor limits see real addresses |
+| `BRAINLIKE_MAX_QUEUE` | 50 | tests waiting at once, across all visitors |
 
-Put it behind a reverse proxy with HTTPS (Caddy, nginx) and set the proxy's upload limit to at least 400 MB.
+Put it behind a reverse proxy with HTTPS (Caddy, nginx) and set the proxy's upload limit to about 401 MB; the app
+refuses larger uploads from their Content-Length before reading them. Set `FORWARDED_ALLOW_IPS` to the proxy's
+address, or every visitor will share the proxy's address and its limit of 3 waiting tests. Uploads are deleted
+once tested; results are kept. A test interrupted by two restarts is marked failed rather than retried forever.
+With a bind-mounted data folder, make it writable by user id 10001 (the container's user).
 A machine with 2 CPU cores and 8 GB of memory runs one test at a time comfortably; a 300-unit rate network takes
 a few seconds, a 4,096-unit ONNX model up to about half an hour.
 
-**Python uploads are off by default.** Accepting them means running strangers' code. Turn them on only where
-that code cannot reach anything: a container or VM with no network access, no secrets, a read-only file system
-apart from the job folder, and a separate user (gVisor or Firecracker are good choices). The per-test limits
-on CPU, memory and time are not a sandbox.
+**Python uploads are off by default.** Accepting them means running strangers' code. The uploaded code only
+produces activity; a separate step that runs no uploaded code scores it, and anything the code writes as a result
+is discarded. That does not make it safe: the code runs as the server's user and can reach the database and other
+jobs. Turn code uploads on only where that code cannot reach anything: a container or VM with no network access,
+no secrets, a read-only file system apart from the job folder, and a separate user (gVisor or Firecracker are
+good choices). The per-test limits on CPU, memory and time are not a sandbox.
 
 JSON endpoints: `GET /api/r/<id>` (status and result of one test), `GET /api/leaderboard`.

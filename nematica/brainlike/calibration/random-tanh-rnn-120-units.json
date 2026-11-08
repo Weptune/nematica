@@ -1,0 +1,118 @@
+{
+ "name": "Random tanh RNN, 120 units",
+ "description": "120 tanh units, sparse random weights (spectral radius 1.3), leak 0.5, input noise 0.6 per step. A baseline: an untrained recurrent network.",
+ "result": {
+  "signatures": {
+   "rest_dim": {
+    "value": 0.23656436567824773,
+    "distance": -13.090281102203658,
+    "inside": false,
+    "worm_median": 0.42631258588362686,
+    "worm_low": 0.4118172348117972,
+    "worm_high": 0.4536907735833076,
+    "label": "few patterns at rest",
+    "about": "Share of resting variance in the 3 strongest patterns: how few patterns the activity uses."
+   },
+   "slow_share": {
+    "value": 0.0,
+    "distance": -13.53376835934587,
+    "inside": false,
+    "worm_median": 0.7622162310373167,
+    "worm_low": 0.7058966450359085,
+    "worm_high": 0.8135464248281847,
+    "label": "slow activity",
+    "about": "Share of each unit's activity that is slow (still correlated 10 to 40 s later)."
+   },
+   "correlation": {
+    "value": 0.10315730490832234,
+    "distance": -5.40405436578383,
+    "inside": false,
+    "worm_median": 0.2151845668683251,
+    "worm_low": 0.194454342045031,
+    "worm_high": 0.23235721650313526,
+    "label": "units move together",
+    "about": "Mean absolute correlation between units at rest."
+   },
+   "timescale": {
+    "value": 1.0,
+    "distance": -5.356484367452319,
+    "inside": false,
+    "worm_median": 13.5,
+    "worm_low": 11.166379822565352,
+    "worm_high": 14.97309773700562,
+    "label": "timescale",
+    "about": "Median time for a unit's activity to become half-forgotten (autocorrelation 0.5), in seconds."
+   },
+   "echo_breadth": {
+    "value": 0.02474747474747474,
+    "distance": -0.4556496315915323,
+    "inside": true,
+    "worm_median": 0.031985513346662456,
+    "worm_low": 0.01610041633932796,
+    "worm_high": 0.048450855891177036,
+    "label": "push spread",
+    "about": "Share of units that a single push moves by more than 1 SD, minus the same share at moments with no push."
+   },
+   "evoked_share": {
+    "value": 0.18293952097138094,
+    "distance": -2.5399517775557334,
+    "inside": false,
+    "worm_median": 0.4163005605897083,
+    "worm_low": 0.32442439125436084,
+    "worm_high": 0.4925407672067573,
+    "label": "push stands out",
+    "about": "How much of the change after a push is caused by the push, against moments with no push."
+   },
+   "tiring": {
+    "value": 0.04867883510178529,
+    "distance": 1.9772799582563132,
+    "inside": false,
+    "worm_median": -0.40090918047026525,
+    "worm_low": -0.6443600570017478,
+    "worm_high": -0.1735321650432112,
+    "label": "tiring on a second push",
+    "about": "Log change in a unit's own response when it is pushed a second time, against matched controls. Negative = it answers less."
+   },
+   "watch_share": {
+    "value": 1.5318867243871799,
+    "distance": 2.949050721160743,
+    "inside": false,
+    "worm_median": 0.3904590957684039,
+    "worm_low": 0.16203106957184338,
+    "worm_high": 0.7775082639731173,
+    "label": "copyable by watching",
+    "about": "How well a linear model fitted only to resting activity predicts the push responses, as a share of how well runs agree with each other. Real worms: poorly."
+   }
+  },
+  "valid": true,
+  "problems": [],
+  "notes": [],
+  "score": 1,
+  "out_of": 8,
+  "mean_abs_distance": 4.835308852725059,
+  "measured": {
+   "rest_dim": 0.23656436567824773,
+   "slow_share": 0.0,
+   "correlation": 0.10315730490832234,
+   "timescale": 1.0,
+   "echo_breadth": 0.02474747474747474,
+   "echo_breadth_push": 0.11363636363636363,
+   "echo_breadth_nopush": 0.08888888888888889,
+   "evoked_share": 0.18293952097138094,
+   "tiring": 0.04867883510178529,
+   "watch_share": 1.5318867243871799,
+   "reliability": 0.15033726826869676,
+   "poked_response": 1.3422952243956499,
+   "n_runs": 30,
+   "n_pushes": 1710,
+   "units_per_run": 45.0
+  },
+  "how": "model run by the test",
+  "schedule": "9cb2bddcdbf71467",
+  "n_units": 120,
+  "step_seconds": 0.5,
+  "push_strength": 1897.3665961010277,
+  "noise_sd": 0.6,
+  "seconds": 1.5
+ }
+}

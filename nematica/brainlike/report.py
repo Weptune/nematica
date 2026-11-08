@@ -34,6 +34,7 @@ def _e(s) -> str:
 def _fmt(v, k):
     if v is None:
         return "not measured"
+    v = float(v)
     return f"{v:.1f} s" if k == "timescale" else f"{v:+.2f}" if k == "tiring" else f"{v:.3f}"
 
 
@@ -80,26 +81,56 @@ def render(res: dict, name: str, meta: dict | None = None) -> str:
     meta = meta or {}
     sig = res["signatures"]
     rows = "".join(
-        f"<tr><th scope='row' title='{_e(ABOUT[k])}'>{_e(LABELS[k])}</th><td class='num'>{_fmt(sig[k].get('value'), k)}</td>"
+        f"<tr><th scope='row' title='{_e(ABOUT[k])}'>{_e(LABELS[k])}</th><td class='num' title='{_e(sig[k].get('missing', ''))}'>"
+        f"{_fmt(sig[k].get('value'), k) if not sig[k].get('missing') else 'not read'}</td>"
         f"<td class='num'>{_fmt(sig[k].get('worm_low'), k)} to {_fmt(sig[k].get('worm_high'), k)}</td>"
         f"<td class='{'in' if sig[k].get('inside') else 'out'}'>{'inside' if sig[k].get('inside') else 'outside'}</td></tr>"
         for k in SIGNATURES)
     m = res.get("measured", {})
-    head = (f"<p class='big'>{res['score']}<small> of {res['out_of']} signatures inside the real-worm range</small></p>"
-            if res["valid"] else
+    sub = ""
+    if res["valid"] and res.get("score_step_free") is not None:
+        dsf = res.get("distance_step_free")
+        sub = (f"<p class='meta'>{int(res['score_step_free'])} of {int(res['out_of_step_free'])} on the six signatures that "
+               "do not depend on the declared step length (all but slow activity and timescale)"
+               + (f", distance {float(dsf):.2f}" if dsf is not None else "") + ".</p>")
+    checks = res.get("noise_check") or []
+    if checks:
+        cells = "".join(f"<td class='num'>{int(c['score']) if c['valid'] else 'not scored'}</td>" for c in checks)
+        heads = "".join(f"<th>{float(c['factor']):g} x noise ({float(c['noise_sd']):.3g})</th>" for c in checks)
+        sub += ("<p class='meta'>The same model at other noise levels (push recalibrated each time):</p>"
+                f"<table><thead><tr><th>declared noise ({res.get('noise_sd', float('nan')):.3g})</th>{heads}</tr></thead>"
+                f"<tbody><tr><td class='num'>{int(res['score']) if res['valid'] else 'not scored'}</td>{cells}</tr></tbody></table>")
+    flags = []
+    if meta.get("tuned"):
+        flags.append("The submitter says this system was tuned against this test.")
+    if meta.get("mode") == "recordings":
+        flags.append("Recordings supplied by the system's owner: the test checks that pushes visibly moved the pushed "
+                     "units, but cannot check how the recordings were made.")
+    desc_flags = "".join(f"<p class='note'>{_e(f)}</p>" for f in flags)
+    dist = res.get("mean_abs_distance")
+    dline = (f"<p class='meta'>Distance from real worms: <b>{float(dist):.2f}</b>. For comparison: groups of real worms the "
+             "reference never saw 0.36 to 0.65; a worm emulator fitted to the atlas 0.86 to 1.08; untrained recurrent, "
+             "spiking, gated and transformer networks 3.8 to 5.4.</p>") if dist is not None else ""
+    head = (f"<p class='big'>{int(res['score']) if res['valid'] else ''}<small> of {int(res['out_of'])} signatures inside the real-worm range</small></p>"
+            + dline + sub + desc_flags if res["valid"] else
             "<p class='warn'><b>Not scored.</b> " + _e("; ".join(res["problems"])) + ". The signatures below are shown for "
-            "information only.</p>")
-    bits = [f"{m.get('n_runs', '?')} runs", f"{m.get('units_per_run', 0):.0f} units recorded per run",
-            f"{m.get('n_pushes', '?')} pushes", f"pushed units moved {m.get('poked_response', float('nan')):.2f} SD (worms 1.6)",
-            _e(res.get("how", "")), f"schedule {res.get('schedule', '')}"]
+            "information only.</p>" + desc_flags)
+    def _num(v, f="{:.0f}"):
+        try:
+            return f.format(float(v))
+        except (TypeError, ValueError):
+            return "?"
+    bits = [f"{_num(m.get('n_runs'))} runs", f"{_num(m.get('units_per_run'))} units recorded per run",
+            f"{_num(m.get('n_pushes'))} pushes", f"pushed units moved {_num(m.get('poked_response'), '{:.2f}')} SD (worms 1.6)",
+            _e(res.get("how", "")), f"schedule {_e(res.get('schedule', ''))}"]
     desc = f"<p>{_e(meta['description'])}</p>" if meta.get("description") else ""
     desc += "".join(f"<p class='note'>{_e(n)}</p>" for n in res.get("notes", []))
     by = f" by {_e(meta['author'])}" if meta.get("author") else ""
     body = [f"<h1>{_e(name)}</h1>", f"<p class='meta'>Brain-likeness test{by} · {' · '.join(b for b in bits if b)}</p>", desc,
             head,
-            "<p>Each signature is measured on this system and on real <i>C. elegans</i> worms the same way: 30 runs, "
-            "45 recorded units each, a brief push to one unit every 30 s, as in the signal propagation atlas (Randi et al. "
-            "2023). The green band is the range spanned by groups of 30 real worms; a dot inside it means a real worm group "
+            "<p>Each signature is measured on this system and on real <i>C. elegans</i> worms the same way: 30 runs of "
+            "about 32 minutes, 45 recorded units each, a 2 s push to one unit every 31 s with two slots left empty, as in "
+            "the signal propagation atlas (Randi et al. 2023). The green band is the range spanned by groups of 30 real worms; a dot inside it means a real worm group "
             "could have produced this value. Distances are in units of that range.</p>",
             profile_svg(sig),
             "<h2>Values</h2><table><thead><tr><th>Signature</th><th>This system</th><th>Real worm groups (95%)</th><th></th></tr></thead>"
@@ -113,7 +144,7 @@ def render(res: dict, name: str, meta: dict | None = None) -> str:
             "<li>Two signatures depend on the time scale you declared (step_seconds): slow activity and timescale.</li>"
             "<li>The noise you run with shapes ongoing activity; a system with no ongoing activity cannot match a brain at rest.</li>"
             "</ul>",
-            "<footer>NEMATICA brain-likeness test, rule fixed 8 Nov 2026. Reference: Randi et al. 2023 signal propagation atlas "
+            "<footer>Brain-likeness test, protocol version 2 (9 Nov 2026). Reference: Randi et al. 2023 signal propagation atlas "
             "(CC BY 4.0), summary numbers only.</footer>"]
     return ("<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
             f"<title>{_e(name)}: brain-likeness</title><style>{CSS}</style></head><body><main>" + "\n".join(body) + "</main></body></html>")

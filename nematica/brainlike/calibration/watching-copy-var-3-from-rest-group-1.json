@@ -1,0 +1,112 @@
+{
+ "name": "Watching copy (VAR(3) from rest), group 1",
+ "description": "A linear model fitted to the atlas worms' stimulation-free activity (what watching teaches), simulated on held-out worm templates.",
+ "result": {
+  "signatures": {
+   "rest_dim": {
+    "value": 0.2761452281445241,
+    "distance": -10.359690979195321,
+    "inside": false,
+    "worm_median": 0.42631258588362686,
+    "worm_low": 0.4118172348117972,
+    "worm_high": 0.4536907735833076,
+    "label": "few patterns at rest",
+    "about": "Share of resting variance in the 3 strongest patterns: how few patterns the activity uses."
+   },
+   "slow_share": {
+    "value": 0.0,
+    "distance": -13.53376835934587,
+    "inside": false,
+    "worm_median": 0.7622162310373167,
+    "worm_low": 0.7058966450359085,
+    "worm_high": 0.8135464248281847,
+    "label": "slow activity",
+    "about": "Share of each unit's activity that is slow (still correlated 10 to 40 s later)."
+   },
+   "correlation": {
+    "value": 0.12447745596300491,
+    "distance": -4.375597065565572,
+    "inside": false,
+    "worm_median": 0.2151845668683251,
+    "worm_low": 0.194454342045031,
+    "worm_high": 0.23235721650313526,
+    "label": "units move together",
+    "about": "Mean absolute correlation between units at rest."
+   },
+   "timescale": {
+    "value": 4.5,
+    "distance": -3.85666874456567,
+    "inside": false,
+    "worm_median": 13.5,
+    "worm_low": 11.166379822565352,
+    "worm_high": 14.97309773700562,
+    "label": "timescale",
+    "about": "Median time for a unit's activity to become half-forgotten (autocorrelation 0.5), in seconds."
+   },
+   "echo_breadth": {
+    "value": 0.011369509043927667,
+    "distance": -1.2978204850254256,
+    "inside": false,
+    "worm_median": 0.031985513346662456,
+    "worm_low": 0.01610041633932796,
+    "worm_high": 0.048450855891177036,
+    "label": "push spread",
+    "about": "Share of units that a single push moves by more than 1 SD, minus the same share at moments with no push."
+   },
+   "evoked_share": {
+    "value": 0.12549513333744494,
+    "distance": -3.1651888553475196,
+    "inside": false,
+    "worm_median": 0.4163005605897083,
+    "worm_low": 0.32442439125436084,
+    "worm_high": 0.4925407672067573,
+    "label": "push stands out",
+    "about": "How much of the change after a push is caused by the push, against moments with no push."
+   },
+   "tiring": {
+    "value": -0.1685364399331393,
+    "distance": 1.0219711086482908,
+    "inside": false,
+    "worm_median": -0.40090918047026525,
+    "worm_low": -0.6443600570017478,
+    "worm_high": -0.1735321650432112,
+    "label": "tiring on a second push",
+    "about": "Log change in a unit's own response when it is pushed a second time, against matched controls. Negative = it answers less."
+   },
+   "watch_share": {
+    "value": 11.999190491831948,
+    "distance": 29.992911365523437,
+    "inside": false,
+    "worm_median": 0.3904590957684039,
+    "worm_low": 0.16203106957184338,
+    "worm_high": 0.7775082639731173,
+    "label": "copyable by watching",
+    "about": "How well a linear model fitted only to resting activity predicts the push responses, as a share of how well runs agree with each other. Real worms: poorly."
+   }
+  },
+  "valid": true,
+  "problems": [],
+  "notes": [],
+  "score": 0,
+  "out_of": 8,
+  "mean_abs_distance": 5.464655782394059,
+  "measured": {
+   "rest_dim": 0.2761452281445241,
+   "slow_share": 0.0,
+   "correlation": 0.12447745596300491,
+   "timescale": 4.5,
+   "echo_breadth": 0.011369509043927667,
+   "echo_breadth_push": 0.2558139534883721,
+   "echo_breadth_nopush": 0.24444444444444444,
+   "evoked_share": 0.12549513333744494,
+   "tiring": -0.1685364399331393,
+   "watch_share": 11.999190491831948,
+   "reliability": 0.010744916633200824,
+   "poked_response": 1.8727524182868813,
+   "n_runs": 30,
+   "n_pushes": 780,
+   "units_per_run": 37.5
+  },
+  "how": "simulated on 30 held-out atlas worm templates, measured exactly as worms"
+ }
+}

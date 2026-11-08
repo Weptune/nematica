@@ -91,7 +91,8 @@ class OnnxNetwork(Network):
         so.intra_op_num_threads = 1
         so.inter_op_num_threads = 1
         try:
-            self.sess = ort.InferenceSession(str(path), sess_options=so, providers=["CPUExecutionProvider"])
+            # loaded from bytes, so a model cannot point its weights at files outside the upload
+            self.sess = ort.InferenceSession(Path(path).read_bytes(), sess_options=so, providers=["CPUExecutionProvider"])
         except Exception as e:                                    # noqa: BLE001
             raise NetworkError(f"could not load the ONNX model: {e}") from e
         ins = {i.name: i for i in self.sess.get_inputs()}
@@ -155,10 +156,44 @@ class OnnxNetwork(Network):
         raise NetworkError("activity was requested for a state the model did not just produce")
 
 
+def check_npz(path, allowed: dict, max_bytes: int) -> None:
+    """Check an uploaded npz before loading anything: only the expected arrays, plain numbers, sizes read from
+    the headers (allowed: name -> maximum number of elements, None for no limit beyond max_bytes)."""
+    import zipfile
+    try:
+        zf = zipfile.ZipFile(path)
+    except Exception as e:                                        # noqa: BLE001
+        raise NetworkError(f"not a valid npz file: {e}") from e
+    with zf:
+        infos = zf.infolist()
+        if sum(i.file_size for i in infos) > max_bytes:
+            raise NetworkError(f"the arrays add up to more than {max_bytes // 2 ** 20} MB once unpacked")
+        for info in infos:
+            key = info.filename[:-4] if info.filename.endswith(".npy") else info.filename
+            if key not in allowed:
+                raise NetworkError(f"unexpected array {key!r}; allowed: {', '.join(sorted(allowed))}")
+            with zf.open(info) as fh:
+                try:
+                    version = np.lib.format.read_magic(fh)
+                    shape, _, dtype = (np.lib.format.read_array_header_1_0(fh) if version == (1, 0)
+                                       else np.lib.format.read_array_header_2_0(fh))
+                except Exception as e:                            # noqa: BLE001
+                    raise NetworkError(f"array {key!r} could not be read: {e}") from e
+            if dtype.hasobject:
+                raise NetworkError(f"array {key!r} holds Python objects; numbers only")
+            cap = allowed[key]
+            if cap is not None and int(np.prod(shape)) > cap:
+                raise NetworkError(f"array {key!r} has {int(np.prod(shape))} elements; at most {cap}")
+
+
+MODEL_KEYS = {"W": MAX_UNITS * MAX_UNITS, "b": MAX_UNITS, "leak": 1, "nonlinearity": 1, "noise_sd": 1, "step_seconds": 1}
+
+
 def load_network(path: str | Path, name: str | None = None) -> Network:
     path = Path(path)
     name = name or path.stem
     if path.suffix == ".npz":
+        check_npz(path, MODEL_KEYS, max_bytes=8 * MAX_UNITS * MAX_UNITS + 2 ** 20)
         try:
             with np.load(path, allow_pickle=False) as z:
                 arrays = {k: z[k] for k in z.files}
@@ -186,7 +221,7 @@ def load_network(path: str | Path, name: str | None = None) -> Network:
 def check_settings(net: Network) -> None:
     if not 0 < net.noise_sd <= 10:
         raise NetworkError("noise_sd must be in (0, 10]")
-    if not 0.001 <= net.step_seconds <= 2.0:
-        raise NetworkError("step_seconds must be between 0.001 and 2")
+    if not 0.005 <= net.step_seconds <= 2.0:
+        raise NetworkError("step_seconds must be between 0.005 and 2")
     if net.n < 10:
         raise NetworkError("the network needs at least 10 units")

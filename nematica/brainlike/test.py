@@ -28,22 +28,30 @@ from .reference import load as load_reference
 from .signatures import ABOUT, LABELS, SIGNATURES, Run, measure, poked_response
 
 MIN_PUSH, MIN_PUSHES, MIN_UNITS = 0.75, 300, 10
-MIN_STEP, MAX_STEP = 0.001, 2.0                  # seconds per step the test accepts
+MIN_PUSH_EXCESS = 0.5          # pushed unit must move this much more than the others (worms: median 1.54 SD)
+MIN_MEASURED = 6               # signatures that must be measurable for a result to count
+MISSING_DISTANCE = 10.0        # a signature that cannot be measured counts as this far from worms
+MIN_STEP, MAX_STEP = 0.005, 2.0                  # seconds per step the test accepts
 TARGET_PUSH = 1.6
+STEP_DEPENDENT = ("slow_share", "timescale")         # read in seconds: depend on the declared step length
 
 
 def _search_push(response: Callable[[float], float], base: float) -> tuple[float, float]:
-    """The strength whose pilot response is closest to the atlas median (1.6 SD): a log grid from 1e-2 to
-    1e4 times `base` (robust when the response is not monotonic, e.g. gated units that shut at large
-    inputs), then a finer grid around the best point."""
-    grid = base * np.logspace(-2, 4, 13)
-    best = None
-    for a in grid:
+    """The push strength for a system: a log grid from 1e-2 to 1e4 times `base`, then a finer grid. If some
+    strength reaches the atlas median (1.6 SD), the one closest to it; if none does (saturating units), the
+    smallest strength that reaches 90% of the best response, so the push is not a long clamp."""
+    pts = []
+    for a in base * np.logspace(-2, 4, 13):
         r = response(float(a))
-        if np.isfinite(r) and (best is None or abs(r - TARGET_PUSH) < abs(best[1] - TARGET_PUSH)):
-            best = (float(a), r)
-    if best is None:
+        if np.isfinite(r):
+            pts.append((float(a), float(r)))
+    if not pts:
         return float(base), float("nan")
+    best_r = max(r for _, r in pts)
+    if best_r < 0.9 * TARGET_PUSH:
+        a, r = min((a, r) for a, r in pts if r >= 0.9 * best_r)
+        return a, r
+    best = min(pts, key=lambda t: abs(t[1] - TARGET_PUSH))
     for a in best[0] * np.logspace(-0.5, 0.5, 7):
         r = response(float(a))
         if np.isfinite(r) and abs(r - TARGET_PUSH) < abs(best[1] - TARGET_PUSH):
@@ -66,13 +74,26 @@ def calibrate_push(net: Network, rng: np.random.Generator, log: Callable[[str], 
 
 
 def score(m: dict, ref: dict | None = None, check_push: bool = True) -> dict:
+    """Compare measured signatures with the real-worm reference. A signature that cannot be measured counts as
+    outside, at distance MISSING_DISTANCE. `check_push` is kept for compatibility: pushes are checked always."""
     ref = ref or load_reference()
+    rel_ref = ref["signatures"].get("reliability")
     out = {}
     for k in SIGNATURES:
         r = ref["signatures"][k]
         v = m.get(k)
-        if v is None or not np.isfinite(v):
-            out[k] = {"value": None, "inside": False, "distance": None}
+        why = None
+        if k == "watch_share" and rel_ref is not None:
+            rel = m.get("reliability")
+            if rel is None or not np.isfinite(rel) or rel < rel_ref["p2_5"]:
+                why = ("its runs barely agree with each other about push responses (reliability "
+                       f"{rel if rel is not None else float('nan'):.3f}; real worm groups at least {rel_ref['p2_5']:.3f}), "
+                       "so how well watching predicts them cannot be read")
+        if why is None and (v is None or not np.isfinite(v)):
+            why = "not measurable from these recordings"
+        if why is not None:
+            out[k] = {"value": None if v is None or not np.isfinite(v) else float(v), "inside": False, "distance": None,
+                      "missing": why, "label": LABELS[k], "about": ABOUT[k]}
             continue
         med = r["median"]
         # groups of 30 drawn from 113 worms overlap, which narrows their spread: widen by the finite-
@@ -85,51 +106,80 @@ def score(m: dict, ref: dict | None = None, check_push: bool = True) -> dict:
                   "worm_median": med, "worm_low": lo_, "worm_high": hi_,
                   "label": LABELS[k], "about": ABOUT[k]}
     problems, notes = [], []
-    weak = not (np.isfinite(m.get("poked_response", np.nan)) and m["poked_response"] >= MIN_PUSH)
-    if weak and not check_push:
-        notes.append(f"The test pushed as hard as was useful, but pushed units moved only {m.get('poked_response', float('nan')):.2f} "
-                     "SD over the next 15 s (worms about 1.6): this system lets go of a push quickly.")
-    if weak and check_push:
-        problems.append(f"the pushes barely moved the pushed units (median change {m.get('poked_response', float('nan')):.2f} "
-                        f"SD; at least {MIN_PUSH} needed)")
+    pr, px = m.get("poked_response", np.nan), m.get("push_excess", np.nan)
+    if not (np.isfinite(pr) and pr >= MIN_PUSH):
+        problems.append(f"the pushes barely moved the pushed units (median change {pr:.2f} SD over 15 s; at least "
+                        f"{MIN_PUSH} needed, worms 1.6)")
+    elif not (np.isfinite(px) and px >= MIN_PUSH_EXCESS):
+        problems.append(f"a push moved the pushed unit hardly more than the others (median excess {px:.2f} SD; at "
+                        f"least {MIN_PUSH_EXCESS} needed, worms 1.54): the push did not reach one unit")
     if m.get("n_pushes", 0) < MIN_PUSHES:
         problems.append(f"only {m.get('n_pushes', 0)} usable pushes (at least {MIN_PUSHES} needed)")
     if m.get("units_per_run", 0) < MIN_UNITS:
         problems.append(f"only {m.get('units_per_run', 0):.0f} units per run with resting activity (at least {MIN_UNITS})")
+    measured = sum(v["distance"] is not None for v in out.values())
+    if measured < MIN_MEASURED:
+        problems.append(f"only {measured} of {len(SIGNATURES)} signatures could be measured (at least {MIN_MEASURED})")
+    for k, v in out.items():
+        if v.get("missing") and k == "watch_share":
+            notes.append(f"Copyable by watching was not read: {v['missing']}. It counts as outside.")
     inside = sum(v["inside"] for v in out.values())
+    free = sum(v["inside"] for k, v in out.items() if k not in STEP_DEPENDENT)
+
+    def dist(keys):
+        return float(np.mean([MISSING_DISTANCE if out[k]["distance"] is None else min(abs(out[k]["distance"]), MISSING_DISTANCE)
+                              for k in keys]))
     return {"signatures": out, "valid": not problems, "problems": problems, "notes": notes,
             "score": inside if not problems else None, "out_of": len(SIGNATURES),
-            "mean_abs_distance": float(np.mean([min(abs(v["distance"]), 10) for v in out.values() if v["distance"] is not None]))
-            if any(v["distance"] is not None for v in out.values()) else None}
+            "score_step_free": free if not problems else None, "out_of_step_free": len(SIGNATURES) - len(STEP_DEPENDENT),
+            "mean_abs_distance": dist(SIGNATURES) if not problems else None,
+            "distance_step_free": dist([k for k in SIGNATURES if k not in STEP_DEPENDENT]) if not problems else None}
 
 
-def evaluate(activity: np.ndarray, sch: Schedule, how: str, extra: dict | None = None, seed: int = 0,
-             pushed_by_test: bool = False) -> dict:
-    """Score recorded activity (runs, steps, analysis units) that followed `sch`. When the test itself
-    applied calibrated pushes, weak pushed-unit responses are a property of the system (noted, still
-    scored); otherwise they mean the pushes cannot be verified (not scored)."""
+def evaluate(activity: np.ndarray, sch: Schedule, how: str, extra: dict | None = None, seed: int = 0) -> dict:
+    """Score recorded activity (runs, steps or 0.5 s frames, analysis units) that followed `sch`. A result
+    counts only if the pushes visibly moved the pushed units, more than the others, whoever applied them."""
     warnings.filterwarnings("ignore", category=RuntimeWarning)
     recs = to_recordings(activity, sch, np.random.default_rng(seed))
     m = measure(recs)
-    res = score(m, check_push=not pushed_by_test)
+    res = score(m)
     res.update({"measured": {k: (float(v) if isinstance(v, (float, np.floating)) else v) for k, v in m.items()},
                 "how": how, "schedule": sch.digest(), "n_units": sch.n_units, "step_seconds": sch.step_seconds,
                 **(extra or {})})
     return res
 
 
-def run_test(net: Network, protocol: Protocol | None = None, seed: int = 0, log: Callable[[str], None] = print) -> dict:
-    """The full test for a model the server (or you) can run: calibrate the push, record 30 runs, score."""
+def run_test(net: Network, protocol: Protocol | None = None, seed: int = 0, log: Callable[[str], None] = print,
+             noise_check: bool = False, schedule_seed: int | None = None) -> dict:
+    """The full test for a model the server (or you) can run: calibrate the push, record 30 runs, score.
+    With noise_check, the model is also tested at half and double its declared noise (push recalibrated
+    each time), so a score that rests on a knife-edge noise setting is visible. The server passes a secret
+    schedule_seed, so a model cannot know which units are recorded or when pushes come."""
     check_settings(net)
     t0 = time.time()
     rng = np.random.default_rng(seed)
     amp = calibrate_push(net, rng, log)
-    sch = make_schedule(net.n, net.step_seconds, protocol)
+    sch = make_schedule(net.n, net.step_seconds, protocol, seed=schedule_seed)
     log(f"recording {len(sch.runs)} runs of {sch.steps} steps")
     act = record_population(net, sch, amp, rng)
     res = evaluate(act, sch, "model run by the test",
-                   {"push_strength": amp, "noise_sd": net.noise_sd, "seconds": round(time.time() - t0, 1)}, seed,
-                   pushed_by_test=True)
+                   {"push_strength": amp, "noise_sd": net.noise_sd, "seconds": round(time.time() - t0, 1)}, seed)
+    if noise_check:
+        base, checks = net.noise_sd, []
+        try:
+            for f in (0.5, 2.0):
+                net.noise_sd = base * f
+                log(f"noise check: noise_sd {net.noise_sd:.3g}")
+                r2 = np.random.default_rng(seed + 1)
+                a2 = calibrate_push(net, r2, lambda m: None)
+                act2 = record_population(net, sch, a2, r2)
+                e = evaluate(act2, sch, "model run by the test", seed=seed)
+                checks.append({"factor": f, "noise_sd": net.noise_sd, "score": e["score"], "valid": e["valid"],
+                               "score_step_free": e["score_step_free"], "distance": e["mean_abs_distance"]})
+        finally:
+            net.noise_sd = base
+        res["noise_check"] = checks
+        res["seconds"] = round(time.time() - t0, 1)
     return res
 
 
@@ -139,7 +189,7 @@ class BrainLike:
 
         run(steps, record, pushes, push_steps, rng) -> array (steps, len(record))
 
-    steps:       how many steps to run (37 minutes at your step length)
+    steps:       how many steps to run (31.7 minutes at your step length)
     record:      indices of your units to record, in the order to return them
     pushes:      list of (step, unit): at that step give unit (an index of your units) a brief extra drive,
                  lasting push_steps steps, strong enough to move it clearly
@@ -155,8 +205,13 @@ class BrainLike:
 
 
 def _python_activity(system, sch, rng, log=None):
+    """Run a Python system through the schedule; steps shorter than 0.5 s are averaged into frames run by run
+    (sch.framed is then set), so memory stays small at fine steps."""
+    from .protocol import FRAME_S, _resample
     units = np.asarray(sch.units)
-    act = np.full((len(sch.runs), sch.steps, len(units)), np.nan, np.float32)
+    fine = sch.step_seconds < FRAME_S - 1e-9
+    T = sch.frames if fine else sch.steps
+    act = np.full((len(sch.runs), T, len(units)), np.nan, np.float32)
     for i, run in enumerate(sch.runs):
         rec = units[run["recorded"]].tolist()
         pushes = [(s, int(units[p])) for s, p in run["pushes"]]
@@ -165,21 +220,21 @@ def _python_activity(system, sch, rng, log=None):
             raise NetworkError(f"run() returned shape {a.shape}; expected ({sch.steps}, {len(rec)})")
         if not np.isfinite(a).all():
             raise NetworkError("run() returned NaN or infinite values")
-        act[i][:, run["recorded"]] = a
+        act[i][:, run["recorded"]] = _resample(a, sch.step_seconds) if fine else a
         if log:
             log(f"run {i + 1}/{len(sch.runs)}")
+    sch.framed = fine
     return act
 
 
-def run_python(system: BrainLike, protocol: Protocol | None = None, seed: int = 0, log: Callable[[str], None] = print) -> dict:
-    """Run a Python system through the test. If the system sets `calibrate_push = True` and reads its push
-    strength from `self.push_strength`, the test first finds the strength that moves a pushed unit by
-    about 1.6 SD, as for uploaded models."""
+def python_activity(system: BrainLike, protocol: Protocol | None = None, seed: int = 0,
+                    log: Callable[[str], None] = lambda m: None, schedule_seed: int | None = None):
+    """Run a Python system through the schedule (and first find its push strength if it sets
+    `calibrate_push = True` and reads `self.push_strength`). Returns (activity, schedule, extra)."""
     if not MIN_UNITS <= int(system.n_units) <= 1_000_000:
         raise NetworkError(f"set n_units to the number of units your system has ({MIN_UNITS} to 1,000,000)")
     if not MIN_STEP <= float(system.step_seconds) <= MAX_STEP:
         raise NetworkError(f"step_seconds must be {MIN_STEP} to {MAX_STEP}")
-    t0 = time.time()
     rng = np.random.default_rng(seed)
     extra = {}
     if getattr(system, "calibrate_push", False):
@@ -190,12 +245,19 @@ def run_python(system: BrainLike, protocol: Protocol | None = None, seed: int = 
             act = _python_activity(system, pilot, np.random.default_rng(rng.integers(1 << 31)))
             return poked_response([Run(x) for x in to_recordings(act, pilot, np.random.default_rng(1))])
         system.push_strength, _ = _search_push(response, float(getattr(system, "push_strength", 1.0) or 1.0))
-        extra["push_strength"] = system.push_strength
+        extra["push_strength"] = float(system.push_strength)
         log(f"push strength {system.push_strength:.4g}")
-    sch = make_schedule(int(system.n_units), float(system.step_seconds), protocol)
+    sch = make_schedule(int(system.n_units), float(system.step_seconds), protocol, seed=schedule_seed)
     act = _python_activity(system, sch, rng, log)
-    return evaluate(act, sch, "Python system run by the test", {"seconds": round(time.time() - t0, 1), **extra}, seed,
-                    pushed_by_test=bool(extra))
+    return act, sch, extra
+
+
+def run_python(system: BrainLike, protocol: Protocol | None = None, seed: int = 0, log: Callable[[str], None] = print,
+               schedule_seed: int | None = None) -> dict:
+    """Run a Python system through the test and score it."""
+    t0 = time.time()
+    act, sch, extra = python_activity(system, protocol, seed, log, schedule_seed)
+    return evaluate(act, sch, "Python system run by the test", {"seconds": round(time.time() - t0, 1), **extra}, seed)
 
 
 # ---------------------------------------------------------------- uploaded recordings

@@ -4421,10 +4421,11 @@ of pool worms into fitting, distinct seeds, cache globs, and the pass-rule summa
 units can be recorded over time and given a brief push. It can be run by the server from an uploaded
 model (rate-RNN weights or ONNX), run from Python, or run by the owner on their own system following a
 published schedule, uploading only the recordings. The test reruns the atlas experiment on it: 30 runs
-of 37 minutes, 45 recorded units per run, a 2 s push to one unit every 30 s. It then measures 8
+of 37 minutes, 45 recorded units per run, a 2 s push to one unit every 30 s *[superseded: protocol version 2,
+amendment 1, and version 3, amendment 3]*. It then measures 8
 signatures the project has measured in worms (`signatures.py`, the research definitions; on all 113
 worms they reproduce the research values: rest dimensionality 0.428, push spread 0.085, tiring -0.423,
-watching share 0.607).
+watching share 0.607). *[Push spread was redefined in amendment 1; the worm value is now 0.032.]*
 
 **Reference.** Each signature on 60 random groups of 30 atlas worms (`reference.json`, summary numbers
 only); a system's value is *inside* when it falls within the 2.5th to 97.5th percentile of those groups,
@@ -4509,6 +4510,116 @@ signatures that do not depend on the declared step length; models the server run
 and double their declared noise, and the result shows all three; submitters state whether they tuned
 against this test, shown on the leaderboard; uploaded recordings are labelled "recordings supplied by the
 owner" on the leaderboard.
+
+**Amendment 1 results (9 Nov 2026; `scripts/calibrate_brainlike.py`, `scripts/calibrate_brainlike_middle.py`,
+full results in `nematica/brainlike/calibration/`, version 1 results kept in `docs/figures/brainlike_calibration_v1/`).**
+Protocol version 2 gives a median of 384 rest frames per run (atlas 345, IQR 269 to 460). The rebuilt reference
+changes only push spread (worm groups: 0.032 [0.018, 0.046], against 0.086 before the no-push correction); every
+other range is identical, which also checks the refactor. "Distance" is the mean over the eight signatures of
+the distance from the real-worm median in units of the real-worm range (each capped at 10).
+
+| system | inside, of 8 | distance | signatures inside |
+|---|---|---|---|
+| real worms held out of the reference, groups 1, 2, 3 | **8, 6, 8** | 0.36, 0.65, 0.37 | all; group 2 misses slow activity and timescale |
+| M1 worm emulator, groups 1, 2, 3 | 6, 4, 4 | 0.86, 1.08, 1.06 | slow activity and timescale in all three; misses push stands out in all three |
+| M3 lab network, hidden drives at 40 s | 3 | 2.37 | timescale, push spread, copyable by watching |
+| M10 transformer, trained | 2 | 2.48 | correlation, push spread |
+| lab network, hidden drives at 5 s (version 1 system) | 0 | 3.80 | none |
+| M6 RNN trained on context-dependent integration | 2 | 3.80 | push stands out, copyable by watching |
+| M7 the same before training | 1 | 4.25 | copyable by watching |
+| M4 RNN trained on a flip-flop task | 0 | 4.43 | none |
+| M5 the same before training | 1 | 4.45 | push spread |
+| lab network, plain (version 1 system) | 1 | 4.68 | push spread |
+| M11 transformer, untrained | 1 | 4.76 | copyable by watching |
+| random tanh RNN (version 1 system) | 1 | 4.84 | push spread |
+| random GRU, ONNX (version 1 system) | 0 | 4.90 | none (its pushes barely move the pushed units: -0.04 SD) |
+| M9 spiking network with adaptation | 1 | 5.02 | copyable by watching |
+| M8 spiking network, plain | 0 | 5.36 | none |
+| M2 watching copy (VAR(3) from rest), groups 1, 2, 3 | 0, 1, 0 | 5.46, 5.39, 5.51 | tiring in one group |
+
+Recalibration: held-out worm groups 8, 6, 8 (expected at least 6: met); the four version 1 networks 0 to 1
+(expected at most 4: met).
+
+**By the registered rule the test does not grade.** (i) M1 at least 5: met in 1 of 3 groups (6, 4, 4).
+(ii) At least three of M2 to M11 between 1 and 5: met (M3, M10, M6 and five systems at 1). (iii) No untrained
+control above M1 or M2: **not met**, because five untrained controls score 1 and the watching copy scores 0 in
+two groups. Individual expectations: M1 missed (4 in two groups); **M2 wrong** (expected 2 to 5, scored 0 to 1:
+the watching copy has no slow activity and its resting activity spreads over far too many patterns. *[Corrected,
+review 9: "its push responses are perfectly predictable from watching" was wrong. Its runs barely agree with
+each other (reliability about 0.01, worms 0.08 to 0.11), so the watching share, a ratio over that reliability,
+was meaningless, not high.]*); M3 met for the
+score (3, against 0 for the 5 s version) but not for the reason given (slow activity moves from -13.5 to -2.0
+range-widths but stays outside); M4 and M5 not met (trained 0, untrained 1), M6 and M7 met (2 against 1);
+M8 and M9 met; M10 and M11 met (2 against 1).
+
+**What the results show instead (exploratory: read after seeing them).** The count of signatures inside is too
+coarse to grade artificial systems: a score of 1 is reached by chance on one signature by most untrained
+networks. The distance grades cleanly: real worm groups 0.36 to 0.65 < worm emulator 0.86 to 1.08 < network
+with 40 s hidden drives 2.37 and trained transformer 2.48 < every other system 3.80 to 5.51. Training moves a
+network towards worms in two of three pairs (context-dependent integration 3.80 against 4.25; transformer 2.48
+against 4.76; flip-flop 4.43 against 4.45). Slow hidden drives at the worm's timescale help (2.37) where fast
+ones do not (3.80). *[Qualified, review 9: the slow-drive gain comes entirely from the two signatures read in
+seconds; on the other six, 40 s and 5 s drives are equal (2.76 against 2.72), and the trained flip-flop network
+is further from worms than the untrained one (4.22 against 3.39). Training moves networks closer in three of
+three pairs on all eight (the flip-flop pair by a negligible amount).]*
+
+**Amendment 2 (9 Nov 2026, post hoc: decided after seeing the results above).** The leaderboard ranks by
+distance, with the count of signatures inside shown alongside, and result pages state the distance first
+against the calibration ranges. Because this was chosen after seeing the calibration, the distance ordering
+above is not a confirmation; the next systems submitted are its first test.
+
+**Review 9 (9 Nov 2026): independent review of the brain-likeness test.** A separate agent that had not written the
+code reran it and checked every number. Calibration numbers, the reference rebuild and a from-scratch rerun of one
+system all matched. Errors found:
+1. *A model with constant output would top the leaderboard*: pushes the test applied itself were exempt from the
+   push check, unmeasurable signatures were dropped from the distance, and SQLite sorts an empty distance first.
+2. *The schedule generator could loop forever* for short protocols (the tests' 6-minute protocol), which is why
+   the test suite hung.
+3. *A test still expected the version 1 run length*; *the JSON result endpoint failed on NaN*.
+4. *With code uploads enabled, uploaded Python could write its own score* (it ran in the process that wrote the
+   result, and the numbers reached the page unescaped).
+5. *The GRU baseline and the documented LSTM example did not push single units*: their input reached every unit,
+   and the GRU's pushed-unit change was -0.04 SD, yet it was scored.
+6. *Statements*: the watching copy's "perfect predictability" (a near-zero denominator), the slow-drive gain
+   (from the step-dependent signatures only); corrected in place above. Stale text on protocol version 1.
+
+Weaknesses: the watching share is meaningless when runs barely agree; push spread lets some networks in by chance;
+the push search returned huge saturating pushes (up to 47,000 times the noise, a clamp of about 7.5 s) when the
+target was out of reach; "units per run" counted units without resting activity; pushes were 60 frames apart
+against 61 to 62 in the atlas; step lengths other than 0.5 s were handled poorly (uneven frame averaging,
+push frames rounded after the push, drifting spacing, memory blow-up at fine steps); the reference percentiles
+came from only 60 groups; and several website issues (upload size checked only after spooling, no global queue
+cap, uploads kept, worker output held in memory, a fork hook that can deadlock, endless retries after crashes,
+non-atomic per-visitor limit, unchecked npz contents, ONNX external data, a public fixed schedule a model could
+learn).
+
+**Amendment 3 (9 Nov 2026, written before rerunning): corrections after review 9.**
+- *Validity, for every system:* the pushed units must move at least 0.75 SD **and** at least 0.5 SD more than the
+  median of the other recorded units (worms: 1.54); no exemption when the test applies the push. At least 6 of 8
+  signatures must be measurable.
+- *Distance:* a signature that cannot be measured counts as outside at distance 10 (the cap), so leaving
+  signatures out can only hurt. Results without a distance never reach the leaderboard.
+- *Copyable by watching* is not read (counts as outside, distance 10) when the runs' agreement with each other
+  is below the 2.5th percentile of real worm groups.
+- *Push search:* if no strength reaches 1.6 SD, the smallest strength reaching 90% of the best response.
+- *Protocol version 3:* pushes every 31 s (atlas median 62 frames), timed in seconds at any step length, push
+  frames never after the push onset, steps shorter than 0.5 s averaged into frames by time overlap as the run
+  goes, steps of 0.005 to 2 s accepted, empty slots placed without the possibility of a hang. With pushes 31 s
+  apart each gap leaves 2 rest frames, so 5 empty slots would give 504 rest frames per run (atlas IQR 269 to
+  460); **2 empty slots per run** give 324 (atlas median 345).
+- *Reference:* 200 groups of 30 worms (was 60), with run-to-run reliability and the push checks recorded.
+- *GRU baseline:* rebuilt so its input reaches one unit each (the cell runs on its own state; input i is added
+  to hidden unit i); the documented ONNX example does the same.
+- *Website:* scoring of Python uploads in a separate step that runs no uploaded code; typed, escaped results;
+  NaN-free JSON; uploads refused from their Content-Length; a queue cap; uploads deleted after testing; worker
+  output to a capped file; limits set by the worker itself; at most two attempts per test; atomic per-visitor
+  limit; npz contents checked from their headers; ONNX loaded from memory; a secret schedule for models the server
+  runs.
+
+**Rerun, same expectations and rule as amendment 1** (nothing about them changes): the reference, the three
+held-out worm groups, the four version 1 networks (with the rebuilt GRU) and M1 to M11. Amendment 1's numbers
+above are superseded by the rerun where they differ. Every signature also gets a step-free distance (the six
+signatures not read in seconds), reported beside the full one.
 
 ## Paper draft and outreach (8 Nov 2026)
 

@@ -1,0 +1,120 @@
+{
+ "name": "Random GRU, 120 units (ONNX)",
+ "description": "A PyTorch GRU cell with 120 units and random weights, exported to ONNX. A baseline.",
+ "result": {
+  "signatures": {
+   "rest_dim": {
+    "value": 0.17948616375837875,
+    "distance": -17.02797130625778,
+    "inside": false,
+    "worm_median": 0.42631258588362686,
+    "worm_low": 0.4118172348117972,
+    "worm_high": 0.4536907735833076,
+    "label": "few patterns at rest",
+    "about": "Share of resting variance in the 3 strongest patterns: how few patterns the activity uses."
+   },
+   "slow_share": {
+    "value": 0.0,
+    "distance": -13.53376835934587,
+    "inside": false,
+    "worm_median": 0.7622162310373167,
+    "worm_low": 0.7058966450359085,
+    "worm_high": 0.8135464248281847,
+    "label": "slow activity",
+    "about": "Share of each unit's activity that is slow (still correlated 10 to 40 s later)."
+   },
+   "correlation": {
+    "value": 0.08842965453499903,
+    "distance": -6.1144977159579295,
+    "inside": false,
+    "worm_median": 0.2151845668683251,
+    "worm_low": 0.194454342045031,
+    "worm_high": 0.23235721650313526,
+    "label": "units move together",
+    "about": "Mean absolute correlation between units at rest."
+   },
+   "timescale": {
+    "value": 1.0,
+    "distance": -5.356484367452319,
+    "inside": false,
+    "worm_median": 13.5,
+    "worm_low": 11.166379822565352,
+    "worm_high": 14.97309773700562,
+    "label": "timescale",
+    "about": "Median time for a unit's activity to become half-forgotten (autocorrelation 0.5), in seconds."
+   },
+   "echo_breadth": {
+    "value": 0.0010101010101010097,
+    "distance": -1.949966835094518,
+    "inside": false,
+    "worm_median": 0.031985513346662456,
+    "worm_low": 0.01610041633932796,
+    "worm_high": 0.048450855891177036,
+    "label": "push spread",
+    "about": "Share of units that a single push moves by more than 1 SD, minus the same share at moments with no push."
+   },
+   "evoked_share": {
+    "value": 0.16645761764970657,
+    "distance": -2.7193443604301404,
+    "inside": false,
+    "worm_median": 0.4163005605897083,
+    "worm_low": 0.32442439125436084,
+    "worm_high": 0.4925407672067573,
+    "label": "push stands out",
+    "about": "How much of the change after a push is caused by the push, against moments with no push."
+   },
+   "tiring": {
+    "value": -0.01853459399389592,
+    "distance": 1.6816765131612033,
+    "inside": false,
+    "worm_median": -0.40090918047026525,
+    "worm_low": -0.6443600570017478,
+    "worm_high": -0.1735321650432112,
+    "label": "tiring on a second push",
+    "about": "Log change in a unit's own response when it is pushed a second time, against matched controls. Negative = it answers less."
+   },
+   "watch_share": {
+    "value": 0.0673835560023665,
+    "distance": -1.4143428245010243,
+    "inside": false,
+    "worm_median": 0.3904590957684039,
+    "worm_low": 0.16203106957184338,
+    "worm_high": 0.7775082639731173,
+    "label": "copyable by watching",
+    "about": "How well a linear model fitted only to resting activity predicts the push responses, as a share of how well runs agree with each other. Real worms: poorly."
+   }
+  },
+  "valid": true,
+  "problems": [],
+  "notes": [
+   "The test pushed as hard as was useful, but pushed units moved only -0.04 SD over the next 15 s (worms about 1.6): this system lets go of a push quickly."
+  ],
+  "score": 0,
+  "out_of": 8,
+  "mean_abs_distance": 4.9045390770746415,
+  "measured": {
+   "rest_dim": 0.17948616375837875,
+   "slow_share": 0.0,
+   "correlation": 0.08842965453499903,
+   "timescale": 1.0,
+   "echo_breadth": 0.0010101010101010097,
+   "echo_breadth_push": 0.045454545454545456,
+   "echo_breadth_nopush": 0.044444444444444446,
+   "evoked_share": 0.16645761764970657,
+   "tiring": -0.01853459399389592,
+   "watch_share": 0.0673835560023665,
+   "reliability": 0.21596583407928382,
+   "poked_response": -0.042423321881870854,
+   "n_runs": 30,
+   "n_pushes": 1710,
+   "units_per_run": 45.0
+  },
+  "how": "model run by the test",
+  "schedule": "9cb2bddcdbf71467",
+  "n_units": 120,
+  "step_seconds": 0.5,
+  "push_strength": 1.0,
+  "noise_sd": 0.1,
+  "seconds": 2.1
+ }
+}

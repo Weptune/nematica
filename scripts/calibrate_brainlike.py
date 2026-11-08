@@ -62,7 +62,7 @@ def worms():
         ref = {"group_size": 30, "signatures": {}}
         vals = {k: [] for k in SIGNATURES}
         g = np.random.default_rng(100 + h)
-        for _ in range(60):
+        for _ in range(200):                                  # as the reference (amendment 3)
             pick = [rest[i] for i in sorted(g.choice(len(rest), 30, replace=False))]
             m = measure(pick, valid_fn=lambda c: role(c) is not None)
             for k in vals:
@@ -121,6 +121,9 @@ class LabBrain(BrainLike):
 
 
 def gru_onnx(path, n=120, seed=0):
+    """A random GRU cell, exported so the test's input reaches one unit each: the cell runs on its own state
+    (no external input) and input[:, i] is added to hidden unit i (amendment 3: the first version fed the
+    input through the cell's input weights, so a push to unit i reached every unit)."""
     import torch
     torch.manual_seed(seed)
 
@@ -130,7 +133,7 @@ def gru_onnx(path, n=120, seed=0):
             self.cell = torch.nn.GRUCell(n, n)
 
         def forward(self, state, input):            # noqa: A002
-            return self.cell(input, state)
+            return self.cell(torch.zeros_like(input), state) + input
     m = Step().eval()
     torch.onnx.export(m, (torch.zeros(1, n), torch.zeros(1, n)), str(path), input_names=["state", "input"],
                       output_names=["next_state"], dynamic_axes={"state": {0: "b"}, "input": {0: "b"}, "next_state": {0: "b"}},

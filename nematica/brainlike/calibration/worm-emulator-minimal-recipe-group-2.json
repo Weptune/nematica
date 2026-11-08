@@ -1,0 +1,112 @@
+{
+ "name": "Worm emulator (minimal recipe), group 2",
+ "description": "The project's worm emulator: slow interacting brain-wide states, individual variation, causal links learned from stimulation, neurons observed one by one. Fitted on the atlas worms of the other two pools and simulated on held-out worm templates. Built on these worms: not independent.",
+ "result": {
+  "signatures": {
+   "rest_dim": {
+    "value": 0.3989416098915509,
+    "distance": -1.8882589222187842,
+    "inside": false,
+    "worm_median": 0.42631258588362686,
+    "worm_low": 0.4118172348117972,
+    "worm_high": 0.4536907735833076,
+    "label": "few patterns at rest",
+    "about": "Share of resting variance in the 3 strongest patterns: how few patterns the activity uses."
+   },
+   "slow_share": {
+    "value": 0.7283378403543256,
+    "distance": -0.601538347283733,
+    "inside": true,
+    "worm_median": 0.7622162310373167,
+    "worm_low": 0.7058966450359085,
+    "worm_high": 0.8135464248281847,
+    "label": "slow activity",
+    "about": "Share of each unit's activity that is slow (still correlated 10 to 40 s later)."
+   },
+   "correlation": {
+    "value": 0.17550533611128138,
+    "distance": -1.9140762386936128,
+    "inside": false,
+    "worm_median": 0.2151845668683251,
+    "worm_low": 0.194454342045031,
+    "worm_high": 0.23235721650313526,
+    "label": "units move together",
+    "about": "Mean absolute correlation between units at rest."
+   },
+   "timescale": {
+    "value": 12.0,
+    "distance": -0.6427781240942783,
+    "inside": true,
+    "worm_median": 13.5,
+    "worm_low": 11.166379822565352,
+    "worm_high": 14.97309773700562,
+    "label": "timescale",
+    "about": "Median time for a unit's activity to become half-forgotten (autocorrelation 0.5), in seconds."
+   },
+   "echo_breadth": {
+    "value": 0.05590062111801242,
+    "distance": 1.4524512749549365,
+    "inside": false,
+    "worm_median": 0.031985513346662456,
+    "worm_low": 0.01610041633932796,
+    "worm_high": 0.048450855891177036,
+    "label": "push spread",
+    "about": "Share of units that a single push moves by more than 1 SD, minus the same share at moments with no push."
+   },
+   "evoked_share": {
+    "value": 0.26039159553996194,
+    "distance": -1.69694672925119,
+    "inside": false,
+    "worm_median": 0.4163005605897083,
+    "worm_low": 0.32442439125436084,
+    "worm_high": 0.4925407672067573,
+    "label": "push stands out",
+    "about": "How much of the change after a push is caused by the push, against moments with no push."
+   },
+   "tiring": {
+    "value": -0.38512700814360784,
+    "distance": 0.06940970835163664,
+    "inside": true,
+    "worm_median": -0.40090918047026525,
+    "worm_low": -0.6443600570017478,
+    "worm_high": -0.1735321650432112,
+    "label": "tiring on a second push",
+    "about": "Log change in a unit's own response when it is pushed a second time, against matched controls. Negative = it answers less."
+   },
+   "watch_share": {
+    "value": 0.3056661003340357,
+    "distance": -0.3712022418886748,
+    "inside": true,
+    "worm_median": 0.3904590957684039,
+    "worm_low": 0.16203106957184338,
+    "worm_high": 0.7775082639731173,
+    "label": "copyable by watching",
+    "about": "How well a linear model fitted only to resting activity predicts the push responses, as a share of how well runs agree with each other. Real worms: poorly."
+   }
+  },
+  "valid": true,
+  "problems": [],
+  "notes": [],
+  "score": 4,
+  "out_of": 8,
+  "mean_abs_distance": 1.0795826983421057,
+  "measured": {
+   "rest_dim": 0.3989416098915509,
+   "slow_share": 0.7283378403543256,
+   "correlation": 0.17550533611128138,
+   "timescale": 12.0,
+   "echo_breadth": 0.05590062111801242,
+   "echo_breadth_push": 0.14285714285714285,
+   "echo_breadth_nopush": 0.08695652173913043,
+   "evoked_share": 0.26039159553996194,
+   "tiring": -0.38512700814360784,
+   "watch_share": 0.3056661003340357,
+   "reliability": 0.16870363845082276,
+   "poked_response": 1.6290172777027008,
+   "n_runs": 30,
+   "n_pushes": 918,
+   "units_per_run": 63.5
+  },
+  "how": "simulated on 30 held-out atlas worm templates, measured exactly as worms"
+ }
+}

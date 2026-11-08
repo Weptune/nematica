@@ -34,13 +34,19 @@ def _npz(**arrays) -> io.BytesIO:
 def test_schedule_is_deterministic_and_well_formed():
     a, b = make_schedule(300, 0.5), make_schedule(300, 0.5)
     assert schedule_json(a) == schedule_json(b) and a.digest() == b.digest()
-    assert len(a.units) == 120 and len(a.runs) == 30 and a.steps == 4440 and a.push_steps == 4
+    assert len(a.units) == 120 and len(a.runs) == 30 and a.steps == 3804 and a.push_steps == 4
     for run in a.runs:
         assert len(run["recorded"]) == 45
         assert all(p in run["recorded"] for _, p in run["pushes"])
         steps = [s for s, _ in run["pushes"]]
-        assert steps == sorted(steps) and np.all(np.diff(steps) == 60)
-    assert make_schedule(300, 0.1).steps == 22200 and make_schedule(300, 0.1).frames == 4440
+        assert steps[0] == 40 and steps == sorted(steps)
+        slots = [int(round(t / 0.5)) for t in np.arange(20.0, a.steps * 0.5 - 32.0 + 1e-9, 31.0)]
+        assert len(slots) - len(steps) == 2 and set(steps) <= set(slots)   # two empty slots
+        assert set(np.diff(steps)) <= {62, 124}                              # every 31 s; never two empty in a row
+    for n in range(10, 120):                                                   # short protocols never hang
+        make_schedule(n, 0.5, Protocol(runs=4, minutes=6.0))
+    assert make_schedule(300, 0.5, seed=5).digest() != a.digest()            # a secret seed changes everything
+    assert make_schedule(300, 0.1).steps == 19020 and make_schedule(300, 0.1).frames == 3804
     assert make_schedule(301, 0.5).digest() != a.digest()
     small = make_schedule(20, 0.5)
     assert small.units == list(range(20)) and all(len(r["recorded"]) == 20 for r in small.runs)
@@ -52,7 +58,7 @@ def test_rate_rnn_npz_and_errors(tmp_path):
     np.savez(p, W=_rnn(), leak=0.3, nonlinearity="relu", noise_sd=0.2, step_seconds=0.25)
     net = load_network(p)
     assert isinstance(net, RateRNN) and net.n == 30 and net.nl == "relu" and net.noise_sd == 0.2 and net.step_seconds == 0.25
-    bad = [({"W": np.ones((3, 4))}, "square"), ({"W": np.ones((5, 5))}, "10 to"), ({"V": _rnn()}, "needs an array W"),
+    bad = [({"W": np.ones((3, 4))}, "square"), ({"W": np.ones((5, 5))}, "10 to"), ({"V": _rnn()}, "unexpected array"),
            ({"W": _rnn(), "leak": 2.0}, "leak"), ({"W": _rnn(), "nonlinearity": "cube"}, "nonlinearity"),
            ({"W": np.full((12, 12), np.nan)}, "NaN")]
     for arrays, msg in bad:
@@ -63,6 +69,41 @@ def test_rate_rnn_npz_and_errors(tmp_path):
     q.write_text("hi")
     with pytest.raises(NetworkError):
         load_network(q)
+
+
+def test_npz_with_unexpected_arrays_is_refused(tmp_path):
+    p = tmp_path / "junk.npz"
+    np.savez(p, W=_rnn(), junk=np.zeros(10))
+    with pytest.raises(NetworkError, match="unexpected array"):
+        load_network(p)
+
+
+def test_constant_output_is_not_scored():
+    res = run_test(RateRNN(np.zeros((20, 20)), b=-100 * np.ones(20), nonlinearity="relu", noise_sd=0.001),
+                   log=lambda m: None)
+    assert not res["valid"] and res["score"] is None and res["mean_abs_distance"] is None
+
+
+def test_push_that_reaches_every_unit_is_not_scored():
+    class Global(Toy):
+        calibrate_push = False
+
+        def run(self, steps, record, pushes, push_steps, rng):
+            x = 0.0
+            on = {t + d for t, _ in pushes for d in range(push_steps)}
+            out = np.empty((steps, len(record)))
+            for t in range(steps):
+                x = 0.9 * x + 0.3 * rng.standard_normal() + (3.0 if t in on else 0.0)
+                out[t] = x + 0.3 * rng.standard_normal(len(record))
+            return out
+    res = run_python(Global(), log=lambda m: None)
+    assert not res["valid"] and any("hardly more than the others" in p for p in res["problems"])
+
+
+def test_result_json_has_no_nan():
+    from nematica.brainlike.worker import clean
+    out = json.dumps(clean({"a": float("nan"), "b": [np.float32(1.5), float("inf")], "c": np.int64(3)}), allow_nan=False)
+    assert out == '{"a": null, "b": [1.5, null], "c": 3}'
 
 
 def test_npz_with_pickled_objects_is_refused(tmp_path):
@@ -173,9 +214,19 @@ def test_python_system_bad_output():
 
 
 def test_full_test_on_a_random_network_is_valid_and_far_from_worms():
-    res = run_test(RateRNN(_rnn(30), leak=0.3, noise_sd=0.5), log=lambda m: None)
+    res = run_test(RateRNN(_rnn(30), leak=0.3, noise_sd=0.5), log=lambda m: None, noise_check=True)
     assert res["valid"] and res["measured"]["n_pushes"] >= 300
-    assert res["score"] <= 2
+    assert res["score"] <= 2 and res["score_step_free"] <= res["score"] and res["out_of_step_free"] == 6
+    assert [c["factor"] for c in res["noise_check"]] == [0.5, 2.0] and res["noise_sd"] == 0.5
+
+
+def test_rest_matches_the_atlas():
+    from nematica.brainlike.protocol import to_recordings
+    from nematica.brainlike.signatures import Run
+    s = make_schedule(60, 0.5)
+    act = np.random.default_rng(0).standard_normal((30, s.steps, len(s.units))).astype(np.float32)
+    unp = [Run(r).unpoked.sum() for r in to_recordings(act, s, np.random.default_rng(1))]
+    assert 269 <= np.median(unp) <= 460                     # the atlas's interquartile range
 
 
 # ---------------------------------------------------------------- command line
@@ -209,7 +260,7 @@ def test_site_pages_and_schedule(site):
         r = c.get(url)
         assert r.status_code == 200 and "Brain-likeness test" in r.text and "—" not in r.text
     r = c.get("/schedule", params={"n_units": 300, "step_seconds": 0.5})
-    assert r.status_code == 200 and json.loads(r.text)["steps_per_run"] == 4440
+    assert r.status_code == 200 and json.loads(r.text)["steps_per_run"] == 3804
     assert c.get("/schedule", params={"n_units": 3}).status_code == 400
     assert c.get("/r/nonexistent-id").status_code == 404
     assert c.get("/r/../../etc").status_code == 404
@@ -234,7 +285,7 @@ def test_site_refuses_bad_uploads(site):
 def test_site_runs_a_model_end_to_end(site):
     A, c = site
     b = _npz(W=_rnn(), leak=0.3, noise_sd=0.5)
-    r = c.post("/submit", data={"mode": "model", "name": "Random <b>RNN</b>", "author": "tester", "public": "1"},
+    r = c.post("/submit", data={"mode": "model", "name": "Random <b>RNN</b>", "author": "tester", "public": "1", "tuned": "1"},
                files={"file": ("rnn.npz", b.getvalue())}, follow_redirects=False)
     assert r.status_code == 303
     job = r.headers["location"].rsplit("/", 1)[1]
@@ -246,8 +297,10 @@ def test_site_runs_a_model_end_to_end(site):
     assert j["result"]["valid"] and j["result"]["out_of"] == 8
     page = c.get(f"/r/{job}").text
     assert "signatures inside the real-worm range" in page and "<nav" in page
+    assert "tuned against this test" in page and "at other noise levels" in page
     board = c.get("/api/leaderboard").json()
-    assert [e["id"] for e in board] == [job]
+    assert [e["id"] for e in board] == [job] and board[0]["tuned"] == 1
+    assert "tuned against this test" in c.get("/leaderboard").text
 
 
 def test_site_reports_a_broken_model(site):

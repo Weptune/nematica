@@ -56,7 +56,7 @@ def page(title: str, body: str, refresh: int | None = None) -> str:
             "<meta name='viewport' content='width=device-width,initial-scale=1'>" + meta +
             f"<title>{_e(title)}</title><style>{CSS}</style></head><body><main>{nav()}{body}"
             "<footer>Reference data: Randi et al. 2023, signal propagation atlas of <i>C. elegans</i> (CC BY 4.0), "
-            "summary numbers only. Test rule fixed 8 Nov 2026. Part of the NEMATICA project.</footer></main></body></html>")
+            "summary numbers only. Protocol version 2 (9 Nov 2026).</footer></main></body></html>")
 
 
 def with_nav(report_html: str) -> str:
@@ -124,14 +124,20 @@ WAYS = [
 def _board_rows(rows) -> str:
     if not rows:
         return "<p>No public results yet. Submit the first one.</p>"
-    out = ["<table class='board'><thead><tr><th>#</th><th>System</th><th>Signatures inside</th>"
-           "<th title='Average distance from the real-worm median, in units of the real-worm range (capped at 10)'>"
-           "Average distance</th></tr></thead><tbody>"]
+    out = ["<table class='board'><thead><tr><th>#</th><th>System</th>"
+           "<th title='Average distance from the real-worm median over the eight signatures, in units of the real-worm "
+           "range (each capped at 10). Real worm groups: 0.36 to 0.65.'>Distance from real worms</th>"
+           "<th>Signatures inside</th></tr></thead><tbody>"]
     for i, r in enumerate(rows, 1):
-        who = f"<br><span class='ref'>{_e(r['author'])}</span>" if r.get("author") else ""
+        tags = [r["author"]] if r.get("author") else []
+        if r.get("mode") == "recordings":
+            tags.append("recordings supplied by the owner")
+        if r.get("tuned"):
+            tags.append("tuned against this test")
+        who = f"<br><span class='ref'>{_e('; '.join(tags))}</span>" if tags else ""
         out.append(f"<tr><td>{i}</td><td><a href='/r/{_e(r['id'])}'>{_e(r['name'])}</a>{who}</td>"
-                   f"<td class='score'>{r['score']}<small> of {r['out_of']}</small></td>"
-                   f"<td class='num'>{(r['distance'] or 0):.2f}</td></tr>")
+                   f"<td class='score'>{float(r['distance']):.2f}</td>"
+                   f"<td class='num'>{int(r['score'])} of {int(r['out_of'])}</td></tr>")
     out.append("</tbody></table>")
     return "".join(out)
 
@@ -148,7 +154,8 @@ def home(board: list[dict], allow_code: bool, limits: dict, examples: list[tuple
     if examples:
         fig = ("<figure>" + compare_svg(examples) + "<figcaption>Each row is one signature of activity. The green band is "
                "the range real worm groups span. A group of real worms the test never saw lands inside on most rows; a "
-               "random recurrent network lands far outside on almost all of them.</figcaption></figure>")
+               "worm emulator fitted to the atlas lands close; a random recurrent network lands far outside on almost "
+               "all of them.</figcaption></figure>")
     body = f"""
 <h1 class='hero'>How close is your network to a living nervous system?</h1>
 <p class='lede'>Submit any artificial network: a rate RNN, a transformer run step by step, a spiking simulation,
@@ -172,6 +179,7 @@ probed the same way.</p>
 <label class='f' for='description'>What it is <small>(optional; shown on the result page)</small></label>
 <textarea id='description' name='description' maxlength='600'></textarea>
 <label class='check'><input type='checkbox' name='public' value='1' checked> List the result on the public leaderboard</label>
+<label class='check'><input type='checkbox' name='tuned' value='1'> I tuned this system against this test (shown with the result)</label>
 <button type='submit'>Run the test</button>
 </form>
 <h3 style='margin-top:30px'>Schedule for recordings</h3>
@@ -179,7 +187,7 @@ probed the same way.</p>
 only on how many units your system has and how long one step is.</p>
 <form class='inline' method='get' action='/schedule'>
 <div><label for='nu'>Units in your system</label><br><input id='nu' type='number' name='n_units' min='10' max='1000000' value='300' required></div>
-<div><label for='dt'>Seconds per step</label><br><input id='dt' type='number' name='step_seconds' min='0.001' max='2' step='any' value='0.5' required></div>
+<div><label for='dt'>Seconds per step</label><br><input id='dt' type='number' name='step_seconds' min='0.005' max='2' step='any' value='0.5' required></div>
 <button type='submit'>Download schedule</button></form>
 <p style='margin-top:10px'>Details for every format are on <a href='/how'>How it works</a>.</p>
 <h2>Leaderboard</h2>
@@ -198,8 +206,10 @@ only on how many units your system has and how long one step is.</p>
 
 
 def leaderboard(board: list[dict]) -> str:
-    body = ("<h1>Leaderboard</h1><p>Valid public results, ranked by how many of the eight signatures fall inside the "
-            "real-worm range, then by average distance from the real-worm median. Entries marked as NEMATICA "
+    body = ("<h1>Leaderboard</h1><p>Valid public results, ranked by distance from real worms: the average, over the "
+            "eight signatures, of how far the system sits from the real-worm median in units of the real-worm range. "
+            "Groups of real worms the reference never saw sit at 0.36 to 0.65. The number of signatures inside "
+            "the range is shown too; it is coarser, and a score of 1 can happen by chance. Entries marked as NEMATICA "
             "references are calibration systems: real worm groups held out of the reference, and baseline networks."
             "</p>" + _board_rows(board) +
             "<p style='margin-top:18px'>The same list as JSON: <a href='/api/leaderboard'><code>/api/leaderboard</code></a>.</p>")
@@ -230,16 +240,22 @@ HOW = """
 be given a brief push. Everything else about the system is free.</p>
 
 <h2>What the test does</h2>
-<p>It picks up to 120 of your units. In each of 30 runs of 37 minutes it records 45 of them and, every 30 seconds,
-gives one recorded unit a 2 second push, the way the signal propagation atlas probed real worms with light
-(Randi et al. 2023). It adds the same small measurement noise to every recording (0.1 SD) and measures eight signatures:</p>
+<p>It picks up to 120 of your units. In each of 30 runs of about 32 minutes it records 45 of them and, every 31
+seconds, gives one recorded unit a 2 second push, leaving 2 slots per run empty so there is as much undisturbed
+activity as in the atlas, the way the signal propagation atlas probed real worms with light (Randi et al. 2023). It adds the same small measurement noise to every recording (0.1 SD) and measures eight signatures:</p>
 {about}
 <p>For each signature the reference is the range spanned by 60 random groups of 30 real worms, widened for the
 finite atlas. Your score is the number of signatures inside that range. The profile on the result page shows how far
 outside each one is, in units of the real-worm range.</p>
 <p>A result counts only if the pushes are visible in the recordings: across at least 300 pushes, the pushed units must
-move on average at least 0.75 SD (real worms: 1.6). When the server runs your model it finds the push strength that
+move on average at least 0.75 SD (real worms: 1.6), and at least 0.5 SD more than the other recorded units (real
+worms: 1.54). When the server runs your model it finds the push strength that
 moves a pushed unit about 1.6 SD itself.</p>
+<p>Two signatures, slow activity and timescale, are read in seconds, so they depend on the step length you
+declare. Every result also shows the score on the other six. For models the server runs, the result also shows
+the score at half and double your declared noise, so a score that rests on one exact noise setting is visible.
+If you tuned your system against this test, say so when you submit; it is shown with the result. Results from
+uploaded recordings are marked as recordings supplied by the owner.</p>
 
 <h2>Way 1: upload recordings (any system)</h2>
 <p>Download the schedule for your system's size and step length (on the <a href='/#submit'>front page</a>, or
@@ -269,20 +285,23 @@ visibly respond. Upload limit 400 MB.</p>
 <p><b>Any recurrent model (.onnx).</b> Export one step with inputs <code>state</code> (batch, S) and
 <code>input</code> (batch, N), and outputs <code>next_state</code> (batch, S) and optionally <code>activity</code>
 (batch, N). The state can hold anything; the N units are what <code>activity</code> reports (without it, the state
-itself). The test feeds noise and pushes through <code>input</code>, one value per unit. From PyTorch:</p>
+itself). The test feeds noise and pushes through <code>input</code>, one value per unit, and checks that a push to unit i
+moves unit i more than the others, so route <code>input[:, i]</code> to unit i alone. From PyTorch:</p>
 <pre><code>class Step(torch.nn.Module):
-    def __init__(self, N, H):
+    def __init__(self, H):
         super().__init__()
-        self.H, self.cell, self.readout = H, torch.nn.LSTMCell(N, H), torch.nn.Linear(H, N)
+        self.H, self.cell = H, torch.nn.LSTMCell(1, H)
     def forward(self, state, input):
-        h, c = self.cell(input, (state[:, :self.H], state[:, self.H:]))
-        return torch.cat([h, c], 1), torch.tanh(self.readout(h))   # next_state, activity
+        h, c = self.cell(torch.zeros(len(state), 1), (state[:, :self.H], state[:, self.H:]))
+        h = h + input                        # input[:, i] reaches hidden unit i, and only it
+        return torch.cat([h, c], 1), h       # next_state, activity: the H hidden units
 
-torch.onnx.export(Step(N, H), (torch.zeros(1, 2 * H), torch.zeros(1, N)), "model.onnx",
+torch.onnx.export(Step(H), (torch.zeros(1, 2 * H), torch.zeros(1, H)), "model.onnx",
                   input_names=["state", "input"], output_names=["next_state", "activity"],
                   dynamic_axes={{"state": {{0: "b"}}, "input": {{0: "b"}}, "next_state": {{0: "b"}}, "activity": {{0: "b"}}}})</code></pre>
 <p>Set <code>noise_sd</code> and <code>step_seconds</code> as ONNX metadata to choose them. Models of up to 4,096
-units, 100 MB. Neither format runs code on the server.</p>
+units, 100 MB. Neither format runs Python on the server; ONNX files are parsed by onnxruntime, loaded from
+memory so they cannot reach other files.</p>
 
 <h2>Way 3: Python</h2>
 <pre><code>from nematica.brainlike import BrainLike, run_python
@@ -303,8 +322,10 @@ strength. On your own machine, <code>python -m nematica brainlike my_system.py</
 <ul>
 <li>The reference is one animal, immobilised <i>C. elegans</i>, probed with light every 30 seconds. A system inside
 on all eight signatures is worm-like under these conditions. It is not shown to be brain-like in general.</li>
-<li>Calibration: three groups of 30 real worms held out of the reference scored 7, 6 and 7 of 8. Random rate networks
-and a random gated recurrent network scored 0 of 8. Expect real nervous systems to land around 6 to 8.</li>
+<li>Calibration: groups of real worms held out of the reference sit at a distance of 0.36 to 0.65 (6 to 8 signatures
+inside); a worm emulator fitted to the atlas at 0.86 to 1.08; a network with hidden slow drives at the worm's
+timescale at 2.37 and a small trained transformer at 2.48; untrained recurrent, spiking, gated and transformer
+networks at 3.8 to 5.4. The count of signatures inside is coarse: untrained networks often reach 1 by chance.</li>
 <li>Being inside means no difference from real worm groups was detected with 30 runs, not that the system is the same.</li>
 <li>Your choices of noise and step length shape the result. Report them with your score.</li>
 </ul>

@@ -17,7 +17,8 @@ import warnings
 from pathlib import Path
 
 
-def run_file(path: str | Path, class_name: str = "System", name: str | None = None, log=print) -> tuple[str, dict]:
+def run_file(path: str | Path, class_name: str = "System", name: str | None = None, log=print,
+             noise_check: bool = True) -> tuple[str, dict]:
     import numpy as np
 
     from .networks import NetworkError, load_network
@@ -39,7 +40,7 @@ def run_file(path: str | Path, class_name: str = "System", name: str | None = No
             if "activity" in z.files:
                 act, sch = recordings_from_upload(z)
                 return name, evaluate(act, sch, "recordings made by the system's owner")
-    return name, run_test(load_network(path, name), log=log)
+    return name, run_test(load_network(path, name), log=log, noise_check=noise_check)
 
 
 def main(argv=None) -> int:
@@ -49,12 +50,14 @@ def main(argv=None) -> int:
     ap.add_argument("--class", dest="cls", default="System", help="class name in a .py file (default System)")
     ap.add_argument("--name", default=None)
     ap.add_argument("--out", default="results/brainlike")
+    ap.add_argument("--no-noise-check", action="store_true", help="models: skip the runs at half and double noise")
     a = ap.parse_args(argv)
     warnings.filterwarnings("ignore", category=RuntimeWarning)
     from .networks import NetworkError
     from .report import render
     try:
-        name, res = run_file(a.file, a.cls, a.name, log=lambda m: print(m, file=sys.stderr, flush=True))
+        name, res = run_file(a.file, a.cls, a.name, log=lambda m: print(m, file=sys.stderr, flush=True),
+                             noise_check=not a.no_noise_check)
     except NetworkError as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
@@ -64,7 +67,10 @@ def main(argv=None) -> int:
     (out / f"{slug}.brainlike.json").write_text(json.dumps({"name": name, **res}, indent=1, default=float))
     (out / f"{slug}.brainlike.html").write_text(render(res, name), encoding="utf-8")
     if res["valid"]:
-        print(f"{name}: {res['score']} of {res['out_of']} signatures inside the real-worm range")
+        print(f"{name}: {res['score']} of {res['out_of']} signatures inside the real-worm range "
+              f"({res['score_step_free']} of {res['out_of_step_free']} that do not depend on the step length)")
+        for c in res.get("noise_check", []):
+            print(f"  at {c['factor']:g}x noise: {c['score']} of {res['out_of']}" if c["valid"] else f"  at {c['factor']:g}x noise: not scored")
     else:
         print(f"{name}: not scored ({'; '.join(res['problems'])})")
     for k, v in res["signatures"].items():

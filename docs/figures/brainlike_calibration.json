@@ -1,13 +1,13 @@
 {
  "random tanh RNN (npz)": {
-  "score": 0,
+  "score": 1,
   "valid": true,
   "problems": [],
   "signatures": {
    "rest_dim": {
-    "value": 0.2956602652917142,
+    "value": 0.23656436567824773,
     "inside": false,
-    "distance": -9.013394704583819
+    "distance": -13.090281102203658
    },
    "slow_share": {
     "value": 0.0,
@@ -15,57 +15,9 @@
     "distance": -13.53376835934587
    },
    "correlation": {
-    "value": 0.14089370364611123,
+    "value": 0.10315730490832234,
     "inside": false,
-    "distance": -3.5836979027229305
-   },
-   "timescale": {
-    "value": 1.5,
-    "inside": false,
-    "distance": -5.142224992754226
-   },
-   "echo_breadth": {
-    "value": 0.11363636363636363,
-    "inside": false,
-    "distance": 1.9416149120368493
-   },
-   "evoked_share": {
-    "value": 0.1689059731406973,
-    "inside": false,
-    "distance": -2.6926959323480526
-   },
-   "tiring": {
-    "value": 0.02756487063102846,
-    "inside": false,
-    "distance": 1.8844211245210694
-   },
-   "watch_share": {
-    "value": 1.2346541588796882,
-    "inside": false,
-    "distance": 2.1811054833859833
-   }
-  },
-  "poked_response": 1.4958702441344598
- },
- "lab network (slow drives share 0.0)": {
-  "score": 0,
-  "valid": true,
-  "problems": [],
-  "signatures": {
-   "rest_dim": {
-    "value": 0.2751475112916273,
-    "inside": false,
-    "distance": -10.428521106037557
-   },
-   "slow_share": {
-    "value": 0.0,
-    "inside": false,
-    "distance": -13.53376835934587
-   },
-   "correlation": {
-    "value": 0.13146707562849774,
-    "inside": false,
-    "distance": -4.038426594667506
+    "distance": -5.40405436578383
    },
    "timescale": {
     "value": 1.0,
@@ -73,27 +25,75 @@
     "distance": -5.356484367452319
    },
    "echo_breadth": {
-    "value": 0.11363636363636363,
-    "inside": false,
-    "distance": 1.9416149120368493
+    "value": 0.02474747474747474,
+    "inside": true,
+    "distance": -0.4556496315915323
    },
    "evoked_share": {
-    "value": 0.2848169406072902,
+    "value": 0.18293952097138094,
     "inside": false,
-    "distance": -1.4310960168844622
+    "distance": -2.5399517775557334
    },
    "tiring": {
-    "value": 0.07188066326336826,
+    "value": 0.04867883510178529,
     "inside": false,
-    "distance": 2.0793211787288657
+    "distance": 1.9772799582563132
    },
    "watch_share": {
-    "value": 1.1919218583937317,
+    "value": 1.5318867243871799,
     "inside": false,
-    "distance": 2.070700129244116
+    "distance": 2.949050721160743
    }
   },
-  "poked_response": 1.3601155906785527
+  "poked_response": 1.3422952243956499
+ },
+ "lab network (slow drives share 0.0)": {
+  "score": 1,
+  "valid": true,
+  "problems": [],
+  "signatures": {
+   "rest_dim": {
+    "value": 0.22248910295092858,
+    "inside": false,
+    "distance": -14.061300200504293
+   },
+   "slow_share": {
+    "value": 0.0,
+    "inside": false,
+    "distance": -13.53376835934587
+   },
+   "correlation": {
+    "value": 0.09483908463754806,
+    "inside": false,
+    "distance": -5.8053148606255105
+   },
+   "timescale": {
+    "value": 1.0,
+    "inside": false,
+    "distance": -5.356484367452319
+   },
+   "echo_breadth": {
+    "value": 0.035858585858585854,
+    "inside": true,
+    "distance": 0.23522574774575278
+   },
+   "evoked_share": {
+    "value": 0.20051471888140865,
+    "inside": false,
+    "distance": -2.3486595410903846
+   },
+   "tiring": {
+    "value": 0.023515091253859713,
+    "inside": false,
+    "distance": 1.8666102680914405
+   },
+   "watch_share": {
+    "value": 1.0960492650644145,
+    "inside": false,
+    "distance": 1.8229988003044053
+   }
+  },
+  "poked_response": 1.499080679013515
  },
  "lab network (slow drives share 0.4)": {
   "score": 0,
@@ -101,9 +101,9 @@
   "problems": [],
   "signatures": {
    "rest_dim": {
-    "value": 0.5503025024960463,
+    "value": 0.5558091987377662,
     "inside": false,
-    "distance": 4.528784665095462
+    "distance": 4.729919097444474
    },
    "slow_share": {
     "value": 0.0,
@@ -111,9 +111,9 @@
     "distance": -13.53376835934587
    },
    "correlation": {
-    "value": 0.27728038577878833,
+    "value": 0.26804699571089313,
     "inside": false,
-    "distance": 3.615971922270554
+    "distance": 3.0782919332036096
    },
    "timescale": {
     "value": 4.0,
@@ -121,27 +121,27 @@
     "distance": -4.070928119263763
    },
    "echo_breadth": {
-    "value": 0.25,
+    "value": 0.004545454545454547,
     "inside": false,
-    "distance": 11.42392029640286
+    "distance": -1.7274089537217328
    },
    "evoked_share": {
-    "value": 0.20294068300275508,
+    "value": 0.03122925946833461,
     "inside": false,
-    "distance": -2.322254825494421
+    "distance": -4.191198913788686
    },
    "tiring": {
-    "value": 0.06780183195175388,
+    "value": -0.07874623832938726,
     "inside": false,
-    "distance": 2.0613825524171707
+    "distance": 1.4168667907607078
    },
    "watch_share": {
-    "value": 1.891068198876088,
+    "value": 0.8353633103172733,
     "inside": false,
-    "distance": 3.8770503242988488
+    "distance": 1.1494772527545025
    }
   },
-  "poked_response": 1.1933651487777017
+  "poked_response": 1.1330242403176738
  },
  "random GRU (ONNX)": {
   "score": 0,
@@ -149,9 +149,9 @@
   "problems": [],
   "signatures": {
    "rest_dim": {
-    "value": 0.23151200055586263,
+    "value": 0.17948616375837875,
     "inside": false,
-    "distance": -13.438831827008379
+    "distance": -17.02797130625778
    },
    "slow_share": {
     "value": 0.0,
@@ -159,9 +159,9 @@
     "distance": -13.53376835934587
    },
    "correlation": {
-    "value": 0.11819654617037909,
+    "value": 0.08842965453499903,
     "inside": false,
-    "distance": -4.6785802626203425
+    "distance": -6.1144977159579295
    },
    "timescale": {
     "value": 1.0,
@@ -169,31 +169,31 @@
     "distance": -5.356484367452319
    },
    "echo_breadth": {
-    "value": 0.045454545454545456,
+    "value": 0.0010101010101010097,
     "inside": false,
-    "distance": -4.902673127420129
+    "distance": -1.949966835094518
    },
    "evoked_share": {
-    "value": 0.01562908928752021,
+    "value": 0.16645761764970657,
     "inside": false,
-    "distance": -4.360994523397461
+    "distance": -2.7193443604301404
    },
    "tiring": {
-    "value": -0.0008717580094613098,
+    "value": -0.01853459399389592,
     "inside": false,
-    "distance": 1.7593573462535923
+    "distance": 1.6816765131612033
    },
    "watch_share": {
-    "value": 0.8799918942795205,
+    "value": 0.0673835560023665,
     "inside": false,
-    "distance": 1.264781941740794
+    "distance": -1.4143428245010243
    }
   },
-  "poked_response": 0.004042104720957566
+  "poked_response": -0.042423321881870854
  },
  "held_out_worms": [
   {
-   "score": 7,
+   "score": 8,
    "signatures": {
     "rest_dim": {
      "value": 0.4288949436821291,
@@ -216,9 +216,9 @@
      "distance": -0.26636529154683414
     },
     "echo_breadth": {
-     "value": 0.09803921568627451,
-     "inside": false,
-     "distance": 1.6374952664865832
+     "value": 0.042483660130718956,
+     "inside": true,
+     "distance": 0.7100244759571473
     },
     "evoked_share": {
      "value": 0.4301437580486671,
@@ -261,9 +261,9 @@
      "distance": 1.8135509211699365
     },
     "echo_breadth": {
-     "value": 0.08163265306122448,
+     "value": 0.029001074113856065,
      "inside": true,
-     "distance": -0.3556778568352655
+     "distance": -0.08191612758269448
     },
     "evoked_share": {
      "value": 0.44798949034250185,
@@ -283,7 +283,7 @@
    }
   },
   {
-   "score": 7,
+   "score": 8,
    "signatures": {
     "rest_dim": {
      "value": 0.4204572193523147,
@@ -306,9 +306,9 @@
      "distance": 0.5297873202036482
     },
     "echo_breadth": {
-     "value": 0.09523809523809523,
-     "inside": false,
-     "distance": 1.0860428167708966
+     "value": 0.03809523809523809,
+     "inside": true,
+     "distance": 0.5061788565667684
     },
     "evoked_share": {
      "value": 0.3921767050260543,
@@ -327,5 +327,397 @@
     }
    }
   }
- ]
+ ],
+ "middle": {
+  "M3": {
+   "name": "Artificial-lab network with 40 s hidden drives",
+   "score": 3,
+   "valid": true,
+   "problems": [],
+   "inside": {
+    "rest_dim": false,
+    "slow_share": false,
+    "correlation": false,
+    "timescale": true,
+    "echo_breadth": true,
+    "evoked_share": false,
+    "tiring": false,
+    "watch_share": true
+   },
+   "distance": {
+    "rest_dim": 5.248653452127581,
+    "slow_share": -2.00650115341295,
+    "correlation": 4.307072589105014,
+    "timescale": -0.42851874939618556,
+    "echo_breadth": -0.5192375976980423,
+    "evoked_share": -3.858202651413678,
+    "tiring": 2.2215946750305466,
+    "watch_share": 0.3854780948762608
+   }
+  },
+  "M4": {
+   "name": "RNN trained on a flip-flop task",
+   "score": 0,
+   "valid": true,
+   "problems": [],
+   "inside": {
+    "rest_dim": false,
+    "slow_share": false,
+    "correlation": false,
+    "timescale": false,
+    "echo_breadth": false,
+    "evoked_share": false,
+    "tiring": false,
+    "watch_share": false
+   },
+   "distance": {
+    "rest_dim": 8.497317305956239,
+    "slow_share": -6.490751816154435,
+    "correlation": 5.82139582761562,
+    "timescale": -3.6424093698675772,
+    "echo_breadth": -1.8227909028814986,
+    "evoked_share": -4.081525557359871,
+    "tiring": 1.9132350062166557,
+    "watch_share": 3.2063340122747515
+   }
+  },
+  "M5": {
+   "name": "RNN before training on a flip-flop task",
+   "score": 1,
+   "valid": true,
+   "problems": [],
+   "inside": {
+    "rest_dim": false,
+    "slow_share": false,
+    "correlation": false,
+    "timescale": false,
+    "echo_breadth": true,
+    "evoked_share": false,
+    "tiring": false,
+    "watch_share": false
+   },
+   "distance": {
+    "rest_dim": -11.644359772500202,
+    "slow_share": -13.53376835934587,
+    "correlation": -4.744919992579153,
+    "timescale": -5.249354680103273,
+    "echo_breadth": 0.9100438440636319,
+    "evoked_share": -1.2313117318824454,
+    "tiring": 2.0851294434142646,
+    "watch_share": 1.3559928960352174
+   }
+  },
+  "M6": {
+   "name": "RNN trained on context-dependent integration",
+   "score": 2,
+   "valid": true,
+   "problems": [],
+   "inside": {
+    "rest_dim": false,
+    "slow_share": false,
+    "correlation": false,
+    "timescale": false,
+    "echo_breadth": false,
+    "evoked_share": true,
+    "tiring": false,
+    "watch_share": true
+   },
+   "distance": {
+    "rest_dim": 7.149865744631855,
+    "slow_share": -13.53376835934587,
+    "correlation": 6.0436344800368955,
+    "timescale": -2.785371871075206,
+    "echo_breadth": 1.0634115932267856,
+    "evoked_share": -0.5565846507901173,
+    "tiring": 1.8591755838918385,
+    "watch_share": 0.9755152964494509
+   }
+  },
+  "M7": {
+   "name": "RNN before training on context-dependent integration",
+   "score": 1,
+   "valid": true,
+   "problems": [],
+   "inside": {
+    "rest_dim": false,
+    "slow_share": false,
+    "correlation": false,
+    "timescale": false,
+    "echo_breadth": false,
+    "evoked_share": false,
+    "tiring": false,
+    "watch_share": true
+   },
+   "distance": {
+    "rest_dim": 4.186349554740784,
+    "slow_share": -13.53376835934587,
+    "correlation": 2.6930566090954073,
+    "timescale": -4.927965618056134,
+    "echo_breadth": -3.3171081063844845,
+    "evoked_share": -6.695463485554071,
+    "tiring": 1.9560165004972156,
+    "watch_share": -0.23514439716481103
+   }
+  },
+  "M8": {
+   "name": "Spiking network, plain",
+   "score": 0,
+   "valid": true,
+   "problems": [],
+   "inside": {
+    "rest_dim": false,
+    "slow_share": false,
+    "correlation": false,
+    "timescale": false,
+    "echo_breadth": false,
+    "evoked_share": false,
+    "tiring": false,
+    "watch_share": false
+   },
+   "distance": {
+    "rest_dim": -21.13368564911674,
+    "slow_share": -13.53376835934587,
+    "correlation": -8.19178339654345,
+    "timescale": -5.570743742150412,
+    "echo_breadth": -2.0135548012010283,
+    "evoked_share": -4.140762498713496,
+    "tiring": 1.6690250609225492,
+    "watch_share": 1.3238893732043444
+   }
+  },
+  "M1.g1": {
+   "name": "Worm emulator (minimal recipe), group 1",
+   "score": 6,
+   "valid": true,
+   "problems": [],
+   "inside": {
+    "rest_dim": true,
+    "slow_share": true,
+    "correlation": true,
+    "timescale": true,
+    "echo_breadth": false,
+    "evoked_share": false,
+    "tiring": true,
+    "watch_share": true
+   },
+   "distance": {
+    "rest_dim": -0.46865043764931313,
+    "slow_share": -0.7014619778904693,
+    "correlation": -0.9122556731945175,
+    "timescale": -0.8570374987923711,
+    "echo_breadth": 1.234205179670271,
+    "evoked_share": -1.894689079950414,
+    "tiring": 0.3229791327288833,
+    "watch_share": -0.47405735995483417
+   }
+  },
+  "M1.g2": {
+   "name": "Worm emulator (minimal recipe), group 2",
+   "score": 4,
+   "valid": true,
+   "problems": [],
+   "inside": {
+    "rest_dim": false,
+    "slow_share": true,
+    "correlation": false,
+    "timescale": true,
+    "echo_breadth": false,
+    "evoked_share": false,
+    "tiring": true,
+    "watch_share": true
+   },
+   "distance": {
+    "rest_dim": -1.8882589222187842,
+    "slow_share": -0.601538347283733,
+    "correlation": -1.9140762386936128,
+    "timescale": -0.6427781240942783,
+    "echo_breadth": 1.4524512749549365,
+    "evoked_share": -1.69694672925119,
+    "tiring": 0.06940970835163664,
+    "watch_share": -0.3712022418886748
+   }
+  },
+  "M1.g3": {
+   "name": "Worm emulator (minimal recipe), group 3",
+   "score": 4,
+   "valid": true,
+   "problems": [],
+   "inside": {
+    "rest_dim": true,
+    "slow_share": true,
+    "correlation": false,
+    "timescale": true,
+    "echo_breadth": false,
+    "evoked_share": false,
+    "tiring": false,
+    "watch_share": true
+   },
+   "distance": {
+    "rest_dim": 0.08632278418284602,
+    "slow_share": -0.6825989654817882,
+    "correlation": -1.5572871607466472,
+    "timescale": -0.42851874939618556,
+    "echo_breadth": 2.061818786680111,
+    "evoked_share": -1.67452587304786,
+    "tiring": 1.3606184780932231,
+    "watch_share": -0.5988312292236012
+   }
+  },
+  "M2.g1": {
+   "name": "Watching copy (VAR(3) from rest), group 1",
+   "score": 0,
+   "valid": true,
+   "problems": [],
+   "inside": {
+    "rest_dim": false,
+    "slow_share": false,
+    "correlation": false,
+    "timescale": false,
+    "echo_breadth": false,
+    "evoked_share": false,
+    "tiring": false,
+    "watch_share": false
+   },
+   "distance": {
+    "rest_dim": -10.359690979195321,
+    "slow_share": -13.53376835934587,
+    "correlation": -4.375597065565572,
+    "timescale": -3.85666874456567,
+    "echo_breadth": -1.2978204850254256,
+    "evoked_share": -3.1651888553475196,
+    "tiring": 1.0219711086482908,
+    "watch_share": 29.992911365523437
+   }
+  },
+  "M2.g2": {
+   "name": "Watching copy (VAR(3) from rest), group 2",
+   "score": 1,
+   "valid": true,
+   "problems": [],
+   "inside": {
+    "rest_dim": false,
+    "slow_share": false,
+    "correlation": false,
+    "timescale": false,
+    "echo_breadth": false,
+    "evoked_share": false,
+    "tiring": true,
+    "watch_share": false
+   },
+   "distance": {
+    "rest_dim": -10.34740726255648,
+    "slow_share": -13.53376835934587,
+    "correlation": -4.4277066341774685,
+    "timescale": -3.85666874456567,
+    "echo_breadth": -1.2641252006600159,
+    "evoked_share": -3.1447949831002946,
+    "tiring": 0.3986772666445868,
+    "watch_share": 13.750556446384916
+   }
+  },
+  "M2.g3": {
+   "name": "Watching copy (VAR(3) from rest), group 3",
+   "score": 0,
+   "valid": true,
+   "problems": [],
+   "inside": {
+    "rest_dim": false,
+    "slow_share": false,
+    "correlation": false,
+    "timescale": false,
+    "echo_breadth": false,
+    "evoked_share": false,
+    "tiring": false,
+    "watch_share": false
+   },
+   "distance": {
+    "rest_dim": -8.867307507324687,
+    "slow_share": -13.53376835934587,
+    "correlation": -4.197436434579759,
+    "timescale": -4.070928119263763,
+    "echo_breadth": -1.6475542986112313,
+    "evoked_share": -3.299372238016461,
+    "tiring": 2.1637660311592204,
+    "watch_share": 9.798970611023526
+   }
+  },
+  "M9": {
+   "name": "Spiking network with adaptation",
+   "score": 1,
+   "valid": true,
+   "problems": [],
+   "inside": {
+    "rest_dim": false,
+    "slow_share": false,
+    "correlation": false,
+    "timescale": false,
+    "echo_breadth": false,
+    "evoked_share": false,
+    "tiring": false,
+    "watch_share": true
+   },
+   "distance": {
+    "rest_dim": -16.18063685049565,
+    "slow_share": -12.832767149803493,
+    "correlation": -6.168324820771491,
+    "timescale": -5.570743742150412,
+    "echo_breadth": -2.0135548012010283,
+    "evoked_share": -4.220020490237634,
+    "tiring": 1.6356877738857791,
+    "watch_share": 0.5360724222710788
+   }
+  },
+  "M10": {
+   "name": "Transformer trained on a synthetic language",
+   "score": 2,
+   "valid": true,
+   "problems": [],
+   "inside": {
+    "rest_dim": false,
+    "slow_share": false,
+    "correlation": true,
+    "timescale": false,
+    "echo_breadth": true,
+    "evoked_share": false,
+    "tiring": false,
+    "watch_share": false
+   },
+   "distance": {
+    "rest_dim": 1.0082649737969833,
+    "slow_share": -4.753899425152338,
+    "correlation": 0.44683915720231177,
+    "timescale": -4.713706243358041,
+    "echo_breadth": -0.4874436146447867,
+    "evoked_share": -4.236617434898783,
+    "tiring": 1.9950828748036276,
+    "watch_share": -2.215026973031339
+   }
+  },
+  "M11": {
+   "name": "Transformer, untrained",
+   "score": 1,
+   "valid": true,
+   "problems": [],
+   "inside": {
+    "rest_dim": false,
+    "slow_share": false,
+    "correlation": false,
+    "timescale": false,
+    "echo_breadth": false,
+    "evoked_share": false,
+    "tiring": false,
+    "watch_share": true
+   },
+   "distance": {
+    "rest_dim": -10.434350922415382,
+    "slow_share": -13.53376835934587,
+    "correlation": -3.099518661755127,
+    "timescale": -5.570743742150412,
+    "echo_breadth": -2.0135548012010283,
+    "evoked_share": -4.6954070031131065,
+    "tiring": 1.7860722283106032,
+    "watch_share": -0.9115953825726755
+   }
+  }
+ }
 }

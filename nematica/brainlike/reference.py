@@ -17,7 +17,7 @@ import numpy as np
 from .signatures import SIGNATURES, measure
 
 REF_PATH = Path(__file__).with_name("reference.json")
-GROUPS, GROUP_SIZE = 60, 30
+GROUPS, GROUP_SIZE = 200, 30
 
 
 def build(data="data/raw/randi2023_wt_npz", groups: int = GROUPS, size: int = GROUP_SIZE, seed: int = 7) -> dict:
@@ -26,7 +26,7 @@ def build(data="data/raw/randi2023_wt_npz", groups: int = GROUPS, size: int = GR
     warnings.filterwarnings("ignore", category=RuntimeWarning)
     recs = sorted(load_pumpprobe_dir(data), key=lambda r: r.uid)
     rng = np.random.default_rng(seed)
-    vals = {k: [] for k in SIGNATURES + ("poked_response", "units_per_run")}
+    vals = {k: [] for k in SIGNATURES + ("poked_response", "push_excess", "reliability", "units_per_run")}
     for g in range(groups):
         pick = [recs[i] for i in sorted(rng.choice(len(recs), size=size, replace=False))]
         m = measure(pick, valid_fn=lambda c: role(c) is not None)

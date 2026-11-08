@@ -6,16 +6,19 @@ left and right partners of a neuron type share a class; in an artificial system 
 class, and a unit keeps its name across runs).
 
 The definitions are those of the project's cross-system comparison (README "The six axes",
-scripts/run_ladder.py and scripts/run_week1.py, which are the research versions of this code; a test
-checks they agree on the atlas), plus three rest signatures from the emulator work. Frame constants are
-in atlas frames of 0.5 s; recordings at another step length are resampled to 0.5 s first (test.py).
+scripts/run_ladder.py and scripts/run_week1.py, which are the research versions of this code; on all 113
+atlas worms they gave identical values when written, 8 Nov 2026), plus three rest signatures from the emulator
+work. Push spread differs from the research version on purpose: it subtracts the same share at no-push moments
+(amendment 1, 9 Nov 2026). Frame constants are
+in atlas frames of 0.5 s; recordings at another step length are resampled to 0.5 s first (protocol.py).
 
 SIGNATURES (name: what it measures; worm value from the atlas in brackets)
   rest_dim       share of resting variance in the top 3 patterns (0.43): how few patterns the activity uses
   slow_share     share of each unit's activity that is slow (lags 10 to 40 s) (about 0.7)
   correlation    mean absolute correlation between units at rest
   timescale      median time for a unit's activity autocorrelation to fall to 0.5, seconds
-  echo_breadth   share of units a single push moves by more than 1 SD (0.085)
+  echo_breadth   share of units a single push moves by more than 1 SD, minus the same share at clean
+                 no-push moments (amendment 1, 9 Nov 2026)
   evoked_share   share of the change after a push that the push caused, against moments with no push (0.42)
   tiring         log change of a unit's own response when pushed a second time, against matched controls (-0.42)
   watch_share    how well a linear model fitted at rest predicts push responses, as a share of how well
@@ -41,7 +44,7 @@ ABOUT = {
     "slow_share": "Share of each unit's activity that is slow (still correlated 10 to 40 s later).",
     "correlation": "Mean absolute correlation between units at rest.",
     "timescale": "Median time for a unit's activity to become half-forgotten (autocorrelation 0.5), in seconds.",
-    "echo_breadth": "Share of units that a single push moves by more than 1 SD.",
+    "echo_breadth": "Share of units that a single push moves by more than 1 SD, minus the same share at moments with no push.",
     "evoked_share": "How much of the change after a push is caused by the push, against moments with no push.",
     "tiring": "Log change in a unit's own response when it is pushed a second time, against matched controls. "
               "Negative = it answers less.",
@@ -156,19 +159,40 @@ def watch_share(runs):
     return float(np.mean(shares)), float(np.nanmedian([agree(R[a], R[b]) for a in range(len(R)) for b in range(a + 1, len(R))]))
 
 
-def echo_breadth(runs):
-    vals = []
+def _breadth(w, k, v):
+    cl = w.r.classes
+    per = defaultdict(list)
+    for j in range(w.N):
+        if j != k and w.valid[j] and (k < 0 or cl[j] != cl[k]) and np.isfinite(v[j]):
+            per[cl[j]].append(v[j])
+    if len(per) < 10:
+        return None
+    m = np.array([np.mean(x) for x in per.values()])
+    return float(np.mean(np.abs(m) > 1.0))
+
+
+def _clean_moments(w, step=5):
+    """No-push moments: windows with no push within 30 s before or during (as evoked_share uses)."""
+    return [t for t in range(PRE, w.T - POST, step) if w.unpoked[t - PRE:t + POST].all()]
+
+
+def echo_breadth(runs, parts=False):
+    """Push spread beyond ongoing change (amendment 1, 9 Nov 2026): median share of units moved by more
+    than 1 SD after a push, minus the same share at clean no-push moments."""
+    real, sham = [], []
     for w in runs:
-        cl = w.r.classes
         for k, f, v in w.stims:
-            per = defaultdict(list)
-            for j in range(w.N):
-                if j != k and w.valid[j] and cl[j] != cl[k] and np.isfinite(v[j]):
-                    per[cl[j]].append(v[j])
-            if len(per) >= 10:
-                m = np.array([np.mean(x) for x in per.values()])
-                vals.append(float(np.mean(np.abs(m) > 1.0)))
-    return float(np.median(vals)) if vals else np.nan
+            b = _breadth(w, k, v)
+            if b is not None:
+                real.append(b)
+        for t in _clean_moments(w):
+            b = _breadth(w, -1, w.change(t))
+            if b is not None:
+                sham.append(b)
+    if not real or not sham:
+        return (np.nan, np.nan, np.nan) if parts else np.nan
+    r, s_ = float(np.median(real)), float(np.median(sham))
+    return (r - s_, r, s_) if parts else r - s_
 
 
 def _rest_matrix(w):
@@ -258,9 +282,7 @@ def timescale(runs, dt=0.5, max_s=120.0):
 def evoked_share(runs):
     fl, ev = [], []
     for w in runs:
-        for t in range(PRE, w.T - POST, 5):
-            if not w.unpoked[t - PRE:t + POST].all():
-                continue
+        for t in _clean_moments(w):
             v = w.change(t)[w.valid]
             v = v[np.isfinite(v)]
             if len(v) >= 10:
@@ -343,6 +365,19 @@ def tiring(runs, all_valid=True):
     return float(np.mean(per)) if per else np.nan
 
 
+def push_excess(runs):
+    """Median over pushes of how much more the pushed unit changed than the median of the other recorded
+    units (SD): checks a push reached one unit rather than the whole system (worms: 1.54)."""
+    v = []
+    for w in runs:
+        for k, f, ch in w.stims:
+            o = np.delete(ch, k)
+            o = o[np.isfinite(o)]
+            if np.isfinite(ch[k]) and o.size >= 5:
+                v.append(ch[k] - np.median(o))
+    return float(np.median(v)) if v else np.nan
+
+
 def poked_response(runs):
     """Median change of the pushed unit itself, in SD: checks the pushes were real and strong enough."""
     v = [s[2][s[0]] for w in runs for s in w.stims if np.isfinite(s[2][s[0]])]
@@ -352,9 +387,10 @@ def poked_response(runs):
 def measure(recordings: Sequence, valid_fn: Callable[[str], bool] | None = None, dt: float = 0.5) -> dict:
     runs = [Run(r, valid_fn) for r in recordings]
     ws, rel = watch_share(runs)
+    eb, eb_real, eb_sham = echo_breadth(runs, parts=True)
     return {"rest_dim": rest_dim(runs), "slow_share": slow_share(runs), "correlation": correlation(runs),
-            "timescale": timescale(runs, dt), "echo_breadth": echo_breadth(runs), "evoked_share": evoked_share(runs),
+            "timescale": timescale(runs, dt), "echo_breadth": eb, "echo_breadth_push": eb_real, "echo_breadth_nopush": eb_sham, "evoked_share": evoked_share(runs),
             "tiring": tiring(runs, all_valid=False), "watch_share": ws,
-            "reliability": rel, "poked_response": poked_response(runs),
+            "reliability": rel, "poked_response": poked_response(runs), "push_excess": push_excess(runs),
             "n_runs": len(runs), "n_pushes": int(sum(len(w.stims) for w in runs)),
-            "units_per_run": float(np.median([w.valid.sum() for w in runs]))}
+            "units_per_run": float(np.median([(w.valid & np.isfinite(w.sd)).sum() for w in runs]))}
