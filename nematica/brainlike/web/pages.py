@@ -3,17 +3,21 @@ from __future__ import annotations
 
 import html
 import json
+import os
 import time
 
 from .. import report as R
 from ..signatures import ABOUT, LABELS, SIGNATURES
+
+# Where the test is served: "" at the root of its own site, "/test" when it sits inside the NEMATICA site.
+BASE = os.environ.get("BRAINLIKE_BASE", "").rstrip("/")
 
 INK, MUTED, RULE, IN_C, OUT_C, BAND = R.INK, R.MUTED, R.RULE, R.IN_C, R.OUT_C, R.BAND
 
 CSS = R.CSS + f"""
 nav{{display:flex;flex-wrap:wrap;gap:6px 22px;align-items:baseline;border-bottom:1px solid {RULE};padding-bottom:12px;margin-bottom:34px;font-size:15px}}
 nav a{{color:{INK};text-decoration:none}} nav a:hover,nav a:focus-visible{{text-decoration:underline}}
-nav .home{{font:600 17px Georgia,serif;margin-right:auto}}
+nav .home{{font:600 17px Georgia,serif;margin-right:auto}} nav .site{{color:{MUTED}}}
 a{{color:#1d5c8f}} a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{{outline:2px solid #1d5c8f;outline-offset:2px}}
 .lede{{font-size:18px;max-width:62ch}}
 h1.hero{{font-size:38px;max-width:20ch;margin-bottom:14px}}
@@ -46,13 +50,21 @@ def _e(s) -> str:
 
 
 def nav() -> str:
+    back = "<a class='site' href='@site/'>NEMATICA site</a>" if BASE else ""
     return ("<nav aria-label='Site'><a class='home' href='/'>Brain-likeness test</a><a href='/#submit'>Submit a system</a>"
-            "<a href='/how'>How it works</a><a href='/leaderboard'>Leaderboard</a></nav>")
+            "<a href='/how'>How it works</a><a href='/leaderboard'>Leaderboard</a>" + back + "</nav>")
+
+
+def _based(doc: str) -> str:
+    """Prefix the test's own links with BASE; '@site/' is the front page of the site around it."""
+    if BASE:
+        doc = doc.replace("href='/", f"href='{BASE}/").replace("action='/", f"action='{BASE}/").replace(">/r/", f">{BASE}/r/")
+    return doc.replace("href='@site/'", "href='/'")
 
 
 def page(title: str, body: str, refresh: int | None = None) -> str:
     meta = f"<meta http-equiv='refresh' content='{refresh}'>" if refresh else ""
-    return ("<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'>"
+    return _based("<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'>"
             "<meta name='viewport' content='width=device-width,initial-scale=1'>" + meta +
             f"<title>{_e(title)}</title><style>{CSS}</style></head><body><main>{nav()}{body}"
             "<footer>Reference data: Randi et al. 2023, signal propagation atlas of <i>C. elegans</i> (CC BY 4.0), "
@@ -61,7 +73,7 @@ def page(title: str, body: str, refresh: int | None = None) -> str:
 
 def with_nav(report_html: str) -> str:
     """A report page from report.render, with the site's navigation and styles."""
-    return report_html.replace("<main>", "<main>" + nav(), 1).replace("</style>", CSS[len(R.CSS):] + "</style>", 1)
+    return _based(report_html.replace("<main>", "<main>" + nav(), 1).replace("</style>", CSS[len(R.CSS):] + "</style>", 1))
 
 
 # ---------------------------------------------------------------- the comparison figure

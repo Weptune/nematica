@@ -284,7 +284,7 @@ async def submit(request: Request, mode: str = Form(...), name: str = Form(...),
                   "values (?,?,?,?,?,?,?,?,?,?)",
                   (job_id, time.time(), name, _clean(author, 80), _clean(description, 600), mode, "queued",
                    1 if public else 0, ip, 1 if tuned else 0))
-    return RedirectResponse(f"/r/{job_id}", status_code=303)
+    return RedirectResponse(f"{pages.BASE}/r/{job_id}", status_code=303)
 
 
 def _job(job_id: str):

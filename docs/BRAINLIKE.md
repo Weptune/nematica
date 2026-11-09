@@ -209,7 +209,14 @@ print(run_python(System())["score"])
 
 ## Running the website
 
-The site is a FastAPI app with a SQLite job store and a queue that runs each test in a separate process with
+**Inside the NEMATICA research site (local).** `web/serve.cmd` (Windows) or `web/serve.sh` serves the research
+site at http://localhost:8642 with the test at http://localhost:8642/test/, linked from the site's navigation.
+It needs the packages in `deploy/brainlike/requirements.txt`; without them it serves the site alone and says how
+to install them. The same server: `python -m nematica.brainlike.web.site [port]`. Results are kept in
+`brainlike_data/` (gitignored). The CPU and memory limits below apply on Linux only, so this is for your own use,
+not for taking submissions from strangers.
+
+**On its own (public).** The site is a FastAPI app with a SQLite job store and a queue that runs each test in a separate process with
 CPU, memory and time limits.
 
 ```
