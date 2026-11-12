@@ -522,3 +522,35 @@ gates off* (a code-path check only): separated regions give H1 real share 1.0 an
 the largest gaps are timescale spread, coupling spread and shared fraction; when the AIs are drawn from the
 brains' region H1 fails (0.0 and 0.0). The decision code does what it should; whether the gates let real
 data through is the open question this amendment cannot answer in advance.
+
+## Review 12 (12 Nov 2026, before any new brain data): close for step 1, not ready for brain measurements
+
+A third independent review checked amendment 3. **Fixed:** reporting of what matching reached, the decay
+definition, slow memory as a definition, calibration through matching (procedure), the nan rule, the slow
+set and undecided outcomes; the BVU interval and cap are correct. **Partly fixed or new, before step 1
+(loading instrument numbers only):** (1) the white-noise estimator is biased low on smooth calcium signals
+(true share 0.10 reads 0.00 to 0.07) but accurate on held or Poisson signals, so brains and AIs with the same
+noise read differently; a shape-robust estimator is needed; (2) a frozen `instrument_numbers` function
+(unit inclusion, rest segments, indicator decay table, median over individuals then preparations, no
+per-unit timescale output); (3) culture spikes are binned at 50 ms in the loader against the registered 20 ms;
+(4) a registered table of preparations and individuals (R10 one or three preparations; R7 is likely one
+monkey per dataset; R2's role; R9 sessions; R11 units); (5) a rule for instrument spread within a group
+(AIs recorded at the group median make AIs alike and brains different; record each AI at each
+preparation's own instrument for AI-to-brain distances, or widen the budget to the group's range).
+**Before brain measurements:** spike matching does not converge for slow networks and the hold factor
+ignores the target (realistic Neuropixels-like numbers are unreachable); the timescale estimator is 2 to 5
+times too short on sparse spikes at real noise levels (0.95 to 0.99), which calibration must cover; the
+bootstrap for H4 to H6 resamples single replicates rather than means; H5's code uses RMS while the text says
+"summed"; a missing C3 or budget value passes silently; segment boundaries are lost through recording;
+**the C3 and budget gates are built to fail** (a 3-df maximum against a 10-df BVU; a budget compared across
+different noise seeds, whose floor alone reached 0.5 to 0.8 BVU), so pooled, common-random-number versions
+and noise-invariant measures (disattenuated sparsity and coupling) are needed; **no positive control** has
+shown the gated pipeline can decide anything; H2 should also require a distance within the median
+real-to-real neighbour distance and be undecided unless H1's AI half holds; the hold convention shifts some
+measures by 1 to 2 BVU against linear interpolation (register both as sensitivities); unit tests.
+Provenance: `map_calibration.json` was produced while `recording.py` was still being edited (the reached
+tolerance and the calcium gain changed during the run; the gain sweep was rerun); it is regenerated with the
+final code in amendment 4, with the code hash recorded.
+
+*Status: all accepted. Amendment 4 will make these fixes, add a gated positive control on fake brains, and
+regenerate both calibration files before step 1.*
