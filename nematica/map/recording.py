@@ -86,85 +86,129 @@ def _reached(target, got, tol=0.1, key=None):
     return bool(abs(got - target) <= (0.05 if key == "noise" else tol * abs(target)))
 
 
-def match_calcium(A, prep, rng=None, n_iter=14):
-    """Registered rule (amendments 2 and 3). `prep`: `decay_over_tau` (indicator decay, the 1/e constant of
-    exp(-n/decay); half-decay times from papers are divided by ln 2, over the recorded tau_med),
-    `frames_per_tau`, `noise` (median white-noise share). Fast networks are first held (hold) so that their
-    native tau_med spans HOLD_TARGET sub-steps. Returns the knobs, the hold factor, what was reached and a
-    `reached` flag (all three within 10%). A network that cannot reach them is reported, not mapped."""
+def hold_factor(t0, target_per_tau=0.0):
+    """Amendment 4 (F6): hold so the native tau_med spans at least HOLD_TARGET sub-steps and at least twice the
+    target samples per tau, for fast and slow networks alike, so any target finer than a native step is
+    reachable. Returns 1 when no hold is needed."""
+    if not np.isfinite(t0) or t0 <= 0:
+        return 1
+    need = max(HOLD_TARGET, 2.0 * target_per_tau)
+    return max(int(np.ceil(need / t0)), 1)
+
+
+def _segments_record(fn, A, segments, rng, **kw):
+    """Amendment 4 (F11): record each segment separately (kernels, interpolation and bins never cross a
+    segment boundary). `segments` are start indices in native steps (0 implied). Returns the concatenated
+    recording and the start indices of each recorded segment."""
+    if not segments:
+        return fn(A, rng=rng, **kw), []
+    cuts = sorted(set([0] + [int(x) for x in segments if 0 < x < len(A)] + [len(A)]))
+    parts, starts, n = [], [], 0
+    for a, b in zip(cuts[:-1], cuts[1:]):
+        Y = fn(A[a:b], rng=rng, **kw)
+        if len(Y):
+            if n:
+                starts.append(n)
+            parts.append(Y)
+            n += len(Y)
+    return np.vstack(parts), starts
+
+
+def match_calcium(A, prep, rng=None, n_iter=14, rounds=8, seed=0):
+    """Registered rule (amendments 2 to 4). `prep`: `decay_over_tau` (indicator decay as the 1/e constant over
+    the recorded tau_med; half-decay times from papers are divided by ln 2), `frames_per_tau`, `noise` (median
+    white-noise share). The network is held (hold_factor); decay is found by bisection on the noiseless trace;
+    then up to `rounds` rounds of: SNR bisection to the noise target, multiplicative frame and decay updates
+    from the achieved values, stopping once all three are reached. If the frame would fall below one sub-step
+    the hold factor is raised. Every evaluation uses the same noise seed (common random numbers), so the
+    search is deterministic. `reached`: all three within tolerance (10%; noise 0.05 absolute)."""
     from .measures import noise_fraction, tau_med
-    rng = rng or np.random.default_rng(0)
+    R_ = lambda: np.random.default_rng(seed)
     t0 = tau_med(_std(A))
-    k = int(np.ceil(HOLD_TARGET / t0)) if np.isfinite(t0) and t0 < HOLD_TARGET else 1
+    k = hold_factor(t0, prep["frames_per_tau"])
     H = hold(A, k)
-    lo, hi = 0.05, 2000.0
+    rec = lambda d, f, s_: calcium(H, decay=d, frame=f, snr=s_, rng=R_())
+    lo, hi = 0.05, 4000.0
     for _ in range(n_iter):
         d = np.sqrt(lo * hi)
-        if d / tau_med(calcium(H, decay=d, frame=1, snr=1e6, rng=rng)) < prep["decay_over_tau"]:
-            lo = d
-        else:
-            hi = d
+        lo, hi = (d, hi) if d / tau_med(rec(d, 1, 1e6)) < prep["decay_over_tau"] else (lo, d)
     d = np.sqrt(lo * hi)
-    t_rec = tau_med(calcium(H, decay=d, frame=1, snr=1e6, rng=rng))
-    frame = max(t_rec / prep["frames_per_tau"], 1.0)
-    lo, hi = 0.3, 100.0
-    for _ in range(n_iter):
-        s_ = np.sqrt(lo * hi)
-        nf = np.median(noise_fraction(calcium(H, decay=d, frame=frame, snr=s_, rng=rng)))
-        if nf > prep["noise"]:
-            lo = s_
-        else:
-            hi = s_
-    snr = float(np.sqrt(lo * hi))
-    for _ in range(3):                                   # refine decay and frame on the noisy recording
-        Y = calcium(H, decay=d, frame=frame, snr=snr, rng=rng)
+    frame = max(tau_med(rec(d, 1, 1e6)) / prep["frames_per_tau"], 1.0)
+    snr, got, ok = 4.0, {}, False
+    for _ in range(rounds):
+        lo, hi = 0.2, 200.0
+        for _ in range(n_iter):
+            s_ = np.sqrt(lo * hi)
+            nf = np.median(noise_fraction(rec(d, frame, s_)))
+            lo, hi = (s_, hi) if nf > prep["noise"] else (lo, s_)
+        snr = float(np.sqrt(lo * hi))
+        Y = rec(d, frame, snr)
         t_y = tau_med(Y)
-        frame = max(frame * t_y / prep["frames_per_tau"], 1.0)
-        d = d * prep["decay_over_tau"] / (d / frame / max(tau_med(calcium(H, decay=d, frame=frame, snr=snr, rng=rng)), 1e-9))
-    Y = calcium(H, decay=d, frame=frame, snr=snr, rng=rng)
-    t_y = tau_med(Y)
-    got = {"decay_over_tau": d / frame / t_y, "frames_per_tau": t_y, "noise": float(np.median(noise_fraction(Y)))}
-    ok = all(_reached(prep[x], got[x], key=x) for x in got)
+        got = {"decay_over_tau": d / frame / t_y, "frames_per_tau": t_y, "noise": float(np.median(noise_fraction(Y)))}
+        ok = all(_reached(prep[x], got[x], key=x) for x in got)
+        if ok:
+            break
+        d = d * prep["decay_over_tau"] / got["decay_over_tau"]
+        frame = frame * t_y / prep["frames_per_tau"]
+        if frame < 1.0:                                  # the recorded timescale is too short: hold more
+            f = int(np.ceil(1.5 / frame))
+            k, H, d, frame = k * f, hold(A, k * f), d * f, frame * f
+            rec = lambda d, f_, s_, H=H: calcium(H, decay=d, frame=f_, snr=s_, rng=R_())
     return {"decay": float(d), "frame": float(frame), "snr": snr, "hold": k, "native_tau": float(t0),
             "achieved": got, "reached": ok}
 
 
-def match_spikes(A, prep, rng=None, n_iter=12, rounds=3):
-    """Registered rule (amendments 2 and 3). `prep` (real data binned at 20 ms): `bins_per_tau`,
-    `count_per_bin`, `noise`. Fast networks are held first. Bin and gain are iterated jointly, measuring the
-    timescale on the recorded counts. Returns knobs, hold, achieved numbers and `reached` (within 10%)."""
+def match_spikes(A, prep, rng=None, n_iter=14, rounds=8, seed=0):
+    """Registered rule (amendments 2 to 4). `prep` (real data binned at 20 ms): `bins_per_tau`,
+    `count_per_bin`, `noise`. The network is held (hold_factor). Up to `rounds` rounds of: gain bisection to
+    the noise target at the current bin, then a multiplicative bin update from the achieved bins per tau of the
+    recorded counts (F6), with the mean count per sub-step set so the expected count per bin is the target;
+    stopping once all three are reached. If the bin would fall below one sub-step the hold factor is raised.
+    Common random numbers as in match_calcium. `reached`: all three within tolerance."""
     from .measures import noise_fraction, tau_med
-    rng = rng or np.random.default_rng(0)
+    R_ = lambda: np.random.default_rng(seed)
     t0 = tau_med(_std(A))
-    k = int(np.ceil(HOLD_TARGET / t0)) if np.isfinite(t0) and t0 < HOLD_TARGET else 1
+    k = hold_factor(t0, prep["bins_per_tau"])
     H = hold(A, k)
-    g, b = 3.0, 1.0
+    g = 3.0
+    b = max(tau_med(spikes(H, mean_count=1.0, bin_steps=1.0, gain=g, rng=R_())) / prep["bins_per_tau"], 1.0)
+    got, ok = {}, False
     for _ in range(rounds):
         mc = prep["count_per_bin"] / b
-        t_rec = tau_med(spikes(H, mean_count=mc, bin_steps=1.0, gain=g, rng=rng))   # in native sub-steps
-        b = max(t_rec / prep["bins_per_tau"], 1.0)
-        mc = prep["count_per_bin"] / b
-        lo, hi = 0.1, 30.0
+        lo, hi = 0.05, 40.0
         for _ in range(n_iter):
             g = np.sqrt(lo * hi)
-            nf = np.median(noise_fraction(spikes(H, mean_count=mc, bin_steps=b, gain=g, rng=rng)))
-            if nf > prep["noise"]:
-                lo = g
-            else:
-                hi = g
+            nf = np.median(noise_fraction(spikes(H, mean_count=mc, bin_steps=b, gain=g, rng=R_())))
+            lo, hi = (g, hi) if nf > prep["noise"] else (lo, g)
         g = float(np.sqrt(lo * hi))
-    Y = spikes(H, mean_count=mc, bin_steps=b, gain=g, rng=rng)
-    got = {"bins_per_tau": tau_med(Y), "count_per_bin": float(Y.mean()), "noise": float(np.median(noise_fraction(Y)))}
-    ok = all(_reached(prep[x], got[x], key=x) for x in got)
-    return {"bin_steps": float(b), "mean_count": float(mc), "gain": g, "hold": k, "native_tau": float(t0),
-            "achieved": got, "reached": ok}
+        Y = spikes(H, mean_count=mc, bin_steps=b, gain=g, rng=R_())
+        t_y = tau_med(Y)
+        got = {"bins_per_tau": t_y, "count_per_bin": float(Y.mean()), "noise": float(np.median(noise_fraction(Y)))}
+        ok = all(_reached(prep[x], got[x], key=x) for x in got)
+        if ok or not np.isfinite(t_y):
+            break
+        b = b * t_y / prep["bins_per_tau"]
+        if b < 1.0:                                      # the recorded timescale is too short: hold more
+            f = int(np.ceil(1.5 / b))
+            k, H, b = k * f, hold(A, k * f), b * f
+    return {"bin_steps": float(b), "mean_count": float(prep["count_per_bin"] / b), "gain": g, "hold": k,
+            "native_tau": float(t0), "achieved": got, "reached": ok}
 
 
-def record_matched(A, rtype, knobs, rng=None):
-    """Record A with matched knobs (including the hold factor)."""
-    H = hold(A, knobs.get("hold", 1))
+def record_matched(A, rtype, knobs, rng=None, segments=None, interp=False):
+    """Record A with matched knobs (including the hold factor), segment by segment (F11). Returns the recording
+    and its segment starts. `interp=True` replaces the hold by linear interpolation (F15 sensitivity)."""
+    k = knobs.get("hold", 1)
+    A = np.asarray(A, float)
+    if k > 1 and interp:
+        t = np.arange(len(A) * k) / k
+        H = np.column_stack([np.interp(t, np.arange(len(A)), A[:, j]) for j in range(A.shape[1])])
+    else:
+        H = hold(A, k)
+    seg = [int(x) * k for x in (segments or [])]
     if rtype == "calcium":
-        return calcium(H, decay=knobs["decay"], frame=knobs["frame"], snr=knobs["snr"], rng=rng)
+        return _segments_record(calcium, H, seg, rng, decay=knobs["decay"], frame=knobs["frame"], snr=knobs["snr"])
     if rtype == "spikes":
-        return spikes(H, mean_count=knobs["mean_count"], bin_steps=knobs["bin_steps"], gain=knobs["gain"], rng=rng)
-    return native(H)
+        return _segments_record(spikes, H, seg, rng, mean_count=knobs["mean_count"], bin_steps=knobs["bin_steps"],
+                                gain=knobs["gain"])
+    return native(H), seg

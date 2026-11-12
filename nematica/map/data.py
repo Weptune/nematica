@@ -33,22 +33,32 @@ def dandi_get(asset, dest):
     return dest
 
 
-def culture_session(path, bin_s=0.05, min_spikes=200):
-    """Rat cortical culture on an HD-MEA (DANDI 002020): detected spikes per electrode -> counts per bin."""
+def bin_spikes(times_by_unit, duration_s, bin_s=None):
+    """Spike times (s) per unit -> counts per bin (time x units). Amendment 4 (F3): every spiking preparation
+    is binned at instrument.SPIKE_BIN_S (20 ms)."""
+    from .instrument import SPIKE_BIN_S
+    bin_s = bin_s or SPIKE_BIN_S
+    nb = int(duration_s / bin_s)
+    X = np.zeros((nb, len(times_by_unit)), np.float32)
+    for i, tt in enumerate(times_by_unit):
+        b = (np.asarray(tt) / bin_s).astype(int)
+        b = b[(b >= 0) & (b < nb)]
+        np.add.at(X[:, i], b, 1)
+    return X
+
+
+def culture_session(path, bin_s=None, min_spikes=200):
+    """Rat cortical culture on an HD-MEA (DANDI 002020): detected spikes per electrode (the registered unit for
+    R9 is the electrode, amendment 4) -> counts per 20 ms bin."""
     import h5py
     with h5py.File(path, "r") as f:
         g = f["processing/ecephys/detected_spikes"]
         ch = g["source_channel"][:]
         t = g["time_from_first_spike_seconds"][:]
         dur = float(f["processing/ecephys/conversion_provenance/duration_s"][0])
+    from .instrument import SPIKE_BIN_S
+    bin_s = bin_s or SPIKE_BIN_S
     chans, counts = np.unique(ch, return_counts=True)
     keep = chans[counts >= min_spikes]
-    nb = int(dur / bin_s)
-    X = np.zeros((nb, len(keep)), np.float32)
-    col = {c: i for i, c in enumerate(keep)}
-    for c, tt in zip(ch, t):
-        i = col.get(c)
-        b = int(tt / bin_s)
-        if i is not None and b < nb:
-            X[b, i] += 1
+    X = bin_spikes([t[ch == c] for c in keep], dur, bin_s)
     return {"activity": X, "dt": bin_s, "recording": "spikes", "duration_s": dur, "units_total": len(chans)}

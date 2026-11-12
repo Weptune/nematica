@@ -33,21 +33,46 @@ def _acov(Z, max_lag):
     return np.fft.irfft(F * np.conj(F), axis=0)[:max_lag + 1] / T
 
 
-def unit_timescales(X, max_lag=None):
-    """Autocorrelation half-life of each unit (samples), robust to white measurement noise: the signal's
-    lag-0 autocovariance is extrapolated from lags 1 and 2 (an exponential through them), and the half-life
-    is the first lag at which the autocovariance falls below half of it (linear interpolation; lag 0 counts
-    as the extrapolated value). nan if ac(1) <= 0.01 ac(0) or it never falls."""
+def _acov_seg(Z, max_lag, segments=None):
+    """Autocovariance pooled over segments (each segment demeaned, weighted by length; lags never cross a
+    boundary, amendment 4 F11). Segments shorter than 4 x max_lag are skipped unless none is longer."""
+    spans = _spans(len(Z), segments)
+    if len(spans) == 1:
+        return _acov(Z, max_lag)
+    long_ = [(a, b) for a, b in spans if b - a >= 4 * max_lag] or [max(spans, key=lambda x: x[1] - x[0])]
+    ac, n = np.zeros((max_lag + 1, Z.shape[1])), 0
+    for a, b in long_:
+        if b - a <= max_lag:
+            continue
+        Y = Z[a:b] - Z[a:b].mean(0)
+        ac += _acov(Y, max_lag) * (b - a)
+        n += b - a
+    return ac / n if n else np.full((max_lag + 1, Z.shape[1]), np.nan)
+
+
+def _signal_var(ac):
+    """Amendment 4 (F1): each unit's signal variance (autocovariance at lag 0 without white noise), from a
+    quadratic least-squares fit through lags 1 to 3 extrapolated to lag 0, capped at the total variance.
+    Used by both unit_timescales and noise_fraction, so the two agree."""
+    V = np.vander(np.array([1.0, 2.0, 3.0]), 3)          # columns x^2, x, 1
+    coef = np.linalg.lstsq(V, ac[1:4], rcond=None)[0]
+    return np.minimum(coef[2], ac[0])
+
+
+def unit_timescales(X, max_lag=None, segments=None):
+    """Autocorrelation half-life of each unit (samples), robust to white measurement noise: autocovariance is
+    divided by the extrapolated signal variance (_signal_var) and the half-life is the first lag at which it
+    falls below 0.5 (linear interpolation; lag 0 counts as 1). nan if ac(1) <= 0.01 ac(0), the extrapolated
+    signal variance is not positive, or it never falls."""
     Z = _z(X)
     T, N = Z.shape
-    max_lag = max_lag or min(T // 4, 4000)
-    ac = _acov(Z, max_lag)
+    longest = max(b - a for a, b in _spans(T, segments))
+    max_lag = max(min(max_lag or longest // 4, 4000), 4)
+    ac = _acov_seg(Z, max_lag, segments)
+    s0 = _signal_var(ac)
     out = np.full(N, np.nan)
-    for i in np.where(ac[1] > 0.01 * ac[0])[0]:
-        a1, a2 = ac[1, i], ac[2, i]
-        rho = min(max(a2 / a1, 1e-3), 0.999) if a1 > 0 else 1e-3
-        s0 = min(a1 / rho, ac[0, i])                     # extrapolated signal variance (never above total)
-        r = np.concatenate([[1.0], ac[1:, i] / s0])
+    for i in np.where((ac[1] > 0.01 * ac[0]) & (s0 > 0))[0]:
+        r = np.concatenate([[1.0], ac[1:, i] / s0[i]])
         below = r < 0.5
         if not below.any():
             continue
@@ -56,18 +81,18 @@ def unit_timescales(X, max_lag=None):
     return out
 
 
-def tau_med(X):
-    t = unit_timescales(X)
+def tau_med(X, segments=None):
+    t = unit_timescales(X, segments=segments)
     return float(np.nanmedian(t)) if np.isfinite(t).any() else np.nan
 
 
-def noise_fraction(X):
-    """Share of each unit's variance that is white: lag-0 excess over the exponential through lags 1 and 2."""
+def noise_fraction(X, segments=None):
+    """Share of each unit's variance that is white (amendment 4): 1 - _signal_var / total. On synthetic tests
+    the error is at most about 0.02 to 0.04 for smooth (calcium-like), held and fast signals and Poisson
+    counts (MAP.md, amendment 4)."""
     Z = _z(X)
-    ac = _acov(Z, 3)
-    rho = np.clip(ac[2] / np.where(ac[1] > 0, ac[1], np.nan), 1e-3, 0.999)
-    signal0 = np.where(ac[1] > 0, ac[1] / rho, 0.0)
-    return np.nan_to_num(np.clip(1 - signal0 / ac[0], 0, 1), nan=1.0)
+    ac = _acov_seg(Z, 4, segments)
+    return np.nan_to_num(np.clip(1 - _signal_var(ac) / ac[0], 0, 1), nan=1.0)
 
 
 def _shift(Z, rng, min_shift):
@@ -155,7 +180,7 @@ def shared_fraction(X, t=None, rng=None, k=5):
 
 def slow_fraction(X, t=None, lag_tau=10.0, segments=None, min_tau=100.0):
     """Slow memory (amendment 2, restated in amendment 3): the median over units of the autocorrelation at
-    lag `lag_tau` x tau_med, relative to the signal variance (extrapolated from lags 1 and 2). It measures a
+    lag `lag_tau` x tau_med, relative to the signal variance (extrapolated from lags 1 to 3, amendment 4). It measures a
     *mixture of timescales*: about 0.001 for a single timescale, larger when components far slower than the
     median unit are present. A system dominated by one slow timescale scores like a fast one (the slow
     timescale then is the median). Autocovariances are pooled over segments (weighted by length); needs at
@@ -174,8 +199,8 @@ def slow_fraction(X, t=None, lag_tau=10.0, segments=None, min_tau=100.0):
         ac = ac + _acov(Y, L + 1) * (b - a)
         n += b - a
     ac = ac / n
-    rho = np.clip(ac[2] / np.where(ac[1] > 0, ac[1], np.nan), 1e-3, 0.999)
-    s0 = np.minimum(ac[1] / rho, ac[0])
+    s0 = _signal_var(ac)                                 # amendment 4: same estimator as the timescales
+    s0 = np.where(s0 > 0, s0, np.nan)
     return float(np.nanmedian(ac[L] / s0))
 
 
@@ -189,11 +214,20 @@ def timescale_spread(X):
     return float(q3 - q1)
 
 
+MAX_NOISE_FOR_DISATTENUATION = 0.8
+
+
 def coupling_spread(X):
-    """Interquartile range of population coupling (each unit's correlation with the sum of the others)."""
+    """Interquartile range of population coupling (each unit's correlation with the sum of the others),
+    disattenuated for each unit's white-noise share (divided by sqrt(1 - noise), amendment 4); nan when the
+    median noise share is above MAX_NOISE_FOR_DISATTENUATION."""
     Z = _z(X)
+    nf = noise_fraction(Z)
+    if np.median(nf) > MAX_NOISE_FOR_DISATTENUATION:
+        return np.nan
     tot = Z.sum(1)
     c = np.array([np.corrcoef(Z[:, i], tot - Z[:, i])[0, 1] for i in range(Z.shape[1])])
+    c = c / np.sqrt(np.clip(1 - nf, 1e-3, None))
     q1, q3 = np.nanpercentile(c, [25, 75])
     return float(q3 - q1)
 
@@ -217,9 +251,15 @@ def drift(X, t=None, blocks=8):
 
 
 def sparsity(X):
-    """Median excess kurtosis of unit activity."""
+    """Median excess kurtosis of unit activity, disattenuated for white noise (excess kurtosis of signal plus
+    independent Gaussian noise is the signal's times (1 - noise share)^2; amendment 4); nan when the median
+    noise share is above MAX_NOISE_FOR_DISATTENUATION."""
     Z = _z(X)
-    return float(np.median((Z ** 4).mean(0) - 3))
+    nf = noise_fraction(Z)
+    if np.median(nf) > MAX_NOISE_FOR_DISATTENUATION:
+        return np.nan
+    k = (Z ** 4).mean(0) - 3
+    return float(np.median(k / np.clip(1 - nf, 0.2, None) ** 2))
 
 
 def _spans(T, segments):
@@ -236,7 +276,7 @@ def measure_matched(X, seed=0, n_units=N_UNITS, n_draws=N_DRAWS, window_tau=WIND
     X = np.asarray(X, float)
     X = X[:, X.std(0) > 1e-9]
     rng = np.random.default_rng(seed)
-    t_raw = tau_med(X)
+    t_raw = tau_med(X, segments=segments)
     if not np.isfinite(t_raw) or X.shape[1] < n_units:
         return {"tau_med": t_raw, "error": "too few units or no timescale"}
     t = max(t_raw, tau_floor)
@@ -273,16 +313,27 @@ def measure_matched(X, seed=0, n_units=N_UNITS, n_draws=N_DRAWS, window_tau=WIND
     return out
 
 
-def split_half_se(X, seed=0, **kw):
-    """C3 (amendment 3): the standard error of each matched value, from two disjoint unit pools: values
-    measured on each half of the units separately; SE = |a - b| / 2 (needs at least 2 x n_units units)."""
+def split_half_se(X, seed=0, n_splits=3, segments=None, **kw):
+    """C3 (amendment 4): standard error of each matched value from disjoint halves: two unit pools when there
+    are at least 2 x n_units units, otherwise the first and second half of the recording (all units).
+    SE^2 = mean over n_splits random splits of (a - b)^2 / 4. Missing values are nan (they fail the gate)."""
     X = np.asarray(X, float)
     X = X[:, X.std(0) > 1e-9]
-    rng = np.random.default_rng(seed + 991)
-    p = rng.permutation(X.shape[1])
-    h = X.shape[1] // 2
-    if h < kw.get("n_units", N_UNITS):
-        return {}
-    a = measure_matched(X[:, p[:h]], seed=seed, **kw)
-    b = measure_matched(X[:, p[h:2 * h]], seed=seed + 1, **kw)
-    return {m: abs(a.get(m, np.nan) - b.get(m, np.nan)) / 2 for m in MEASURES}
+    n = kw.get("n_units", N_UNITS)
+    sq = {m: [] for m in MEASURES}
+    for k in range(n_splits):
+        rng = np.random.default_rng(seed + 991 + k)
+        if X.shape[1] >= 2 * n:
+            p = rng.permutation(X.shape[1]); h = X.shape[1] // 2
+            A, Bm = X[:, p[:h]], X[:, p[h:2 * h]]
+            sa = sb = segments
+        else:
+            h = len(X) // 2
+            A, Bm = X[:h], X[h:2 * h]
+            sa = [s_ for s_ in (segments or []) if s_ < h]
+            sb = [s_ - h for s_ in (segments or []) if s_ > h]
+        a = measure_matched(A, seed=seed + 10 * k, segments=sa, **kw)
+        b = measure_matched(Bm, seed=seed + 10 * k + 1, segments=sb, **kw)
+        for m in MEASURES:
+            sq[m].append((a.get(m, np.nan) - b.get(m, np.nan)) ** 2 / 4)
+    return {m: float(np.sqrt(np.mean(v))) if np.isfinite(v).all() else np.nan for m, v in sq.items()}
