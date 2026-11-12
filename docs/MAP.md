@@ -219,3 +219,73 @@ that are in use. **C3** compared draw-to-draw variation with an arbitrary synthe
 spread (10% parameter jitter) and many measurements fall short of 0.25; it is re-evaluated against the
 real between-individual spread of each preparation once loaded, and a measurement short of it there gets
 more draws (up to 160) before use, never different definitions.
+
+## Review 10 (12 Nov 2026, before any new brain data): not ready for data
+
+An independent review of this registration, the measurement code and the AI pilot (an agent that had not
+worked on it; checks on synthetic systems and the cached language-model recordings only). **Verdict:
+not ready to read brain data.** The plan's logic holds; these must be fixed first (amendment 2):
+
+**Measurements**
+1. *Shared fraction* is mostly an overfitting score: independent units with no shared variance give
+   -0.29 to -0.49, and more signal can make it more negative. The language models' negative values say
+   nothing about shared state. Fix: small fixed predictor set or nested cross-validation, minus a
+   circular-shift null.
+2. *Spectrum exponent* is fitted on less than a decade of ranks (25 + 25 units), has a per-draw SD of
+   0.7 to 0.9, and returns finite values on data with no shared spectrum (the pilot's negative exponents);
+   a rank-window bug keeps ranks past the first non-positive one. Fix: nan unless ranks 1 to 10 beat a
+   shift null; a robust shape statistic.
+3. *Shared dimensionality* (participation ratio) is 0.40 to 0.45 for independent units, the same as
+   systems with 20 to 100 shared dimensions. Fix: only dimensions above a shift null, or drop it.
+4. *tau_med* has a +1-sample bias and a floor near 2 samples: the language models' timescales (about 2
+   tokens) are set by sampling resolution, and under calcium tau_med is set by the indicator kernel, so
+   "each system's own timescale" is not true for the calcium group. Fix: remove the bias; a registered
+   minimum (resolution-limited systems reported, not mapped) or a sensitivity sweep.
+5. *Drift* regresses over the whole recording, so it shrinks with recording span (about 25,000 tau_med
+   for language models against 170 to 1,000 for brains); the language models' zero is likely this. Fix:
+   only block pairs within 150 tau_med, inside the same windows as the other measures.
+6. *Slow fraction*: the tau_med bias compresses it; segments are not a fixed length in tau_med after
+   rounding; the noise-floor estimate removes real signal for slow calcium and near-white recordings;
+   recording choices alone move it across its whole calibrated range.
+
+**Recording models (the biggest gap)**
+7. No registered rule maps each preparation's instrument (kernel in seconds, frame rate, firing rate,
+   bin width) onto an AI's steps, and the arbitrary settings used move several measurements by more than
+   their calibrated ranges. Fix: a per-preparation matching rule plus a sweep, and a mismatch budget (a
+   measurement that moves more than 1 BVU over the plausible range is not used for brain vs AI).
+8. Unit scale before rectification decides how much signal survives the spike model (Mamba's channels
+   come out almost pure Poisson noise), which biases H5. Fix: standardise units, registered gain.
+9. Spike-train bin width and rest-period selection (task data, R6 and R7) are unregistered; windows
+   must not straddle gaps.
+10. There is no field-potential model, and watch share is not defined here: R8 and H7 move to
+    exploratory unless both are added and calibrated first.
+
+**Calibration**
+11. C1 tests each measurement at one point in nuisance space (one timescale, noise level, rate, unit
+    count). Fix: add **C4, nuisance invariance** (samples per tau, noise, rate, bin, kernel, unit scale,
+    population size), with a cross-talk matrix between measurements; re-run C1 at each preparation's
+    matched settings.
+12. C3 as coded measures Monte-Carlo noise from averaging, not stability under subsampling; register
+    that a measurement still short after 160 draws is dropped for that group.
+
+**Hypotheses**
+13. H1: "system" is undefined (counting Pythia variants separately makes the AI half nearly automatic;
+    with three calcium brains the brain half needs 3 of 3). Fix: one centroid per preparation and per
+    family, leave out all siblings (same species, dataset or family), minimum preparations per group.
+14. BVU: statistic unstated and very noisy from 3 individuals. Fix: pooled within-preparation SD per
+    recording group, with its interval; cap any measure's contribution (e.g. 10 BVU).
+15. H2 is partly circular: the emulator and the ladder setting were fitted on worm data. Fix: name the
+    A10 setting now, exclude the preparations a model was fitted on, a joint distance criterion, and a
+    limit on how many standard AIs may also pass.
+16. H3 is near chance as worded (half the measurements are "slow or shared"), and the slow-state
+    amplitude, gap metric and group are unregistered. Fix: register them; a permutation test.
+17. H4 to H6 confirm nulls with little power. Fix: equivalence tests with bootstrap intervals, named
+    groups, more seeds (PolyPythia).
+
+**AI pilot:** 2,048-token segments reset Mamba's state (and cap its memory, relevant to H5); register a
+burn-in and keep windows inside segments; use the full 200k tokens; a common unit type (residual stream)
+alongside MLP neurons and SSM channels; a depth sensitivity.
+
+*Status: all accepted. Amendment 2 will fix them and re-run calibration (C1 to C4) before any brain data
+is read. The pilot numbers in `docs/figures/map_pilot_ai.json` were produced with the flawed definitions
+and are superseded.*
