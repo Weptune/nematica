@@ -1,159 +1,267 @@
 {
  "separated": {
-  "group_instrument": {
-   "decay_over_tau": 0.3359671599473208,
-   "frames_per_tau": 2.943048163384243,
-   "noise": 0.0
+  "instruments": {
+   "P0": {
+    "decay_over_tau": 0.4323860503351449,
+    "frames_per_tau": 5.089922253776811,
+    "noise": 0.04434578072776321,
+    "n_individuals": 4
+   },
+   "P1": {
+    "decay_over_tau": 0.39390693984318853,
+    "frames_per_tau": 5.083370575978062,
+    "noise": 0.1267076607605206,
+    "n_individuals": 4
+   },
+   "P2": {
+    "decay_over_tau": 0.34802233637694974,
+    "frames_per_tau": 4.600525663390778,
+    "noise": 0.06432064038145882,
+    "n_individuals": 4
+   },
+   "P3": {
+    "decay_over_tau": 0.49957781454258565,
+    "frames_per_tau": 7.243209988624508,
+    "noise": 0.05041741537405567,
+    "n_individuals": 4
+   },
+   "P4": {
+    "decay_over_tau": 0.2544301943559244,
+    "frames_per_tau": 4.143105611211659,
+    "noise": 0.07508806834566054,
+    "n_individuals": 4
+   }
   },
   "unreached": [],
-  "measures": [],
+  "mapped_ais": [
+   "F0",
+   "F1",
+   "F2",
+   "F3",
+   "AUG"
+  ],
+  "measures": [
+   "shared_fraction",
+   "slow_fraction",
+   "timescale_spread",
+   "coupling_spread"
+  ],
   "dropped": {
-   "spectrum_steepness": "nan in some system",
-   "shared_fraction": "C3: unstable in a preparation",
-   "timescale_spread": "C3: unstable in a preparation",
-   "coupling_spread": "C3: unstable in a preparation",
-   "sparsity": "C3: unstable in a preparation"
+   "sparsity": "C3: missing or unstable in a preparation"
   },
   "bvu": {
-   "spectrum_steepness": {
-    "sd": 0.17041263503829834,
-    "df": 2,
-    "lo": 0.09845783748961749,
-    "hi": 0.7524393425395423
-   },
    "shared_fraction": {
-    "sd": 0.03378914394747651,
-    "df": 10,
-    "lo": 0.024972852201942636,
-    "hi": 0.05382853897597616
+    "sd": 0.06493264150455395,
+    "df": 15,
+    "lo": 0.05030084320321778,
+    "hi": 0.09332804289269919
+   },
+   "slow_fraction": {
+    "sd": 0.013648487178197834,
+    "df": 15,
+    "lo": 0.010572962959831362,
+    "hi": 0.019617045714950116
    },
    "timescale_spread": {
-    "sd": 0.014894664946418144,
-    "df": 10,
-    "lo": 0.011008336490635939,
-    "hi": 0.023728273609081862
+    "sd": 0.02181002790662314,
+    "df": 15,
+    "lo": 0.01689539757768693,
+    "hi": 0.03134767310856335
    },
    "coupling_spread": {
-    "sd": 0.04016452627015609,
-    "df": 10,
-    "lo": 0.029684764428030433,
-    "hi": 0.06398498201509427
+    "sd": 0.05367954319462232,
+    "df": 15,
+    "lo": 0.041583496726583714,
+    "hi": 0.07715390277749373
    },
    "sparsity": {
-    "sd": 0.0440535722895562,
-    "df": 10,
-    "lo": 0.032559077302011526,
-    "hi": 0.07018051231796475
+    "sd": 0.06431900769990678,
+    "df": 15,
+    "lo": 0.04982548447644263,
+    "hi": 0.09244606364907784
    }
   },
-  "gates_off": {
-   "measures": [
-    "shared_fraction",
-    "timescale_spread",
-    "coupling_spread",
-    "sparsity"
-   ],
-   "H1": {
-    "powered": true,
-    "types": 5,
-    "real_share": 1.0,
-    "ai_share": 1.0,
-    "holds": true
-   },
-   "H2": {
+  "c3_over_bvu": {
+   "shared_fraction": 0.18084040359749146,
+   "slow_fraction": 0.3369623074036895,
+   "timescale_spread": 0.487642044274712,
+   "coupling_spread": 0.32275004310291616,
+   "sparsity": 0.5805220168722114
+  },
+  "budget_over_bvu": {
+   "shared_fraction": 0.10559541939804927,
+   "slow_fraction": 0.4071041337097401,
+   "timescale_spread": 0.6740437090291194,
+   "coupling_spread": 0.1530354453995831,
+   "sparsity": 1.4309129392979394
+  },
+  "H1": {
+   "powered": true,
+   "types": 5,
+   "real_share": 1.0,
+   "ai_share": 1.0,
+   "holds": true
+  },
+  "H2": {
+   "decided": true,
+   "candidates": {
     "AUG": {
-     "distance": 1.856428143631059,
-     "threshold": 5.278579151603138,
-     "standard_passing": 4,
-     "passes": false,
-     "decided": false
+     "decided": true,
+     "nearest": "P2",
+     "distance": 0.7424257747488712,
+     "limit": 0.8314537312605003,
+     "passes": true
     }
    },
-   "gaps": {
-    "timescale_spread": 6.246060653583968,
-    "coupling_spread": 3.065780983306727,
-    "shared_fraction": 3.0065226811897,
-    "sparsity": 0.8218007849530641
-   }
+   "holds": true
+  },
+  "gaps": {
+   "slow_fraction": 4.208392416885918,
+   "timescale_spread": 3.4907481111856744,
+   "shared_fraction": 2.4105228435768646,
+   "coupling_spread": 2.314281041064883
+  },
+  "paired_F0_F1": {
+   "h4_rule": {
+    "decided": true,
+    "ci": {
+     "lo": [
+      0.13409868511510886,
+      0.17635459366001513
+     ],
+     "hi": [
+      0.07227492107048632,
+      0.09504951018911288
+     ]
+    },
+    "holds": true
+   },
+   "h6_rule": {
+    "decided": true,
+    "ci": {
+     "lo": [
+      0.13409868511510886,
+      0.17635459366001513
+     ],
+     "hi": [
+      0.07227492107048632,
+      0.09504951018911288
+     ]
+    },
+    "holds": true
+   },
+   "d_F0": 3.127318054711073,
+   "d_F1": 3.0063057621302653
   }
  },
  "mixed": {
-  "group_instrument": {
-   "decay_over_tau": 0.288552175530656,
-   "frames_per_tau": 3.1946387219421712,
-   "noise": 0.0
+  "instruments": {
+   "P0": {
+    "decay_over_tau": 0.3371654706431993,
+    "frames_per_tau": 3.7550091772572145,
+    "noise": 0.07076936672181938,
+    "n_individuals": 4
+   },
+   "P1": {
+    "decay_over_tau": 0.4107009691914566,
+    "frames_per_tau": 3.5341079153220747,
+    "noise": 0.22753932899822935,
+    "n_individuals": 4
+   },
+   "P2": {
+    "decay_over_tau": 0.3817999992367473,
+    "frames_per_tau": 4.3621844927465965,
+    "noise": 0.020524227038733994,
+    "n_individuals": 4
+   },
+   "P3": {
+    "decay_over_tau": 0.40962595216263153,
+    "frames_per_tau": 6.169713547204813,
+    "noise": 0.11548300800034783,
+    "n_individuals": 4
+   },
+   "P4": {
+    "decay_over_tau": 0.39026287309696084,
+    "frames_per_tau": 5.127667738807094,
+    "noise": 0.06510413812510724,
+    "n_individuals": 4
+   }
   },
   "unreached": [],
+  "mapped_ais": [
+   "F0",
+   "F1",
+   "F2",
+   "F3",
+   "AUG"
+  ],
   "measures": [
-   "shared_fraction"
+   "shared_fraction",
+   "coupling_spread"
   ],
   "dropped": {
-   "spectrum_steepness": "nan in some system",
-   "timescale_spread": "mismatch budget",
-   "coupling_spread": "mismatch budget",
-   "sparsity": "C3: unstable in a preparation"
+   "slow_fraction": "mismatch budget: missing or too large",
+   "timescale_spread": "mismatch budget: missing or too large",
+   "sparsity": "C3: missing or unstable in a preparation"
   },
   "bvu": {
-   "spectrum_steepness": {
-    "sd": 0.2350806057138158,
-    "df": 5,
-    "lo": 0.15798586426537053,
-    "hi": 0.49114390988515305
-   },
    "shared_fraction": {
-    "sd": 0.07399597605894738,
-    "df": 10,
-    "lo": 0.0546888839957304,
-    "hi": 0.11788091724211673
+    "sd": 0.06956615856139318,
+    "df": 15,
+    "lo": 0.05389025231325928,
+    "hi": 0.09998782245202015
+   },
+   "slow_fraction": {
+    "sd": 0.01679143468080821,
+    "df": 15,
+    "lo": 0.01300768463234582,
+    "hi": 0.024134421452891578
    },
    "timescale_spread": {
-    "sd": 0.017683027790151736,
-    "df": 10,
-    "lo": 0.013069157365239599,
-    "hi": 0.028170336368836594
+    "sd": 0.025246513939555314,
+    "df": 15,
+    "lo": 0.019557512364753553,
+    "hi": 0.036286953391179946
    },
    "coupling_spread": {
-    "sd": 0.023057043542374783,
-    "df": 10,
-    "lo": 0.017040980425326344,
-    "hi": 0.03673153036729101
+    "sd": 0.04336218587026125,
+    "df": 15,
+    "lo": 0.03359103313632827,
+    "hi": 0.062324708329278604
    },
    "sparsity": {
-    "sd": 0.058433774248288745,
-    "df": 10,
-    "lo": 0.04318718491869869,
-    "hi": 0.09308920934862314
+    "sd": 0.0580110378173916,
+    "df": 15,
+    "lo": 0.04493894056510702,
+    "hi": 0.08337958383060406
    }
   },
-  "gates_off": {
-   "measures": [
-    "shared_fraction",
-    "timescale_spread",
-    "coupling_spread",
-    "sparsity"
-   ],
-   "H1": {
-    "powered": true,
-    "types": 5,
-    "real_share": 0.0,
-    "ai_share": 0.0,
-    "holds": false
-   },
-   "H2": {
-    "AUG": {
-     "distance": 1.2002779121719842,
-     "threshold": 2.7418315518463245,
-     "standard_passing": 4,
-     "passes": false,
-     "decided": false
-    }
-   },
-   "gaps": {
-    "coupling_spread": 1.241044491881895,
-    "sparsity": 0.6174442042525088,
-    "timescale_spread": 0.3040672370815786,
-    "shared_fraction": 0.2321907411296516
-   }
+  "c3_over_bvu": {
+   "shared_fraction": 0.1847661910001064,
+   "slow_fraction": 0.2994337251966274,
+   "timescale_spread": 0.4162975658330311,
+   "coupling_spread": 0.39480724065138667,
+   "sparsity": 0.6910845855333251
+  },
+  "budget_over_bvu": {
+   "shared_fraction": 0.8940762610859435,
+   "slow_fraction": 1.326501958525902,
+   "timescale_spread": 2.0220964805211645,
+   "coupling_spread": 0.22763661112746442,
+   "sparsity": 1.599572408677688
   }
+ },
+ "provenance": {
+  "code_sha256_16": "203b0300c22ba9db",
+  "git_head_at_run": "4fb8ee96166943b26ac9c8b62152532d270daa5e",
+  "files": [
+   "nematica/map/measures.py",
+   "nematica/map/recording.py",
+   "nematica/map/synthetic.py",
+   "nematica/map/analysis.py",
+   "nematica/map/instrument.py",
+   "scripts/map_fake_brains.py"
+  ],
+  "seconds": 1850
  }
 }

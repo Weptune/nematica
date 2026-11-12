@@ -5121,20 +5121,26 @@ spiking, "liquid" CfC/LTC, Pythia transformers 14M to 1B with training checkpoin
 networks, an RL agent, the lab networks, the worm emulator). Every artificial network is recorded the
 way the brain it is compared with was recorded; time is measured in each system's own timescale.
 
-**Full registration:** `docs/MAP.md` (systems, recording models, eight core measurements, the ruler in
-biological variation units, calibration gate C1 to C3, phases). The hypotheses, fixed before any new
-data is read:
+**Full registration:** `docs/MAP.md` (systems, recording models, measurements, the ruler in biological
+variation units, calibration gates, phases, and four dated amendments made before any brain activity was
+measured). The hypotheses as they stand after amendment 4 (13 Nov 2026), all tested per recording group
+(calcium, spikes) and counted only in a powered group (at least 4 preparation types, 3 measurements):
 
 | | prediction | holds if |
 |---|---|---|
 | H1 | brains resemble brains more than AIs | nearest neighbour real for at least 80% of real preparations and artificial for at least 80% of standard AI families |
-| H2 | no difference in kind | at least one augmented AI inside the brain envelope (widened by 1 BVU) on every measurement |
-| H3 | the dials are slow, shared state | at least 2 of the 3 largest gaps among spectrum exponent, shared fraction, slow fraction, drift; slow state cuts distance to brains by at least 30% |
-| H4 | scale does not buy brain-likeness | Spearman(log parameters, distance) above -0.3 across Pythia 14M to 1B |
-| H5 | SSMs closer than transformers on slow measurements | Mamba-130M closer than Pythia-160M by at least 1 BVU over slow fraction, timescale spread, drift |
-| H6 | worm-inspired "liquid" networks are not closer | CfC/LTC vs GRU distance difference below 1 BVU |
-| H7 | watching fails beyond the worm | watch share in human cortex and in cultures below every standard AI recorded the same way |
+| H2 | no difference in kind | an augmented AI's nearest neighbour is a real preparation within the median real-to-real neighbour distance (decided only where H1's AI half holds) |
+| H3 | the dials are slow, shared state | the largest brain vs AI gaps are slow or shared measurements (descriptive); slow state cuts distance to the brain centroid by at least 30% |
+| H4 | scale does not buy brain-likeness | 90% interval of d(Pythia-1B) minus d(Pythia-14M) lies above -1 BVU |
+| H5 | SSMs closer than transformers on slow measurements | Mamba closer than Pythia (RMS over the slow measurements in use), interval excluding 0 |
+| H6 | worm-inspired "liquid" networks are not closer | CfC minus GRU distance within +-1 BVU |
+| H7 | watching fails beyond the worm | exploratory (no field-potential recording model) |
 | H8 | no body needed | cultures and organoids have a real nearest neighbour |
+
+Status (13 Nov 2026): the measurement, matching and decision code is frozen and unit-tested; calibration
+keeps 5 measurements in calcium and in moderately noisy spikes, none in Neuropixels-like spikes; a gated
+fake-brain positive control decides H1, H2 and a paired test correctly. Next: an independent review, then
+step 1 (instrument numbers only from the real datasets).
 
 ## Replay lab
 

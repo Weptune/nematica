@@ -136,7 +136,7 @@ Measurements failing C1 are dropped before brain data is read, and the drop is r
 | **H2** no difference in kind | some augmented AI lands among the brains | at least one augmented AI is inside the brain envelope (range of real preparations, widened by 1 BVU) on every measurement |
 | **H3** the dials are slow, shared state | the biggest brain vs AI gaps are on slow and shared measurements, and slow state closes them | (a) at least 2 of the 3 largest standardised gaps between the brain and standard-AI centroids are among M1, M3, M4, M7; (b) adding slow state (augmented a, b) cuts distance to the brain centroid by at least 30%, more on M1/M3/M4/M7 than on the rest |
 | **H4** scale does not buy it | bigger transformers are not closer to brains | Spearman between log parameters and distance to the brain centroid across Pythia 14M to 1B is above -0.3 |
-| **H5** SSMs closer than transformers | Mamba is more brain-like on slow measurements | Mamba-130M closer to the brain centroid than Pythia-160M by at least 1 BVU summed over M4, M5, M7 |
+| **H5** SSMs closer than transformers | Mamba is more brain-like on slow measurements | Mamba-130M closer to the brain centroid than Pythia-160M by at least 1 BVU summed over M4, M5, M7 *(amendment 4: RMS over the slow set in use, see below)* |
 | **H6** "liquid" is not enough | worm-inspired CfC/LTC networks are not closer than GRUs | difference in distance to the brain centroid below 1 BVU |
 | **H7** watching fails beyond the worm | perturbation is needed to copy any real network | watch share in each of R8 and R9 is below every standard AI recorded the same way (holds if both; partial if one) |
 | **H8** no body needed | cultures and organoids sit among the brains | R9 and R10 each have a real nearest neighbour (H1 criterion) |
@@ -388,7 +388,7 @@ spread after 160 draws is dropped for that group.
   tau_med and so rescales every window; this is part of the effect and is reported.
 - *H4 to H6* are equivalence tests with bootstrap intervals (200 resamples over draws and text segments or
   seeds), per powered group: **H4** holds if the 90% interval of d(Pythia-1B) - d(Pythia-14M) lies above
-  -1 BVU; **H5** if Mamba-370M is closer than Pythia-410M (summed over the slow measurements in use) with
+  -1 BVU; **H5** if Mamba-370M is closer than Pythia-410M (summed over the slow measurements in use; *amendment 4: RMS*) with
   a 90% interval excluding 0; **H6** if CfC minus GRU lies within +-1 BVU. PolyPythia seeds are used where
   released.
 - *H7* is exploratory (no field-potential model, and watch share is defined only in the worm test).
@@ -554,3 +554,176 @@ final code in amendment 4, with the code hash recorded.
 
 *Status: all accepted. Amendment 4 will make these fixes, add a gated positive control on fake brains, and
 regenerate both calibration files before step 1.*
+
+## Amendment 4 (12 to 13 Nov 2026, answering review 12, before any new brain data was read)
+
+All points of review 12 are accepted. No brain activity has been measured; the only real data touched so far
+are file shapes. Code: `nematica/map/{measures,recording,instrument,analysis,data}.py`,
+`scripts/map_calibrate.py`, `scripts/map_fake_brains.py`, `tests/test_map.py` (20 unit tests, F17).
+
+**Estimators (F1, F7, F12).**
+- *Signal variance* (the part of a unit's variance that is not white noise) is now a quadratic least-squares
+  fit through lags 1 to 3, extrapolated to lag 0 and capped at the total. One estimator serves the timescale,
+  the noise share and slow memory. On synthetic tests the noise share is within about 0.02 for smooth
+  calcium-like, held and fast signals and within 0.05 for Poisson counts (the old lag-2 exponential read
+  0.01 for a true 0.05 on smooth signals), and half-lives are recovered within 8% at a white share of 0.5
+  and within 12% at 0.9 (the old estimator: 11% and 14%).
+- *The system's timescale* (still called tau_med) is now the half-life of the **population**
+  autocorrelation (units standardised, autocovariance averaged over units, divided by the averaged signal
+  variance), not the median of per-unit half-lives. On sparse spike counts at a white share of 0.97 the
+  per-unit median read 5 to 20 times too short (review 12's finding); the population version is unbiased
+  there; on clean data the two agree within 1 to 10% (further apart when unit timescales are widely spread). Per-unit half-lives remain only inside
+  timescale spread.
+- *Noise-invariant measures:* **coupling spread** divides each unit's coupling by sqrt(1 - its noise
+  share); **sparsity** divides excess kurtosis by (1 - noise share)^2 for continuous recordings, and for
+  spike counts is the kurtosis of the underlying rate from factorial moments (for Poisson counts
+  E[C(C-1)...(C-k+1)] = E[rate^k], so Poisson noise drops out exactly). For continuous recordings both are
+  nan when the median noise share is above 0.8.
+- *Segments (F11):* autocovariances are pooled over segments and recordings are made segment by segment
+  (kernels, interpolation and bins never cross a boundary); recordings return their segment starts.
+
+**Matching (F6, F15).** The hold factor is target-aware: k = ceil(max(8, 2 x target samples per tau) /
+native tau_med), for slow networks too, and it is raised whenever the frame or bin would fall below one
+sub-step. Calcium decay is the *smallest* decay that reaches its target (a log grid, then bisection): the
+decay ratio is not monotone once a slow component takes over the recorded timescale. Then up to 8 rounds of
+noise bisection and multiplicative frame, decay and bin updates on the achieved values, with common random
+numbers (the same noise seed in every evaluation, so the search is deterministic), returning the best round.
+The registered call (`recording.match`) uses at most 200 units and at least 400 recorded timescales (at 60
+units and 100 timescales the timescale on sparse counts varies by about 40%; at this size about 10%).
+Realistic targets are now reached for fast (1 step), medium and slow (30 steps) networks, including
+Neuropixels-like spikes (10 bins per timescale, 0.1 spikes per bin, noise share 0.97) and noisy calcium
+(decay 0.5 of the timescale, 3 frames per timescale, noise 0.6); unit tests cover the slow case.
+Sensitivities registered: linear interpolation instead of the hold, and a hold of 2k
+(`record_matched(..., interp=True)`).
+
+**Instrument numbers (F2, F3)** are a frozen function, `instrument.instrument_numbers`, the only code step 1
+runs on real data. It outputs aggregates only (timescale in seconds, samples per timescale, noise share,
+decay ratio or count per bin, units, duration), never per-unit timescales or any measure. Unit inclusion:
+calcium units with a noise share below 0.99; spike units with at least 200 spikes and 0.05 Hz. Rest
+stretches only where a preparation marks them. All spikes are binned at 20 ms (`data.bin_spikes`; the
+culture loader's 50 ms is fixed). Indicator decay is the half-decay time over ln 2, from a table filled at
+step 1 with a citation per indicator (the in vivo single-spike value from the indicator's characterisation
+paper where reported, else the dataset paper), before any matching. Aggregation: median over individuals
+within a preparation, then over preparations.
+
+**Instrument spread within a group (F5).** Every AI is recorded at **each preparation's own instrument
+numbers**. An AI-to-preparation distance uses the AI recorded at that preparation's instrument; an
+AI-to-AI distance is the mean over the group's preparations of the distance between the two AIs recorded at
+the same instrument; an AI's position for centroids is its mean over the instruments. An AI is mapped only
+if matching is reached at every preparation of the group. (Amendment 3's single recording at the group
+median is withdrawn: it made AIs alike and brains different by construction.)
+
+**Gates (F10, F12).**
+- *C3* is the pooled split-half SE: for each individual, SE^2 is the mean over 5 random splits of
+  (a - b)^2 / 4, with two disjoint unit halves when there are at least 100 units, otherwise the first and
+  second half in time; a preparation's SE is the root mean SE^2 over its individuals; it must be below 0.5
+  BVU in every preparation. A missing value fails.
+- *Mismatch budget:* each matched knob is swept x/÷1.5 with common random numbers (the same recording seed
+  and unit draws for the base and the swept recording, so seed noise does not count as sensitivity), mean
+  over 2 seeds of the largest change; the group's budget is the median over mapped AIs of each AI's largest
+  change over the preparations, and must be at most 1 BVU. A missing value fails.
+
+**Analysis (F8, F9, F14, F16).**
+- *Bootstrap for H4 to H6:* each resample draws each AI's replicates at every instrument (as many as it has,
+  with replacement) and averages them, and draws each preparation's individuals for the brain centroid;
+  BVU is held fixed and the test is run at both ends of its interval. At least 20 replicates per AI per
+  preparation, else undecided.
+- *H5:* RMS over the slow set in use, like every distance (the text said "summed").
+- *H2:* undecided in a group unless H1's AI half holds there (standard AIs keep to themselves, so the
+  rule is not loose). An augmented AI passes if its nearest neighbour among the preparations (those it was
+  fitted on left out) and the standard AIs is a real preparation **and** that distance is at most the
+  median real-to-real nearest-neighbour distance in the group. Augmented AIs are not siblings of their
+  base model (two AIs are siblings when they share family *and* role).
+- *Robustness:* a verdict counts only if it is the same at timescale floors 2, 4 and 8 and under the hold,
+  linear interpolation and a hold of 2k; otherwise it is reported as undecided, with each variant's verdict.
+- Centroids need at least 3 finite individuals (the mapping rule); BVU uses the same preparations;
+  systems without a candidate neighbour make H1 and H8 undecided rather than failing; H8 needs a powered group.
+
+**Preparations and individuals (F4)**, registered now, before step 1. A preparation is mapped with at least
+3 individuals; "type" is species plus kind of preparation (in vivo, culture, organoid, slice); same dataset
+or same type are siblings.
+
+| id | group | type | individual | units | role |
+|---|---|---|---|---|---|
+| R1 | calcium | *C. elegans*, in vivo | worm | identified neurons (dataset ROIs) | mapped |
+| R2 | calcium | *C. elegans*, in vivo | worm | dataset ROIs | exploratory, not counted (sibling of R1) |
+| R3 | calcium | zebrafish larva, in vivo | fish (Chen et al. 2018) | dataset cells | mapped |
+| R5 | calcium | mouse cortex, in vivo (2-photon) | mouse (recordings of one mouse pooled) | dataset cells | mapped |
+| R11 | calcium | *Drosophila*, in vivo | fly | dataset ROIs or supervoxels; not loaded if only raw volumes exist | mapped if loaded |
+| R4 | spikes | mouse, in vivo | mouse | sorted units | mapped |
+| R6 | spikes | mouse, in vivo | mouse | sorted units, whole sessions (task flagged) | mapped (sibling of R4) |
+| R7 | spikes | macaque, in vivo | MC_Maze and MC_RTT are likely one monkey each | sorted units | exploratory unless 3 monkeys are found |
+| R9 | spikes | rat cortical culture | culture (its last-day session) | electrode (detected spikes) | mapped |
+| R10a | spikes | human brain organoid | organoid | as in the dataset | mapped |
+| R10b | spikes | mouse brain organoid | organoid | as in the dataset | mapped |
+| R10c | spikes | mouse neonatal slice | slice | as in the dataset | mapped |
+| R8 | (none) | human cortex | patient | field potentials | exploratory (no recording model) |
+
+So the calcium group has at most 4 types (worm, zebrafish, mouse, fly) and is powered only if all four
+load with at least 3 individuals; the spike group has up to 5 (mouse in vivo, rat culture, human organoid,
+mouse organoid, mouse slice).
+
+**Calibration, regenerated with the final code (F7, provenance).** `docs/figures/map_calibration.json`,
+code hash 539cc49115ea3f64 (the measurement, recording, analysis and calibration files as committed in
+4fb8ee9; the run started from the working tree on top of 4f84743, and the only file changed during it was
+the indicator table in `instrument.py`, which calibration does not use). Profiles: calcium A (decay 0.3 of
+the recorded timescale, 4 frames per timescale, noise share 0.2) and R (0.5, 3, 0.6); spikes A (3 bins per
+timescale, 0.5 spikes per bin, noise 0.6) and R, Neuropixels-like (10, 0.1, 0.97). Amendment 3's profile B
+is replaced by the realistic R profiles. 20 draws, 2 seeds; 7 of 360 matches did not reach their targets
+(included). Cells: C1 Spearman / largest C4 ratio; "ok" = C1 >= 0.9 and every C4 ratio < 0.5.
+
+| measurement | native | calcium A | calcium R | spikes A | spikes R |
+|---|---|---|---|---|---|
+| spectrum steepness | 0.96 / 0.25 ok | nan / nan | nan / nan | nan / nan | nan / nan |
+| shared fraction | 0.98 / 0.04 ok | 0.98 / 0.20 ok | 0.94 / 0.18 ok | 0.98 / 0.13 ok | 0.25 / 1.19 |
+| slow memory | 0.98 / 0.14 ok | 0.98 / 0.09 ok | 0.94 / 0.18 ok | 0.98 / 0.05 ok | 0.71 / 0.65 |
+| timescale spread | 0.98 / 0.10 ok | 0.98 / 0.03 ok | 0.94 / 0.27 ok | 0.94 / 0.17 ok | -0.34 / 0.58 |
+| coupling spread | 0.96 / 0.06 ok | 0.96 / 0.03 ok | 0.94 / 0.11 ok | 0.98 / 0.09 ok | nan / nan |
+| drift | 0.84 / 0.23 | 0.74 / 0.15 | 0.89 / 0.41 | 0.47 / 1.23 | 0.54 / 0.41 |
+| sparsity | 0.98 / 0.00 ok | 0.98 / 0.12 ok | 0.98 / 0.12 ok | 0.98 / 0.04 ok | -0.32 / 0.77 |
+
+So calcium keeps five measurements under both profiles (amendment 3 kept three), and so do moderately
+noisy spikes. **At Neuropixels-like noise no measurement survives** with 50-unit draws: each unit is about
+97% Poisson noise. A one-seed check (not part of the gate; `data/cache/spikeR.py`) of draws of 200 units
+and windows of 600 timescales did not rescue it: slow memory stayed monotone in its property under both
+protocols, shared fraction stayed at zero, timescale spread and sparsity did not track theirs, and
+coupling spread is undefined above a noise share of 0.8. No fallback protocol is registered. If the spike
+group's step-2 calibration at its real instrument numbers keeps fewer than 3 measurements, the spike group
+is not mapped, and by amendment 3 H8 and the spike arm of H3 to H6 are undecided.
+*Timescale recovery:* the recorded timescale in native steps over the true one is 1.0 in native units,
+1.1 to 1.5 (calcium A) and 1.8 to 2.4 (calcium R; the indicator lengthens the timescale, which is part of
+the recording, not an estimator bias), and 0.66 to 1.03 for spikes. Drift fails everywhere except native
+units (0.84); spectrum steepness never beats its null once recorded.
+
+**Gated positive and negative controls (F13)** (`docs/figures/map_fake_brains.json`, code hash 203b0300c22ba9db,
+every registered gate on). Five fake preparation types, four individuals each, each with its own calcium instrument; instrument
+numbers from `instrument_numbers`; every fake AI matched and recorded at each preparation's instrument;
+pooled C3 (5 splits); budget with common random numbers.
+- *Separated (positive control):* all matches reached; four measurements usable (sparsity dropped by C3 at
+  0.58 BVU); C3 0.18 to 0.49 BVU and budget 0.11 to 0.67 BVU for the rest. **H1 holds** (real share 1.0,
+  AI share 1.0); **the augmented AI passes H2** (nearest P2 at 0.74 BVU, limit 0.83); the paired bootstrap
+  decides (two standard AIs 3.13 and 3.01 BVU from the brains: the H6 equivalence rule holds and the H4
+  rule holds, both at both BVU ends); the largest gaps are slow memory, timescale spread, shared fraction,
+  coupling spread. So the gated pipeline *can* decide when the answer is clear, which amendment 3's could not.
+- *Mixed (negative control):* AIs drawn from the brains' region. Only two measurements survived (slow
+  memory and timescale spread failed the budget at 1.3 and 2.0 BVU: brain-like AIs with slow components are
+  more sensitive to recording knobs), so the group is not mapped and every hypothesis is undecided. The
+  pipeline made no false claim, but this control did not show a correct rejection under the gates; that
+  remains untested, and the gates' sensitivity to slow, brain-like systems is a limitation to watch.
+
+**Power, stated before data (F12).** With the minimum powered group (4 preparation types, 3 individuals
+each) the BVU has 8 degrees of freedom and its 90% interval runs from 0.72 to 1.71 times the estimate;
+H1's 80% rule then means every preparation's neighbour must be real (4 of 4). Paired tests use at least 20
+replicates per AI per preparation. The positive control (5 types, 4 individuals, df 15) is about the
+smallest world in which the pipeline decided; real groups with fewer types or more instrument noise are
+expected to be undecided, which will be reported as such.
+
+**Code hashes.** Both JSON files record a hash of the files they ran; both match the committed files.
+Two docstrings in `measures.py` state accuracy loosely ("within a few percent", "0.02 to 0.04"); they are
+left unedited so the hashes stay valid, and the figures in this amendment govern.
+
+**Text corrections marked in place:** H5 in the hypothesis table and in amendment 2 ("summed") now reads
+RMS; README's hypothesis table is updated to the rules as amended.
+
+*Status: amendment 4 complete. Next: independent review 13 of amendments 3 and 4 and the code; if it
+clears, step 1 (instrument numbers only) runs on the real datasets.*
