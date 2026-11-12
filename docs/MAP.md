@@ -829,3 +829,22 @@ datasets.*
 with the caution that the R1 rest construction must be shown in a loader under the step-1 hash; segments in
 matching, `h2` and step-1 detrending fixed (trending units no longer move the timescale). Detrending in the
 measurement path is added to the open list above.
+
+## Amendment 6 (13 Nov 2026, from file metadata at the start of step 1, before any instrument number or measure was computed)
+
+Opening the worm files for step 1 (stimulus times and recording lengths only) showed that **R1 has
+almost no rest under the registered rule**: in all 113 wild-type recordings of Randi et al. 2023 a neuron is
+stimulated every 31 s (5th to 95th percentile of gaps 30.5 to 37.5 s), so excluding 30 s after each onset
+leaves only the stretch before the first stimulus (median 21 s; at least 100 s in only 2 recordings). That
+is shorter than a few timescales, so no instrument number or measure can be taken from it. The two
+unstimulated Randi recordings are fewer than 3 individuals. Changes, decided from these metadata alone:
+- **R1 becomes exploratory** (whole sessions with stimulation flagged, reported, not counted).
+- **R2 becomes the mapped worm preparation:** Atanas et al. 2023 (local copy of the WormWideWeb release;
+  30 freely moving worms, NeuroPAL strain, 0.6 s frames, about 16 min each, 121 to 153 neurons, traces
+  `trace_original`). Rest: the 13 "baseline" recordings whole (their two halves as segments); for the 17
+  "heat" recordings, only the stretch before the heat pulse (first range, about 8 min). Individual = worm.
+  Indicator: NLS-GCaMP7f (nuclear); by amendment 5 the table value for jGCaMP7f is a convention and
+  step 1 reports the decay ratio at it and at twice it. R2 is freely moving, so its activity includes
+  locomotion; that is a property of this preparation, flagged in the results.
+- The calcium group's worm type is therefore *C. elegans*, freely moving, in vivo; the group still needs
+  four types (worm, zebrafish, mouse, fly) to be powered.
