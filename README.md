@@ -5111,6 +5111,31 @@ pokes) is drawn from the local copy of the atlas and is not committed (`web/data
 without it the site still works and says how to generate it. Fonts: Newsreader and Schibsted
 Grotesk (SIL Open Font License, `web/fonts`).
 
+## A map of brains and AIs (pre-registered 12 Nov 2026)
+
+**Why.** The question is what differentiates real neural networks from artificial ones in general, and
+so far the evidence is mostly one animal and small networks. This widens both sides: at least 8 real
+preparations (worms, zebrafish, mice across the brain, macaque, human cortex, rat cultures, human and
+mouse organoids) and at least 10 families of artificial network (random and task-trained RNNs, GRU/LSTM,
+spiking, "liquid" CfC/LTC, Pythia transformers 14M to 1B with training checkpoints, Mamba, vision
+networks, an RL agent, the lab networks, the worm emulator). Every artificial network is recorded the
+way the brain it is compared with was recorded; time is measured in each system's own timescale.
+
+**Full registration:** `docs/MAP.md` (systems, recording models, eight core measurements, the ruler in
+biological variation units, calibration gate C1 to C3, phases). The hypotheses, fixed before any new
+data is read:
+
+| | prediction | holds if |
+|---|---|---|
+| H1 | brains resemble brains more than AIs | nearest neighbour real for at least 80% of real preparations and artificial for at least 80% of standard AI families |
+| H2 | no difference in kind | at least one augmented AI inside the brain envelope (widened by 1 BVU) on every measurement |
+| H3 | the dials are slow, shared state | at least 2 of the 3 largest gaps among spectrum exponent, shared fraction, slow fraction, drift; slow state cuts distance to brains by at least 30% |
+| H4 | scale does not buy brain-likeness | Spearman(log parameters, distance) above -0.3 across Pythia 14M to 1B |
+| H5 | SSMs closer than transformers on slow measurements | Mamba-130M closer than Pythia-160M by at least 1 BVU over slow fraction, timescale spread, drift |
+| H6 | worm-inspired "liquid" networks are not closer | CfC/LTC vs GRU distance difference below 1 BVU |
+| H7 | watching fails beyond the worm | watch share in human cortex and in cultures below every standard AI recorded the same way |
+| H8 | no body needed | cultures and organoids have a real nearest neighbour |
+
 ## Replay lab
 
 ```powershell
