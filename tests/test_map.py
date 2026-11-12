@@ -174,3 +174,33 @@ def test_h8_and_robust(world):
     assert An.robust({"floor 2": True, "floor 4": True}) is True
     assert An.robust({"floor 2": True, "floor 4": False}) is None
     assert An.robust({"floor 2": True, "floor 4": None}) is None
+
+
+# ---------------------------------------------------------------- amendment 5
+def test_every_rest_stretch_counts():
+    rng = np.random.default_rng(7)
+    X = np.vstack([_ar(3000, 10, 8.0, rng)] + [_ar(2900, 10, 2.0, rng) for _ in range(9)])
+    seg = [3000 + 2900 * i for i in range(9)]
+    assert M.tau_med(X, segments=seg) < 3.5          # the nine short stretches dominate (longest alone: 8)
+
+
+def test_noise_share_on_calcium_shaped_signals():
+    A = synthetic.population(np.random.default_rng(1), N=40, T=20000)
+    rng = np.random.default_rng(2)
+    for decay in (0.3, 1.1, 3.0, 8.0):
+        F = R.calcium(A, decay=decay, frame=1, snr=1e9)
+        for share in (0.1, 0.3):
+            Y = F + rng.standard_normal(F.shape) * F.std(0) * np.sqrt(share / (1 - share))
+            assert abs(np.median(M.noise_fraction(Y)) - share) < 0.04
+
+
+def test_detrend_removes_bleaching():
+    rng = np.random.default_rng(3)
+    X = _ar(5000, 10, 4.0, rng) + np.linspace(20, 0, 5000)[:, None]
+    assert abs(M.tau_med(M.detrend(X)) - 4.0) < 0.5
+
+
+def test_match_with_segments_reaches():
+    A = synthetic.population(np.random.default_rng(4), N=100, T=8000)
+    k = R.match(A, "calcium", dict(decay_over_tau=0.3, frames_per_tau=4, noise=0.3), segments=[2000, 4000, 6000])
+    assert k["reached"]

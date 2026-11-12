@@ -21,7 +21,10 @@ from __future__ import annotations
 
 import numpy as np
 
-from .measures import noise_fraction, tau_med
+import hashlib
+from pathlib import Path
+
+from .measures import detrend, noise_fraction, tau_med
 
 SPIKE_BIN_S = 0.02
 MIN_SPIKES = 200
@@ -72,6 +75,8 @@ def instrument_numbers(ind, rtype):
     calcium, `indicator` (a key of INDICATOR_HALF_DECAY_S) or `half_decay_s`. Returns only aggregates."""
     X, seg = _rest(ind)
     dt = float(ind["dt"])
+    if rtype == "calcium":
+        X = detrend(X, seg)                              # amendment 5: per unit, per stretch
     X = include_units(X, rtype, dt)
     out = {"n_units": int(X.shape[1]), "duration_s": float(len(X) * dt)}
     if X.shape[1] < 2:
@@ -86,6 +91,7 @@ def instrument_numbers(ind, rtype):
             hd = INDICATOR_HALF_DECAY_S[ind["indicator"]][0]
         out["frames_per_tau"] = float(t)
         out["decay_over_tau"] = float(hd / np.log(2) / dt / t)
+        out["decay_over_tau_x2"] = float(2 * hd / np.log(2) / dt / t)      # sensitivity (amendment 5)
     elif rtype == "spikes":
         if abs(dt - SPIKE_BIN_S) > 1e-9:
             return {**out, "error": f"spikes must be binned at {SPIKE_BIN_S} s"}
@@ -107,3 +113,16 @@ def preparation_numbers(individuals, rtype):
 def group_numbers(preps, rtype):
     """Median over preparations within a recording group."""
     return {k: float(np.median([p[k] for p in preps])) for k in KEYS[rtype]}
+
+
+STEP1_CODE = ["nematica/map/instrument.py", "nematica/map/measures.py", "nematica/map/data.py"]
+
+
+def code_hash(extra=()):
+    """Hash of the code step 1 runs (this module, the estimators, the loaders and any loader script), stored
+    with step 1's output (amendment 5)."""
+    root = Path(__file__).resolve().parents[2]
+    h = hashlib.sha256()
+    for f in list(STEP1_CODE) + list(extra):
+        h.update((root / f).read_bytes())
+    return h.hexdigest()[:16]

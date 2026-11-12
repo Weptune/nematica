@@ -213,8 +213,9 @@ def h2(preps, ais, measures, B):
             res[a["id"]] = {"decided": False, "why": "no candidate neighbour"}; continue
         res[a["id"]] = {"decided": True, "nearest": nb["id"], "distance": d, "limit": lim,
                         "passes": bool(nb["kind"] == "real" and d <= lim)}
-    return {"decided": True, "candidates": res,
-            "holds": any(v.get("passes") for v in res.values()) if any(v["decided"] for v in res.values()) else None}
+    if not any(v["decided"] for v in res.values()):
+        return {"decided": False, "why": "no candidate could be decided", "candidates": res}
+    return {"decided": True, "candidates": res, "holds": any(v.get("passes") for v in res.values())}
 
 
 def gaps(preps, ais, measures, B):

@@ -126,7 +126,7 @@ def _segments_record(fn, A, segments, rng, **kw):
     return np.vstack(parts), starts
 
 
-def match_calcium(A, prep, rng=None, n_iter=14, rounds=8, seed=0):
+def match_calcium(A, prep, rng=None, n_iter=14, rounds=8, seed=0, segments=None):
     """Registered rule (amendments 2 to 4). `prep`: `decay_over_tau` (indicator decay as the 1/e constant over
     the recorded tau_med; half-decay times from papers are divided by ln 2), `frames_per_tau`, `noise` (median
     white-noise share). The network is held (hold_factor); decay is the smallest that reaches the target on
@@ -135,13 +135,17 @@ def match_calcium(A, prep, rng=None, n_iter=14, rounds=8, seed=0):
     from the achieved values, stopping once all three are reached. If the frame would fall below one sub-step
     the hold factor is raised. Every evaluation uses the same noise seed (common random numbers), so the
     search is deterministic; the best round is returned. `reached`: all three within tolerance (10%; noise
-    0.05 absolute). Callers pass at most MATCH_MIN_UNITS units and at least MATCH_MIN_TAU timescales."""
-    from .measures import noise_fraction, tau_med
+    0.05 absolute). Callers pass at most MATCH_MIN_UNITS units and at least MATCH_MIN_TAU timescales.
+    `segments` (native steps): recorded segment by segment and timed within segments (amendment 5)."""
+    from .measures import noise_fraction as _nf, tau_med as _tm
     R_ = lambda: np.random.default_rng(seed)
-    t0 = tau_med(_std(A))
+    seg = [int(x) for x in (segments or [])]
+    t0 = _tm(_std(A), segments=seg)
     k = hold_factor(t0, prep["frames_per_tau"])
     H = hold(A, k)
-    rec = lambda d, f, s_: calcium(H, decay=d, frame=f, snr=s_, rng=R_())
+    rec = lambda d, f, s_, H=H, k=k: _segments_record(calcium, H, [x * k for x in seg], R_(), decay=d, frame=f, snr=s_)
+    tau_med = lambda YS: _tm(YS[0], segments=YS[1])
+    noise_fraction = lambda YS: _nf(YS[0], segments=YS[1])
     ratio = lambda d: d / tau_med(rec(d, 1, 1e6))
     grid = 0.05 * 1.5 ** np.arange(28)                   # 0.05 to about 2,800 sub-steps
     lo, hi = grid[0], grid[-1]
@@ -175,36 +179,43 @@ def match_calcium(A, prep, rng=None, n_iter=14, rounds=8, seed=0):
         if frame < 1.0:                                  # the recorded timescale is too short: hold more
             f = int(np.ceil(1.5 / frame))
             k, H, d, frame = k * f, hold(A, k * f), d * f, frame * f
-            rec = lambda d, f_, s_, H=H: calcium(H, decay=d, frame=f_, snr=s_, rng=R_())
+            rec = lambda d, f_, s_, H=H, k=k: _segments_record(calcium, H, [x * k for x in seg], R_(), decay=d,
+                                                               frame=f_, snr=s_)
     return {**best, "native_tau": float(t0), "reached": bool(_err(prep, best["achieved"]) <= 1)}
 
 
-def match_spikes(A, prep, rng=None, n_iter=14, rounds=8, seed=0):
+def match_spikes(A, prep, rng=None, n_iter=14, rounds=8, seed=0, segments=None):
     """Registered rule (amendments 2 to 4). `prep` (real data binned at 20 ms): `bins_per_tau`,
     `count_per_bin`, `noise`. The network is held (hold_factor). Up to `rounds` rounds of: gain bisection to
     the noise target at the current bin, then a multiplicative bin update from the achieved bins per tau of the
     recorded counts (F6), with the mean count per sub-step set so the expected count per bin is the target;
     stopping once all three are reached. If the bin would fall below one sub-step the hold factor is raised.
-    Common random numbers and best round as in match_calcium. `reached`: all three within tolerance."""
-    from .measures import noise_fraction, tau_med
+    Common random numbers, best round and segments as in match_calcium. `reached`: all three within
+    tolerance."""
+    from .measures import noise_fraction as _nf, tau_med as _tm
     R_ = lambda: np.random.default_rng(seed)
-    t0 = tau_med(_std(A))
+    seg = [int(x) for x in (segments or [])]
+    t0 = _tm(_std(A), segments=seg)
     k = hold_factor(t0, prep["bins_per_tau"])
     H = hold(A, k)
+    rec = lambda mc, b, g, H=H, k=k: _segments_record(spikes, H, [x * k for x in seg], R_(), mean_count=mc,
+                                                      bin_steps=b, gain=g)
+    tau_med = lambda YS: _tm(YS[0], segments=YS[1])
+    noise_fraction = lambda YS: _nf(YS[0], segments=YS[1])
     g = 3.0
-    b = max(tau_med(spikes(H, mean_count=1.0, bin_steps=1.0, gain=g, rng=R_())) / prep["bins_per_tau"], 1.0)
+    b = max(tau_med(rec(1.0, 1.0, g)) / prep["bins_per_tau"], 1.0)
     got, best = {}, None
     for _ in range(rounds):
         mc = prep["count_per_bin"] / b
         lo, hi = 0.05, 40.0
         for _ in range(n_iter):
             g = np.sqrt(lo * hi)
-            nf = np.median(noise_fraction(spikes(H, mean_count=mc, bin_steps=b, gain=g, rng=R_())))
+            nf = np.median(noise_fraction(rec(mc, b, g)))
             lo, hi = (g, hi) if nf > prep["noise"] else (lo, g)
         g = float(np.sqrt(lo * hi))
-        Y = spikes(H, mean_count=mc, bin_steps=b, gain=g, rng=R_())
+        Y = rec(mc, b, g)
         t_y = tau_med(Y)
-        got = {"bins_per_tau": t_y, "count_per_bin": float(Y.mean()), "noise": float(np.median(noise_fraction(Y)))}
+        got = {"bins_per_tau": t_y, "count_per_bin": float(Y[0].mean()), "noise": float(np.median(noise_fraction(Y)))}
         state = {"bin_steps": float(b), "mean_count": float(mc), "gain": g, "hold": k, "achieved": got}
         if best is None or _err(prep, got) < _err(prep, best["achieved"]):
             best = state
@@ -214,6 +225,8 @@ def match_spikes(A, prep, rng=None, n_iter=14, rounds=8, seed=0):
         if b < 1.0:                                      # the recorded timescale is too short: hold more
             f = int(np.ceil(1.5 / b))
             k, H, b = k * f, hold(A, k * f), b * f
+            rec = lambda mc, b, g, H=H, k=k: _segments_record(spikes, H, [x * k for x in seg], R_(), mean_count=mc,
+                                                              bin_steps=b, gain=g)
     return {**best, "native_tau": float(t0), "reached": bool(_err(prep, best["achieved"]) <= 1)}
 
 
@@ -240,7 +253,7 @@ def record_matched(A, rtype, knobs, rng=None, segments=None, interp=False):
     return np.hstack(parts), starts
 
 
-def match(A, rtype, prep, seed=0):
+def match(A, rtype, prep, seed=0, segments=None):
     """The registered matching call (amendment 4): at most MATCH_MIN_UNITS units; the first rows covering
     1.5 x MATCH_MIN_TAU native timescales; if the recording that reaches the targets covers fewer than
     MATCH_MIN_TAU recorded timescales, matching is repeated on more rows (all rows at most). The returned
@@ -249,11 +262,12 @@ def match(A, rtype, prep, seed=0):
     from .measures import tau_med
     A = np.asarray(A, float)
     sub = A[:, :MATCH_MIN_UNITS]
-    t0 = tau_med(_std(sub))
+    seg = [int(x) for x in (segments or [])]
+    t0 = tau_med(_std(sub), segments=seg)
     rows = len(A) if not np.isfinite(t0) else int(min(len(A), max(1.5 * MATCH_MIN_TAU * t0, 2000)))
     f = match_calcium if rtype == "calcium" else match_spikes
     while True:
-        k = f(sub[:rows], prep, seed=seed)
+        k = f(sub[:rows], prep, seed=seed, segments=[x for x in seg if x < rows])
         per = (k["frame"] if rtype == "calcium" else k["bin_steps"]) / k["hold"]       # native steps per sample
         tau_native = k["achieved"].get("frames_per_tau" if rtype == "calcium" else "bins_per_tau", np.nan) * per
         n_tau = rows / tau_native if np.isfinite(tau_native) and tau_native > 0 else np.inf

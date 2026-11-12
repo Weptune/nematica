@@ -760,3 +760,61 @@ recovery of 0.66 at 1.5 samples per tau contradicts "unbiased"; `h2` can return 
 
 *Status: all accepted. Amendment 5 fixes items 1 to 3 (and the minor ones that touch step 1) before step 1;
 items 4 to 10 are fixed before any brain measurement.*
+
+## Amendment 5 (13 Nov 2026, answering review 13's step-1 items, before any new brain data was read)
+
+Review 13's items 1 to 3 and the step-1 minor items are fixed; items 4 to 10 are fixed before any brain
+measurement (a later amendment). Code: `nematica/map/{measures,recording,instrument,analysis}.py`; 24 unit
+tests (4 new).
+
+- **Every stretch counts (item 1).** Autocovariances are pooled over all segments: lag products are summed
+  over every segment longer than the lag and each lag is divided by its own number of pairs (so lags never
+  cross a boundary and short stretches are no longer discarded). The reviewer's case (one 3,000-sample
+  stretch at half-life 8, nine of 2,900 at half-life 2) now reads 2.7 (amendment 4: 7.8). Unit test added.
+- **Noise share (item 2).** The signal variance is now the cubic through lags 1 to 4 extrapolated to lag 0
+  (amendment 4: a quadratic through lags 1 to 3). On calcium-shaped signals (indicator decay 0.3 to 8
+  native steps, true white share 0.1, 0.3, 0.6), AR signals and Poisson counts the error is at most 0.033
+  (worst: decay comparable to the native timescale, read low; amendment 4's estimator: 0.05 there). This
+  residual bias is registered, not hidden: it applies equally to brains and AIs recorded through the same
+  model, but not to brains whose real signal shape differs from the model's; step 2 reports it at each
+  group's numbers. Amendment 4's "within about 0.02" was wrong for calcium and is corrected here. Unit test
+  on calcium-shaped signals added. Spike timescale recovery is 0.66 at 1.5 samples per timescale, rising to
+  0.92 at 30 (amendment 4's word "unbiased" applied only to the high-noise comparison with the per-unit median).
+- **Detrending (minor item, registered now).** In the calcium group every recording, brain and AI alike,
+  has each unit's linear trend removed within each segment before instrument numbers and measures
+  (bleaching raised the population timescale by 27% in the reviewer's test).
+- **Segments in matching (minor item).** `match` and both matchers take segments; recordings inside
+  matching are made and timed segment by segment.
+- **`h2`** now returns undecided when no candidate could be decided.
+
+**Step-1 inputs, registered now (item 3).**
+- *Trace type.* Calcium preparations use fluorescence (F or dF/F as shipped, neuropil-corrected where the
+  dataset provides it; the noise share and timescale do not depend on per-unit scale). Deconvolved or
+  inferred-spike traces are not modelled: a dataset that ships only those is not used. If R5 (Stringer et
+  al. 2019) ships only deconvolved activity, R5 is replaced by the Allen Brain Observatory Visual Coding
+  two-photon dataset (de Vries et al. 2020), spontaneous-activity epochs, dF/F traces, one individual per
+  mouse; this is decided at step 1 from the files' contents and reported.
+- *Rest for R1.* Its dataset marks stimulation, not rest. Rest = everything except the 30 s after each
+  stimulation onset (sensitivity: 15 s); stretches shorter than 20 s are dropped. R6 and R7 keep whole
+  sessions (task flagged), as registered in amendment 3.
+- *Indicator rule.* The half-decay comes from the dataset paper if it states one for its own preparation;
+  otherwise from the table in `instrument.py` (Chen et al. 2013 in vivo 1-AP values, about 0.1 s for
+  GCaMP6f, 0.2 s for 6m, 0.5 s for 6s; Dana et al. 2019 for jGCaMP7f, cultured neurons). For
+  nuclear-localised indicators and preparations imaged below 30 C (worm, fish, fly) the table value is a
+  convention: step 1 reports the decay ratio at the table value and at twice it, and step 2 calibrates at both.
+- *Provenance.* Step 1's output stores `instrument.code_hash` over `instrument.py`, `measures.py`,
+  `data.py` and the loader script it runs, plus the dataset identifiers and versions.
+
+**Before brain measurements (registered as open):** review 13's items 4 (an instrument-transfer gate:
+each AI's range across the group's actual instruments under 0.5 BVU), 5 (sparsity on counts: dropped or
+re-estimated, and AI recordings given the brain's distribution of rates and noise shares), 6 (budget as the
+max over AIs; CRN for the frame knob), 7 (hierarchical bootstrap over network instances), 8 (robustness
+variants re-matched and run in a control; floors applied only to resolution-limited native systems),
+9 (an alternative C3 split for short preparations), 10 (graded positive and negative controls at realistic
+noise and the minimum group size, several seeds, with decision and false-positive rates), and 11 (slow
+memory's turn-down above a slow share of 0.6, which places augmented candidate (a) outside C1's range).
+The amendment-4 calibration and fake-brain files remain as evidence for that code version; both are
+regenerated with the final estimators at step 2.
+
+*Status: ready for step 1 by review 13's criteria. Step 1 runs only `instrument_numbers` on the real
+datasets.*

@@ -1,13 +1,14 @@
-"""The map's core measurements (docs/MAP.md, as amended 12 Nov 2026, amendment 2), the same for any system.
+"""The map's core measurements (docs/MAP.md, amendments 2 to 5), the same for any system.
 
 Input: activity X, shape (time, units), already passed through a recording model (recording.py). Time is in
-samples. Every measurement is dimensionless: time enters only through tau_med, the system's median unit
-timescale (an exponential fit to the autocorrelation from lag 1, so white measurement noise does not shorten
-it; floored at TAU_FLOOR samples, the sampling resolution). Shared measurements are compared with a
-circular-shift null that keeps each unit's own timescale but breaks timing between units.
+samples. Every measurement is dimensionless: time enters only through tau_med, the system's timescale (the
+half-life of the population autocorrelation relative to the extrapolated signal variance, so white
+measurement noise does not shorten it; floored at TAU_FLOOR samples, the sampling resolution). Shared
+measurements are compared with a circular-shift null that keeps each unit's own timescale but breaks timing
+between units.
 
-`segments` (optional): sample indices where a recording restarts (e.g. a language model's context); windows
-never straddle them.
+`segments` (optional): sample indices where a recording restarts (e.g. a language model's context, a gap
+between rest stretches); windows never straddle them and autocovariances never cross them.
 """
 from __future__ import annotations
 
@@ -34,29 +35,48 @@ def _acov(Z, max_lag):
 
 
 def _acov_seg(Z, max_lag, segments=None):
-    """Autocovariance pooled over segments (each segment demeaned, weighted by length; lags never cross a
-    boundary, amendment 4 F11). Segments shorter than 4 x max_lag are skipped unless none is longer."""
+    """Autocovariance pooled over segments (amendment 5): each segment is demeaned, lag products are summed
+    over every segment longer than the lag, and each lag is divided by its own number of pairs, so every
+    stretch contributes and lags never cross a boundary. Lags with no pairs are nan."""
     spans = _spans(len(Z), segments)
-    if len(spans) == 1:
-        return _acov(Z, max_lag)
-    long_ = [(a, b) for a, b in spans if b - a >= 4 * max_lag] or [max(spans, key=lambda x: x[1] - x[0])]
-    ac, n = np.zeros((max_lag + 1, Z.shape[1])), 0
-    for a, b in long_:
-        if b - a <= max_lag:
+    num = np.zeros((max_lag + 1, Z.shape[1]))
+    pairs = np.zeros(max_lag + 1)
+    for a, b in spans:
+        n = b - a
+        if n < 2:
             continue
         Y = Z[a:b] - Z[a:b].mean(0)
-        ac += _acov(Y, max_lag) * (b - a)
-        n += b - a
-    return ac / n if n else np.full((max_lag + 1, Z.shape[1]), np.nan)
+        L = min(max_lag, n - 1)
+        num[:L + 1] += _acov(Y, L) * n                  # _acov divides by n; undo to get sums of products
+        pairs[:L + 1] += n - np.arange(L + 1)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        return num / np.where(pairs > 0, pairs, np.nan)[:, None]
+
+
+def detrend(X, segments=None):
+    """Amendment 5: remove each unit's least-squares linear trend within each segment (bleaching and slow
+    baseline drift). Applied in the calcium group to every recording, brain and AI alike, before instrument
+    numbers and measures."""
+    X = np.asarray(X, float).copy()
+    for a, b in _spans(len(X), segments):
+        if b - a < 3:
+            continue
+        t = np.arange(b - a, dtype=float)
+        t -= t.mean()
+        Y = X[a:b]
+        X[a:b] = Y - np.outer(t, (t @ (Y - Y.mean(0))) / (t @ t))
+    return X
 
 
 def _signal_var(ac):
-    """Amendment 4 (F1): each unit's signal variance (autocovariance at lag 0 without white noise), from a
-    quadratic least-squares fit through lags 1 to 3 extrapolated to lag 0, capped at the total variance.
-    Used by both unit_timescales and noise_fraction, so the two agree."""
-    V = np.vander(np.array([1.0, 2.0, 3.0]), 3)          # columns x^2, x, 1
-    coef = np.linalg.lstsq(V, ac[1:4], rcond=None)[0]
-    return np.minimum(coef[2], ac[0])
+    """Amendment 5 (F1 again): each unit's signal variance (autocovariance at lag 0 without white noise),
+    from the cubic through lags 1 to 4 extrapolated to lag 0, capped at the total variance. On calcium-shaped,
+    AR and Poisson test signals the resulting noise share is within 0.035 of the truth (worst: calcium whose
+    indicator decay is comparable to the native timescale, read low). Used by the timescale, the noise share
+    and slow memory, so they agree."""
+    V = np.vander(np.array([1.0, 2.0, 3.0, 4.0]), 4)     # columns x^3, x^2, x, 1
+    coef = np.linalg.solve(V, ac[1:5])
+    return np.minimum(coef[3], ac[0])
 
 
 def unit_timescales(X, max_lag=None, segments=None):
@@ -67,7 +87,7 @@ def unit_timescales(X, max_lag=None, segments=None):
     Z = _z(X)
     T, N = Z.shape
     longest = max(b - a for a, b in _spans(T, segments))
-    max_lag = max(min(max_lag or longest // 4, 4000), 4)
+    max_lag = max(min(max_lag or longest // 4, 4000), 5)
     ac = _acov_seg(Z, max_lag, segments)
     s0 = _signal_var(ac)
     out = np.full(N, np.nan)
@@ -93,7 +113,7 @@ def tau_med(X, segments=None):
     Z = _z(X)
     T = len(Z)
     longest = max(b - a for a, b in _spans(T, segments))
-    L = max(min(longest // 4, 4000), 4)
+    L = max(min(longest // 4, 4000), 5)
     ac = _acov_seg(Z, L, segments).mean(1)
     s0 = float(_signal_var(ac[:, None])[0])
     if not np.isfinite(s0) or s0 <= 0 or ac[1] <= 0:
@@ -106,7 +126,7 @@ def noise_fraction(X, segments=None):
     the error is at most about 0.02 to 0.04 for smooth (calcium-like), held and fast signals and Poisson
     counts (MAP.md, amendment 4)."""
     Z = _z(X)
-    ac = _acov_seg(Z, 4, segments)
+    ac = _acov_seg(Z, 5, segments)
     return np.nan_to_num(np.clip(1 - _signal_var(ac) / ac[0], 0, 1), nan=1.0)
 
 
@@ -195,10 +215,10 @@ def shared_fraction(X, t=None, rng=None, k=5):
 
 def slow_fraction(X, t=None, lag_tau=10.0, segments=None, min_tau=100.0):
     """Slow memory (amendment 2, restated in amendment 3): the median over units of the autocorrelation at
-    lag `lag_tau` x tau_med, relative to the signal variance (extrapolated from lags 1 to 3, amendment 4). It measures a
+    lag `lag_tau` x tau_med, relative to the signal variance (extrapolated from lags 1 to 4, amendment 5). It measures a
     *mixture of timescales*: about 0.001 for a single timescale, larger when components far slower than the
     median unit are present. A system dominated by one slow timescale scores like a fast one (the slow
-    timescale then is the median). Autocovariances are pooled over segments (weighted by length); needs at
+    timescale then is the median). Autocovariances are pooled over segments (pair-weighted); needs at
     least `min_tau` tau_med of data in segments longer than 5 x the lag."""
     Z = _z(X)
     t = t if t is not None else max(tau_med(Z), TAU_FLOOR)
@@ -208,12 +228,8 @@ def slow_fraction(X, t=None, lag_tau=10.0, segments=None, min_tau=100.0):
     spans = [(a, b) for a, b in _spans(len(Z), segments) if b - a >= 5 * L]
     if sum(b - a for a, b in spans) < min_tau * t:
         return np.nan
-    ac, n = 0, 0
-    for a, b in spans:
-        Y = Z[a:b] - Z[a:b].mean(0)
-        ac = ac + _acov(Y, L + 1) * (b - a)
-        n += b - a
-    ac = ac / n
+    starts = list(np.cumsum([b - a for a, b in spans])[:-1])
+    ac = _acov_seg(np.vstack([Z[a:b] for a, b in spans]), max(L + 1, 5), starts)
     s0 = _signal_var(ac)                                 # amendment 4: same estimator as the timescales
     s0 = np.where(s0 > 0, s0, np.nan)
     return float(np.nanmedian(ac[L] / s0))
