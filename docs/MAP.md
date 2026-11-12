@@ -848,3 +848,20 @@ unstimulated Randi recordings are fewer than 3 individuals. Changes, decided fro
   locomotion; that is a property of this preparation, flagged in the results.
 - The calcium group's worm type is therefore *C. elegans*, freely moving, in vivo; the group still needs
   four types (worm, zebrafish, mouse, fly) to be powered.
+
+## Amendment 7 (13 Nov 2026, from file metadata during step 1, before any zebrafish instrument number or measure)
+
+R3's rest was never defined. The zebrafish files (Chen et al. 2018, figshare 7272617; read for protocol
+names, frame rates and stimulus codes only) show that fish 1 to 7 saw visual stimuli throughout (phototaxis
+and black/white blocks), while fish 10 and 12 to 18 have a block named *Spontaneous* (stimulus code 4;
+for example 517 frames at 2 Hz in fish 16, 640 frames at 2.56 Hz in fish 12). Registered now:
+- **R3 rest = the frames of the "Spontaneous" block** (from the file's protocol frame lists; a gap inside
+  the block is a segment boundary). Fish without such a block are excluded. Fish whose stated frame rate is
+  outside 1 to 5 Hz are excluded (fish 17 states 38 Hz, implausible for this light-sheet protocol).
+- Activity = `CellResp` (dF/F, the least-processed trace shipped); all cells pass to the unit-inclusion
+  rule of `instrument_numbers`. Indicator: GCaMP6f (nuclear-localised in this line), so by amendment 5 the
+  table value is a convention, reported at 1x and 2x.
+- Fish 8, 9 and 11 could not be read by streaming (their archives fail at the member header); they are
+  attempted by full download, and excluded if still unreadable.
+So R3 has at most 8 individuals (10, 12, 13, 14, 15, 16, 18, and 8, 9, 11 if readable and with a
+Spontaneous block). The Spontaneous blocks last about 4 to 18 minutes.
