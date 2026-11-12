@@ -400,3 +400,37 @@ spread after 160 draws is dropped for that group.
 (burn-in), windows inside segments; units are MLP neurons (Pythia) and gated SSM channels (Mamba), with
 the residual stream at the same layer as a common second unit type, and depths 1/4 and 3/4 as
 sensitivity analyses. The amendment-1 pilot numbers are void.
+
+## Review 11 (12 Nov 2026, before any new brain data): not ready for data
+
+A second independent review checked amendment 2 against review 10. **Fixed:** shared fraction now has a
+clean null (independent units -0.003 to +0.005); the spectrum statistic is null-controlled; the timescale
+bias is gone for single timescales; drift is windowed; R8 and H7 are exploratory; the calibration table
+follows from the JSON exactly; Poisson bin integration and the matching bisections are correct.
+**Still open (must fix before data):**
+1. The matching rule silently misses its targets for fast-timescale networks (every language model):
+   frames and bins hit a floor of 1 step, decay saturates; it must report what it reached and a network
+   that cannot be matched is reported, not mapped. "Indicator decay" must be defined (1/e constant).
+2. Matching per preparation leaves each AI without one position per group, so the map and H1 to H6 are
+   undefined; one recording per AI per group (the group's median instrument) is needed, and the
+   mismatch budget, BVU, distance and hypothesis code must exist and be tested on synthetic "fake brains"
+   before data.
+3. Slow memory is not monotone in the slow share once slow activity dominates the median unit (then
+   tau_med itself becomes slow); it measures a mixture of timescales, must be restated and calibrated as
+   such, pooled over segments, with a minimum length.
+4. C1 and C4 for calcium and spikes were run at fixed recording settings, not through the matching rule
+   the real pipeline uses; rerun through matching against registered synthetic instrument profiles.
+5. nan in a measurement (e.g. steepness when one global mode dominates, as in worms and fish) must have a
+   registered value or drop the measurement for the whole group, not shrink a distance.
+6. Register now: if the spike group cannot be mapped, H8 and the spike arm of H3 to H6 are undecided and
+   H1 is tested in calcium only; the calcium group is powered only with Danionella (DANDI 001453) or the fly.
+7. Name the slow set per group; H5 and H3(b) are undecided where it is empty (calcium, as of amendment 2).
+**Should fix:** C3 as per-individual SD over unit subsets, no draw-count escape; a cross-talk rule (three
+calcium measurements largely read one "sharedness" factor); carry BVU uncertainty into H4 and H6; H4 and
+H5 undecided if the conclusion changes across timescale floors; drop dead units before recording; R6 as
+whole sessions; 40 draws in calibration; state that PolyPythia has no 1B seeds.
+
+*Status: all accepted; amendment 3 follows. Shape checks so far: DANDI 001453 holds behaviour only (no
+neural traces), so by the registered rule R3 is Chen et al. 2018 (Janelia figshare 7272617; 18 zebrafish,
+about 80,000 cells each; CC BY-NC 4.0, used locally, summary numbers only). With zebrafish as the only
+fish, the calcium group is powered only if the fly (R11) is loaded.*
