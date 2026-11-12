@@ -289,3 +289,114 @@ alongside MLP neurons and SSM channels; a depth sensitivity.
 *Status: all accepted. Amendment 2 will fix them and re-run calibration (C1 to C4) before any brain data
 is read. The pilot numbers in `docs/figures/map_pilot_ai.json` were produced with the flawed definitions
 and are superseded.*
+
+
+## Amendment 2 (12 Nov 2026, answering review 10, before any new brain data was read)
+
+Every point of review 10 is accepted. What changed:
+
+**Measurements** (`nematica/map/measures.py`)
+- *Timescale (tau_med):* the half-life is now measured against the signal variance extrapolated from lags
+  1 and 2 (an exponential through them), so white measurement noise neither shortens nor biases it
+  (synthetic half-lives 1.39 / 3.47 / 13.9 samples read 1.45 / 3.50 / 13.79, the same with noise as SD
+  as the signal). Floor: 2 samples. A system whose median falls below it is flagged *resolution-limited*
+  and mapped at the floor, with a sensitivity analysis at floors 2, 4 and 8.
+- *Shared measurements* are compared with a circular-shift null (shifts of at least 20 tau_med, which keep
+  each unit's own timescale and break timing between units). **Shared fraction** uses 5 patterns of the
+  other units (fixed) and is reported as observed minus the shifted baseline (independent units: 0.00).
+  **Spectrum steepness** replaces the spectrum exponent: the slope over ranks 1 to 3 only, and nan unless
+  all three beat the null. **Shared dimensionality is dropped**: it never recovered its property.
+- **Slow memory** replaces the spectral slow share (a single fast process already gave it about 0.45):
+  the median autocorrelation at 10 x tau_med, relative to the signal variance (about 0.001 for one
+  timescale; it rises with the share of much slower components). Whole recording of the drawn units.
+- **Drift** is measured inside each 150 tau_med window (8 blocks, slope of dissimilarity on separation),
+  never over the whole recording, so it no longer shrinks with recording length.
+- Windows never straddle a segment boundary (a language model's context, a gap between rest periods).
+
+**Recording models** (`nematica/map/recording.py`)
+- Units are standardised and multiplied by a registered gain before rectification, so a network's
+  native activation scale no longer decides how much signal survives.
+- **The matching rule**, from each preparation's own summary numbers, computed once it is loaded:
+  *calcium:* the indicator's decay relative to the recorded median timescale, frames per recorded
+  timescale, and the white-noise share are matched (`match_calcium`; indicator decay from the dataset's
+  paper, or the indicator's published value when not stated); *spikes* (all real spike data binned at
+  20 ms): bins per recorded timescale, mean count per bin, and white-noise share (through the gain) are
+  matched (`match_spikes`). Fractional frames and bins are allowed (interpolated sampling; Poisson counts
+  drawn from the rate integrated over each bin).
+- **Mismatch budget:** after matching, every matched knob is swept by a factor of 2 each way; a
+  measurement that moves by more than 1 BVU over that range is not used for brain vs AI distances in that
+  preparation's group (reported).
+- No field-potential model: **R8 (human cortex) and H7 move to exploratory.**
+
+**Calibration** (`scripts/map_calibrate.py`, `docs/figures/map_calibration.json`). C1 as before, now also
+reporting a cross-talk matrix. **C4, new:** at the default synthetic system, each nuisance knob is swept;
+for knobs the matching rule does *not* set (samples per timescale from 1.5 to 30, unit scale x0.01 to x100,
+population 60 to 3,000 units) a measurement must move by less than half its C1 range; knobs the rule
+sets are left to the mismatch budget. Cells: C1 Spearman / largest unmatched-knob ratio / largest
+matched-knob ratio. A measurement is used in a recording type when C1 >= 0.9 and every unmatched ratio
+< 0.5.
+
+| measurement | native | calcium | spikes |
+|---|---|---|---|
+| spectrum steepness | 0.97 / 0.24 / - **used** | 0.95 / 0.45 / 0.16 **used** | nan / nan / nan |
+| shared fraction | 0.98 / 0.06 / - **used** | 0.98 / 0.21 / 0.48 **used** | 0.98 / 0.29 / 1.59 **used** |
+| slow memory | 0.98 / 0.10 / - **used** | 0.71 / 0.96 / 1.08 | 0.98 / 0.41 / 0.18 **used** |
+| timescale spread | 0.98 / 0.07 / - **used** | 0.98 / 0.26 / 0.33 **used** | 0.83 / 3.07 / 3.97 |
+| coupling spread | 0.98 / 0.15 / - **used** | 0.97 / 0.06 / 0.34 **used** | 0.94 / 0.53 / 1.16 |
+| drift | 0.93 / 0.41 / - **used** | 0.82 / 0.26 / 0.19 | 0.32 / 1.19 / 1.35 |
+| sparsity | 0.98 / 0.00 / - **used** | 0.98 / 0.05 / 0.07 **used** | 0.98 / 0.38 / 2.42 **used** |
+
+So: **calcium group** uses spectrum steepness, shared fraction, timescale spread, coupling spread, sparsity; **spike group** uses shared fraction, slow memory, sparsity;
+AI-to-AI comparisons in native units use all seven. Slow memory and drift do not survive in calcium
+recordings and spike recordings lose most measurements: with 50 units and realistic recording noise, few
+measurements are trustworthy. That limits what the map can say, and it is reported as a result.
+**C3** (stability under unit subsampling) is now built into the protocol (every system is 50 units); a
+measurement whose draw-to-draw variation is not below 0.25 of a preparation group's between-individual
+spread after 160 draws is dropped for that group.
+
+**Hypotheses, pinned down**
+- *Unit of comparison:* one centroid per real preparation (mean of its individuals; at least 3) and one
+  per AI family, at a fixed representative: A1 120 units, gain 1.5; A2 the perceptual-decision task;
+  A3 a 256-unit GRU; A4 1,000 plain spiking neurons; A5 CfC on the A3 task; A6 Pythia-410M final
+  checkpoint; A7 Mamba-370M; A8 ResNet-18 on natural video; A9 the RL agent. Other variants are
+  sensitivity analyses. Augmented AIs are never candidate neighbours in H1.
+- *Siblings left out:* when finding a system's nearest neighbour, every system from the same dataset, the
+  same species in the same kind of preparation (in vivo, culture, organoid, slice), or the same AI family
+  is excluded.
+- *Groups:* calcium {R1, R2 (exploratory), R3 zebrafish and Danionella as two species, R5, R11 if
+  loaded}; spikes {R4, R6, R7 (whole sessions, flagged as task), R9, R10 (human organoids, mouse organoids,
+  mouse slices)}. A group needs at least 4 preparations of distinct species-or-preparation type; otherwise
+  it is underpowered and reported, not tested. **H1 holds if it holds in every powered group** (at least one).
+- *BVU* per group: the pooled within-preparation SD of each measurement (df = sum of n_i - 1), with a
+  90% interval; any measurement's contribution to a distance is capped at 10 BVU. Distances use the
+  group's measurements that are finite in both systems (at least 3, else not mapped), divided by the
+  square root of their number.
+- *H2:* candidates fixed: (a) A1 plus slow hidden drives carrying 40% of variance, time constant 50 x A1's
+  native median timescale; (b) Pythia-410M with an Ornstein-Uhlenbeck latent (time constant 200 tokens,
+  30% of the residual stream's variance at the recorded layer's input, through a fixed random projection);
+  (c) A10 at the joint-search setting of 6 Nov (strong slow drives, weak silent links, spread, 30% quiet
+  units, individual weight SD 80%, held pushes); (d) A11. For (c) and (d) the worm preparations are left
+  out. **Passes** if its distance to the nearest real preparation is at most the largest real-to-real
+  nearest-neighbour distance in the group, *and* at most one standard AI family also passes (otherwise
+  the criterion is too loose and H2 is undecided in that group). H2 holds if a candidate passes in any
+  powered group; if none does, the measurements on which every AI stays furthest out are reported as the
+  candidate differences in kind.
+- *H3:* gap = |brain centroid - standard-AI centroid| per measurement in BVU. (a) is reported
+  descriptively (with 3 to 5 measurements per group a permutation test has no power): are the slow or
+  shared measurements in use the largest gaps? (b) holds if adding slow state ((a) and (b) above) cuts the
+  distance to the brain centroid by at least 30% for both, in every powered group. Slow state also raises
+  tau_med and so rescales every window; this is part of the effect and is reported.
+- *H4 to H6* are equivalence tests with bootstrap intervals (200 resamples over draws and text segments or
+  seeds), per powered group: **H4** holds if the 90% interval of d(Pythia-1B) - d(Pythia-14M) lies above
+  -1 BVU; **H5** if Mamba-370M is closer than Pythia-410M (summed over the slow measurements in use) with
+  a 90% interval excluding 0; **H6** if CfC minus GRU lies within +-1 BVU. PolyPythia seeds are used where
+  released.
+- *H7* is exploratory (no field-potential model, and watch share is defined only in the worm test).
+- *H8* holds if R9 and R10 each have a real nearest neighbour under H1's rule.
+- *R3:* DANDI 001453 if its files hold cellular calcium traces for at least 3 zebrafish and 3 Danionella
+  with at least 50 cells over at least 150 tau_med; otherwise Chen et al. 2018 (Janelia, zebrafish only).
+
+**Language models:** the full 200k-token sample, segments of 2,048 tokens with the first 128 dropped
+(burn-in), windows inside segments; units are MLP neurons (Pythia) and gated SSM channels (Mamba), with
+the residual stream at the same layer as a common second unit type, and depths 1/4 and 3/4 as
+sensitivity analyses. The amendment-1 pilot numbers are void.

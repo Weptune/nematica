@@ -1,15 +1,23 @@
-"""The map's eight core measurements (docs/MAP.md), the same for any system.
+"""The map's core measurements (docs/MAP.md, as amended 12 Nov 2026, amendment 2), the same for any system.
 
-Input: activity X, shape (time, units), already passed through a recording model (recording.py). Time is
-in samples; every measurement is dimensionless (time enters only through tau_med, the system's own median
-unit timescale). Each function returns a float (nan when the recording cannot support it).
+Input: activity X, shape (time, units), already passed through a recording model (recording.py). Time is in
+samples. Every measurement is dimensionless: time enters only through tau_med, the system's median unit
+timescale (an exponential fit to the autocorrelation from lag 1, so white measurement noise does not shorten
+it; floored at TAU_FLOOR samples, the sampling resolution). Shared measurements are compared with a
+circular-shift null that keeps each unit's own timescale but breaks timing between units.
+
+`segments` (optional): sample indices where a recording restarts (e.g. a language model's context); windows
+never straddle them.
 """
 from __future__ import annotations
 
 import numpy as np
 
-MEASURES = ("spectrum_exponent", "shared_dim", "shared_fraction", "slow_fraction", "timescale_spread",
-            "coupling_spread", "drift", "sparsity")
+MEASURES = ("spectrum_steepness", "shared_fraction", "slow_fraction", "timescale_spread",
+            "coupling_spread", "drift", "sparsity")          # shared_dim dropped (amendment 2): never recovered its property
+TAU_FLOOR = 2.0                     # samples; below this a system is resolution-limited (flagged)
+N_UNITS, N_DRAWS, WINDOW_TAU = 50, 40, 150
+NULL_SHIFT_TAU = 20                 # circular shifts of at least this many tau_med
 
 
 def _z(X):
@@ -19,23 +27,32 @@ def _z(X):
     return (X[:, keep] - X[:, keep].mean(0)) / sd[keep]
 
 
+def _acov(Z, max_lag):
+    T = len(Z)
+    F = np.fft.rfft(Z, n=2 * T, axis=0)
+    return np.fft.irfft(F * np.conj(F), axis=0)[:max_lag + 1] / T
+
+
 def unit_timescales(X, max_lag=None):
-    """Half-life (samples) of each unit's autocorrelation, measured from lag 1 so that white measurement
-    noise (which only affects lag 0) does not shorten it: the lag beyond 1 at which ac(k)/ac(1) first
-    falls below 0.5, plus 1 (nan if ac(1) <= 0 or it never falls)."""
+    """Autocorrelation half-life of each unit (samples), robust to white measurement noise: the signal's
+    lag-0 autocovariance is extrapolated from lags 1 and 2 (an exponential through them), and the half-life
+    is the first lag at which the autocovariance falls below half of it (linear interpolation; lag 0 counts
+    as the extrapolated value). nan if ac(1) <= 0.01 ac(0) or it never falls."""
     Z = _z(X)
     T, N = Z.shape
-    max_lag = max_lag or min(T // 4, 2000)
-    F = np.fft.rfft(Z, n=2 * T, axis=0)
-    ac = np.fft.irfft(F * np.conj(F), axis=0)[:max_lag + 1] / T
+    max_lag = max_lag or min(T // 4, 4000)
+    ac = _acov(Z, max_lag)
     out = np.full(N, np.nan)
-    ok = ac[1] > 0.02 * ac[0]
-    r = ac[1:] / np.where(ok, ac[1], 1.0)
-    below = r < 0.5
-    for i in np.where(ok & below.any(0))[0]:
-        k = int(below[:, i].argmax())                # index in r; lag = k + 1
-        a0, a1 = r[k - 1, i], r[k, i]
-        out[i] = 1 + (k - 1) + (a0 - 0.5) / (a0 - a1)
+    for i in np.where(ac[1] > 0.01 * ac[0])[0]:
+        a1, a2 = ac[1, i], ac[2, i]
+        rho = min(max(a2 / a1, 1e-3), 0.999) if a1 > 0 else 1e-3
+        s0 = min(a1 / rho, ac[0, i])                     # extrapolated signal variance (never above total)
+        r = np.concatenate([[1.0], ac[1:, i] / s0])
+        below = r < 0.5
+        if not below.any():
+            continue
+        k = int(np.argmax(below))
+        out[i] = (k - 1) + (r[k - 1] - 0.5) / (r[k - 1] - r[k])
     return out
 
 
@@ -44,123 +61,127 @@ def tau_med(X):
     return float(np.nanmedian(t)) if np.isfinite(t).any() else np.nan
 
 
-def _halves(N, rng):
+def noise_fraction(X):
+    """Share of each unit's variance that is white: lag-0 excess over the exponential through lags 1 and 2."""
+    Z = _z(X)
+    ac = _acov(Z, 3)
+    rho = np.clip(ac[2] / np.where(ac[1] > 0, ac[1], np.nan), 1e-3, 0.999)
+    signal0 = np.where(ac[1] > 0, ac[1] / rho, 0.0)
+    return np.nan_to_num(np.clip(1 - signal0 / ac[0], 0, 1), nan=1.0)
+
+
+def _shift(Z, rng, min_shift):
+    T = len(Z)
+    lo = int(min(max(min_shift, 1), T // 3))
+    return np.column_stack([np.roll(Z[:, i], rng.integers(lo, T - lo)) for i in range(Z.shape[1])])
+
+
+def _chunks(T, t):
+    chunk = max(int(10 * max(t, 1.0)), 10)
+    idx = np.arange(T) // chunk
+    return idx % 2 == 0, idx % 2 == 1
+
+
+def svca(Z, t, rng, n_comp=None):
+    """Shared variance component analysis (Stringer et al. 2019): reliable variance per shared dimension."""
+    T, N = Z.shape
     p = rng.permutation(N)
-    return p[: N // 2], p[N // 2: 2 * (N // 2)]
-
-
-def svca(X, rng, n_comp=None):
-    """Shared variance component analysis (Stringer et al. 2019): reliable variance per shared dimension.
-
-    Units split in two halves, time in alternating chunks (train/test); components from the train
-    cross-covariance, variance measured as test covariance between the two halves' projections."""
-    Z = _z(X)
-    T, N = Z.shape
-    a, b = _halves(N, rng)
-    chunk = max(int(10 * max(tau_med(Z), 1.0)), 20)       # chunks long against the timescale
-    idx = np.arange(T) // chunk
-    train, test = idx % 2 == 0, idx % 2 == 1
-    k = n_comp or min(len(a), len(b), train.sum() // 4, 512)
-    C = Z[train][:, a].T @ Z[train][:, b] / train.sum()
+    a, b = p[: N // 2], p[N // 2: 2 * (N // 2)]
+    train, test = _chunks(T, t)
+    k = n_comp or min(len(a), len(b), max(train.sum() // 4, 1))
+    C = Z[train][:, a].T @ Z[train][:, b] / max(train.sum(), 1)
     U, S, Vt = np.linalg.svd(C, full_matrices=False)
-    U, V = U[:, :k], Vt[:k].T
-    pa, pb = Z[test][:, a] @ U, Z[test][:, b] @ V
-    shared = (pa * pb).mean(0)
-    var = 0.5 * (pa.var(0) + pb.var(0))
-    return shared, var, len(a)
+    pa, pb = Z[test][:, a] @ U[:, :k], Z[test][:, b] @ Vt[:k].T
+    return (pa * pb).mean(0)
 
 
-def spectrum_exponent(X, rng=None, fit=(2, None)):
-    """Power-law slope of the reliable (shared) spectrum, fitted on ranks fit[0] .. K/2 with positive variance."""
-    rng = rng or np.random.default_rng(0)
-    shared, _, n = svca(X, rng)
-    pos = shared > 0
-    K = int(np.argmin(pos)) if not pos.all() else len(pos)   # ranks up to the first non-positive one
-    hi = fit[1] or max(K // 2, 6)
-    r = np.arange(1, len(shared) + 1)
-    sel = (r >= fit[0]) & (r <= hi) & pos
-    if sel.sum() < 4:
-        return np.nan
-    return float(-np.polyfit(np.log(r[sel]), np.log(shared[sel]), 1)[0])
-
-
-def shared_dim(X, rng=None):
-    """Participation ratio of the reliable shared spectrum (positive SVCA variances), as a share of the
-    half-population size (amendment 1: replaces the count above a shuffle null, which fell with weaker
-    dimensions rather than rising with more of them at 50 units)."""
-    rng = rng or np.random.default_rng(0)
-    shared, _, n = svca(X, rng)
-    lam = np.clip(shared, 0, None)
-    if lam.sum() <= 0:
-        return np.nan
-    return float(lam.sum() ** 2 / (lam ** 2).sum() / n)
-
-
-def shared_fraction(X, rng=None, n_target=300, n_pc=64, ridge=1.0):
-    """Median share of a unit's held-out variance predicted from the other units (ridge on their top PCs)."""
-    rng = rng or np.random.default_rng(0)
+def _shared_with_null(X, t, rng, n_null=3):
     Z = _z(X)
-    T, N = Z.shape
-    chunk = max(int(10 * max(tau_med(Z), 1.0)), 20)
-    idx = np.arange(T) // chunk
-    tr, te = idx % 2 == 0, idx % 2 == 1
-    targets = rng.choice(N, size=min(n_target, N), replace=False)
+    shared = svca(Z, t, np.random.default_rng(int(rng.integers(1 << 30))))
+    null = np.concatenate([svca(_shift(Z, rng, NULL_SHIFT_TAU * t), t, np.random.default_rng(int(rng.integers(1 << 30))),
+                                n_comp=len(shared)) for _ in range(n_null)])
+    return shared, float(np.quantile(null, 0.95))
+
+
+def spectrum_steepness(X, t=None, rng=None, ranks=3):
+    """Slope of log reliable shared variance against log rank over ranks 1..`ranks` (fixed). nan unless every
+    one of those ranks beats the shift null (no shared spectrum to describe)."""
+    rng = rng or np.random.default_rng(0)
+    t = t if t is not None else max(tau_med(X), TAU_FLOOR)
+    shared, thr = _shared_with_null(X, t, rng)
+    if len(shared) < ranks or not (shared[:ranks] > max(thr, 0)).all():
+        return np.nan
+    r = np.arange(1, ranks + 1)
+    return float(-np.polyfit(np.log(r), np.log(shared[:ranks]), 1)[0])
+
+
+def shared_dim(X, t=None, rng=None):
+    """Participation ratio of the shared dimensions that beat the shift null, as a share of half-population
+    size; 0 when none do."""
+    rng = rng or np.random.default_rng(0)
+    t = t if t is not None else max(tau_med(X), TAU_FLOOR)
+    shared, thr = _shared_with_null(X, t, rng)
+    lam = shared[shared > max(thr, 0)]
+    if len(lam) == 0:
+        return 0.0
+    return float(lam.sum() ** 2 / (lam ** 2).sum() / (X.shape[1] // 2))
+
+
+def _pred_r2(Z, tr, te, k):
+    N = Z.shape[1]
     r2 = []
-    for g in np.array_split(targets, max(1, int(np.ceil(len(targets) / max(1, N // 10))))):
+    for g in np.array_split(np.arange(N), max(1, int(np.ceil(N / max(1, N // 10))))):
         others = np.setdiff1d(np.arange(N), g)
-        U, S, Vt = np.linalg.svd(Z[tr][:, others], full_matrices=False)
-        k = min(n_pc, len(S), max(1, tr.sum() // 4))
+        Vt = np.linalg.svd(Z[tr][:, others], full_matrices=False)[2]
         P = Vt[:k].T
         A_tr, A_te = Z[tr][:, others] @ P, Z[te][:, others] @ P
-        G = A_tr.T @ A_tr
-        W = np.linalg.solve(G + ridge * 1e-2 * np.trace(G) / k * np.eye(k), A_tr.T @ Z[tr][:, g])
-        pred = A_te @ W
+        W = np.linalg.lstsq(A_tr, Z[tr][:, g], rcond=None)[0]
         y = Z[te][:, g]
-        r2.extend(1 - ((y - pred) ** 2).sum(0) / ((y - y.mean(0)) ** 2).sum(0))
-    return float(np.median(r2))
+        r2.extend(1 - ((y - A_te @ W) ** 2).sum(0) / ((y - y.mean(0)) ** 2).sum(0))
+    return np.array(r2)
 
 
-def slow_fraction(X, factor=10.0, t=None):
-    """Median share of a unit's signal power at frequencies below 1 / (factor * tau_med).
-
-    Amendment 1 (12 Nov, before any new data): the white measurement-noise floor, estimated as the
-    median power in the top quarter of frequencies, is subtracted first, so Poisson or camera noise does
-    not count as fast signal."""
+def shared_fraction(X, t=None, rng=None, k=5):
+    """Median held-out share of a unit's variance predicted from the top `k` patterns of the other units,
+    minus the same with every unit circularly shifted against the others (the overfitting baseline)."""
+    rng = rng or np.random.default_rng(0)
     Z = _z(X)
-    t = t if t is not None else tau_med(Z)
-    if not np.isfinite(t):
+    t = t if t is not None else max(tau_med(Z), TAU_FLOOR)
+    tr, te = _chunks(len(Z), t)
+    real = np.median(_pred_r2(Z, tr, te, k))
+    null = np.median(np.concatenate([_pred_r2(_shift(Z, rng, NULL_SHIFT_TAU * t), tr, te, k) for _ in range(3)]))
+    return float(real - null)
+
+
+def slow_fraction(X, t=None, lag_tau=10.0):
+    """Slow memory (amendment 2; replaces the spectral slow share, which a single fast process already put
+    near 0.45): the median over units of the autocorrelation at lag `lag_tau` x tau_med, relative to the
+    unit's signal variance (extrapolated from lags 1 and 2, so white noise does not count). About 0.001 for
+    a single-timescale process; large when activity carries components far slower than the typical unit."""
+    Z = _z(X)
+    t = t if t is not None else max(tau_med(Z), TAU_FLOOR)
+    L = int(round(lag_tau * t))
+    if L < 2 or len(Z) < 5 * L:
         return np.nan
-    T = len(Z)
-    seg = int(min(T, 2 ** np.ceil(np.log2(max(32 * factor * t, 256)))))
-    hop = max(seg // 2, 1)
-    P = 0
-    win = np.hanning(seg)[:, None]
-    for s0 in range(0, T - seg + 1, hop):
-        F = np.fft.rfft(Z[s0:s0 + seg] * win, axis=0)
-        P = P + np.abs(F) ** 2
-    f = np.fft.rfftfreq(seg)
-    P = P[1:]
-    f = f[1:]
-    floor = np.median(P[f >= np.quantile(f, 0.75)], axis=0)
-    S = np.clip(P - floor, 0, None)
-    low = f < 1.0 / (factor * t)
-    tot = S.sum(0)
-    ok = tot > 0
-    return float(np.median(S[low][:, ok].sum(0) / tot[ok])) if ok.any() else np.nan
+    ac = _acov(Z, L + 1)
+    rho = np.clip(ac[2] / np.where(ac[1] > 0, ac[1], np.nan), 1e-3, 0.999)
+    s0 = np.minimum(ac[1] / rho, ac[0])
+    v = ac[L] / s0
+    return float(np.nanmedian(v))
 
 
 def timescale_spread(X):
     """Interquartile range of log10 unit timescales."""
-    t = unit_timescales(X)
-    t = t[np.isfinite(t) & (t > 0)]
-    if len(t) < 5:
+    tt = unit_timescales(X)
+    tt = tt[np.isfinite(tt) & (tt > 0)]
+    if len(tt) < 5:
         return np.nan
-    q1, q3 = np.percentile(np.log10(t), [25, 75])
+    q1, q3 = np.percentile(np.log10(tt), [25, 75])
     return float(q3 - q1)
 
 
 def coupling_spread(X):
-    """Interquartile range of population coupling (each unit's correlation with the mean of the others)."""
+    """Interquartile range of population coupling (each unit's correlation with the sum of the others)."""
     Z = _z(X)
     tot = Z.sum(1)
     c = np.array([np.corrcoef(Z[:, i], tot - Z[:, i])[0, 1] for i in range(Z.shape[1])])
@@ -168,29 +189,22 @@ def coupling_spread(X):
     return float(q3 - q1)
 
 
-def drift(X, block_tau=25.0, t=None, max_units=400, rng=None):
-    """Drift rate of the correlation structure (amendment 1): the recording is cut into blocks of
-    block_tau * tau_med; dissimilarity 1 - r(off-diagonal correlations) between every pair of blocks is
-    regressed on their separation; returns the slope per 100 tau_med. Needs at least 4 blocks."""
-    rng = rng or np.random.default_rng(0)
+def drift(X, t=None, blocks=8):
+    """Drift inside a window: the window is cut into `blocks` equal blocks; dissimilarity 1 - r(off-diagonal
+    correlations) between every pair of blocks is regressed on their separation in tau_med; returns the slope
+    per 100 tau_med."""
     Z = _z(X)
-    t = t if t is not None else tau_med(Z)
-    if not np.isfinite(t):
+    t = t if t is not None else max(tau_med(Z), TAU_FLOOR)
+    L = len(Z) // blocks
+    if L < 8:
         return np.nan
-    L = int(round(block_tau * t))
-    nb = len(Z) // max(L, 1)
-    if nb < 4:
-        return np.nan
-    if Z.shape[1] > max_units:
-        Z = Z[:, rng.choice(Z.shape[1], max_units, replace=False)]
     iu = np.triu_indices(Z.shape[1], 1)
-    C = np.array([np.nan_to_num(np.corrcoef(Z[k * L:(k + 1) * L].T)[iu]) for k in range(nb)])
+    C = np.array([np.nan_to_num(np.corrcoef(Z[k * L:(k + 1) * L].T)[iu]) for k in range(blocks)])
     C = C - C.mean(1, keepdims=True)
     C /= np.linalg.norm(C, axis=1, keepdims=True) + 1e-12
-    R = C @ C.T                                       # correlation between every pair of blocks
-    i, j = np.triu_indices(nb, 1)
-    sep, dis = (j - i) * block_tau, 1 - R[i, j]
-    return float(np.polyfit(sep, dis, 1)[0] * 100)
+    R = C @ C.T
+    i, j = np.triu_indices(blocks, 1)
+    return float(np.polyfit((j - i) * L / t, 1 - R[i, j], 1)[0] * 100)
 
 
 def sparsity(X):
@@ -199,57 +213,53 @@ def sparsity(X):
     return float(np.median((Z ** 4).mean(0) - 3))
 
 
-def measure_all(X, seed=0):
-    rng = lambda k: np.random.default_rng(seed * 100 + k)
-    return {"spectrum_exponent": spectrum_exponent(X, rng(1)), "shared_dim": shared_dim(X, rng(2)),
-            "shared_fraction": shared_fraction(X, rng(3)), "slow_fraction": slow_fraction(X),
-            "timescale_spread": timescale_spread(X), "coupling_spread": coupling_spread(X),
-            "drift": drift(X, rng=rng(4)), "sparsity": sparsity(X), "tau_med": tau_med(X)}
+def _spans(T, segments):
+    b = sorted(set([0] + [s for s in (segments or []) if 0 < s < T] + [T]))
+    return list(zip(b[:-1], b[1:]))
 
 
-# ---------------------------------------------------------------- the matched protocol (amendment 1)
-N_UNITS, N_DRAWS, WINDOW_TAU = 50, 40, 150
-
-
-def measure_matched(X, seed=0, n_units=N_UNITS, n_draws=N_DRAWS, window_tau=WINDOW_TAU, only=None):
-    """Every system measured the same way: tau_med from all units; then n_draws random draws of n_units
-    units and a window of window_tau * tau_med samples; each measurement averaged over draws.
-    Returns {measure: mean} plus {measure + '_sd': SD over draws} and tau_med, window."""
+def measure_matched(X, seed=0, n_units=N_UNITS, n_draws=N_DRAWS, window_tau=WINDOW_TAU, only=None,
+                    segments=None, tau_floor=TAU_FLOOR):
+    """Every system measured the same way: tau_med from all units (floored at tau_floor samples); then n_draws
+    draws of n_units units and one window of window_tau * tau_med samples inside one segment; window
+    measurements averaged over draws. Slow fraction uses the drawn units over the longest segment.
+    Returns means, SDs over draws, tau_med and flags."""
     X = np.asarray(X, float)
     X = X[:, X.std(0) > 1e-9]
     rng = np.random.default_rng(seed)
-    t = tau_med(X)
-    if not np.isfinite(t) or X.shape[1] < n_units:
-        return {"tau_med": t, "error": "too few units or no timescale"}
+    t_raw = tau_med(X)
+    if not np.isfinite(t_raw) or X.shape[1] < n_units:
+        return {"tau_med": t_raw, "error": "too few units or no timescale"}
+    t = max(t_raw, tau_floor)
     W = int(round(window_tau * t))
-    if W > len(X):
-        return {"tau_med": t, "error": f"recording shorter than {window_tau} tau_med"}
+    spans = [(a, b) for a, b in _spans(len(X), segments) if b - a >= W]
+    if not spans:
+        return {"tau_med": t_raw, "error": f"no stretch of {window_tau} tau_med"}
+    longest = max(_spans(len(X), segments), key=lambda ab: ab[1] - ab[0])
     names = only or MEASURES
     vals = {m: [] for m in names}
     for d in range(n_draws):
         u = rng.choice(X.shape[1], n_units, replace=False)
-        s0 = int(rng.integers(0, len(X) - W + 1))
+        a, b = spans[int(rng.integers(len(spans)))]
+        s0 = int(rng.integers(a, b - W + 1))
         Y = X[s0:s0 + W, u]
         r = np.random.default_rng(seed * 1000 + d)
         for m in names:
-            f = globals()[m]
             try:
-                if m == "drift":                      # a rate over the whole recording, matched units
-                    v = f(X[:, u], t=t, rng=r)
-                elif m == "slow_fraction":            # Welch segments of fixed length in tau_med over the whole recording
-                    v = f(X[:, u], t=t)
-                elif m == "slow_fraction":
-                    v = f(Y, t=t)
-                elif "rng" in f.__code__.co_varnames:
-                    v = f(Y, rng=r)
+                if m == "slow_fraction":
+                    v = slow_fraction(X[longest[0]:longest[1], u], t=t)
+                elif m in ("spectrum_steepness", "shared_dim", "shared_fraction"):
+                    v = globals()[m](Y, t=t, rng=r)
+                elif m == "drift":
+                    v = drift(Y, t=t)
                 else:
-                    v = f(Y)
+                    v = globals()[m](Y)
             except Exception:  # noqa: BLE001
                 v = np.nan
             vals[m].append(v)
-    out = {"tau_med": t, "window": W}
+    out = {"tau_med": t_raw, "tau_used": t, "resolution_limited": bool(t_raw < tau_floor), "window": W}
     for m in names:
-        a = np.array(vals[m], float)
-        out[m] = float(np.nanmean(a)) if np.isfinite(a).any() else np.nan
-        out[m + "_sd"] = float(np.nanstd(a)) if np.isfinite(a).sum() > 1 else np.nan
+        a_ = np.array(vals[m], float)
+        out[m] = float(np.nanmean(a_)) if np.isfinite(a_).sum() >= max(n_draws // 2, 1) else np.nan
+        out[m + "_sd"] = float(np.nanstd(a_)) if np.isfinite(a_).sum() > 1 else np.nan
     return out
