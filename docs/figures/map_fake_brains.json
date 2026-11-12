@@ -1,0 +1,159 @@
+{
+ "separated": {
+  "group_instrument": {
+   "decay_over_tau": 0.3359671599473208,
+   "frames_per_tau": 2.943048163384243,
+   "noise": 0.0
+  },
+  "unreached": [],
+  "measures": [],
+  "dropped": {
+   "spectrum_steepness": "nan in some system",
+   "shared_fraction": "C3: unstable in a preparation",
+   "timescale_spread": "C3: unstable in a preparation",
+   "coupling_spread": "C3: unstable in a preparation",
+   "sparsity": "C3: unstable in a preparation"
+  },
+  "bvu": {
+   "spectrum_steepness": {
+    "sd": 0.17041263503829834,
+    "df": 2,
+    "lo": 0.09845783748961749,
+    "hi": 0.7524393425395423
+   },
+   "shared_fraction": {
+    "sd": 0.03378914394747651,
+    "df": 10,
+    "lo": 0.024972852201942636,
+    "hi": 0.05382853897597616
+   },
+   "timescale_spread": {
+    "sd": 0.014894664946418144,
+    "df": 10,
+    "lo": 0.011008336490635939,
+    "hi": 0.023728273609081862
+   },
+   "coupling_spread": {
+    "sd": 0.04016452627015609,
+    "df": 10,
+    "lo": 0.029684764428030433,
+    "hi": 0.06398498201509427
+   },
+   "sparsity": {
+    "sd": 0.0440535722895562,
+    "df": 10,
+    "lo": 0.032559077302011526,
+    "hi": 0.07018051231796475
+   }
+  },
+  "gates_off": {
+   "measures": [
+    "shared_fraction",
+    "timescale_spread",
+    "coupling_spread",
+    "sparsity"
+   ],
+   "H1": {
+    "powered": true,
+    "types": 5,
+    "real_share": 1.0,
+    "ai_share": 1.0,
+    "holds": true
+   },
+   "H2": {
+    "AUG": {
+     "distance": 1.856428143631059,
+     "threshold": 5.278579151603138,
+     "standard_passing": 4,
+     "passes": false,
+     "decided": false
+    }
+   },
+   "gaps": {
+    "timescale_spread": 6.246060653583968,
+    "coupling_spread": 3.065780983306727,
+    "shared_fraction": 3.0065226811897,
+    "sparsity": 0.8218007849530641
+   }
+  }
+ },
+ "mixed": {
+  "group_instrument": {
+   "decay_over_tau": 0.288552175530656,
+   "frames_per_tau": 3.1946387219421712,
+   "noise": 0.0
+  },
+  "unreached": [],
+  "measures": [
+   "shared_fraction"
+  ],
+  "dropped": {
+   "spectrum_steepness": "nan in some system",
+   "timescale_spread": "mismatch budget",
+   "coupling_spread": "mismatch budget",
+   "sparsity": "C3: unstable in a preparation"
+  },
+  "bvu": {
+   "spectrum_steepness": {
+    "sd": 0.2350806057138158,
+    "df": 5,
+    "lo": 0.15798586426537053,
+    "hi": 0.49114390988515305
+   },
+   "shared_fraction": {
+    "sd": 0.07399597605894738,
+    "df": 10,
+    "lo": 0.0546888839957304,
+    "hi": 0.11788091724211673
+   },
+   "timescale_spread": {
+    "sd": 0.017683027790151736,
+    "df": 10,
+    "lo": 0.013069157365239599,
+    "hi": 0.028170336368836594
+   },
+   "coupling_spread": {
+    "sd": 0.023057043542374783,
+    "df": 10,
+    "lo": 0.017040980425326344,
+    "hi": 0.03673153036729101
+   },
+   "sparsity": {
+    "sd": 0.058433774248288745,
+    "df": 10,
+    "lo": 0.04318718491869869,
+    "hi": 0.09308920934862314
+   }
+  },
+  "gates_off": {
+   "measures": [
+    "shared_fraction",
+    "timescale_spread",
+    "coupling_spread",
+    "sparsity"
+   ],
+   "H1": {
+    "powered": true,
+    "types": 5,
+    "real_share": 0.0,
+    "ai_share": 0.0,
+    "holds": false
+   },
+   "H2": {
+    "AUG": {
+     "distance": 1.2002779121719842,
+     "threshold": 2.7418315518463245,
+     "standard_passing": 4,
+     "passes": false,
+     "decided": false
+    }
+   },
+   "gaps": {
+    "coupling_spread": 1.241044491881895,
+    "sparsity": 0.6174442042525088,
+    "timescale_spread": 0.3040672370815786,
+    "shared_fraction": 0.2321907411296516
+   }
+  }
+ }
+}

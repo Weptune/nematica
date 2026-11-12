@@ -434,3 +434,91 @@ whole sessions; 40 draws in calibration; state that PolyPythia has no 1B seeds.
 neural traces), so by the registered rule R3 is Chen et al. 2018 (Janelia figshare 7272617; 18 zebrafish,
 about 80,000 cells each; CC BY-NC 4.0, used locally, summary numbers only). With zebrafish as the only
 fish, the calcium group is powered only if the fly (R11) is loaded.*
+
+
+## Amendment 3 (12 Nov 2026, answering review 11, before any new brain data was read)
+
+All points of review 11 are accepted. Code: `nematica/map/{measures,recording,analysis}.py`,
+`scripts/map_calibrate.py`, `scripts/map_fake_brains.py`.
+
+**Matching (must-fix 1, 2).** "Indicator decay" is the 1/e constant of exp(-n/decay) (half-decay times
+from papers divided by ln 2). Fast networks are first *held*: each native step repeated for
+k = ceil(8 / native tau_med) sub-steps (a convention for how long a token or step lasts; sensitivity at 2k),
+so frames and bins finer than a native step can be reached. Calcium decay and frame are refined on the
+noisy recording; spike bin and gain are iterated jointly with the timescale measured on the recorded
+counts. Both report what they reached and a `reached` flag (within 10%; the noise share within 0.05
+absolute); **a network whose targets are not reached is reported, not mapped.** **Each AI is recorded once
+per group**, matched to the group's median instrument numbers (per-preparation matching is a sensitivity
+analysis). **Mismatch budget:** every matched knob swept by a factor of 1.5 each way (the plausible error in
+estimating a preparation's instrument numbers); a measurement that moves any mapped AI by more than 1 BVU
+is dropped for the whole group. The budget, BVU, distance, nearest-neighbour and hypothesis code is now
+written and frozen (`analysis.py`) and was run end to end on synthetic "fake brains" (below).
+
+**Slow memory (must-fix 3)** is restated as a measure of a **mixture of timescales**: it rises when
+components far slower than the median unit are present, and a system dominated by one slow timescale
+scores like a fast one (its slow timescale then is the median). Its autocovariance is pooled over segments,
+with at least 100 tau_med of data. C1 sweeps the slow share over 0 to 0.4, the range in which the median
+unit stays fast.
+
+**Calibration through the matching rule (must-fix 4).** C1 and C4 now record every synthetic system through
+`match_calcium` / `match_spikes` against two instrument profiles per type: calcium A (decay 0.3 of the
+recorded timescale, 4 frames per timescale, noise share 0.2) and B (0.8, 7, 0.4); spikes A (3 bins per
+timescale, 0.5 spikes per bin, noise 0.6) and B (6, 0.2, 0.8). C4 sweeps the knobs matching does not set:
+native timescale (1.5 to 30 samples per tau), population (60 to 3,000), and the calcium rectification gain
+(0.5 to 4; a first run of the gain sweep had a bug that left the gain unchanged and was rerun). 20 draws,
+2 seeds. 80 of the calibration recordings did not reach their targets within tolerance
+(mostly at the extremes of the sweeps); they are included, which makes the gate conservative. Cells:
+C1 Spearman / largest C4 ratio; "ok" = C1 >= 0.9 and every C4 ratio < 0.5.
+
+| measurement | native | calcium A | calcium B | spikes A | spikes B |
+|---|---|---|---|---|---|
+| spectrum steepness | nan / 0.25 | nan / nan | -0.24 / 1.64 | nan / nan | nan / nan |
+| shared fraction | 0.98 / 0.05 ok | 0.98 / 0.21 ok | 0.96 / 0.21 ok | 0.98 / 0.10 ok | 0.91 / 0.19 ok |
+| slow memory | 0.98 / 0.17 ok | 0.98 / 0.08 ok | -0.31 / 0.76 | 0.98 / 0.03 ok | 0.98 / 0.07 ok |
+| timescale spread | 0.98 / 0.06 ok | 0.98 / 0.07 ok | 0.91 / 0.86 | 0.94 / 0.47 ok | 0.94 / 0.62 |
+| coupling spread | 0.96 / 0.09 ok | 0.98 / 0.03 ok | 0.96 / 0.11 ok | 0.98 / 0.23 ok | 0.96 / 0.30 ok |
+| drift | 0.86 / 0.19 | 0.96 / 0.45 ok | nan / 0.17 | 0.62 / 0.42 | 0.17 / 1.72 |
+| sparsity | 0.98 / 0.00 ok | 0.98 / 0.13 ok | 0.98 / 0.14 ok | 0.96 / 0.30 ok | 0.30 / 0.88 |
+
+**Provisional measurement sets** (passing under both profiles): calcium: shared fraction, coupling spread, sparsity;
+spikes: shared fraction, slow memory, coupling spread; native (AI to AI): shared fraction, slow memory, timescale spread, coupling spread, sparsity. **Final sets per
+group:** once each group's median instrument numbers are known (they come from loading the data, before any
+measurement), C1 and C4 are rerun on synthetic systems at exactly those numbers and the group uses the
+measurements that pass there. This is the last calibration step before brain measurements.
+
+**nan (must-fix 5):** a measurement that is nan in any mapped system of a group is dropped for the whole group
+(so nan never shrinks a distance); a value needs at least 80% finite draws.
+
+**Outcomes registered now (must-fix 6, 7).** A group is mapped only with at least 3 usable measurements and
+at least 4 distinct preparation types. If the spike group cannot be mapped, H8 and the spike arm of H3 to
+H6 are undecided and H1 is tested in calcium only; if neither group can be mapped, the study reports that
+brain-AI comparison through matched recordings is not possible with these data and measurements, which is a
+result about the question itself. The calcium group is powered only if the fly (R11) is loaded (R3 is
+zebrafish only; DANDI 001453 holds behaviour only). **Slow set per group:** {slow memory, timescale spread,
+drift} intersected with the group's measurements; **H5 and H3(b) are undecided in a group whose slow set is
+empty.**
+
+**H2 (changed):** an augmented AI passes if its nearest neighbour among the preparations and the standard AI
+families (siblings and the preparations it was fitted on left out) is a real preparation, the same rule as
+H1. The earlier threshold rule (nearest real within the largest real-to-real distance) let every standard AI
+pass in the fake-brain test, because real preparations of different species are far apart.
+
+**Should-fix items.** C3 is the split-half standard error (two disjoint unit pools), averaged over a
+preparation's individuals, below **0.5** BVU (0.25 dropped every measurement on fake brains whose
+individuals differ by 20%; the gate stays, at a level where measurement noise is less than half the
+biological spread); no draw-count escape. Cross-talk is reported as ratios to each measurement's C1 range
+(`X` in the JSON); the effective number of independent measurements will be reported with the map. H4 and
+H6 hold only at both ends of the BVU interval (implemented); H4 and H5 are undecided if the conclusion
+changes across timescale floors 2, 4 and 8. Units constant in native activity are dropped before recording.
+R6 and R7 use whole sessions, flagged as task. PolyPythia has no 1B seeds, so H4's interval for 1B is over
+text segments only. Calibration uses 20 draws (not 40) for time; values used in the map use 40.
+
+**Fake-brain test** (`docs/figures/map_fake_brains.json`): five fake preparations from one region of
+parameter space (20% individual variation, 30% between preparations, each with its own calcium instrument)
+and four standard fake AIs from another region, plus one augmented AI near the brains. Every AI reached its
+matched targets. *With the registered gates on,* the C3 and budget gates dropped every measurement, so no
+hypothesis was decidable: on data like these the protocol says "cannot map" rather than guessing. *With the
+gates off* (a code-path check only): separated regions give H1 real share 1.0 and AI share 1.0 (holds), and
+the largest gaps are timescale spread, coupling spread and shared fraction; when the AIs are drawn from the
+brains' region H1 fails (0.0 and 0.0). The decision code does what it should; whether the gates let real
+data through is the open question this amendment cannot answer in advance.

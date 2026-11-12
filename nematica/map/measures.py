@@ -153,21 +153,30 @@ def shared_fraction(X, t=None, rng=None, k=5):
     return float(real - null)
 
 
-def slow_fraction(X, t=None, lag_tau=10.0):
-    """Slow memory (amendment 2; replaces the spectral slow share, which a single fast process already put
-    near 0.45): the median over units of the autocorrelation at lag `lag_tau` x tau_med, relative to the
-    unit's signal variance (extrapolated from lags 1 and 2, so white noise does not count). About 0.001 for
-    a single-timescale process; large when activity carries components far slower than the typical unit."""
+def slow_fraction(X, t=None, lag_tau=10.0, segments=None, min_tau=100.0):
+    """Slow memory (amendment 2, restated in amendment 3): the median over units of the autocorrelation at
+    lag `lag_tau` x tau_med, relative to the signal variance (extrapolated from lags 1 and 2). It measures a
+    *mixture of timescales*: about 0.001 for a single timescale, larger when components far slower than the
+    median unit are present. A system dominated by one slow timescale scores like a fast one (the slow
+    timescale then is the median). Autocovariances are pooled over segments (weighted by length); needs at
+    least `min_tau` tau_med of data in segments longer than 5 x the lag."""
     Z = _z(X)
     t = t if t is not None else max(tau_med(Z), TAU_FLOOR)
     L = int(round(lag_tau * t))
-    if L < 2 or len(Z) < 5 * L:
+    if L < 2:
         return np.nan
-    ac = _acov(Z, L + 1)
+    spans = [(a, b) for a, b in _spans(len(Z), segments) if b - a >= 5 * L]
+    if sum(b - a for a, b in spans) < min_tau * t:
+        return np.nan
+    ac, n = 0, 0
+    for a, b in spans:
+        Y = Z[a:b] - Z[a:b].mean(0)
+        ac = ac + _acov(Y, L + 1) * (b - a)
+        n += b - a
+    ac = ac / n
     rho = np.clip(ac[2] / np.where(ac[1] > 0, ac[1], np.nan), 1e-3, 0.999)
     s0 = np.minimum(ac[1] / rho, ac[0])
-    v = ac[L] / s0
-    return float(np.nanmedian(v))
+    return float(np.nanmedian(ac[L] / s0))
 
 
 def timescale_spread(X):
@@ -235,7 +244,6 @@ def measure_matched(X, seed=0, n_units=N_UNITS, n_draws=N_DRAWS, window_tau=WIND
     spans = [(a, b) for a, b in _spans(len(X), segments) if b - a >= W]
     if not spans:
         return {"tau_med": t_raw, "error": f"no stretch of {window_tau} tau_med"}
-    longest = max(_spans(len(X), segments), key=lambda ab: ab[1] - ab[0])
     names = only or MEASURES
     vals = {m: [] for m in names}
     for d in range(n_draws):
@@ -247,7 +255,7 @@ def measure_matched(X, seed=0, n_units=N_UNITS, n_draws=N_DRAWS, window_tau=WIND
         for m in names:
             try:
                 if m == "slow_fraction":
-                    v = slow_fraction(X[longest[0]:longest[1], u], t=t)
+                    v = slow_fraction(X[:, u], t=t, segments=segments)
                 elif m in ("spectrum_steepness", "shared_dim", "shared_fraction"):
                     v = globals()[m](Y, t=t, rng=r)
                 elif m == "drift":
@@ -260,6 +268,21 @@ def measure_matched(X, seed=0, n_units=N_UNITS, n_draws=N_DRAWS, window_tau=WIND
     out = {"tau_med": t_raw, "tau_used": t, "resolution_limited": bool(t_raw < tau_floor), "window": W}
     for m in names:
         a_ = np.array(vals[m], float)
-        out[m] = float(np.nanmean(a_)) if np.isfinite(a_).sum() >= max(n_draws // 2, 1) else np.nan
+        out[m] = float(np.nanmean(a_)) if np.isfinite(a_).sum() >= max(int(0.8 * n_draws), 1) else np.nan
         out[m + "_sd"] = float(np.nanstd(a_)) if np.isfinite(a_).sum() > 1 else np.nan
     return out
+
+
+def split_half_se(X, seed=0, **kw):
+    """C3 (amendment 3): the standard error of each matched value, from two disjoint unit pools: values
+    measured on each half of the units separately; SE = |a - b| / 2 (needs at least 2 x n_units units)."""
+    X = np.asarray(X, float)
+    X = X[:, X.std(0) > 1e-9]
+    rng = np.random.default_rng(seed + 991)
+    p = rng.permutation(X.shape[1])
+    h = X.shape[1] // 2
+    if h < kw.get("n_units", N_UNITS):
+        return {}
+    a = measure_matched(X[:, p[:h]], seed=seed, **kw)
+    b = measure_matched(X[:, p[h:2 * h]], seed=seed + 1, **kw)
+    return {m: abs(a.get(m, np.nan) - b.get(m, np.nan)) / 2 for m in MEASURES}
