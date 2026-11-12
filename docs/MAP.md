@@ -774,7 +774,9 @@ tests (4 new).
 - **Noise share (item 2).** The signal variance is now the cubic through lags 1 to 4 extrapolated to lag 0
   (amendment 4: a quadratic through lags 1 to 3). On calcium-shaped signals (indicator decay 0.3 to 8
   native steps, true white share 0.1, 0.3, 0.6), AR signals and Poisson counts the error is at most 0.033
-  (worst: decay comparable to the native timescale, read low; amendment 4's estimator: 0.05 there). This
+  (worst: decay comparable to the native timescale, read low; amendment 4's estimator: 0.05 there).
+  *(Corrected after review 13's follow-up: with fractional frames the worst case is 0.041, decay 1.13 and
+  frame 1.08; read "at most about 0.04".)* This
   residual bias is registered, not hidden: it applies equally to brains and AIs recorded through the same
   model, but not to brains whose real signal shape differs from the model's; step 2 reports it at each
   group's numbers. Amendment 4's "within about 0.02" was wrong for calcium and is corrected here. Unit test
@@ -807,7 +809,9 @@ tests (4 new).
 
 **Before brain measurements (registered as open):** review 13's items 4 (an instrument-transfer gate:
 each AI's range across the group's actual instruments under 0.5 BVU), 5 (sparsity on counts: dropped or
-re-estimated, and AI recordings given the brain's distribution of rates and noise shares), 6 (budget as the
+re-estimated, and AI recordings given the brain's distribution of rates and noise shares), detrending wired
+into `measure_matched`, `match` and `record_matched` for the calcium group (in code it is so far applied only
+in `instrument_numbers`), 6 (budget as the
 max over AIs; CRN for the frame knob), 7 (hierarchical bootstrap over network instances), 8 (robustness
 variants re-matched and run in a control; floors applied only to resolution-limited native systems),
 9 (an alternative C3 split for short preparations), 10 (graded positive and negative controls at realistic
@@ -818,3 +822,10 @@ regenerated with the final estimators at step 2.
 
 *Status: ready for step 1 by review 13's criteria. Step 1 runs only `instrument_numbers` on the real
 datasets.*
+
+**Review 13 follow-up (13 Nov 2026):** the same reviewer checked amendment 5. *Step 1 may run.* Item 1 fixed
+(2.71 against 7.82; the remainder is the long stretch's real share of variance); item 2 mostly fixed (true
+0.10 reads 0.059 to 0.090; worst error 0.041 with fractional frames, corrected above); item 3 registered,
+with the caution that the R1 rest construction must be shown in a loader under the step-1 hash; segments in
+matching, `h2` and step-1 detrending fixed (trending units no longer move the timescale). Detrending in the
+measurement path is added to the open list above.
