@@ -727,3 +727,36 @@ RMS; README's hypothesis table is updated to the rules as amended.
 
 *Status: amendment 4 complete. Next: independent review 13 of amendments 3 and 4 and the code; if it
 clears, step 1 (instrument numbers only) runs on the real datasets.*
+
+## Review 13 (13 Nov 2026, before any new brain data): ready for step 1 with fixes, not ready for brain measurements
+
+A fourth independent review checked amendment 4 against the code and JSON. **Confirmed:** both code hashes
+match the committed files (the calibration cache tag confirms the provenance note); the calibration table and
+fake-brain numbers match the JSON; the 8-df BVU interval is right; F3, F9, F10, F14, F16 are fixed; F6 holds
+(a fast network reached calcium R, Neuropixels-like spikes and a worm-like profile); `instrument_numbers`
+outputs aggregates only. **Before step 1:** (1) the timescale uses only the longest segment (`_acov_seg`
+keeps segments of at least 4 x max_lag with max_lag from the longest one), so a preparation with unequal
+rest stretches is timed from one stretch (3,000 samples at half-life 8 plus nine of 2,900 at half-life 2
+read 7.82; pooled, 2.06); (2) F1 is only partly fixed and the text overstates it: on calcium-shaped signals
+(decay 1.1 to 8 steps) a true white share of 0.10 reads 0.043 to 0.076 and 0.30 reads 0.25 to 0.28, and the
+fake brains' instrument numbers read low in all 10 preparations; (3) step-1 inputs are not registered: trace
+type per dataset (raw, dF/F, neuropil-corrected, deconvolved), the rest definition for R1 (its dataset marks
+stimuli, not rest), an indicator rule for nuclear GCaMP and non-mammalian temperatures, and a hash of the
+loaders in step 1's output. **Before brain measurements:** (4) one AI's value moves across the five similar
+fake instruments by 0.9 to 3.8 BVU on some measures, while real-to-real distances are not instrument-matched,
+which inflates them in the direction of the worm prediction (an instrument-transfer gate is needed);
+(5) factorial-moment sparsity on counts is unusable at 0.1 to 0.5 spikes per bin and depends on the spread of
+rates, which AI recordings do not reproduce (every AI unit gets the same mean count); (6) the budget takes the
+median over AIs where the max is needed, CRN is not exact for the frame knob, and the "floor removed" is not
+implemented; (7) the bootstrap's replicates are recording seeds of one network, not instances; (8) the
+robustness rule cannot run as written (hold 2k unimplemented; interpolation reuses hold-matched knobs; floors
+would rescale brain windows; whether gates rerun per variant is unspecified); (9) the C3 time-half fallback
+fails for preparations under 300 timescales (the worms); (10) the positive control is too favourable (same
+generator, noise 0.02 to 0.23, 5 x 4, all parameters separated, calcium only); graded controls at realistic
+noise and the minimum group size are needed. **Minor:** slow memory turns down above a slow share of 0.6;
+a bleaching-like trend in 30% of units raises the population timescale by 27% (register detrending); the
+measures.py module docstring describes the old tau_med; `match()` takes no segments; spike timescale
+recovery of 0.66 at 1.5 samples per tau contradicts "unbiased"; `h2` can return decided with no verdict.
+
+*Status: all accepted. Amendment 5 fixes items 1 to 3 (and the minor ones that touch step 1) before step 1;
+items 4 to 10 are fixed before any brain measurement.*
