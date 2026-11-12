@@ -168,3 +168,54 @@ worm work pointed to, and the worm-based conclusion is revised.
 5. Perturbation measurements where possible (R8, R9, R6), H7.
 6. Visuals: the map itself (every system as a cloud of its individuals), and each system's activity as
    a rotating shape in the same treatment, side by side.
+
+
+## Amendment 1 (12 Nov 2026, after the synthetic calibration, before any new brain data was read)
+
+The first calibration run (`scripts/map_calibrate.py`, synthetic systems only) showed three problems,
+fixed here before any real data is touched:
+
+1. **Unit count changes the values** (C3 as first worded failed for nearly every measurement: values at
+   300 units and at 50 differed by 1 to 16 between-individual SDs). So every system is now measured the
+   same way (**the matched protocol**, `nematica/map/measures.measure_matched`): 50 units drawn at random,
+   40 draws, values averaged over draws. Time windows are 150 tau_med for the windowed measurements;
+   slow fraction (Welch segments of fixed length in tau_med) and drift (a rate) use the whole recording,
+   so they do not depend on its length. A recording shorter than 150 tau_med is reported, not mapped
+   (by the brain-likeness reference, worm atlas runs are about 170 tau_med; the 16-minute copper runs,
+   about 75, so R2 becomes exploratory).
+2. **Three definitions changed**, each because a synthetic property was not recovered:
+   - *shared dimensionality* is now the participation ratio of the reliable shared spectrum (the count
+     above a shuffle null fell, rather than rose, with more dimensions at 50 units);
+   - *slow fraction* subtracts the white measurement-noise floor first;
+   - *drift* is a rate: dissimilarity of the correlation structure regressed on separation between
+     blocks of 25 tau_med, per 100 tau_med.
+3. **Recording type matters** (C2 failed for every measurement except the spectrum exponent: calcium and
+   spike recordings of the same system differ by 0.6 to 42 between-individual SDs). As registered, those
+   measurements are compared only within a recording type. **H1 is therefore tested separately in the
+   calcium group (R1, R2, R3, R5, R11) and the spike group (R4, R6, R7, R9, R10), and holds only if it
+   holds in both.** Every artificial network is recorded through both models and compared with each
+   group in its own type. Human cortex (R8, field potentials) is compared with AIs recorded as field
+   potentials only.
+
+**Final calibration** (Spearman for C1, ratio to between-individual SD for C2 and C3):
+
+| measurement | C1 native / calcium / spikes | C2 | C3 native / calcium / spikes | used for |
+|---|---|---|---|---|
+| spectrum_exponent | 0.98 / 0.94 / 0.94 | 0.11 | 0.26 / 0.64 / 0.79 | native, calcium, spikes |
+| shared_dim | 0.83 / 0.91 / 0.62 | 0.57 | 0.18 / 0.07 / 0.34 | calcium |
+| shared_fraction | 0.98 / 0.98 / 0.87 | 2.70 | 0.16 / 0.15 / 0.54 | native, calcium |
+| slow_fraction | 0.98 / 0.96 / 0.69 | 18.74 | 0.30 / 0.11 / 0.35 | native, calcium |
+| timescale_spread | 0.98 / 0.95 / 0.98 | 7.14 | 0.21 / 0.30 / 0.58 | native, calcium, spikes |
+| coupling_spread | 0.98 / 0.98 / 0.98 | 4.14 | 0.11 / 0.26 / 0.40 | native, calcium, spikes |
+| drift | 0.98 / 0.95 / 0.98 | 4.81 | 0.07 / 0.19 / 0.33 | native, calcium, spikes |
+| sparsity | 0.98 / 0.98 / 0.98 | 41.63 | 0.77 / 0.63 / 0.37 | native, calcium, spikes |
+
+**A measurement is used within a recording type where it passes C1** (a refinement of "dropped if it
+fails": a measurement that recovers its property in calcium recordings but not in Poisson spikes is used
+for the calcium group only). So the calcium group uses all eight; the spike group uses spectrum exponent,
+timescale spread, coupling spread, drift and sparsity; shared dimensionality is not used for AI-to-AI
+comparisons in native units. H3's slow and shared measurements are, per group, those of M1, M3, M4, M7
+that are in use. **C3** compared draw-to-draw variation with an arbitrary synthetic between-individual
+spread (10% parameter jitter) and many measurements fall short of 0.25; it is re-evaluated against the
+real between-individual spread of each preparation once loaded, and a measurement short of it there gets
+more draws (up to 160) before use, never different definitions.
