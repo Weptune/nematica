@@ -9,8 +9,10 @@ Rules (registered):
 - Rest segments. If the individual carries `segments` marking spontaneous (no-stimulus) stretches, only
   those are used (`rest`), and lags never cross a boundary; otherwise the whole recording.
 - Indicator decay. The 1/e decay constant is the indicator's half-decay time divided by ln 2, from
-  INDICATOR_HALF_DECAY_S (each entry cites its source; filled and registered at step 1 before matching, from
-  the indicator's characterisation paper, in vivo single-spike value where reported, else the dataset paper).
+  INDICATOR_HALF_DECAY_S (each entry cites its source: the indicator's characterisation paper, in vivo
+  single-spike value where reported, else the dataset paper). Worm neurons mostly do not spike and are
+  imaged at room temperature, so for R1 and R2 the indicator value is a convention; a sensitivity at twice
+  the half-decay is reported.
 - Aggregation. Median over individuals within a preparation; then median over preparations within a
   recording group (`group_numbers`). Each individual's numbers are kept so the per-preparation matching of
   amendment 4 (F5, AIs recorded at each preparation's own instrument) can use the preparation medians.
@@ -26,7 +28,15 @@ MIN_SPIKES = 200
 MIN_RATE_HZ = 0.05
 MAX_NOISE_CALCIUM = 0.99
 
-INDICATOR_HALF_DECAY_S: dict[str, tuple[float, str]] = {}   # indicator -> (half-decay s, source); step 1
+# indicator -> (half-decay time in seconds, source). Registered in amendment 4, before step 1. Which indicator
+# each dataset used is read from its metadata or paper at step 1; an indicator not listed here is added with
+# a citation by the same rule before any matching.
+INDICATOR_HALF_DECAY_S: dict[str, tuple[float, str]] = {
+    "GCaMP6f": (0.10, "Chen et al. 2013 Nature 499:295, mouse V1 in vivo, 1 AP (about 100 ms)"),
+    "GCaMP6m": (0.20, "Chen et al. 2013, mouse V1 in vivo, 1 AP (about 200 ms)"),
+    "GCaMP6s": (0.50, "Chen et al. 2013, mouse V1 in vivo, 1 AP (about 500 ms)"),
+    "jGCaMP7f": (0.265, "Dana et al. 2019 Nat Methods, cultured neurons, 1 AP (265 ms); no in vivo 1-AP value"),
+}
 
 
 def include_units(X, rtype, dt):

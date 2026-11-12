@@ -129,7 +129,8 @@ def _segments_record(fn, A, segments, rng, **kw):
 def match_calcium(A, prep, rng=None, n_iter=14, rounds=8, seed=0):
     """Registered rule (amendments 2 to 4). `prep`: `decay_over_tau` (indicator decay as the 1/e constant over
     the recorded tau_med; half-decay times from papers are divided by ln 2), `frames_per_tau`, `noise` (median
-    white-noise share). The network is held (hold_factor); decay is found by bisection on the noiseless trace;
+    white-noise share). The network is held (hold_factor); decay is the smallest that reaches the target on
+    the noiseless trace (a log grid, then bisection inside the first bracket that reaches it);
     then up to `rounds` rounds of: SNR bisection to the noise target, multiplicative frame and decay updates
     from the achieved values, stopping once all three are reached. If the frame would fall below one sub-step
     the hold factor is raised. Every evaluation uses the same noise seed (common random numbers), so the
@@ -141,10 +142,16 @@ def match_calcium(A, prep, rng=None, n_iter=14, rounds=8, seed=0):
     k = hold_factor(t0, prep["frames_per_tau"])
     H = hold(A, k)
     rec = lambda d, f, s_: calcium(H, decay=d, frame=f, snr=s_, rng=R_())
-    lo, hi = 0.05, 4000.0
-    for _ in range(n_iter):
+    ratio = lambda d: d / tau_med(rec(d, 1, 1e6))
+    grid = 0.05 * 1.5 ** np.arange(28)                   # 0.05 to about 2,800 sub-steps
+    lo, hi = grid[0], grid[-1]
+    for a, b in zip(grid[:-1], grid[1:]):                # the smallest decay that reaches the target: the
+        if ratio(b) >= prep["decay_over_tau"]:           # ratio is not monotone when a slow component takes
+            lo, hi = a, b                                # over the recorded timescale at long decays
+            break
+    for _ in range(n_iter // 2):
         d = np.sqrt(lo * hi)
-        lo, hi = (d, hi) if d / tau_med(rec(d, 1, 1e6)) < prep["decay_over_tau"] else (lo, d)
+        lo, hi = (d, hi) if ratio(d) < prep["decay_over_tau"] else (lo, d)
     d = np.sqrt(lo * hi)
     frame = max(tau_med(rec(d, 1, 1e6)) / prep["frames_per_tau"], 1.0)
     snr, got, ok, best = 4.0, {}, False, None
@@ -221,9 +228,38 @@ def record_matched(A, rtype, knobs, rng=None, segments=None, interp=False):
     else:
         H = hold(A, k)
     seg = [int(x) * k for x in (segments or [])]
-    if rtype == "calcium":
-        return _segments_record(calcium, H, seg, rng, decay=knobs["decay"], frame=knobs["frame"], snr=knobs["snr"])
-    if rtype == "spikes":
-        return _segments_record(spikes, H, seg, rng, mean_count=knobs["mean_count"], bin_steps=knobs["bin_steps"],
-                                gain=knobs["gain"])
-    return native(H), seg
+    if rtype == "native":
+        return native(H), seg
+    fn, kw = ((calcium, dict(decay=knobs["decay"], frame=knobs["frame"], snr=knobs["snr"])) if rtype == "calcium"
+              else (spikes, dict(mean_count=knobs["mean_count"], bin_steps=knobs["bin_steps"], gain=knobs["gain"])))
+    rng = rng or np.random.default_rng(0)
+    parts = []                                           # units are recorded independently: blocks of 400
+    for a in range(0, H.shape[1], 400):                  # units keep memory bounded (results are identical
+        Y, starts = _segments_record(fn, H[:, a:a + 400], seg, rng, **kw)   # in distribution)
+        parts.append(Y.astype(np.float32))
+    return np.hstack(parts), starts
+
+
+def match(A, rtype, prep, seed=0):
+    """The registered matching call (amendment 4): at most MATCH_MIN_UNITS units; the first rows covering
+    1.5 x MATCH_MIN_TAU native timescales; if the recording that reaches the targets covers fewer than
+    MATCH_MIN_TAU recorded timescales, matching is repeated on more rows (all rows at most). The returned
+    `needs_steps` is the native length that gives MATCH_MIN_TAU recorded timescales, so a caller can generate
+    enough data (a recording shorter than its windows cannot be measured)."""
+    from .measures import tau_med
+    A = np.asarray(A, float)
+    sub = A[:, :MATCH_MIN_UNITS]
+    t0 = tau_med(_std(sub))
+    rows = len(A) if not np.isfinite(t0) else int(min(len(A), max(1.5 * MATCH_MIN_TAU * t0, 2000)))
+    f = match_calcium if rtype == "calcium" else match_spikes
+    while True:
+        k = f(sub[:rows], prep, seed=seed)
+        per = (k["frame"] if rtype == "calcium" else k["bin_steps"]) / k["hold"]       # native steps per sample
+        tau_native = k["achieved"].get("frames_per_tau" if rtype == "calcium" else "bins_per_tau", np.nan) * per
+        n_tau = rows / tau_native if np.isfinite(tau_native) and tau_native > 0 else np.inf
+        if n_tau >= MATCH_MIN_TAU or rows >= len(A):
+            break
+        rows = int(min(len(A), np.ceil(rows * MATCH_MIN_TAU / n_tau * 1.2)))
+    k["rows"] = rows
+    k["needs_steps"] = float(MATCH_MIN_TAU * tau_native) if np.isfinite(tau_native) else np.nan
+    return k

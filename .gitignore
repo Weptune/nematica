@@ -5,6 +5,7 @@ __pycache__/
 data/raw/
 data/derived/
 data/external/
+data/cache/
 results/
 runs/
 lab/node_modules/

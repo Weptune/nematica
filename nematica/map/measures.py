@@ -265,10 +265,30 @@ def drift(X, t=None, blocks=8):
     return float(np.polyfit((j - i) * L / t, 1 - R[i, j], 1)[0] * 100)
 
 
+def _is_counts(X):
+    X = np.asarray(X)
+    return bool(X.size and (X >= 0).all() and np.allclose(X, np.round(X)))
+
+
 def sparsity(X):
-    """Median excess kurtosis of unit activity, disattenuated for white noise (excess kurtosis of signal plus
-    independent Gaussian noise is the signal's times (1 - noise share)^2; amendment 4); nan when the median
-    noise share is above MAX_NOISE_FOR_DISATTENUATION."""
+    """Median excess kurtosis of unit activity, corrected for measurement noise (amendment 4).
+    Counts (non-negative integers, spike recordings): the kurtosis of the underlying rate, from factorial
+    moments (for Poisson counts E[C(C-1)...(C-k+1)] = E[rate^k]), so Poisson noise drops out exactly.
+    Otherwise: disattenuated for white noise (the excess kurtosis of signal plus independent Gaussian noise is
+    the signal's times (1 - noise share)^2), and nan when the median noise share is above
+    MAX_NOISE_FOR_DISATTENUATION."""
+    X = np.asarray(X, float)
+    if _is_counts(X):
+        m1 = X.mean(0)
+        f2 = (X * (X - 1)).mean(0)
+        f3 = (X * (X - 1) * (X - 2)).mean(0)
+        f4 = (X * (X - 1) * (X - 2) * (X - 3)).mean(0)
+        var = f2 - m1 ** 2
+        mu4 = f4 - 4 * f3 * m1 + 6 * f2 * m1 ** 2 - 3 * m1 ** 4
+        ok = var > 1e-12
+        if not ok.any():
+            return np.nan
+        return float(np.median(mu4[ok] / var[ok] ** 2 - 3))
     Z = _z(X)
     nf = noise_fraction(Z)
     if np.median(nf) > MAX_NOISE_FOR_DISATTENUATION:

@@ -1,4 +1,17 @@
 {
+ "provenance": {
+  "code_sha256_16": "539cc49115ea3f64",
+  "git_head_at_run": "4f84743b1a0540254d09d3006762a417c98d7551",
+  "files": [
+   "nematica/map/measures.py",
+   "nematica/map/recording.py",
+   "nematica/map/synthetic.py",
+   "nematica/map/analysis.py",
+   "nematica/map/instrument.py",
+   "scripts/map_calibrate.py"
+  ],
+  "seconds": 3334
+ },
  "protocol": {
   "draws": 20,
   "seeds": 2,
@@ -12,10 +25,10 @@
      "frames_per_tau": 4.0,
      "noise": 0.2
     },
-    "B": {
-     "decay_over_tau": 0.8,
-     "frames_per_tau": 7.0,
-     "noise": 0.4
+    "R": {
+     "decay_over_tau": 0.5,
+     "frames_per_tau": 3.0,
+     "noise": 0.6
     }
    },
    "spikes": {
@@ -24,124 +37,126 @@
      "count_per_bin": 0.5,
      "noise": 0.6
     },
-    "B": {
-     "bins_per_tau": 6.0,
-     "count_per_bin": 0.2,
-     "noise": 0.8
+    "R": {
+     "bins_per_tau": 10.0,
+     "count_per_bin": 0.1,
+     "noise": 0.97
     }
    }
-  }
+  },
+  "min_recorded_tau": 240
  },
- "unreached_matches": 80,
+ "unreached_matches": 7,
+ "jobs": 90,
  "C1": {
   "native/-": {
    "spectrum_steepness": {
-    "rho": NaN,
-    "range": 0.8661001440047937,
-    "finite": 5
+    "rho": 0.956182887467515,
+    "range": 0.9487373701224662,
+    "finite": 6
    },
    "shared_fraction": {
     "rho": 0.9847319278346618,
-    "range": 0.18852831218476432,
+    "range": 0.19229132989606182,
     "finite": 10
    },
    "slow_fraction": {
     "rho": 0.9847319278346618,
-    "range": 0.1035917369046899,
+    "range": 0.10322723257755835,
     "finite": 10
    },
    "timescale_spread": {
     "rho": 0.9847319278346618,
-    "range": 0.3543827494403248,
+    "range": 0.3579271620831528,
     "finite": 10
    },
    "coupling_spread": {
     "rho": 0.9601136296387952,
-    "range": 0.14747913286653264,
+    "range": 0.15146760528398165,
     "finite": 10
    },
    "drift": {
-    "rho": 0.8616404368553291,
-    "range": 0.05259055594031758,
+    "rho": 0.8370221386594626,
+    "range": 0.05242377726096297,
     "finite": 10
    },
    "sparsity": {
     "rho": 0.9847319278346618,
-    "range": 11.193218437040862,
+    "range": 13.055540877024436,
     "finite": 10
    }
   },
   "calcium/A": {
    "spectrum_steepness": {
     "rho": NaN,
-    "range": 0.3434732325254841,
+    "range": 0.3400676948722179,
     "finite": 4
    },
    "shared_fraction": {
     "rho": 0.9847319278346618,
-    "range": 0.09916022960001492,
+    "range": 0.10137538779351823,
     "finite": 10
    },
    "slow_fraction": {
     "rho": 0.9847319278346618,
-    "range": 0.09812539018021398,
+    "range": 0.0957842358083057,
     "finite": 10
    },
    "timescale_spread": {
     "rho": 0.9847319278346618,
-    "range": 0.26924737642088126,
+    "range": 0.2438454226428973,
     "finite": 10
    },
    "coupling_spread": {
-    "rho": 0.9847319278346618,
-    "range": 0.11277234418466095,
+    "rho": 0.9601136296387952,
+    "range": 0.12985883763177947,
     "finite": 10
    },
    "drift": {
-    "rho": 0.9601136296387952,
-    "range": 0.0349056733071713,
+    "rho": 0.7385489458759963,
+    "range": 0.051062208745281855,
     "finite": 10
    },
    "sparsity": {
     "rho": 0.9847319278346618,
-    "range": 6.031417526930713,
+    "range": 11.77889819704439,
     "finite": 10
    }
   },
-  "calcium/B": {
+  "calcium/R": {
    "spectrum_steepness": {
-    "rho": -0.23904572186687875,
-    "range": 0.11795120024642147,
-    "finite": 6
+    "rho": NaN,
+    "range": NaN,
+    "finite": 1
    },
    "shared_fraction": {
-    "rho": 0.956182887467515,
-    "range": 0.03897868546580983,
-    "finite": 6
+    "rho": 0.9354953314429287,
+    "range": 0.02335858348469767,
+    "finite": 10
    },
    "slow_fraction": {
-    "rho": -0.30512857662936466,
-    "range": 0.042389866292801594,
-    "finite": 9
+    "rho": 0.9354953314429287,
+    "range": 0.06151680381499614,
+    "finite": 10
    },
    "timescale_spread": {
-    "rho": 0.9108770332470622,
-    "range": 0.034758135545280316,
+    "rho": 0.9354953314429287,
+    "range": 0.08423215968325926,
     "finite": 10
    },
    "coupling_spread": {
-    "rho": 0.9601136296387952,
-    "range": 0.07025383384388362,
+    "rho": 0.9354953314429287,
+    "range": 0.09625745109670075,
     "finite": 10
    },
    "drift": {
-    "rho": NaN,
-    "range": 0.10604167780191331,
-    "finite": 3
+    "rho": 0.8862587350511957,
+    "range": 0.015353770812820945,
+    "finite": 10
    },
    "sparsity": {
     "rho": 0.9847319278346618,
-    "range": 1.552192813041641,
+    "range": 7.9519505945331685,
     "finite": 10
    }
   },
@@ -153,69 +168,69 @@
    },
    "shared_fraction": {
     "rho": 0.9847319278346618,
-    "range": 0.029347578230470617,
+    "range": 0.03129697839953509,
     "finite": 10
    },
    "slow_fraction": {
     "rho": 0.9847319278346618,
-    "range": 0.09482481385352662,
+    "range": 0.0888636431066632,
     "finite": 10
    },
    "timescale_spread": {
     "rho": 0.9354953314429287,
-    "range": 0.1702754282858152,
+    "range": 0.20548647881204685,
     "finite": 10
    },
    "coupling_spread": {
     "rho": 0.9847319278346618,
-    "range": 0.07180196377836393,
+    "range": 0.11394221768607227,
     "finite": 10
    },
    "drift": {
-    "rho": 0.6154574548966636,
-    "range": 0.016082645729792473,
+    "rho": 0.46774766572146437,
+    "range": 0.007454964253966319,
     "finite": 10
    },
    "sparsity": {
-    "rho": 0.9601136296387952,
-    "range": 1.9244834091145036,
+    "rho": 0.9847319278346618,
+    "range": 8.77718844298079,
     "finite": 10
    }
   },
-  "spikes/B": {
+  "spikes/R": {
    "spectrum_steepness": {
     "rho": NaN,
     "range": NaN,
     "finite": 0
    },
    "shared_fraction": {
-    "rho": 0.9108770332470622,
-    "range": 0.009077209562749648,
+    "rho": 0.24618298195866545,
+    "range": 0.0005259568533965281,
     "finite": 10
    },
    "slow_fraction": {
-    "rho": 0.9847319278346618,
-    "range": 0.09179367566623894,
+    "rho": 0.7139306476801298,
+    "range": 0.053563984478736934,
     "finite": 10
    },
    "timescale_spread": {
-    "rho": 0.9354953314429287,
-    "range": 0.14308837320655066,
+    "rho": -0.3446561747421316,
+    "range": 0.10457735870050966,
     "finite": 10
    },
    "coupling_spread": {
-    "rho": 0.9601136296387952,
-    "range": 0.036708334410051356,
-    "finite": 10
+    "rho": NaN,
+    "range": NaN,
+    "finite": 0
    },
    "drift": {
-    "rho": 0.1723280873710658,
-    "range": 0.004260700290278601,
+    "rho": 0.541602560309064,
+    "range": 0.007844884344383615,
     "finite": 10
    },
    "sparsity": {
-    "rho": 0.29541957835039856,
-    "range": 0.5302620362552108,
+    "rho": -0.3200378765462651,
+    "range": 13.149676499213445,
     "finite": 10
    }
   }
@@ -224,195 +239,195 @@
   "native/-": {
    "spectrum_steepness": {
     "spectrum_steepness": 1.0,
-    "shared_fraction": 0.13198886765041612,
-    "slow_fraction": 0.21455118847527452,
+    "shared_fraction": 0.14135425879642136,
+    "slow_fraction": 0.24299992457308528,
     "timescale_spread": NaN,
-    "coupling_spread": 0.20837373133676837,
-    "drift": 0.6959186961691712,
-    "sparsity": 0.11755752880292193
+    "coupling_spread": 0.12665046241706363,
+    "drift": 0.660630107379228,
+    "sparsity": 0.4182731662657815
    },
    "shared_fraction": {
-    "spectrum_steepness": 1.4748861191308897,
+    "spectrum_steepness": 1.4301918170692003,
     "shared_fraction": 1.0,
-    "slow_fraction": 0.0744136360414127,
-    "timescale_spread": 0.026067289742533226,
-    "coupling_spread": 0.1261453616676826,
-    "drift": 0.292896262227482,
-    "sparsity": 0.2643841466145188
+    "slow_fraction": 0.07066358431464648,
+    "timescale_spread": 0.019513388792677073,
+    "coupling_spread": 0.111294618090692,
+    "drift": 0.2792475148002801,
+    "sparsity": 0.2560057967830094
    },
    "slow_fraction": {
-    "spectrum_steepness": 0.044918424223347145,
-    "shared_fraction": 0.857140817549805,
+    "spectrum_steepness": 0.05229207302033465,
+    "shared_fraction": 0.8510372992436162,
     "slow_fraction": 1.0,
-    "timescale_spread": 0.16741306550441207,
-    "coupling_spread": 0.28489236305688126,
-    "drift": 0.06240498261375277,
-    "sparsity": 0.08743357800416571
+    "timescale_spread": 0.13886180578210255,
+    "coupling_spread": 0.2807174832748938,
+    "drift": 0.06513605505799021,
+    "sparsity": 0.08761098067825403
    },
    "timescale_spread": {
-    "spectrum_steepness": 0.03764344769773857,
-    "shared_fraction": 0.21129032398791997,
-    "slow_fraction": 0.11604326013362687,
+    "spectrum_steepness": 0.03509605484936201,
+    "shared_fraction": 0.19722898983446743,
+    "slow_fraction": 0.11361094858665621,
     "timescale_spread": 1.0,
-    "coupling_spread": 0.03554528148696681,
-    "drift": 0.012347396793312005,
-    "sparsity": 0.0691517137998267
+    "coupling_spread": 0.03092881517056848,
+    "drift": 0.015408279423403504,
+    "sparsity": 0.07342874282537369
    },
    "coupling_spread": {
-    "spectrum_steepness": 0.1840132570893237,
-    "shared_fraction": 0.21494689523211696,
-    "slow_fraction": 0.036109148179040956,
-    "timescale_spread": 0.027492748073143062,
+    "spectrum_steepness": 0.1771282804374435,
+    "shared_fraction": 0.20208099802240792,
+    "slow_fraction": 0.03758292388776369,
+    "timescale_spread": 0.044580073297025916,
     "coupling_spread": 1.0,
-    "drift": 0.09849422821073352,
-    "sparsity": 0.05434271170262514
+    "drift": 0.11335240839804676,
+    "sparsity": 0.02965478472080761
    },
    "drift": {
-    "spectrum_steepness": 0.054730680787812416,
-    "shared_fraction": 0.18253958480350901,
-    "slow_fraction": 0.058272558509614006,
-    "timescale_spread": 0.07034402260563748,
-    "coupling_spread": 0.1802290595945421,
+    "spectrum_steepness": 0.026345225743956337,
+    "shared_fraction": 0.2039840051101401,
+    "slow_fraction": 0.10782449766917616,
+    "timescale_spread": 0.04999117057441536,
+    "coupling_spread": 0.18120093121054046,
     "drift": 1.0,
-    "sparsity": 0.09973994289584276
+    "sparsity": 0.11626160100774789
    },
    "sparsity": {
-    "spectrum_steepness": 0.0006830285830605913,
-    "shared_fraction": 0.0011663266191107911,
-    "slow_fraction": 0.0006985308023349033,
-    "timescale_spread": 0.0006210593325938486,
-    "coupling_spread": 0.0004875413643801008,
-    "drift": 0.001216060204521276,
+    "spectrum_steepness": 0.0005388314609583668,
+    "shared_fraction": 0.0009766171676004786,
+    "slow_fraction": 0.0006179574811159491,
+    "timescale_spread": 0.0016072698177717446,
+    "coupling_spread": 0.00038701745234995965,
+    "drift": 0.0012506990724816208,
     "sparsity": 1.0
    }
   },
   "calcium/A": {
    "spectrum_steepness": {
     "spectrum_steepness": 1.0,
-    "shared_fraction": 0.2551983478787887,
-    "slow_fraction": NaN,
+    "shared_fraction": 0.58012736584719,
+    "slow_fraction": 1.7548636402652125,
     "timescale_spread": NaN,
-    "coupling_spread": 0.8460054965307139,
+    "coupling_spread": NaN,
     "drift": NaN,
     "sparsity": NaN
    },
    "shared_fraction": {
-    "spectrum_steepness": 1.7184383939338739,
+    "spectrum_steepness": 1.745293100077133,
     "shared_fraction": 1.0,
-    "slow_fraction": 0.05422547359079305,
-    "timescale_spread": 0.08703904522257264,
-    "coupling_spread": 0.10405494669439315,
-    "drift": 0.4055401055279591,
-    "sparsity": 0.28986611660594047
+    "slow_fraction": 0.06570915165015558,
+    "timescale_spread": 0.06883555962330472,
+    "coupling_spread": 0.12452965304018404,
+    "drift": 0.4011672820197725,
+    "sparsity": 0.32511053051597877
    },
    "slow_fraction": {
-    "spectrum_steepness": 0.10485654497465642,
-    "shared_fraction": 0.762501926799214,
+    "spectrum_steepness": 0.12136173381719637,
+    "shared_fraction": 0.7538270806062679,
     "slow_fraction": 1.0,
-    "timescale_spread": 0.23275455093923095,
-    "coupling_spread": 0.3477578824868261,
-    "drift": 0.04736162066600675,
-    "sparsity": 0.18400648356768048
+    "timescale_spread": 0.1470267312861751,
+    "coupling_spread": 0.33247357963837637,
+    "drift": 0.07881366551754426,
+    "sparsity": 0.19057065170137497
    },
    "timescale_spread": {
-    "spectrum_steepness": 0.035749516263601046,
-    "shared_fraction": 0.17325989586243662,
-    "slow_fraction": 0.0826253059744054,
+    "spectrum_steepness": 0.059860076137375436,
+    "shared_fraction": 0.1910608947050268,
+    "slow_fraction": 0.11154416254016884,
     "timescale_spread": 1.0,
-    "coupling_spread": 0.04491291522066039,
-    "drift": 0.061515911786282296,
-    "sparsity": 0.12510788968149794
+    "coupling_spread": 0.04447843838649774,
+    "drift": 0.04240355723767828,
+    "sparsity": 0.14257271466150082
    },
    "coupling_spread": {
-    "spectrum_steepness": 0.22984026079361247,
-    "shared_fraction": 0.19957485641968684,
-    "slow_fraction": 0.09574505570562511,
-    "timescale_spread": 0.08094053800871195,
+    "spectrum_steepness": 0.23728578498650407,
+    "shared_fraction": 0.13984984710662673,
+    "slow_fraction": 0.11666450200914821,
+    "timescale_spread": 0.045795374675162405,
     "coupling_spread": 1.0,
-    "drift": 0.14000363107628347,
-    "sparsity": 0.042108665831601826
+    "drift": 0.1368837865359594,
+    "sparsity": 0.04798805005853743
    },
    "drift": {
-    "spectrum_steepness": 0.26907499509387023,
-    "shared_fraction": 0.17496875729569178,
-    "slow_fraction": 0.22459324557206004,
-    "timescale_spread": 0.15639518177388548,
-    "coupling_spread": 0.34849768086723765,
+    "spectrum_steepness": 0.10805708895604835,
+    "shared_fraction": 0.07377596830700046,
+    "slow_fraction": 0.09096144566545114,
+    "timescale_spread": 0.1294913464502461,
+    "coupling_spread": 0.06079143712387764,
     "drift": 1.0,
-    "sparsity": 0.18419901491046697
+    "sparsity": 0.12589238502583305
    },
    "sparsity": {
-    "spectrum_steepness": 0.003875964980310768,
-    "shared_fraction": 0.003944263482368655,
-    "slow_fraction": 0.010620136070834823,
-    "timescale_spread": 0.00744700444101639,
-    "coupling_spread": 0.005110009613865666,
-    "drift": 0.0025647733303049897,
+    "spectrum_steepness": 0.002499935779433843,
+    "shared_fraction": 0.0044277439448962225,
+    "slow_fraction": 0.004640439393709537,
+    "timescale_spread": 0.008958991055453966,
+    "coupling_spread": 0.005881256283751245,
+    "drift": 0.0031009877860408513,
     "sparsity": 1.0
    }
   },
-  "calcium/B": {
+  "calcium/R": {
    "spectrum_steepness": {
-    "spectrum_steepness": 1.0,
-    "shared_fraction": NaN,
-    "slow_fraction": 1.3338832067147992,
-    "timescale_spread": NaN,
-    "coupling_spread": 6.624935785182473,
-    "drift": NaN,
-    "sparsity": 0.4424020636242312
+    "spectrum_steepness": null,
+    "shared_fraction": null,
+    "slow_fraction": null,
+    "timescale_spread": null,
+    "coupling_spread": null,
+    "drift": null,
+    "sparsity": null
    },
    "shared_fraction": {
-    "spectrum_steepness": 2.8259925608722214,
+    "spectrum_steepness": 2.432655556113548,
     "shared_fraction": 1.0,
-    "slow_fraction": 0.7347650808324356,
-    "timescale_spread": 0.14078187104345383,
-    "coupling_spread": 0.20139867992243474,
-    "drift": 0.45359772147216676,
-    "sparsity": 0.5781383541516835
+    "slow_fraction": 0.1900451298768903,
+    "timescale_spread": 0.11641648889854879,
+    "coupling_spread": 0.31721757094489295,
+    "drift": 0.6159525005630934,
+    "sparsity": 0.30206497471177757
    },
    "slow_fraction": {
-    "spectrum_steepness": 0.34672245196423446,
-    "shared_fraction": 0.5645843006303799,
+    "spectrum_steepness": 0.08832824750171536,
+    "shared_fraction": 0.411228419156174,
     "slow_fraction": 1.0,
-    "timescale_spread": 0.3907741591810269,
-    "coupling_spread": 0.6362722429048157,
-    "drift": 0.2810967683055428,
-    "sparsity": 0.4353653624352898
+    "timescale_spread": 0.16300422676371198,
+    "coupling_spread": 0.11333369410109495,
+    "drift": 0.1809642150842078,
+    "sparsity": 0.10883729337459391
    },
    "timescale_spread": {
-    "spectrum_steepness": 0.7642454777802308,
-    "shared_fraction": 0.4757846936621407,
-    "slow_fraction": 0.6974018913644362,
+    "spectrum_steepness": 0.042381899766011484,
+    "shared_fraction": 0.6135975696096542,
+    "slow_fraction": 0.7542765620832648,
     "timescale_spread": 1.0,
-    "coupling_spread": 0.4851549170969712,
-    "drift": 0.41881744075145233,
-    "sparsity": 0.3483922296660556
+    "coupling_spread": 0.3215794253779913,
+    "drift": 0.23503179796954143,
+    "sparsity": 0.16433871171948622
    },
    "coupling_spread": {
-    "spectrum_steepness": 0.42749646576023587,
-    "shared_fraction": 0.2234115381819374,
-    "slow_fraction": 0.21558914667209986,
-    "timescale_spread": 0.09103977156217778,
+    "spectrum_steepness": 0.44915302116367667,
+    "shared_fraction": 0.22888409190634776,
+    "slow_fraction": 0.12598566714890724,
+    "timescale_spread": 0.08547238683851857,
     "coupling_spread": 1.0,
-    "drift": 0.11119259661381592,
-    "sparsity": 0.13257505496944536
+    "drift": 0.10313505477180195,
+    "sparsity": 0.12871830048665456
    },
    "drift": {
-    "spectrum_steepness": 0.0722243986543686,
-    "shared_fraction": 0.029495687158372794,
-    "slow_fraction": 0.24014453515301948,
-    "timescale_spread": 0.06169510394811621,
-    "coupling_spread": 0.07147395580527642,
+    "spectrum_steepness": 0.32173887418364083,
+    "shared_fraction": 0.4716486987978728,
+    "slow_fraction": 0.3859678368677493,
+    "timescale_spread": 0.38028311923670166,
+    "coupling_spread": 0.28339455285949144,
     "drift": 1.0,
-    "sparsity": 0.04372226341334925
+    "sparsity": 0.4356915929759519
    },
    "sparsity": {
-    "spectrum_steepness": 0.011418405564845021,
-    "shared_fraction": 0.030775151438715682,
-    "slow_fraction": 0.0741468554494643,
-    "timescale_spread": 0.01871952631306704,
-    "coupling_spread": 0.01609368531258388,
-    "drift": 0.017481729304792498,
+    "spectrum_steepness": 0.018201838589141078,
+    "shared_fraction": 0.023541450679675675,
+    "slow_fraction": 0.020028840392643417,
+    "timescale_spread": 0.02029302009225269,
+    "coupling_spread": 0.013661868789606627,
+    "drift": 0.020882070235979416,
     "sparsity": 1.0
    }
   },
@@ -427,61 +442,61 @@
     "sparsity": null
    },
    "shared_fraction": {
-    "spectrum_steepness": 2.051762056039043,
+    "spectrum_steepness": 1.8036237379889166,
     "shared_fraction": 1.0,
-    "slow_fraction": 0.09482992819022845,
-    "timescale_spread": 0.11933980763012457,
-    "coupling_spread": 0.20351172007043683,
-    "drift": 0.23191514628709037,
-    "sparsity": 0.2689097974520266
+    "slow_fraction": 0.09721975204257108,
+    "timescale_spread": 0.08401426523376136,
+    "coupling_spread": 0.15121483959502957,
+    "drift": 0.2264740397697547,
+    "sparsity": 0.30011043310187696
    },
    "slow_fraction": {
-    "spectrum_steepness": 0.06614139739813608,
-    "shared_fraction": 0.8290867375726539,
+    "spectrum_steepness": 0.09115521539453565,
+    "shared_fraction": 0.8244759186830208,
     "slow_fraction": 1.0,
-    "timescale_spread": 0.14215342740958414,
-    "coupling_spread": 0.29515934988847564,
-    "drift": 0.04318269913180128,
-    "sparsity": 0.19915150382179073
+    "timescale_spread": 0.20536018862115923,
+    "coupling_spread": 0.3054594437614694,
+    "drift": 0.053513142695033225,
+    "sparsity": 0.18427649573384056
    },
    "timescale_spread": {
-    "spectrum_steepness": 0.24161631248297818,
-    "shared_fraction": 0.06757377669009379,
-    "slow_fraction": 0.2396740417076545,
+    "spectrum_steepness": 0.08156573241482575,
+    "shared_fraction": 0.19839884106239222,
+    "slow_fraction": 0.09447698416485147,
     "timescale_spread": 1.0,
-    "coupling_spread": 0.17371999912971997,
-    "drift": 0.12603925727509654,
-    "sparsity": 0.5383857497498221
+    "coupling_spread": 0.0904055480848672,
+    "drift": 0.2745026483121684,
+    "sparsity": 0.42322388282225337
    },
    "coupling_spread": {
-    "spectrum_steepness": 0.46399212796194717,
-    "shared_fraction": 0.26780136474466154,
-    "slow_fraction": 0.12187970105168044,
-    "timescale_spread": 0.05874980838137753,
+    "spectrum_steepness": 0.8225617733950544,
+    "shared_fraction": 0.580149434254643,
+    "slow_fraction": 0.16589941213187764,
+    "timescale_spread": 0.08613971585043366,
     "coupling_spread": 1.0,
-    "drift": 0.058994604701217174,
-    "sparsity": 0.0833611308870675
+    "drift": 0.3758143640183184,
+    "sparsity": 0.31529355917624924
    },
    "drift": {
-    "spectrum_steepness": 0.6634151339827692,
-    "shared_fraction": 0.53213453952032,
-    "slow_fraction": 0.4161037131948773,
-    "timescale_spread": 0.4531953259729471,
-    "coupling_spread": 0.3014342921763461,
+    "spectrum_steepness": 1.0183135632948912,
+    "shared_fraction": 1.273714551061773,
+    "slow_fraction": 1.0155808346069446,
+    "timescale_spread": 0.5789843916785309,
+    "coupling_spread": 0.3763041942206686,
     "drift": 1.0,
-    "sparsity": 0.5691628653915956
+    "sparsity": 0.6577842335479017
    },
    "sparsity": {
-    "spectrum_steepness": 0.11544338481238244,
-    "shared_fraction": 0.11535006102726847,
-    "slow_fraction": 0.13308938298418416,
-    "timescale_spread": 0.082217715454723,
-    "coupling_spread": 0.059711698437935105,
-    "drift": 0.20975378865069447,
+    "spectrum_steepness": 0.032391940942261145,
+    "shared_fraction": 0.0252105102053486,
+    "slow_fraction": 0.04277265780725457,
+    "timescale_spread": 0.03543481154892597,
+    "coupling_spread": 0.023660573825338142,
+    "drift": 0.011707860084356382,
     "sparsity": 1.0
    }
   },
-  "spikes/B": {
+  "spikes/R": {
    "spectrum_steepness": {
     "spectrum_steepness": null,
     "shared_fraction": null,
@@ -492,57 +507,57 @@
     "sparsity": null
    },
    "shared_fraction": {
-    "spectrum_steepness": 2.130403854964084,
+    "spectrum_steepness": 0.7038347310922871,
     "shared_fraction": 1.0,
-    "slow_fraction": 0.038061753591039436,
-    "timescale_spread": 0.10286703825055456,
-    "coupling_spread": 0.26697524748708984,
-    "drift": 0.3674557186227976,
-    "sparsity": 0.2839257565915723
+    "slow_fraction": 0.9249404832396444,
+    "timescale_spread": 1.3429942496951972,
+    "coupling_spread": 1.0018364790017682,
+    "drift": 0.8994897426920658,
+    "sparsity": 1.1370147051593191
    },
    "slow_fraction": {
-    "spectrum_steepness": 0.08157026106585655,
-    "shared_fraction": 0.8469685999618687,
+    "spectrum_steepness": 0.47535757306364235,
+    "shared_fraction": 1.4427963372588013,
     "slow_fraction": 1.0,
-    "timescale_spread": 0.19990811323687674,
-    "coupling_spread": 0.31725542176738936,
-    "drift": 0.05166759384084536,
-    "sparsity": 0.16665499931051364
+    "timescale_spread": 1.0256996368881466,
+    "coupling_spread": 0.39976523420547033,
+    "drift": 0.5865648544895203,
+    "sparsity": 0.4388353422826217
    },
    "timescale_spread": {
-    "spectrum_steepness": 0.16098764541749006,
-    "shared_fraction": 0.26194431581847144,
-    "slow_fraction": 0.19995842774174274,
+    "spectrum_steepness": 1.2563860185396565,
+    "shared_fraction": 0.8592502396538502,
+    "slow_fraction": 1.109357007841259,
     "timescale_spread": 1.0,
-    "coupling_spread": 0.3543666854507867,
-    "drift": 0.1704606517036327,
-    "sparsity": 0.5756227644785329
+    "coupling_spread": 1.0380437892101162,
+    "drift": 0.8620145187208692,
+    "sparsity": 0.7781044542736841
    },
    "coupling_spread": {
-    "spectrum_steepness": 0.5951469837885759,
-    "shared_fraction": 0.4547199209987655,
-    "slow_fraction": 0.16443783457065592,
-    "timescale_spread": 0.046485183185450564,
-    "coupling_spread": 1.0,
-    "drift": 0.24766020527534333,
-    "sparsity": 0.15179263810246557
+    "spectrum_steepness": null,
+    "shared_fraction": null,
+    "slow_fraction": null,
+    "timescale_spread": null,
+    "coupling_spread": null,
+    "drift": null,
+    "sparsity": null
    },
    "drift": {
-    "spectrum_steepness": 1.7771091635535465,
-    "shared_fraction": 2.7672897097973266,
-    "slow_fraction": 1.738164007524284,
-    "timescale_spread": 0.23760322860374805,
-    "coupling_spread": 0.9303480799474177,
+    "spectrum_steepness": 0.5723872794791911,
+    "shared_fraction": 0.40658622069690525,
+    "slow_fraction": 0.9211470408478452,
+    "timescale_spread": 0.3435377645482877,
+    "coupling_spread": 1.1081113054313316,
     "drift": 1.0,
-    "sparsity": 1.994171289668811
+    "sparsity": 0.32875654934919674
    },
    "sparsity": {
-    "spectrum_steepness": 0.6273074365530846,
-    "shared_fraction": 0.5055173698723231,
-    "slow_fraction": 0.5823792470581853,
-    "timescale_spread": 0.4007536217509259,
-    "coupling_spread": 0.953014428271871,
-    "drift": 1.0449407423683645,
+    "spectrum_steepness": 0.5626802835923781,
+    "shared_fraction": 1.3780024801637885,
+    "slow_fraction": 0.8406836935617333,
+    "timescale_spread": 1.482282030470156,
+    "coupling_spread": 0.7886521668732701,
+    "drift": 1.167159534784228,
     "sparsity": 1.0
    }
   }
@@ -550,121 +565,185 @@
  "C4": {
   "native/-": {
    "samples_per_tau": {
-    "spectrum_steepness": 0.2502010764641968,
-    "shared_fraction": 0.05134641357295093,
-    "slow_fraction": 0.16601951059501344,
-    "timescale_spread": 0.0520781868197902,
-    "coupling_spread": 0.08754363694229088,
-    "drift": 0.19435335197234258,
-    "sparsity": 0.0019976982362600207
+    "spectrum_steepness": 0.24517894135237747,
+    "shared_fraction": 0.036530807311053765,
+    "slow_fraction": 0.13666287832147936,
+    "timescale_spread": 0.10244090259457954,
+    "coupling_spread": 0.05583291050360947,
+    "drift": 0.23304310028813832,
+    "sparsity": 0.0002863566534962213
    },
    "population": {
-    "spectrum_steepness": 0.004474126023173567,
-    "shared_fraction": 0.04222560735861857,
-    "slow_fraction": 0.041153738768304395,
-    "timescale_spread": 0.059378494359324144,
-    "coupling_spread": 0.05249716407127907,
-    "drift": 0.1499077722342083,
-    "sparsity": 0.0008226590839212943
+    "spectrum_steepness": 0.0021250843748696685,
+    "shared_fraction": 0.03316630502031949,
+    "slow_fraction": 0.016158713035057365,
+    "timescale_spread": 0.05481634906914551,
+    "coupling_spread": 0.04897265258780082,
+    "drift": 0.10849649349041943,
+    "sparsity": 0.0010276965762984482
    }
   },
   "calcium/A": {
    "samples_per_tau": {
     "spectrum_steepness": NaN,
-    "shared_fraction": 0.03918625919755022,
-    "slow_fraction": 0.075427486790085,
-    "timescale_spread": 0.035590484368538594,
-    "coupling_spread": 0.03248395486150895,
-    "drift": 0.16979547894095884,
-    "sparsity": 0.0022100803101646445
+    "shared_fraction": 0.12846158844879774,
+    "slow_fraction": 0.010120266722542565,
+    "timescale_spread": 0.02849772126793012,
+    "coupling_spread": 0.010553978878846152,
+    "drift": 0.0596318490877282,
+    "sparsity": 0.006093628216789375
    },
    "population": {
     "spectrum_steepness": NaN,
-    "shared_fraction": 0.10995240959472564,
-    "slow_fraction": 0.006799717721924526,
-    "timescale_spread": 0.0724436233173783,
-    "coupling_spread": 0.028090571797755485,
-    "drift": 0.44997726251747555,
-    "sparsity": 0.004928204511169821
+    "shared_fraction": 0.038352507262200575,
+    "slow_fraction": 0.01462054433710786,
+    "timescale_spread": 0.02122988484674152,
+    "coupling_spread": 0.028480003700791272,
+    "drift": 0.15472534728508264,
+    "sparsity": 0.003979337268513439
    },
    "gain": {
     "spectrum_steepness": NaN,
-    "shared_fraction": 0.21365749988322663,
-    "slow_fraction": 0.06352204476378913,
-    "timescale_spread": 0.03906020588969754,
-    "coupling_spread": 0.0346501446328273,
-    "drift": 0.04438987057020303,
-    "sparsity": 0.12838677494354442
+    "shared_fraction": 0.19978306473905577,
+    "slow_fraction": 0.08801607070097697,
+    "timescale_spread": 0.021390228822134944,
+    "coupling_spread": 0.025278649833485628,
+    "drift": 0.02851615618437409,
+    "sparsity": 0.1193118310387462
    }
   },
-  "calcium/B": {
+  "calcium/R": {
    "samples_per_tau": {
-    "spectrum_steepness": 0.3431123721967591,
-    "shared_fraction": 0.20949395667508167,
-    "slow_fraction": 0.7565909981087283,
-    "timescale_spread": 0.5430369205698617,
-    "coupling_spread": 0.109681824398084,
-    "drift": 0.09330308738287038,
-    "sparsity": 0.07057936283094257
+    "spectrum_steepness": null,
+    "shared_fraction": 0.1234475792918317,
+    "slow_fraction": 0.1824601914248971,
+    "timescale_spread": 0.2690010064999678,
+    "coupling_spread": 0.08516505676845618,
+    "drift": 0.2587635498223652,
+    "sparsity": 0.012837614392132508
    },
    "population": {
-    "spectrum_steepness": 1.639267474819015,
-    "shared_fraction": 0.14103451800733333,
-    "slow_fraction": 0.044573299648164755,
-    "timescale_spread": 0.8600405191756851,
-    "coupling_spread": 0.041367963020317366,
-    "drift": 0.17143005156757196,
-    "sparsity": 0.012551750995042752
+    "spectrum_steepness": null,
+    "shared_fraction": 0.0977569613690208,
+    "slow_fraction": 0.16373092113783735,
+    "timescale_spread": 0.18370866170127215,
+    "coupling_spread": 0.11442589172777012,
+    "drift": 0.4124065523518329,
+    "sparsity": 0.009139291586690057
    },
    "gain": {
-    "spectrum_steepness": 0.36464273780538703,
-    "shared_fraction": 0.1541677165477706,
-    "slow_fraction": 0.09124525344626658,
-    "timescale_spread": 0.2288996784237555,
-    "coupling_spread": 0.03682418927897591,
-    "drift": 0.024903898355627375,
-    "sparsity": 0.13759201479662414
+    "spectrum_steepness": null,
+    "shared_fraction": 0.1821936745888542,
+    "slow_fraction": 0.04654000533683542,
+    "timescale_spread": 0.1372546394217128,
+    "coupling_spread": 0.04565846064025429,
+    "drift": 0.18146019866820734,
+    "sparsity": 0.11992876197472155
    }
   },
   "spikes/A": {
    "samples_per_tau": {
     "spectrum_steepness": null,
-    "shared_fraction": 0.09301998907330979,
-    "slow_fraction": 0.010963284295821763,
-    "timescale_spread": 0.4734446002845221,
-    "coupling_spread": 0.18084556807259708,
-    "drift": 0.34258574365006145,
-    "sparsity": 0.30408016432442675
+    "shared_fraction": 0.0705936793768556,
+    "slow_fraction": 0.05091751371215124,
+    "timescale_spread": 0.16652494885558763,
+    "coupling_spread": 0.05076315213356751,
+    "drift": 1.2300379587515589,
+    "sparsity": 0.03838888597660466
    },
    "population": {
     "spectrum_steepness": null,
-    "shared_fraction": 0.10377379645349204,
-    "slow_fraction": 0.030782430293705386,
-    "timescale_spread": 0.23088754523451607,
-    "coupling_spread": 0.22505571992586074,
-    "drift": 0.4160557228176491,
-    "sparsity": 0.1224191824721729
+    "shared_fraction": 0.1277895229662953,
+    "slow_fraction": 0.030253027107557805,
+    "timescale_spread": 0.11769148585318367,
+    "coupling_spread": 0.09012599495536007,
+    "drift": 0.24967406181258528,
+    "sparsity": 0.044634482559969116
    }
   },
-  "spikes/B": {
+  "spikes/R": {
    "samples_per_tau": {
     "spectrum_steepness": null,
-    "shared_fraction": 0.19071286271528767,
-    "slow_fraction": 0.07054532977240414,
-    "timescale_spread": 0.6237432671935198,
-    "coupling_spread": 0.2958101289575105,
-    "drift": 0.7043844206170311,
-    "sparsity": 0.8797997268001796
+    "shared_fraction": 0.6134686997533596,
+    "slow_fraction": 0.6495316134498379,
+    "timescale_spread": 0.4101933369277534,
+    "coupling_spread": null,
+    "drift": 0.3137386458451645,
+    "sparsity": 0.7746291247041859
    },
    "population": {
     "spectrum_steepness": null,
-    "shared_fraction": 0.16576238764973822,
-    "slow_fraction": 0.02958537443931563,
-    "timescale_spread": 0.22260328857002748,
-    "coupling_spread": 0.16605451885845923,
-    "drift": 1.7242275327209966,
-    "sparsity": 0.4097276664931724
+    "shared_fraction": 1.1923483897609977,
+    "slow_fraction": 0.28717332148518515,
+    "timescale_spread": 0.581310834215234,
+    "coupling_spread": null,
+    "drift": 0.40938671008386435,
+    "sparsity": 0.35118244634800133
    }
   }
+ },
+ "TAU": {
+  "native/-": {
+   "1.5": 1.0,
+   "4.0": 1.0,
+   "12.0": 1.0,
+   "30.0": 1.0
+  },
+  "calcium/A": {
+   "1.5": 1.0908634749967687,
+   "4.0": 1.3844215889880656,
+   "12.0": 1.3822287519026057,
+   "30.0": 1.4725402307408126
+  },
+  "calcium/R": {
+   "1.5": 1.8011821870909395,
+   "4.0": 2.29305524942232,
+   "12.0": 2.3301193585431106,
+   "30.0": 2.4088254271234764
+  },
+  "spikes/A": {
+   "1.5": 0.6584507444563453,
+   "4.0": 0.8469305432249814,
+   "12.0": 0.8564950995828733,
+   "30.0": 0.9176900395427883
+  },
+  "spikes/R": {
+   "1.5": 0.8153256230513909,
+   "4.0": 1.0327240710923302,
+   "12.0": 0.856533972139778,
+   "30.0": 0.9539361335530034
+  }
+ },
+ "used": {
+  "native/-": [
+   "spectrum_steepness",
+   "shared_fraction",
+   "slow_fraction",
+   "timescale_spread",
+   "coupling_spread",
+   "sparsity"
+  ],
+  "calcium/A": [
+   "shared_fraction",
+   "slow_fraction",
+   "timescale_spread",
+   "coupling_spread",
+   "sparsity"
+  ],
+  "calcium/R": [
+   "shared_fraction",
+   "slow_fraction",
+   "timescale_spread",
+   "coupling_spread",
+   "sparsity"
+  ],
+  "spikes/A": [
+   "shared_fraction",
+   "slow_fraction",
+   "timescale_spread",
+   "coupling_spread",
+   "sparsity"
+  ],
+  "spikes/R": []
  }
 }
