@@ -79,6 +79,18 @@ def spikes(A, mean_count=0.5, bin_steps=1, gain=None, rng=None):
 RECORDINGS = {"native": native, "calcium": calcium, "spikes": spikes}
 
 
+def _err(prep, got):
+    """Largest error relative to tolerance (<= 1 means reached)."""
+    e = [abs(got[x] - prep[x]) / (0.05 if x == "noise" else 0.1 * abs(prep[x])) for x in got]
+    return max(e) if all(np.isfinite(e)) else np.inf
+
+
+MATCH_MIN_UNITS = 200          # amendment 4: matching uses up to this many units (all if fewer) and
+MATCH_MIN_TAU = 400            # at least this many recorded timescales; the timescale estimate on sparse
+                               # counts at real noise levels varies by about 10% at this size (40% at 60
+                               # units and 100 timescales)
+
+
 def _reached(target, got, tol=0.1, key=None):
     """Within 10% of the target; the white-noise share (a proportion) within 0.05 absolute."""
     if not np.isfinite(got):
@@ -121,7 +133,8 @@ def match_calcium(A, prep, rng=None, n_iter=14, rounds=8, seed=0):
     then up to `rounds` rounds of: SNR bisection to the noise target, multiplicative frame and decay updates
     from the achieved values, stopping once all three are reached. If the frame would fall below one sub-step
     the hold factor is raised. Every evaluation uses the same noise seed (common random numbers), so the
-    search is deterministic. `reached`: all three within tolerance (10%; noise 0.05 absolute)."""
+    search is deterministic; the best round is returned. `reached`: all three within tolerance (10%; noise
+    0.05 absolute). Callers pass at most MATCH_MIN_UNITS units and at least MATCH_MIN_TAU timescales."""
     from .measures import noise_fraction, tau_med
     R_ = lambda: np.random.default_rng(seed)
     t0 = tau_med(_std(A))
@@ -134,7 +147,7 @@ def match_calcium(A, prep, rng=None, n_iter=14, rounds=8, seed=0):
         lo, hi = (d, hi) if d / tau_med(rec(d, 1, 1e6)) < prep["decay_over_tau"] else (lo, d)
     d = np.sqrt(lo * hi)
     frame = max(tau_med(rec(d, 1, 1e6)) / prep["frames_per_tau"], 1.0)
-    snr, got, ok = 4.0, {}, False
+    snr, got, ok, best = 4.0, {}, False, None
     for _ in range(rounds):
         lo, hi = 0.2, 200.0
         for _ in range(n_iter):
@@ -145,8 +158,10 @@ def match_calcium(A, prep, rng=None, n_iter=14, rounds=8, seed=0):
         Y = rec(d, frame, snr)
         t_y = tau_med(Y)
         got = {"decay_over_tau": d / frame / t_y, "frames_per_tau": t_y, "noise": float(np.median(noise_fraction(Y)))}
-        ok = all(_reached(prep[x], got[x], key=x) for x in got)
-        if ok:
+        state = {"decay": float(d), "frame": float(frame), "snr": snr, "hold": k, "achieved": got}
+        if best is None or _err(prep, got) < _err(prep, best["achieved"]):
+            best = state
+        if _err(prep, got) <= 1:
             break
         d = d * prep["decay_over_tau"] / got["decay_over_tau"]
         frame = frame * t_y / prep["frames_per_tau"]
@@ -154,8 +169,7 @@ def match_calcium(A, prep, rng=None, n_iter=14, rounds=8, seed=0):
             f = int(np.ceil(1.5 / frame))
             k, H, d, frame = k * f, hold(A, k * f), d * f, frame * f
             rec = lambda d, f_, s_, H=H: calcium(H, decay=d, frame=f_, snr=s_, rng=R_())
-    return {"decay": float(d), "frame": float(frame), "snr": snr, "hold": k, "native_tau": float(t0),
-            "achieved": got, "reached": ok}
+    return {**best, "native_tau": float(t0), "reached": bool(_err(prep, best["achieved"]) <= 1)}
 
 
 def match_spikes(A, prep, rng=None, n_iter=14, rounds=8, seed=0):
@@ -164,7 +178,7 @@ def match_spikes(A, prep, rng=None, n_iter=14, rounds=8, seed=0):
     the noise target at the current bin, then a multiplicative bin update from the achieved bins per tau of the
     recorded counts (F6), with the mean count per sub-step set so the expected count per bin is the target;
     stopping once all three are reached. If the bin would fall below one sub-step the hold factor is raised.
-    Common random numbers as in match_calcium. `reached`: all three within tolerance."""
+    Common random numbers and best round as in match_calcium. `reached`: all three within tolerance."""
     from .measures import noise_fraction, tau_med
     R_ = lambda: np.random.default_rng(seed)
     t0 = tau_med(_std(A))
@@ -172,7 +186,7 @@ def match_spikes(A, prep, rng=None, n_iter=14, rounds=8, seed=0):
     H = hold(A, k)
     g = 3.0
     b = max(tau_med(spikes(H, mean_count=1.0, bin_steps=1.0, gain=g, rng=R_())) / prep["bins_per_tau"], 1.0)
-    got, ok = {}, False
+    got, best = {}, None
     for _ in range(rounds):
         mc = prep["count_per_bin"] / b
         lo, hi = 0.05, 40.0
@@ -184,15 +198,16 @@ def match_spikes(A, prep, rng=None, n_iter=14, rounds=8, seed=0):
         Y = spikes(H, mean_count=mc, bin_steps=b, gain=g, rng=R_())
         t_y = tau_med(Y)
         got = {"bins_per_tau": t_y, "count_per_bin": float(Y.mean()), "noise": float(np.median(noise_fraction(Y)))}
-        ok = all(_reached(prep[x], got[x], key=x) for x in got)
-        if ok or not np.isfinite(t_y):
+        state = {"bin_steps": float(b), "mean_count": float(mc), "gain": g, "hold": k, "achieved": got}
+        if best is None or _err(prep, got) < _err(prep, best["achieved"]):
+            best = state
+        if _err(prep, got) <= 1 or not np.isfinite(t_y):
             break
         b = b * t_y / prep["bins_per_tau"]
         if b < 1.0:                                      # the recorded timescale is too short: hold more
             f = int(np.ceil(1.5 / b))
             k, H, b = k * f, hold(A, k * f), b * f
-    return {"bin_steps": float(b), "mean_count": float(prep["count_per_bin"] / b), "gain": g, "hold": k,
-            "native_tau": float(t0), "achieved": got, "reached": ok}
+    return {**best, "native_tau": float(t0), "reached": bool(_err(prep, best["achieved"]) <= 1)}
 
 
 def record_matched(A, rtype, knobs, rng=None, segments=None, interp=False):

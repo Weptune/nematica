@@ -72,18 +72,33 @@ def unit_timescales(X, max_lag=None, segments=None):
     s0 = _signal_var(ac)
     out = np.full(N, np.nan)
     for i in np.where((ac[1] > 0.01 * ac[0]) & (s0 > 0))[0]:
-        r = np.concatenate([[1.0], ac[1:, i] / s0[i]])
-        below = r < 0.5
-        if not below.any():
-            continue
-        k = int(np.argmax(below))
-        out[i] = (k - 1) + (r[k - 1] - 0.5) / (r[k - 1] - r[k])
+        out[i] = _half_life(np.concatenate([[1.0], ac[1:, i] / s0[i]]))
     return out
 
 
+def _half_life(r):
+    below = r < 0.5
+    if not below.any():
+        return np.nan
+    k = int(np.argmax(below))
+    return (k - 1) + (r[k - 1] - 0.5) / (r[k - 1] - r[k])
+
+
 def tau_med(X, segments=None):
-    t = unit_timescales(X, segments=segments)
-    return float(np.nanmedian(t)) if np.isfinite(t).any() else np.nan
+    """The system's timescale (amendment 4): half-life of the population autocorrelation, i.e. the
+    autocovariance of the standardised units averaged over units, divided by the averaged extrapolated signal
+    variance. It replaces the median of per-unit half-lives, which reads 5 to 20 times too short on sparse
+    spike counts at real noise levels (white share 0.95 to 0.99) because each unit's own estimate is then
+    mostly noise; on clean or moderately noisy data the two agree within a few percent. The name is kept."""
+    Z = _z(X)
+    T = len(Z)
+    longest = max(b - a for a, b in _spans(T, segments))
+    L = max(min(longest // 4, 4000), 4)
+    ac = _acov_seg(Z, L, segments).mean(1)
+    s0 = float(_signal_var(ac[:, None])[0])
+    if not np.isfinite(s0) or s0 <= 0 or ac[1] <= 0:
+        return np.nan
+    return float(_half_life(np.concatenate([[1.0], ac[1:] / s0])))
 
 
 def noise_fraction(X, segments=None):
