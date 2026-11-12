@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>NEMATICA film</title>
+    <style>
+      @font-face { font-family: 'Schibsted Grotesk'; src: url('./fonts/schibsted-grotesk-latin-wght-normal.woff2') format('woff2'); font-weight: 400 900; }
+      @font-face { font-family: 'Newsreader'; src: url('./fonts/newsreader-latin-opsz-normal.woff2') format('woff2'); font-weight: 200 800; }
+      html, body, #root { margin: 0; height: 100%; background: #010306; overflow: hidden; }
+      canvas { display: block; }
+      .pair { display: grid; grid-template-columns: 1fr 1fr; height: 100%; gap: 2px; background: #0b1418; }
+      .half { position: relative; overflow: hidden; background: #010306; }
+      .tag { position: absolute; left: 44px; bottom: 40px; color: rgba(214, 233, 240, .62); font: 400 17px/1.35 'Schibsted Grotesk', system-ui, sans-serif; letter-spacing: .01em; }
+      .tag b { display: block; color: rgba(236, 247, 250, .95); font: 400 34px/1.1 'Newsreader', Georgia, serif; letter-spacing: -.01em; margin-bottom: 6px; }
+      .clock { position: absolute; z-index: 5; top: 38px; left: 50%; transform: translateX(-50%); padding: 9px 18px; border-radius: 999px; color: rgba(236, 230, 255, .9); background: rgba(13, 10, 36, .55); border: 1px solid rgba(220, 210, 255, .18); font: 500 18px 'Schibsted Grotesk', system-ui, sans-serif; letter-spacing: .01em; font-variant-numeric: tabular-nums; }
+      .clock.on { color: #1a1030; background: rgba(255, 244, 224, .95); border-color: transparent; }
+      .clock.corner { top: auto; bottom: 44px; left: 52px; transform: none; font: 400 30px 'Newsreader', Georgia, serif; background: none; border: 0; padding: 0; }
+      .clock.corner span { font: 400 17px 'Schibsted Grotesk', system-ui, sans-serif; color: rgba(214, 205, 245, .6); margin-left: 8px; }
+      #root { position: relative; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/film/main.jsx"></script>
+  </body>
+</html>
