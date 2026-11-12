@@ -864,4 +864,26 @@ for example 517 frames at 2 Hz in fish 16, 640 frames at 2.56 Hz in fish 12). Re
 - Fish 8, 9 and 11 could not be read by streaming (their archives fail at the member header); they are
   attempted by full download, and excluded if still unreadable.
 So R3 has at most 8 individuals (10, 12, 13, 14, 15, 16, 18, and 8, 9, 11 if readable and with a
-Spontaneous block). The Spontaneous blocks last about 4 to 18 minutes.
+Spontaneous block). The Spontaneous blocks last about 4 to 9 minutes.
+
+## Amendment 8 (13 Nov 2026, from file contents and metadata during step 1, before those preparations' instrument numbers or any measure)
+
+- **R11 (fly) is not loaded.** DANDI 000727 ships imaging volumes only (for example a processed functional
+  series of 3,384 x 314 x 146 x 91 voxels and raw series, about 67 GB per fly), no ROI or supervoxel
+  traces; by amendment 4's table the fly is then not loaded (this study does not segment volumes).
+  **Consequence, registered in amendment 3:** the calcium group has at most three types (worm, zebrafish,
+  mouse) and is **not powered**; H1 to H6 are not tested in calcium. Its preparations are still measured and
+  shown on the map, described, not tested.
+- **R5 is replaced** (rule of amendment 5): the Stringer et al. 2019 spontaneous two-photon files hold only
+  `Fsp`, deconvolved activity. The Allen Brain Observatory fallback is loaded for the map if time allows; it
+  cannot make the calcium group powered.
+- **R4** (Stringer et al. 2019, figshare 7739750, three mice, eight probes each): individual = mouse; units =
+  every probe's sorted clusters; spikes binned at 20 ms; the whole recording is spontaneous.
+- **Length cap for instrument numbers:** at most the first 20 minutes of each individual's rest are used
+  (memory: a mouse has about 2,000 units). Measures later use their own registered windows.
+- **R10 from DANDI 001603 (curated spikes):** human organoids (HO1 to HO8), mouse organoids (MO1 to MO14),
+  mouse slices (M1S1 to M3S2; individual = mouse, its first slice only, so slices from one mouse are not
+  counted twice), and rat planar cultures (PR1 to PR8) as **R10d**, type "rat cortical culture", a sibling
+  of R9. For subjects with several sessions the first curated-spikes session is used.
+- So the spike group has five types (mouse in vivo: R4, R6; rat culture: R9, R10d; human organoid;
+  mouse organoid; mouse slice) and is powered if its measures survive step 2.
