@@ -184,12 +184,12 @@ def drift(X, block_tau=25.0, t=None, max_units=400, rng=None):
     if Z.shape[1] > max_units:
         Z = Z[:, rng.choice(Z.shape[1], max_units, replace=False)]
     iu = np.triu_indices(Z.shape[1], 1)
-    C = [np.nan_to_num(np.corrcoef(Z[k * L:(k + 1) * L].T)[iu]) for k in range(nb)]
-    sep, dis = [], []
-    for i in range(nb):
-        for j in range(i + 1, nb):
-            sep.append((j - i) * block_tau)
-            dis.append(1 - np.corrcoef(C[i], C[j])[0, 1])
+    C = np.array([np.nan_to_num(np.corrcoef(Z[k * L:(k + 1) * L].T)[iu]) for k in range(nb)])
+    C = C - C.mean(1, keepdims=True)
+    C /= np.linalg.norm(C, axis=1, keepdims=True) + 1e-12
+    R = C @ C.T                                       # correlation between every pair of blocks
+    i, j = np.triu_indices(nb, 1)
+    sep, dis = (j - i) * block_tau, 1 - R[i, j]
     return float(np.polyfit(sep, dis, 1)[0] * 100)
 
 

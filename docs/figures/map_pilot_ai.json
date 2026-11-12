@@ -1,0 +1,154 @@
+{
+ "pythia-70m": {
+  "native": {
+   "tau_med": 1.9632949798628465,
+   "window": 294,
+   "spectrum_exponent": 0.7144981041212155,
+   "shared_dim": 0.4816773067562682,
+   "shared_fraction": -0.030229609483211788,
+   "slow_fraction": 0.3540356255330854,
+   "timescale_spread": 0.2033038100189144,
+   "coupling_spread": 0.13268380729434998,
+   "drift": 0.00011278750916751108,
+   "sparsity": 6.9943680316605406
+  },
+  "calcium": {
+   "tau_med": 5.151490632889038,
+   "window": 773,
+   "spectrum_exponent": 0.9691853262158773,
+   "shared_dim": 0.4162383324373007,
+   "shared_fraction": -0.026572003424544653,
+   "slow_fraction": 0.4378052205298368,
+   "timescale_spread": 0.1442110664118627,
+   "coupling_spread": 0.17738426068999047,
+   "drift": 0.0009001442279260306,
+   "sparsity": 2.02344726279488
+  },
+  "spikes": {
+   "tau_med": 1.7948965700337296,
+   "window": 269,
+   "spectrum_exponent": -0.6257108051541149,
+   "shared_dim": 0.35086708170566894,
+   "shared_fraction": -0.24526362932719223,
+   "slow_fraction": 0.12203870455824002,
+   "timescale_spread": 0.20464076660565939,
+   "coupling_spread": 0.07920665713465586,
+   "drift": 5.6936215347292164e-08,
+   "sparsity": 0.3791874480489165
+  }
+ },
+ "mamba-130m": {
+  "native": {
+   "tau_med": 1.9237437715842831,
+   "window": 289,
+   "spectrum_exponent": 0.6932714082260615,
+   "shared_dim": 0.44164660819395507,
+   "shared_fraction": -0.21439248194318633,
+   "slow_fraction": 0.3506039911042823,
+   "timescale_spread": 0.18705940518307526,
+   "coupling_spread": 0.12108992825377707,
+   "drift": 0.00010822452713726426,
+   "sparsity": 15.99964197002951
+  },
+  "calcium": {
+   "tau_med": 4.447061060121051,
+   "window": 667,
+   "spectrum_exponent": 0.8148995398434042,
+   "shared_dim": 0.4198965988651235,
+   "shared_fraction": -0.2499070935502316,
+   "slow_fraction": 0.4626102503912807,
+   "timescale_spread": 0.16308220278543098,
+   "coupling_spread": 0.1303827518278208,
+   "drift": 0.0005195066287460471,
+   "sparsity": 3.1738538379356545
+  },
+  "spikes": {
+   "tau_med": 1.4622965366690381,
+   "window": 219,
+   "spectrum_exponent": 0.6137038523943721,
+   "shared_dim": 0.34782527240522226,
+   "shared_fraction": -0.19768037783055542,
+   "slow_fraction": 0.13999875190002747,
+   "timescale_spread": 0.21685689071844982,
+   "coupling_spread": 0.08994884296668455,
+   "drift": -4.10729108993301e-08,
+   "sparsity": 0.2861787412541217
+  }
+ },
+ "random-rnn": {
+  "native": {
+   "tau_med": 27.563766881592343,
+   "window": 4135,
+   "spectrum_exponent": 1.4440110186256188,
+   "shared_dim": 0.22643588266248957,
+   "shared_fraction": 0.44123482637968425,
+   "slow_fraction": 0.21824105165949584,
+   "timescale_spread": 0.15526498366313177,
+   "coupling_spread": 0.32728219883828447,
+   "drift": 0.009219019463368871,
+   "sparsity": 0.616960205667086
+  },
+  "calcium": {
+   "tau_med": 15.903355292666003,
+   "window": 2386,
+   "spectrum_exponent": 1.4807412662344484,
+   "shared_dim": 0.2186482358437174,
+   "shared_fraction": 0.43266904230076386,
+   "slow_fraction": 0.22520406460929232,
+   "timescale_spread": 0.10764358610655625,
+   "coupling_spread": 0.31153368199436826,
+   "drift": 0.012857129428127162,
+   "sparsity": 0.487550625649798
+  },
+  "spikes": {
+   "tau_med": 5.64820038639507,
+   "window": 847,
+   "spectrum_exponent": -0.4611390162486456,
+   "shared_dim": 0.33824510878440683,
+   "shared_fraction": -0.10952722185808779,
+   "slow_fraction": 0.06414067283831901,
+   "timescale_spread": 0.3819196582804775,
+   "coupling_spread": 0.04887845690903079,
+   "drift": 7.470710451990577e-05,
+   "sparsity": 0.5500001540866566
+  }
+ },
+ "random-rnn+slow": {
+  "native": {
+   "tau_med": 111.79075819402657,
+   "window": 16769,
+   "spectrum_exponent": 2.5871638255468072,
+   "shared_dim": 0.18635735969956455,
+   "shared_fraction": 0.8379366493349505,
+   "slow_fraction": 0.41348393123121685,
+   "timescale_spread": 0.1726621970618743,
+   "coupling_spread": 0.5377004917999242,
+   "drift": -0.007923558036430226,
+   "sparsity": -1.4764459233105574
+  },
+  "calcium": {
+   "tau_med": 58.83319999882002,
+   "window": 8825,
+   "spectrum_exponent": 2.655823831522415,
+   "shared_dim": 0.18400090813811548,
+   "shared_fraction": 0.7714417125477209,
+   "slow_fraction": 0.39251240852555747,
+   "timescale_spread": 0.1612593982572092,
+   "coupling_spread": 0.5079057756881484,
+   "drift": 0.02163208285648541,
+   "sparsity": -1.2896453567255917
+  },
+  "spikes": {
+   "tau_med": 26.691505895632908,
+   "window": 4004,
+   "spectrum_exponent": 3.2868894785154708,
+   "shared_dim": 0.16855133525377913,
+   "shared_fraction": 0.15818952993405427,
+   "slow_fraction": 0.20315405437026346,
+   "timescale_spread": 0.19032889477637147,
+   "coupling_spread": 0.16231920721252496,
+   "drift": -0.0318954206301744,
+   "sparsity": 0.97368312812387
+  }
+ }
+}
