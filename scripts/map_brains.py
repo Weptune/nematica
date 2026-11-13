@@ -46,6 +46,8 @@ def run_prep(pid):
         f = CACHE / f"{pid}_{ind['id']}.pkl"
         if ind.get("cached") or f.exists():
             continue
+        if pid == "R2" and ind.get("kind") != "baseline":   # amendment 13: the 14 baseline worms only
+            continue
         if "error" in ind:
             r = {"id": ind["id"], "error": ind["error"]}
         else:
@@ -75,4 +77,4 @@ def main(ids):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:] or ["R2", "R4", "R9", "R10b", "R10c", "R10d", "R3", "R6", "R10a"])
+    main(sys.argv[1:] or ["R2"])                    # amendment 13: the worm map only

@@ -29,26 +29,55 @@ def _meas(Y, seed, seg, n_draws, tau_floor, rtype=None):
                                                              "resolution_limited": r.get("resolution_limited")}
 
 
+def crops(Y, seg, length, max_crops):
+    """Amendment 13 (review 14, items 3 and 4): non-overlapping crops of `length` recorded samples, never
+    crossing a segment boundary, so an AI is measured on stretches as long as one brain recording."""
+    out = []
+    for a, b in measures._spans(len(Y), seg):
+        for s in range(a, b - length + 1, length):
+            out.append(Y[s:s + length])
+            if len(out) >= max_crops:
+                return out
+    return out
+
+
 def ai_at_prep(instances, rtype, inst, segments=None, recs_per_instance=4, n_draws=20, seed=0,
-               hold_mult=1, interp=False, tau_floor=measures.TAU_FLOOR, budget=True):
+               hold_mult=1, interp=False, tau_floor=measures.TAU_FLOOR, budget=True, crop_len=None,
+               max_crops=4):
     k = recording.match(instances[0], rtype, inst, seed=seed, segments=segments, hold_mult=hold_mult,
                         interp=interp)
-    rec = lambda A, kk, s: recording.record_matched(A, rtype, kk, rng=np.random.default_rng(s),
-                                                    segments=segments, interp=interp)
+    _rec = lambda A, kk, s: recording.record_matched(A, rtype, kk, rng=np.random.default_rng(s),
+                                                     segments=segments, interp=interp)
+
+    def rec(A, kk, s):
+        """A recording, or (amendment 13) its first crop of crop_len samples (one 'individual')."""
+        Y, seg = _rec(A, kk, s)
+        if crop_len:
+            c = crops(Y, seg, crop_len, 1)
+            return (c[0], []) if c else (Y[:0], [])
+        return Y, seg
     reps = []
     for i, A in enumerate(instances):
         for r in range(recs_per_instance):
             s = 1000 * i + 50 + r
-            Y, seg = rec(A, k, s)
-            reps.append({**_meas(Y, s, seg, n_draws, tau_floor, rtype), "instance": i})
+            if crop_len:                                 # every crop of one recording is an AI individual
+                Yf, segf = _rec(A, k, s)
+                for j, Y in enumerate(crops(Yf, segf, crop_len, max_crops)):
+                    reps.append({**_meas(Y, s + 100 * j, [], n_draws, tau_floor, rtype), "instance": i, "crop": j})
+            else:
+                Y, seg = rec(A, k, s)
+                reps.append({**_meas(Y, s, seg, n_draws, tau_floor, rtype), "instance": i})
     names = measures.MEASURES
     vals = {m: (float(np.nanmean(v)) if np.isfinite(v).sum() >= 0.8 * len(v) else np.nan)
             for m in names for v in [np.array([r[m] for r in reps], float)]}
     out = {"values": vals, "replicates": reps, "reached": bool(k["reached"]), "knobs": k,
-           "achieved": k["achieved"]}
+           "achieved": k["achieved"], "native_tau": k.get("native_tau"), "crop_len": crop_len}
     if budget:
         A = instances[0]
-        base = {s: reps[s - 50] for s in (50, 51)}               # instance 0, recordings 0 and 1
+        base = {}
+        for s in (50, 51):                                       # instance 0, recordings 0 and 1 (first crop)
+            Y, seg = rec(A, k, s)
+            base[s] = _meas(Y, s, seg, n_draws, tau_floor, rtype)
         floor = {m: abs(base[50][m] - base[51][m]) / 2 for m in names}
         ch = {m: [] for m in names}
         for s in (50, 51):

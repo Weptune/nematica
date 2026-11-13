@@ -73,7 +73,8 @@ RAW = ROOT / "data/raw"
 def atanas_worms(folder=RAW / "atanas2023_wwweb"):
     """R2 (amendment 6): Atanas et al. 2023, freely moving worms. Activity = `trace_original` (fluorescence),
     dt = median confocal frame interval. Rest: 'baseline' recordings whole, their two ranges as segments;
-    'heat' recordings only the first range (before the heat pulse). Indicator NLS-GCaMP7f."""
+    'heat' recordings only the first range (before the heat pulse). Amendment 13: a baseline recording is one
+    continuous stretch (its two ranges have no time gap). Indicator NLS-GCaMP7f."""
     out = []
     for f in sorted(Path(folder).glob("*.json")):
         d = json.loads(f.read_text())
@@ -81,7 +82,8 @@ def atanas_worms(folder=RAW / "atanas2023_wwweb"):
         dt = float(np.median(np.diff(d["timestamp_confocal"])))
         r = [(int(a[0]) - 1, int(a[-1])) for a in d["ranges"]]       # 1-indexed inclusive -> python
         heat = "heat" in d["dataset_type"]
-        rest = r[:1] if heat else r
+        # amendment 13: a baseline recording is one continuous stretch (no time gap between its two ranges)
+        rest = r[:1] if heat else [(r[0][0], r[-1][1])]
         out.append({"id": d["uid"], "activity": X, "dt": dt, "rest": rest, "indicator": "jGCaMP7f",
                     "kind": "heat (pre-pulse only)" if heat else "baseline"})
     return out

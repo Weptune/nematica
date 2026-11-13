@@ -46,13 +46,11 @@ def lm(name, seeds=None, ou=None):
     out = []
     if seeds:
         t = np.load(TOK)[:120_000]
-        for s in seeds:
-            out.append(ai.record(s, t, keep=KEEP, ou_tau=ou)[:2])
-            if ou is None:
-                pass
+        for i, s in enumerate(seeds):                  # amendment 13: each instance its own OU realisation
+            out.append(ai.record(s, t, keep=KEEP, ou_tau=ou, seed=i)[:2])
         return out
-    for part in thirds():
-        out.append(ai.record(name, part, keep=KEEP, ou_tau=ou)[:2])
+    for i, part in enumerate(thirds()):
+        out.append(ai.record(name, part, keep=KEEP, ou_tau=ou, seed=i)[:2])
     return out
 
 
@@ -81,12 +79,27 @@ SPECS = {
 FITTED_ON = {"A10": ["R1", "R2"]}                          # candidates (c), (d): worm preparations left out
 
 
+def code_hash():
+    import hashlib
+    h = hashlib.sha256()
+    for f in ("nematica/map/measures.py", "nematica/map/recording.py", "nematica/map/pipeline.py",
+              "nematica/map/zoo.py", "nematica/map/ai.py", "scripts/map_ais.py"):
+        h.update((ROOT / f).read_bytes())
+    return h.hexdigest()[:16]
+
+
 def profile(pid, d):
-    rt = "spikes" if pid in GROUPS["spikes"] else "calcium"
+    rt = "spikes" if pid in GROUPS.get("spikes", []) else "calcium"
+    if pid == "R2":                                     # amendment 13: the 14 baseline worms' median
+        rows = [r for r in d["R2"]["individuals"] if r.get("kind") == "baseline" and "error" not in r]
+        return rt, {k: float(np.median([r[k] for r in rows])) for k in instrument.KEYS[rt]}
     return rt, {k: d[pid]["median"][k] for k in instrument.KEYS[rt]}
 
 
-VARIANTS = {"": {}, "hold2k": {"hold_mult": 2}, "interp": {"interp": True}}
+VARIANTS = {"": {}, "hold2k": {"hold_mult": 2}, "interp": {"interp": True},
+            "noise05": {"noise": 0.05}, "noise10": {"noise": 0.10}}     # amendment 13: worm noise sensitivity
+CROP_LEN = {"R2": 1600}                    # amendment 13: one baseline worm recording, in frames
+N_DRAWS = 40                               # as for the worms
 
 
 def run(aid, variant=""):
@@ -108,9 +121,13 @@ def run(aid, variant=""):
             _drop_cache(model)
     for pid in todo:
         rt, prof = profile(pid, d)
+        opts = dict(VARIANTS[variant])
+        if "noise" in opts:
+            prof = {**prof, "noise": opts.pop("noise")}
         r = pipeline.ai_at_prep(acts, rt, prof, segments=segs[0] or None,
                                 recs_per_instance=(7 if aid in PAIRED else 2) if not variant else 2,
-                                budget=not variant, **VARIANTS[variant])
+                                budget=not variant, crop_len=CROP_LEN.get(pid), n_draws=N_DRAWS, **opts)
+        r["code_sha256_16"] = code_hash()
         r["family"], r["role"] = SPECS[aid][0], SPECS[aid][1]
         (CACHE / f"{aid}_{pid}{suf}.pkl").write_bytes(pickle.dumps(r))
         print(aid, pid, "reached", r["reached"], {k: round(v, 3) for k, v in r["values"].items() if v == v},

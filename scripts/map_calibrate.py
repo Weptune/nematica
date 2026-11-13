@@ -88,6 +88,16 @@ def system(job):
                     out[(rt, pn)] = ({m: np.nan for m in M}, bool(k["reached"]), np.nan)   # reported as nan
                     continue
                 Y, seg = recording.record_matched(B, rt, k, rng=np.random.default_rng(s + 7))
+                if prof.get("crop_len"):                 # amendment 13: brain-length crops, detrended
+                    from nematica.map.pipeline import crops
+                    cs = crops(Y, seg, int(prof["crop_len"]), 4)
+                    vals = [meas(measures.detrend(c), s + j) for j, c in enumerate(cs)]
+                    v = {m: float(np.nanmean([x[m] for x in vals])) if vals and np.isfinite([x[m] for x in vals]).any()
+                         else np.nan for m in M}
+                    per = (k["frame"] if rt == "calcium" else k["bin_steps"]) / k["hold"]
+                    tr = k["achieved"]["frames_per_tau" if rt == "calcium" else "bins_per_tau"] * per / t_true
+                    out[(rt, pn)] = (v, bool(k["reached"]), float(tr))
+                    continue
                 per = (k["frame"] if rt == "calcium" else k["bin_steps"]) / k["hold"]
                 tr = k["achieved"]["frames_per_tau" if rt == "calcium" else "bins_per_tau"] * per / t_true
                 out[(rt, pn)] = (meas(Y, s), bool(k["reached"]), float(tr))

@@ -1136,3 +1136,45 @@ failed to rescue the spike profiles and are reported here.
 - A8 and A9 are silently missing.
 
 *Status: all accepted. Amendment 13 follows.*
+
+## Amendment 13 (13 Nov 2026, answering review 14, before any worm measurement)
+
+- **A baseline worm is one continuous stretch** (its two 800-frame ranges have no time gap), detrended as a
+  whole: 1,600 frames, about 200 to 280 timescales. Step 1 for R2 was recomputed. The worm map's
+  instrument is the median over the **14** baseline worms: decay ratio 0.079, 8.1 frames per timescale,
+  noise share 0.014. Only baseline worms are measured (`map_brains.py` now measures R2 baseline only).
+- **Length is matched** (items 3 and 4). Every AI is recorded through the worm instrument, and each
+  recording is cut into 1,600-frame crops that never cross a segment boundary (`pipeline.crops`; at most 4
+  per recording). Each crop is detrended and measured like a worm (40 draws). **Each crop is an AI
+  individual**, compared with single worms, never averaged first. Detrending is now also applied inside
+  calcium matching.
+- **Step 2 for the worm map** (`scripts/map_step2_worm.py`) reruns C1 and C4 at the baseline worms'
+  numbers, on 1,600-frame detrended crops. The worm map uses only what passes there.
+- **The worm map's rules** (`scripts/map_worm.py`, written before any measure):
+  - BVU from 14 worms (13 df).
+  - An AI with a nan in a calibrated measurement is reported unmapped; the measurement is not dropped.
+  - C3: pooled worm SE below 0.5 BVU. Unit halves of 71 units share the time window, so this gate is
+    lenient about temporal sampling error; the between-worm BVU includes that error.
+  - Budget: the largest AI change at most 1 BVU.
+  - At least 3 measurements.
+  - Envelope: the maximum leave-one-out distance of a worm to the other 13, with a bootstrap interval over
+    worms.
+  - An AI is "worm-like" if its median crop distance to the worm centroid is at most the envelope. Its
+    percentile among the worms' leave-one-out distances and a hierarchical bootstrap interval are reported.
+  - Pairs use H3(b)'s 30% rule and H4 to H6's interval rules on the bootstrap of median crop distances.
+    This is descriptive.
+- **Sensitivities** (item 6): every AI is also recorded at noise shares 0.05 and 0.10, and with linear
+  interpolation instead of the hold. AIs whose native timescale is below 1.5 steps (below C4's calibrated
+  range) are flagged.
+- **Provenance and instances** (items 7 and 10): `map_ais.py` is fixed, and every AI output stores a code
+  hash. Candidate (b)'s instances get their own OU realisation. A10's instances remain individuals of one
+  base network, as registered for the lab ladder.
+- **A8 (vision) and A9 (RL agent) are not run:** no natural-video sample is available in this workspace,
+  and the RL agent needs an environment and training this machine cannot give in time. They are listed as
+  missing.
+- Corrections:
+  - the step-2 rerun's hash is 61e367da1247c9c6;
+  - the match counts are 540 (first run) and 450 (rerun), all reached;
+  - the 6e7/N cap was not memory-only (3,000-unit jobs only);
+  - R10d drift is -0.37;
+  - step 1's hash is 4ff3d00427a81b2c.

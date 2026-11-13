@@ -169,7 +169,10 @@ def match_calcium(A, prep, rng=None, n_iter=14, rounds=8, seed=0, segments=None,
     t0 = _tm(_std(A), segments=seg)
     k = hold_factor(t0, prep["frames_per_tau"]) * hold_mult        # hold_mult 2: the "hold 2k" variant
     H = upsample(A, k, interp)
-    rec = lambda d, f, s_, H=H, k=k: _segments_record(calcium, H, [x * k for x in seg], R_(), decay=d, frame=f, snr=s_)
+    def rec(d, f, s_, H=H, k=k):                         # amendment 13: detrended, as every calcium recording
+        from .measures import detrend
+        Y, st = _segments_record(calcium, H, [x * k for x in seg], R_(), decay=d, frame=f, snr=s_)
+        return detrend(Y, st), st
     tau_med = lambda YS: _tm(YS[0], segments=YS[1])
     noise_fraction = lambda YS: _nf(YS[0], segments=YS[1])
     ratio = lambda d: d / tau_med(rec(d, 1, 1e6))
@@ -205,8 +208,10 @@ def match_calcium(A, prep, rng=None, n_iter=14, rounds=8, seed=0, segments=None,
         if frame < 1.0:                                  # the recorded timescale is too short: hold more
             f = int(np.ceil(1.5 / frame))
             k, H, d, frame = k * f, upsample(A, k * f, interp), d * f, frame * f
-            rec = lambda d, f_, s_, H=H, k=k: _segments_record(calcium, H, [x * k for x in seg], R_(), decay=d,
-                                                               frame=f_, snr=s_)
+            def rec(d, f_, s_, H=H, k=k):
+                from .measures import detrend
+                Y, st = _segments_record(calcium, H, [x * k for x in seg], R_(), decay=d, frame=f_, snr=s_)
+                return detrend(Y, st), st
     return {**best, "native_tau": float(t0), "reached": bool(_err(prep, best["achieved"]) <= 1)}
 
 
