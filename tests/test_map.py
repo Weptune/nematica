@@ -236,3 +236,25 @@ def test_bootstrap_needs_instances(world):
             for r in a["at"][p["id"]]["replicates"]:
                 r["instance"] = 0                              # one network seed only
     assert not An.h4(preps, ais[0], ais[1], ms, B)["decided"]
+
+
+def test_oasis_recovers_sparse_spikes():
+    from nematica.map.deconv import oasis
+    rng = np.random.default_rng(0)
+    s = (rng.random(3000) < 0.05) * rng.uniform(1, 2, 3000)
+    g = np.exp(-1 / 5.0)
+    c = np.zeros_like(s)
+    for t in range(len(s)):
+        c[t] = (c[t - 1] * g if t else 0) + s[t]
+    est = oasis(c[:, None], 5.0)[:, 0]
+    assert np.allclose(est, s, atol=1e-6)
+
+
+def test_deconv_matching_reaches_noise_target():
+    from nematica.map import recording, synthetic
+    A = synthetic.population(np.random.default_rng(3), N=60, T=30000)
+    prof = dict(taus_per_frame=8.5, noise=0.78, fs=2.5, indicator_frames=1.8, kernel_frames=5.0)
+    k = recording.match(A, "deconv", prof, seed=0)
+    assert k["reached"] and abs(k["frame"] / k["hold"] - 8.5 * k["native_tau"]) < 1e-6
+    Y, _ = recording.record_matched(A, "deconv", k, rng=np.random.default_rng(1))
+    assert Y.min() >= 0 and len(Y) > 900

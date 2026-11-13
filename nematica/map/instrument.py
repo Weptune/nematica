@@ -92,6 +92,12 @@ def instrument_numbers(ind, rtype):
         out["frames_per_tau"] = float(t)
         out["decay_over_tau"] = float(hd / np.log(2) / dt / t)
         out["decay_over_tau_x2"] = float(2 * hd / np.log(2) / dt / t)      # sensitivity (amendment 5)
+    elif rtype == "deconv":                              # amendment 15: deconvolved calcium (e.g. suite2p Fsp)
+        out["frames_per_tau"] = float(t)
+        out["zero_frac"] = float(np.median((X <= 0).mean(0)))
+        out["fs"] = float(ind["fs"])                     # amendment 16: indicator and deconvolution kernel
+        out["indicator_frames"] = float(ind["indicator_s"] * ind["fs"])     # are fixed per recording, not
+        out["kernel_frames"] = float(ind["kernel_s"] * ind["fs"])           # matched
     elif rtype == "spikes":
         if abs(dt - SPIKE_BIN_S) > 1e-9:
             return {**out, "error": f"spikes must be binned at {SPIKE_BIN_S} s"}
@@ -101,7 +107,8 @@ def instrument_numbers(ind, rtype):
     return out
 
 
-KEYS = {"calcium": ("decay_over_tau", "frames_per_tau", "noise"),
+KEYS = {"deconv": ("frames_per_tau", "zero_frac", "noise", "fs", "indicator_frames", "kernel_frames"),
+        "calcium": ("decay_over_tau", "frames_per_tau", "noise"),
         "spikes": ("bins_per_tau", "count_per_bin", "noise", "rate_log_sd")}
 
 

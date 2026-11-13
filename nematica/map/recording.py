@@ -108,7 +108,20 @@ def spikes(A, mean_count=0.5, bin_steps=1, gain=None, rng=None, rate_log_sd=0.0)
     return rng.poisson(np.clip(lam, 0, None)).astype(float)
 
 
-RECORDINGS = {"native": native, "calcium": calcium, "spikes": spikes}
+def deconv(A, indicator_frames=1.8, kernel_frames=5.0, frame=2, snr=4.0, fs=2.5, gain=None, rng=None):
+    """Deconvolved calcium (amendment 15/16): see nematica.map.deconv.deconvolved."""
+    from .deconv import deconvolved
+    return deconvolved(A, indicator_frames, kernel_frames, frame, snr, fs, gain=gain, rng=rng)
+
+
+RECORDINGS = {"native": native, "calcium": calcium, "spikes": spikes, "deconv": deconv}
+SAMPLE_KNOB = {"calcium": "frame", "deconv": "frame", "spikes": "bin_steps"}
+TAU_KEY = {"calcium": "frames_per_tau", "deconv": "frames_per_tau", "spikes": "bins_per_tau"}
+
+
+def per_sample(k, rtype):
+    """Native steps per recorded sample for matched knobs k."""
+    return k[SAMPLE_KNOB[rtype]] / k["hold"]
 
 
 def _err(prep, got):
@@ -270,6 +283,42 @@ def match_spikes(A, prep, rng=None, n_iter=14, rounds=14, seed=0, segments=None,
     return {**best, "native_tau": float(t0), "reached": bool(_err(prep, best["achieved"]) <= 1)}
 
 
+MATCH_MIN_FRAMES = 1500        # amendment 16: deconvolved recordings are matched on at least this many frames
+
+
+def match_deconv(A, prep, rng=None, n_iter=14, seed=0, segments=None, hold_mult=1, interp=False):
+    """Amendment 16. `prep`: `taus_per_frame` (one frame spans this many native population timescales: the
+    frame duration over the species' own native timescale, from electrophysiology), `noise` (target),
+    `indicator_frames`, `kernel_frames`, `fs` (fixed by the preparation). The recorded timescale of
+    deconvolved data sits at a floor near 0.75 frames once a frame spans a native timescale or more, so it
+    cannot set the frame; it is reported, with the zero fraction. The frame is fixed from the network's own
+    native timescale; SNR is bisected to the noise target. `reached`: noise within 0.05. Common random
+    numbers; segments as in match_calcium."""
+    from .measures import noise_fraction as _nf, tau_med as _tm
+    R_ = lambda: np.random.default_rng(seed)
+    seg = [int(x) for x in (segments or [])]
+    t0 = _tm(_std(A), segments=seg)
+    fixed = dict(indicator_frames=prep["indicator_frames"], kernel_frames=prep["kernel_frames"], fs=prep["fs"])
+    if not np.isfinite(t0) or t0 <= 0:
+        return {"frame": np.nan, "snr": np.nan, "hold": 1, **fixed, "achieved": {}, "zero_frac": np.nan,
+                "native_tau": float(t0), "reached": False}
+    k = max(int(np.ceil(1.0 / (prep["taus_per_frame"] * t0))), 1) * hold_mult     # a frame spans >= 1 sub-step
+    H = upsample(A, k, interp)
+    frame = float(prep["taus_per_frame"] * t0 * k)
+    rec = lambda s_: _segments_record(deconv, H, [x * k for x in seg], R_(), frame=frame, snr=s_, **fixed)
+    lo, hi = 0.1, 200.0
+    for _ in range(n_iter):
+        s_ = np.sqrt(lo * hi)
+        nf = np.median(_nf(*rec(s_)))
+        lo, hi = (s_, hi) if nf > prep["noise"] else (lo, s_)
+    snr = float(np.sqrt(lo * hi))
+    Y, st = rec(snr)
+    got = {"frames_per_tau": _tm(Y, segments=st), "noise": float(np.median(_nf(Y, segments=st)))}
+    return {"frame": frame, "snr": snr, "hold": k, **fixed, "achieved": got,
+            "zero_frac": float(np.median((Y <= 0).mean(0))), "native_tau": float(t0),
+            "reached": bool(_reached(prep["noise"], got["noise"], key="noise"))}
+
+
 def record_matched(A, rtype, knobs, rng=None, segments=None, interp=False):
     """Record A with matched knobs (including the hold factor), segment by segment (F11). Returns the recording
     and its segment starts. `interp=True` replaces the hold by linear interpolation (F15 sensitivity)."""
@@ -278,9 +327,13 @@ def record_matched(A, rtype, knobs, rng=None, segments=None, interp=False):
     seg = [int(x) * k for x in (segments or [])]
     if rtype == "native":
         return native(upsample(A, k, ip)), seg
-    fn, kw = ((calcium, dict(decay=knobs["decay"], frame=knobs["frame"], snr=knobs["snr"])) if rtype == "calcium"
-              else (spikes, dict(mean_count=knobs["mean_count"], bin_steps=knobs["bin_steps"], gain=knobs["gain"],
-                                 rate_log_sd=knobs.get("rate_log_sd", 0.0))))
+    if rtype == "calcium":
+        fn, kw = calcium, dict(decay=knobs["decay"], frame=knobs["frame"], snr=knobs["snr"])
+    elif rtype == "deconv":
+        fn, kw = deconv, {x: knobs[x] for x in ("frame", "snr", "indicator_frames", "kernel_frames", "fs")}
+    else:
+        fn, kw = spikes, dict(mean_count=knobs["mean_count"], bin_steps=knobs["bin_steps"], gain=knobs["gain"],
+                              rate_log_sd=knobs.get("rate_log_sd", 0.0))
     rng = rng or np.random.default_rng(0)
     parts = []                                           # units are recorded independently: blocks of 400
     A = np.asarray(A)
@@ -303,12 +356,17 @@ def match(A, rtype, prep, seed=0, segments=None, hold_mult=1, interp=False):
     seg = [int(x) for x in (segments or [])]
     t0 = tau_med(_std(sub), segments=seg)
     rows = len(A) if not np.isfinite(t0) else int(min(len(A), max(1.5 * MATCH_MIN_TAU * t0, 2000)))
-    f = match_calcium if rtype == "calcium" else match_spikes
+    if rtype == "deconv" and np.isfinite(t0):
+        rows = int(min(len(A), 1.2 * MATCH_MIN_FRAMES * prep["taus_per_frame"] * t0))
+    f = {"calcium": match_calcium, "deconv": match_deconv, "spikes": match_spikes}[rtype]
     while True:
         k = f(sub[:rows], prep, seed=seed, segments=[x for x in seg if x < rows], hold_mult=hold_mult, interp=interp)
-        per = (k["frame"] if rtype == "calcium" else k["bin_steps"]) / k["hold"]       # native steps per sample
-        tau_native = k["achieved"].get("frames_per_tau" if rtype == "calcium" else "bins_per_tau", np.nan) * per
+        per = per_sample(k, rtype)                                                   # native steps per sample
+        tau_native = k["achieved"].get(TAU_KEY[rtype], np.nan) * per
         n_tau = rows / tau_native if np.isfinite(tau_native) and tau_native > 0 else np.inf
+        if rtype == "deconv":                            # amendment 16: at least MATCH_MIN_FRAMES frames
+            n_tau = rows / per / MATCH_MIN_FRAMES * MATCH_MIN_TAU if np.isfinite(per) else np.inf
+            tau_native = per * MATCH_MIN_FRAMES / MATCH_MIN_TAU
         if n_tau >= MATCH_MIN_TAU or rows >= len(A):
             break
         rows = int(min(len(A), np.ceil(rows * MATCH_MIN_TAU / n_tau * 1.2)))

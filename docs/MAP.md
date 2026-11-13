@@ -1300,3 +1300,49 @@ Sensitivity: an indicator decay of 1.5 s.
 5. then the mice are measured and the cross-species rule is applied.
 
 The spike datasets stay closed (step 2).
+
+## Mouse step 1 results and amendment 16 (14 Nov 2026, before any mouse measure and before step 2 for the mouse)
+
+**Step 1 (instrument numbers only), 7 mice**, first 20 minutes of each recording, a 500-neuron subset:
+
+| number | median | range |
+|---|---|---|
+| samples per recorded timescale | 0.71 | 0.64 to 0.90 |
+| white share (noise) | 0.78 | 0.65 to 0.95 |
+| fraction of exactly-zero samples | 0.63 | 0.62 to 0.67 |
+| frame rate | 2.5 Hz (one mouse 3 Hz) | |
+
+**What step 1 showed about the instrument.** A recorded timescale below one frame means the deconvolved
+mouse data is nearly white from one 400 ms frame to the next. The population autocorrelation of one mouse
+(MP030, computed for this check only) is 0.11 at lag 1, 0.00 at lag 2, slightly negative at lags 3 to 6,
+and a slow positive tail of about 0.008 at lags 10 to 30. Passing white input through the deconvolved
+instrument gives the same picture (recorded timescale 0.77 frames, white share 0.76 to 0.81). So at this
+frame rate the recorded timescale is pinned near a floor of about 0.75 frames and **cannot set the frame**,
+which amendment 15 asked it to do.
+
+**Amendment 16.**
+1. *Deconvolution kernel.* The data authors deconvolved with a fixed indicator decay of 2 s (Stringer et
+   al. 2019, Methods: OASIS, 60 s running baseline, neuropil factor 0.7). Amendment 15 used 1.25 s, which
+   was wrong for this dataset. The instrument now records with the GCaMP6s decay from the same table as
+   every other calcium preparation (half-decay 0.5 s, 1/e 0.72 s; 1.8 frames at 2.5 Hz), and deconvolves
+   with the authors' 2 s kernel (5 frames). Sensitivity: indicator 1/e 1.25 s (amendment 15's value).
+2. *The frame.* It is fixed by physics, not by the floored recorded timescale: one frame spans the frame
+   duration (0.4 s) over mouse cortex's own native population timescale, taken from the same lab's
+   spontaneous Neuropixels recordings (preparation R4, step 1: median 0.047 s over 3 mice, range 0.036 to
+   0.104). That is **8.5 native timescales per frame**; an AI frame spans 8.5 of the AI's own native
+   timescales. Sensitivity: 3.85 (R4's slowest mouse).
+3. *Matched and reported numbers.* SNR is bisected to the white-share target (within 0.05). Samples per
+   recorded timescale and the zero fraction are reported, not matched (no knob sets them once the frame is
+   fixed; the zero fraction is set by the network's own activity distribution). Matching uses at least
+   1,500 frames.
+4. *Recording length.* The mouse "recording" is the first 20 minutes, which is 3,000 frames at 2.5 Hz
+   (what step 1 read). AIs are cut into 3,000-frame crops. Sensitivity: whole recordings, mice only.
+5. *Step 2 at the mouse numbers.* Same gates as before (C1 rho of at least 0.9; C4 ratio below 0.5),
+   with the C4 native-timescale levels 1.5, 3 and 6 steps (memory: one 3,000-frame crop at 8.5 timescales
+   per frame needs about 25,000 timescales of native activity). Calibration systems hold at least 2 whole
+   crops. Deconvolved data is not detrended (the 60 s baseline already removes slow drift).
+
+A synthetic check while writing this amendment (default system and four variants): matching reaches the
+white-share target every time, with samples per recorded timescale 0.95 to 1.38 (mouse 0.71) and zero
+fraction 0.79 to 0.81 (mouse 0.63). The mouse is whiter and less often exactly zero than these synthetic
+systems; whether AIs also differ there is reported with the AI recordings.

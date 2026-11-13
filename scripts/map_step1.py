@@ -31,6 +31,8 @@ PREPS = {
            "load": lambda skip: data.atanas_worms()},
     "R3": {"group": "calcium", "type": "zebrafish larva, in vivo", "rtype": "calcium",
            "source": "Chen et al. 2018, figshare 7272617 (streamed)", "load": lambda skip: data.chen_fish(skip)},
+    "R5m": {"group": "deconv", "type": "mouse visual cortex, in vivo (2-photon, deconvolved)", "rtype": "deconv",
+            "source": "Stringer et al. 2019, figshare 6163622 (Fsp)", "load": lambda skip: data.stringer_2p(skip, cap_s=1200)},
     "R4": {"group": "spikes", "type": "mouse, in vivo", "rtype": "spikes",
            "source": "Stringer et al. 2019, figshare 7739750", "load": lambda skip: data.stringer_neuropixels(skip)},
     "R6": {"group": "spikes", "type": "mouse, in vivo", "rtype": "spikes",

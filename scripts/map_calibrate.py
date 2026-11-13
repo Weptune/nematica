@@ -48,8 +48,11 @@ DRAWS = 20
 SEEDS = (0, 1)
 MIN_REC_TAU = 240
 MAX_T = 80000
+CAL_CROPS = 2                  # amendment 16 (deconvolved instrument only): crops a calibration system must hold
+BIG_TAU = 30                   # systems with at least this native timescale run one at a time (memory)
 CODE = ["nematica/map/measures.py", "nematica/map/recording.py", "nematica/map/synthetic.py",
-        "nematica/map/analysis.py", "nematica/map/instrument.py", "scripts/map_calibrate.py"]
+        "nematica/map/analysis.py", "nematica/map/instrument.py", "nematica/map/deconv.py",
+        "scripts/map_calibrate.py"]
 
 
 def code_hash():
@@ -80,10 +83,12 @@ def system(job):
                 k = recording.match(A, rt, prof, seed=s)
                 B = A
                 need = int(k["needs_steps"] * MIN_REC_TAU / recording.MATCH_MIN_TAU) if np.isfinite(k["needs_steps"]) else 0
+                if rt == "deconv" and prof.get("crop_len"):   # amendment 16: enough for CAL_CROPS whole crops
+                    need = max(need, int(prof["crop_len"] * recording.per_sample(k, rt) * CAL_CROPS * 1.05))
                 if need > len(A):                        # memory: at most 60 million unit-samples
                     tmax = min(MAX_T, int(6e7 / params.get("N", 300)))
                     B = synthetic.population(np.random.default_rng(gseed), **{**params, "T": min(need, tmax)})
-                per_sample = (k["frame"] if rt == "calcium" else k["bin_steps"]) / k["hold"]
+                per_sample = recording.per_sample(k, rt)
                 if B.shape[1] >= 3000 and len(B) / per_sample * B.shape[1] > 1e8:   # memory (8 GB): not measured;
                     out[(rt, pn)] = ({m: np.nan for m in M}, bool(k["reached"]), np.nan)   # reported as nan
                     continue
@@ -91,15 +96,15 @@ def system(job):
                 if prof.get("crop_len"):                 # amendment 13: brain-length crops, detrended
                     from nematica.map.pipeline import crops
                     cs = crops(Y, seg, int(prof["crop_len"]), 4)
-                    vals = [meas(measures.detrend(c), s + j) for j, c in enumerate(cs)]
+                    vals = [meas(measures.detrend(c) if rt == "calcium" else c, s + j) for j, c in enumerate(cs)]
                     v = {m: float(np.nanmean([x[m] for x in vals])) if vals and np.isfinite([x[m] for x in vals]).any()
                          else np.nan for m in M}
-                    per = (k["frame"] if rt == "calcium" else k["bin_steps"]) / k["hold"]
-                    tr = k["achieved"]["frames_per_tau" if rt == "calcium" else "bins_per_tau"] * per / t_true
+                    per = recording.per_sample(k, rt)
+                    tr = k["achieved"][recording.TAU_KEY[rt]] * per / t_true
                     out[(rt, pn)] = (v, bool(k["reached"]), float(tr))
                     continue
-                per = (k["frame"] if rt == "calcium" else k["bin_steps"]) / k["hold"]
-                tr = k["achieved"]["frames_per_tau" if rt == "calcium" else "bins_per_tau"] * per / t_true
+                per = recording.per_sample(k, rt)
+                tr = k["achieved"][recording.TAU_KEY[rt]] * per / t_true
                 out[(rt, pn)] = (meas(Y, s), bool(k["reached"]), float(tr))
     finally:
         recording.GAIN = 1.0
@@ -124,7 +129,7 @@ def run_cached(jobs, t0, cache_tag=""):
     systems (3,000 units, or 30 samples per tau) run one at a time to bound memory."""
     CACHE.mkdir(parents=True, exist_ok=True)
     tag = code_hash() + cache_tag
-    big = [i for i, j in enumerate(jobs) if j[0].get("N", 0) >= 3000 or j[0].get("tau_fast", 0) >= 30]
+    big = [i for i, j in enumerate(jobs) if j[0].get("N", 0) >= 3000 or j[0].get("tau_fast", 0) >= BIG_TAU]
     small = [i for i in range(len(jobs)) if i not in big]
     out = {}
     with Pool(2) as pool:
@@ -208,7 +213,7 @@ def main(profiles=None, out_path=None, cache_tag="", c4=None, sweep=None):
                 ch = float(np.nanmax(mm) - np.nanmin(mm)) if np.isfinite(mm).sum() > 1 else float("nan")
                 out["X"][kk][m][prop] = ch / rngc if rngc == rngc and rngc > 0 else None
         for knob, vals in C4_.items():
-            if knob == "gain" and key[0] != "calcium":
+            if knob == "gain" and key[0] not in ("calcium", "deconv"):
                 continue
             out["C4"][kk][knob] = {}
             for m in M:

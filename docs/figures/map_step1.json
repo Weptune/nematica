@@ -1334,10 +1334,136 @@
     "n_units": 420.0,
     "decay_over_tau_x2": 0.10205500791325856
    }
+  },
+  "R5m": {
+   "group": "deconv",
+   "type": "mouse visual cortex, in vivo (2-photon, deconvolved)",
+   "rtype": "deconv",
+   "source": "Stringer et al. 2019, figshare 6163622 (Fsp)",
+   "individuals": [
+    {
+     "id": "M150824_MP019",
+     "kind": "RASGRF_G6s, 2016-04-05, spont_gray",
+     "n_units": 500,
+     "duration_s": 1200.0,
+     "tau_med_s": 0.2242586568887785,
+     "noise": 0.9457078276753661,
+     "duration_tau": 5350.9640013368235,
+     "frames_per_tau": 0.6727759706663355,
+     "zero_frac": 0.66875,
+     "units_total": 11983,
+     "fs": 3.0,
+     "indicator_frames": 2.164042561333445,
+     "kernel_frames": 6.0
+    },
+    {
+     "id": "M160825_MP027",
+     "kind": "EMX_G6s, 2016-12-12, spont_black",
+     "n_units": 500,
+     "duration_s": 1200.0,
+     "tau_med_s": 0.25783099348436384,
+     "noise": 0.7770552176434203,
+     "duration_tau": 4654.211597228997,
+     "frames_per_tau": 0.6445774837109096,
+     "zero_frac": 0.629,
+     "units_total": 11624,
+     "fs": 2.5,
+     "indicator_frames": 1.8033688011112043,
+     "kernel_frames": 5.0
+    },
+    {
+     "id": "M160907_MP028",
+     "kind": "GAD_G6s, 2016-09-26, spont_gray",
+     "n_units": 500,
+     "duration_s": 1200.0,
+     "tau_med_s": 0.3597380075608061,
+     "noise": 0.6548957038720454,
+     "duration_tau": 3335.7609559706184,
+     "frames_per_tau": 0.8993450189020151,
+     "zero_frac": 0.6233333333333333,
+     "units_total": 9392,
+     "fs": 2.5,
+     "indicator_frames": 1.8033688011112043,
+     "kernel_frames": 5.0
+    },
+    {
+     "id": "M161025_MP030",
+     "kind": "TETO_G6s, 2016-11-20, spont_black",
+     "n_units": 444,
+     "duration_s": 1200.0,
+     "tau_med_s": 0.2838619683627118,
+     "noise": 0.760084488969683,
+     "duration_tau": 4227.40674603746,
+     "frames_per_tau": 0.7096549209067795,
+     "zero_frac": 0.6413333333333333,
+     "units_total": 10164,
+     "fs": 2.5,
+     "indicator_frames": 1.8033688011112043,
+     "kernel_frames": 5.0
+    },
+    {
+     "id": "M170714_MP032",
+     "kind": "GADxtdTomato, 2017-08-04, spont_black",
+     "n_units": 500,
+     "duration_s": 1200.0,
+     "tau_med_s": 0.29600970472686283,
+     "noise": 0.8131342561460527,
+     "duration_tau": 4053.9211412250033,
+     "frames_per_tau": 0.7400242618171571,
+     "zero_frac": 0.6253333333333333,
+     "units_total": 10523,
+     "fs": 2.5,
+     "indicator_frames": 1.8033688011112043,
+     "kernel_frames": 5.0
+    },
+    {
+     "id": "M170717_MP033",
+     "kind": "tetO, 2017-08-18, spont_black",
+     "n_units": 500,
+     "duration_s": 1200.0,
+     "tau_med_s": 0.25659845470682996,
+     "noise": 0.7517545857218333,
+     "duration_tau": 4676.567524036845,
+     "frames_per_tau": 0.6414961367670748,
+     "zero_frac": 0.6411666666666667,
+     "units_total": 10640,
+     "fs": 2.5,
+     "indicator_frames": 1.8033688011112043,
+     "kernel_frames": 5.0
+    },
+    {
+     "id": "M170717_MP034",
+     "kind": "tetO, 2017-08-25, spont_black",
+     "n_units": 500,
+     "duration_s": 1200.0,
+     "tau_med_s": 0.28985574609452075,
+     "noise": 0.7968223102121839,
+     "duration_tau": 4139.990378554321,
+     "frames_per_tau": 0.7246393652363018,
+     "zero_frac": 0.6316666666666667,
+     "units_total": 11267,
+     "fs": 2.5,
+     "indicator_frames": 1.8033688011112043,
+     "kernel_frames": 5.0
+    }
+   ],
+   "median": {
+    "frames_per_tau": 0.7096549209067795,
+    "zero_frac": 0.6316666666666667,
+    "noise": 0.7770552176434203,
+    "fs": 2.5,
+    "indicator_frames": 1.8033688011112043,
+    "kernel_frames": 5.0,
+    "n_individuals": 7,
+    "n_excluded": 0,
+    "tau_med_s": 0.2838619683627118,
+    "duration_tau": 4227.40674603746,
+    "n_units": 500.0
+   }
   }
  },
  "provenance": {
-  "code_sha256_16": "0f38591d9991dcf3",
-  "seconds_last_run": 4
+  "code_sha256_16": "6c95b349a363f152",
+  "seconds_last_run": 3
  }
 }

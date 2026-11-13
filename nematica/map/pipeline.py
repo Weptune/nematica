@@ -18,7 +18,7 @@ import numpy as np
 
 from . import measures, recording
 
-KNOBS = {"calcium": ("decay", "frame", "snr"), "spikes": ("bin_steps", "mean_count", "gain")}
+KNOBS = {"calcium": ("decay", "frame", "snr"), "deconv": ("frame", "snr"), "spikes": ("bin_steps", "mean_count", "gain")}
 
 
 def _meas(Y, seed, seg, n_draws, tau_floor, rtype=None):
@@ -54,7 +54,7 @@ def ai_at_prep(instances, rtype, inst, segments=None, recs_per_instance=4, n_dra
         recordings differ in activity, not only in noise. Segment starts are shifted accordingly."""
         if not crop_len:
             return A, segments
-        need = int(np.ceil(max_crops * crop_len * 1.2 * kk["frame" if rtype == "calcium" else "bin_steps"]
+        need = int(np.ceil(max_crops * crop_len * 1.2 * kk[recording.SAMPLE_KNOB[rtype]]
                            / kk["hold"])) + 1
         if need >= len(A):
             return A, segments

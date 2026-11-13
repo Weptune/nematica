@@ -345,3 +345,37 @@ def rat_cultures(skip=()):
             yield {"id": s, "activity": X, "dt": d["dt"], "kind": "last-day session"}
         except Exception as e:  # noqa: BLE001
             yield {"id": s, "error": f"unreadable: {type(e).__name__}"}
+
+
+KERNEL_S = 2.0           # amendment 16: the deconvolution kernel the data authors used (Stringer et al. 2019,
+                         # Methods: OASIS with a fixed indicator decay timescale of 2 s)
+INDICATOR_S = 0.50 / np.log(2)   # amendment 16: GCaMP6s 1/e decay from the half-decay in instrument.py's table
+                                 # (Chen et al. 2013); sensitivity 1.25 s (amendment 15's value)
+
+
+def stringer_2p(skip=(), cap_s=None):
+    """Species 2 (amendment 15): Stringer et al. 2019 spontaneous two-photon recordings (figshare 6163622),
+    `Fsp` (suite2p OASIS deconvolution, neurons x frames), one recording per mouse (the first by date for
+    MP030). Frame rate per plane = 30 Hz / number of planes, from dbspont.mat."""
+    import scipy.io as sio
+    files = figshare_files(6163622)
+    db = sio.loadmat(io.BytesIO(open_url(files["dbspont.mat"]["download_url"]).read()), squeeze_me=True,
+                     struct_as_record=False)["db"]
+    seen = set()
+    for x in sorted(np.atleast_1d(db), key=lambda x: (x.mouse_name, x.date)):
+        if x.mouse_name in seen:
+            continue
+        seen.add(x.mouse_name)
+        uid = x.mouse_name
+        if uid in skip:
+            yield {"id": uid, "cached": True}
+            continue
+        name = f"spont_{x.mouse_name}_{x.date}.mat"
+        fs = 30.0 / float(x.nplanes)
+        m = sio.loadmat(io.BytesIO(open_url(files[name]["download_url"]).read()), variable_names=["Fsp"])
+        X = np.asarray(m["Fsp"], np.float32).T                              # frames x neurons
+        del m
+        if cap_s:
+            X = X[: int(cap_s * fs)]
+        yield {"id": uid, "activity": X, "dt": 1.0 / fs, "fs": fs, "indicator_s": INDICATOR_S, "kernel_s": KERNEL_S,
+               "kind": f"{x.mouse_type}, {x.date}, {np.atleast_1d(x.expt_name)[0]}"}
