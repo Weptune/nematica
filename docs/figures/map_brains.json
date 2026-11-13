@@ -1,0 +1,476 @@
+{
+ "preparations": {
+  "R2": {
+   "type": "C. elegans, freely moving, in vivo",
+   "group": "calcium",
+   "individuals": [
+    {
+     "id": "2022-06-14-07",
+     "values": {
+      "spectrum_steepness": NaN,
+      "shared_fraction": 0.24785493431256067,
+      "slow_fraction": 0.07213992964403461,
+      "timescale_spread": 0.43042918358737925,
+      "coupling_spread": 0.43080480299930296,
+      "drift": 0.08147265384562567,
+      "sparsity": 2.0175866618923965
+     },
+     "sd": {
+      "spectrum_steepness": 0.2570838590927411,
+      "shared_fraction": 0.055365339272298496,
+      "slow_fraction": 0.013423913664935934,
+      "timescale_spread": 0.058408172976150065,
+      "coupling_spread": 0.07093240806545237,
+      "drift": 0.02970059737849342,
+      "sparsity": 0.4847202499574715
+     },
+     "se": {
+      "spectrum_steepness": NaN,
+      "shared_fraction": NaN,
+      "slow_fraction": NaN,
+      "timescale_spread": NaN,
+      "coupling_spread": NaN,
+      "drift": NaN,
+      "sparsity": NaN
+     },
+     "tau_med": 10.621166175298141,
+     "error": null,
+     "n_units": 130
+    },
+    {
+     "id": "2022-06-14-13",
+     "values": {
+      "spectrum_steepness": 1.038723373526464,
+      "shared_fraction": 0.24720632938023474,
+      "slow_fraction": -0.020784673862775417,
+      "timescale_spread": 0.4146644436191499,
+      "coupling_spread": 0.25538311323042434,
+      "drift": 0.07250639803054354,
+      "sparsity": 0.9886692729158657
+     },
+     "sd": {
+      "spectrum_steepness": 0.3741056998626428,
+      "shared_fraction": 0.05756426319614699,
+      "slow_fraction": 0.017263284281952535,
+      "timescale_spread": 0.054892140042966775,
+      "coupling_spread": 0.05882716154458894,
+      "drift": 0.03330696383291528,
+      "sparsity": 0.31316415678151677
+     },
+     "se": {
+      "spectrum_steepness": 0.15553718657297297,
+      "shared_fraction": 0.04094856346780059,
+      "slow_fraction": 0.021298972361395208,
+      "timescale_spread": 0.03365049974021479,
+      "coupling_spread": 0.02799941759288265,
+      "drift": 0.013175856294406593,
+      "sparsity": 0.2179401482512643
+     },
+     "tau_med": 6.556921521226212,
+     "error": null,
+     "n_units": 134
+    },
+    {
+     "id": "2022-06-28-01",
+     "values": {
+      "spectrum_steepness": 0.8343488842299175,
+      "shared_fraction": 0.3414719532433095,
+      "slow_fraction": 0.0009525105782460904,
+      "timescale_spread": 0.5733231087032777,
+      "coupling_spread": 0.338978243848134,
+      "drift": 0.058558293974838124,
+      "sparsity": 1.4357578272985563
+     },
+     "sd": {
+      "spectrum_steepness": 0.28466358892257554,
+      "shared_fraction": 0.04727924258002287,
+      "slow_fraction": 0.013020579434218159,
+      "timescale_spread": 0.08541347131902603,
+      "coupling_spread": 0.07472478156455102,
+      "drift": 0.0439736390455035,
+      "sparsity": 0.48648849154595003
+     },
+     "se": {
+      "spectrum_steepness": 0.08330947603595572,
+      "shared_fraction": 0.033066830932215886,
+      "slow_fraction": 0.011222603304563166,
+      "timescale_spread": 0.03572206119131143,
+      "coupling_spread": 0.05342300244776001,
+      "drift": 0.017215926018933403,
+      "sparsity": 0.29955086061938785
+     },
+     "tau_med": 7.307241422390937,
+     "error": null,
+     "n_units": 142
+    },
+    {
+     "id": "2022-06-28-07",
+     "values": {
+      "spectrum_steepness": 0.713364381390875,
+      "shared_fraction": 0.26041767586054754,
+      "slow_fraction": 0.07860624694040105,
+      "timescale_spread": 0.47011718371726363,
+      "coupling_spread": 0.28289933752287433,
+      "drift": 0.07825544906259105,
+      "sparsity": 1.489242100524992
+     },
+     "sd": {
+      "spectrum_steepness": 0.3094921415951427,
+      "shared_fraction": 0.039844538421717327,
+      "slow_fraction": 0.013147932385269305,
+      "timescale_spread": 0.06367355539850363,
+      "coupling_spread": 0.05794544220614342,
+      "drift": 0.03872856378559572,
+      "sparsity": 0.5700938195596095
+     },
+     "se": {
+      "spectrum_steepness": 0.23020063304061275,
+      "shared_fraction": 0.0330129991230326,
+      "slow_fraction": 0.01488826790544402,
+      "timescale_spread": 0.04871541020093064,
+      "coupling_spread": 0.026482835632877073,
+      "drift": 0.009437089016970275,
+      "sparsity": 0.3203430625139991
+     },
+     "tau_med": 7.442009171008389,
+     "error": null,
+     "n_units": 142
+    },
+    {
+     "id": "2022-07-20-01",
+     "values": {
+      "spectrum_steepness": 1.0453579800326434,
+      "shared_fraction": 0.2427628020061717,
+      "slow_fraction": -0.023846563887924187,
+      "timescale_spread": 0.43920740064822894,
+      "coupling_spread": 0.2925881258665129,
+      "drift": 0.09954852350279589,
+      "sparsity": 1.5689884217822545
+     },
+     "sd": {
+      "spectrum_steepness": 0.3501318402027452,
+      "shared_fraction": 0.06424304392858939,
+      "slow_fraction": 0.014954113818918674,
+      "timescale_spread": 0.06307951025193845,
+      "coupling_spread": 0.057982069257678966,
+      "drift": 0.06229721976987829,
+      "sparsity": 0.31896765971674307
+     },
+     "se": {
+      "spectrum_steepness": 0.2140254224260781,
+      "shared_fraction": 0.0436699882064595,
+      "slow_fraction": 0.016888879313006953,
+      "timescale_spread": 0.038197767890800316,
+      "coupling_spread": 0.024125621902268163,
+      "drift": 0.015807886121216183,
+      "sparsity": 0.33352305888827277
+     },
+     "tau_med": 7.869662706661427,
+     "error": null,
+     "n_units": 144
+    },
+    {
+     "id": "2022-08-02-01",
+     "values": {
+      "spectrum_steepness": 0.7512094519507604,
+      "shared_fraction": 0.24396088429611956,
+      "slow_fraction": 0.03020807478524281,
+      "timescale_spread": 0.36921072775190644,
+      "coupling_spread": 0.248576600456592,
+      "drift": 0.03979246739128857,
+      "sparsity": 1.5907069286723114
+     },
+     "sd": {
+      "spectrum_steepness": 0.4018022285459013,
+      "shared_fraction": 0.05513058462914272,
+      "slow_fraction": 0.01967455957866697,
+      "timescale_spread": 0.0594273121428758,
+      "coupling_spread": 0.04818146780382761,
+      "drift": 0.03079338041166189,
+      "sparsity": 0.40757884055621857
+     },
+     "se": {
+      "spectrum_steepness": NaN,
+      "shared_fraction": NaN,
+      "slow_fraction": NaN,
+      "timescale_spread": NaN,
+      "coupling_spread": NaN,
+      "drift": NaN,
+      "sparsity": NaN
+     },
+     "tau_med": 10.062641162151303,
+     "error": null,
+     "n_units": 152
+    },
+    {
+     "id": "2023-01-09-28",
+     "values": {
+      "spectrum_steepness": 1.5785889980667314,
+      "shared_fraction": 0.3020543637717373,
+      "slow_fraction": -0.09039959891839922,
+      "timescale_spread": 0.6520111492187219,
+      "coupling_spread": 0.36556735120339634,
+      "drift": 0.07206196686017355,
+      "sparsity": 1.066665162877911
+     },
+     "sd": {
+      "spectrum_steepness": 0.2626153147912959,
+      "shared_fraction": 0.06863510461918361,
+      "slow_fraction": 0.03723491519901181,
+      "timescale_spread": 0.08697192691833369,
+      "coupling_spread": 0.1340260330624163,
+      "drift": 0.05429087745231643,
+      "sparsity": 0.3062331201283266
+     },
+     "se": {
+      "spectrum_steepness": 0.13893542237291714,
+      "shared_fraction": 0.03140836065431889,
+      "slow_fraction": 0.029125763719903924,
+      "timescale_spread": 0.08184963397151837,
+      "coupling_spread": 0.07456835207751836,
+      "drift": 0.026806081888584105,
+      "sparsity": 0.07230297621070592
+     },
+     "tau_med": 8.524429887107356,
+     "error": null,
+     "n_units": 145
+    },
+    {
+     "id": "2023-01-19-01",
+     "values": {
+      "spectrum_steepness": 1.2084415006517826,
+      "shared_fraction": 0.30062453862498406,
+      "slow_fraction": 0.1300444286550933,
+      "timescale_spread": 0.26697163662245504,
+      "coupling_spread": 0.2917502007675618,
+      "drift": 0.1562094351353947,
+      "sparsity": 0.4834799025514915
+     },
+     "sd": {
+      "spectrum_steepness": 0.27221219928361,
+      "shared_fraction": 0.04995810390193436,
+      "slow_fraction": 0.011403155080551392,
+      "timescale_spread": 0.03936541873760839,
+      "coupling_spread": 0.04984986681583983,
+      "drift": 0.026375490868008607,
+      "sparsity": 0.2674061624665221
+     },
+     "se": {
+      "spectrum_steepness": 0.09920132019572243,
+      "shared_fraction": 0.018104596790524875,
+      "slow_fraction": 0.013023888829210172,
+      "timescale_spread": 0.03778127521613919,
+      "coupling_spread": 0.02735910309716794,
+      "drift": 0.023758454745656188,
+      "sparsity": 0.0925396849535874
+     },
+     "tau_med": 9.978562878791237,
+     "error": null,
+     "n_units": 124
+    },
+    {
+     "id": "2023-01-19-08",
+     "values": {
+      "spectrum_steepness": 1.335273534971491,
+      "shared_fraction": 0.2578225602594422,
+      "slow_fraction": 0.018141859808406317,
+      "timescale_spread": 0.3781063588124985,
+      "coupling_spread": 0.36909330030762444,
+      "drift": 0.13864409416754936,
+      "sparsity": 0.6980229735944457
+     },
+     "sd": {
+      "spectrum_steepness": 0.2589229902242447,
+      "shared_fraction": 0.055271759328481225,
+      "slow_fraction": 0.009510909327445721,
+      "timescale_spread": 0.05552636907540173,
+      "coupling_spread": 0.06923822626767176,
+      "drift": 0.037941499657893125,
+      "sparsity": 0.33023557088400984
+     },
+     "se": {
+      "spectrum_steepness": 0.10482553906116615,
+      "shared_fraction": 0.02731178448433992,
+      "slow_fraction": 0.015373153096013323,
+      "timescale_spread": 0.042441576159259344,
+      "coupling_spread": 0.05044885337561376,
+      "drift": 0.0036660232329364037,
+      "sparsity": 0.12788573378811527
+     },
+     "tau_med": 8.613926005813854,
+     "error": null,
+     "n_units": 147
+    },
+    {
+     "id": "2023-01-19-15",
+     "values": {
+      "spectrum_steepness": 0.952053778959926,
+      "shared_fraction": 0.24564985363096556,
+      "slow_fraction": 0.01709063418463633,
+      "timescale_spread": 0.40570656140372996,
+      "coupling_spread": 0.27108316519156367,
+      "drift": 0.02491483888853106,
+      "sparsity": 1.1617596304039934
+     },
+     "sd": {
+      "spectrum_steepness": 0.5280799024082634,
+      "shared_fraction": 0.04985568577759133,
+      "slow_fraction": 0.010857625220978998,
+      "timescale_spread": 0.07268432993436888,
+      "coupling_spread": 0.05930619937324636,
+      "drift": 0.03181953388162456,
+      "sparsity": 0.4064066015266684
+     },
+     "se": {
+      "spectrum_steepness": 0.29767729185028874,
+      "shared_fraction": 0.0290659279606849,
+      "slow_fraction": 0.014350977896502637,
+      "timescale_spread": 0.03250454630448282,
+      "coupling_spread": 0.028853283180600486,
+      "drift": 0.015227504628745473,
+      "sparsity": 0.2276905951079966
+     },
+     "tau_med": 7.736973272130025,
+     "error": null,
+     "n_units": 144
+    },
+    {
+     "id": "2023-01-19-22",
+     "values": {
+      "spectrum_steepness": 1.084465228523754,
+      "shared_fraction": 0.2802286395357061,
+      "slow_fraction": 0.039196883423818885,
+      "timescale_spread": 0.3503823476224845,
+      "coupling_spread": 0.33745190455632135,
+      "drift": 0.13442236165027924,
+      "sparsity": 0.9582481475764192
+     },
+     "sd": {
+      "spectrum_steepness": 0.38138020869530004,
+      "shared_fraction": 0.055327751208110135,
+      "slow_fraction": 0.020270300904476134,
+      "timescale_spread": 0.07809405557466051,
+      "coupling_spread": 0.056524278199891295,
+      "drift": 0.045493298943677506,
+      "sparsity": 0.2050759008699086
+     },
+     "se": {
+      "spectrum_steepness": NaN,
+      "shared_fraction": 0.032370091998800976,
+      "slow_fraction": 0.014035348656307785,
+      "timescale_spread": 0.054785124254776094,
+      "coupling_spread": 0.030492098137444218,
+      "drift": 0.009967341438505665,
+      "sparsity": 0.15871294761892868
+     },
+     "tau_med": 8.243831358161358,
+     "error": null,
+     "n_units": 153
+    },
+    {
+     "id": "2023-01-23-15",
+     "values": {
+      "spectrum_steepness": 0.9267757236327157,
+      "shared_fraction": 0.2650955641814369,
+      "slow_fraction": 0.05789784941007914,
+      "timescale_spread": 0.4485021734471175,
+      "coupling_spread": 0.24603703340204422,
+      "drift": 0.030788729330117365,
+      "sparsity": 1.2463853212847276
+     },
+     "sd": {
+      "spectrum_steepness": 0.4247006846847307,
+      "shared_fraction": 0.055995565191346394,
+      "slow_fraction": 0.016496650138902478,
+      "timescale_spread": 0.06909354777242233,
+      "coupling_spread": 0.05106558772201769,
+      "drift": 0.03643232938340954,
+      "sparsity": 0.44804158482968687
+     },
+     "se": {
+      "spectrum_steepness": 0.2065403479041294,
+      "shared_fraction": 0.00934498013730515,
+      "slow_fraction": 0.014742182510045908,
+      "timescale_spread": 0.026633161948214044,
+      "coupling_spread": 0.015943631413742516,
+      "drift": 0.018096181152604116,
+      "sparsity": 0.1686302046306279
+     },
+     "tau_med": 7.394830415372709,
+     "error": null,
+     "n_units": 147
+    },
+    {
+     "id": "2023-01-23-21",
+     "values": {
+      "spectrum_steepness": 1.3337781744540878,
+      "shared_fraction": 0.22454700853435675,
+      "slow_fraction": 0.04738283270350991,
+      "timescale_spread": 0.37711003296612766,
+      "coupling_spread": 0.25777285007451384,
+      "drift": -0.0013955560506234382,
+      "sparsity": 1.367734246962461
+     },
+     "sd": {
+      "spectrum_steepness": 0.3813607418597751,
+      "shared_fraction": 0.048009175171953425,
+      "slow_fraction": 0.01472998734514881,
+      "timescale_spread": 0.08755732647817632,
+      "coupling_spread": 0.06068780395075316,
+      "drift": 0.04633149826072211,
+      "sparsity": 0.34624570429412405
+     },
+     "se": {
+      "spectrum_steepness": 0.15866597940139118,
+      "shared_fraction": 0.033344599497085785,
+      "slow_fraction": 0.024270065524711594,
+      "timescale_spread": 0.05099779086354741,
+      "coupling_spread": 0.02233202092037235,
+      "drift": 0.01630953804778215,
+      "sparsity": 0.16459851570824086
+     },
+     "tau_med": 7.987576088348488,
+     "error": null,
+     "n_units": 126
+    },
+    {
+     "id": "2023-03-07-01",
+     "values": {
+      "spectrum_steepness": 1.5548342411250993,
+      "shared_fraction": 0.2665849010578745,
+      "slow_fraction": -0.04883699818867862,
+      "timescale_spread": 0.3975039802136955,
+      "coupling_spread": 0.37526997823491537,
+      "drift": 0.04793750435269621,
+      "sparsity": 0.6192021762220842
+     },
+     "sd": {
+      "spectrum_steepness": 0.40363162279704584,
+      "shared_fraction": 0.04577729017196415,
+      "slow_fraction": 0.01566426885862836,
+      "timescale_spread": 0.06927009067564437,
+      "coupling_spread": 0.08815913663593591,
+      "drift": 0.0441927948030728,
+      "sparsity": 0.24974477927326977
+     },
+     "se": {
+      "spectrum_steepness": NaN,
+      "shared_fraction": 0.02740736061077971,
+      "slow_fraction": 0.01998964617669805,
+      "timescale_spread": 0.0444743556896431,
+      "coupling_spread": 0.05031770464054545,
+      "drift": 0.017021401113218895,
+      "sparsity": 0.21912312549278318
+     },
+     "tau_med": 9.466363139044319,
+     "error": null,
+     "n_units": 153
+    }
+   ]
+  }
+ },
+ "provenance": {
+  "code_sha256_16": "303a1fa7a4159dac",
+  "seconds_last_run": 470
+ }
+}
