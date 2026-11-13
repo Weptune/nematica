@@ -91,6 +91,85 @@ def instrument():
     save(fig, "instrument")
 
 
+LABEL = {"A1": "Random RNN", "A1-slow": "Random RNN + slow drives", "A2": "Task-trained RNN", "A3": "GRU (characters)",
+         "A4": "Spiking network", "A5": "CfC 'liquid' (characters)", "A6-14m": "Pythia 14M", "A6-160m": "Pythia 160M",
+         "A6-410m": "Pythia 410M", "A6-1b": "Pythia 1B", "A6-410m-ou": "Pythia 410M + slow latent",
+         "A7-130m": "Mamba 130M", "A7-370m": "Mamba 370M", "A10": "Lab network (tuned on worms)"}
+
+
+def worm():
+    d = json.loads((ROOT / "docs/figures/map_worm.json").read_text())["primary"]
+    ais = d["ais"]
+    order = sorted(ais, key=lambda k: ais[k]["median_crop_distance"])
+    fig, ax = plt.subplots(figsize=(11, 0.42 * len(order) + 2.6))
+    env, (elo, ehi) = d["envelope"], d["envelope_ci90"]
+    top = len(order) + 0.6
+    ax.axvspan(0, env, color="#1d1840", zorder=0)
+    ax.axvspan(elo, ehi, color="#2a2350", zorder=0)
+    ax.axvline(env, color=MUTED, lw=1, zorder=1)
+    ax.text(env, top + 0.15, "worm envelope", ha="center", va="bottom", fontsize=9, color=MUTED)
+    for v in d["worm_loo"].values():                    # each worm, to the other 13
+        ax.plot([v, v], [top - 0.35, top + 0.05], color=INK, lw=1.4)
+    ax.text(-0.05, top - 0.15, "14 real worms", ha="right", va="center", fontsize=10, color=INK)
+    col = lambda a: CAT["amber"] if a["fitted_on_worms"] else (CAT["pink"] if a["role"] == "augmented" else CAT["blue"])
+    for i, k in enumerate(order):
+        a = ais[k]
+        y = len(order) - 1 - i
+        lo, hi = a["ci90"]
+        ax.plot([lo, hi], [y, y], color=col(a), lw=2, solid_capstyle="round", alpha=0.8)
+        ax.scatter([a["median_crop_distance"]], [y], s=70, color=col(a), zorder=3, edgecolor=BG, linewidth=1.5)
+        ax.text(-0.05, y, LABEL.get(k, k), ha="right", va="center", fontsize=10, color=INK)
+    xmax = max(max(ais[k]["ci90"][1] for k in order), ehi) * 1.08
+    ax.set_xlim(0, min(xmax, 10.5))
+    ax.set_ylim(-0.8, top + 0.9)
+    ax.set_yticks([])
+    for s_ in ("top", "right", "left"):
+        ax.spines[s_].set_visible(False)
+    ax.set_xlabel("distance from the average worm, in units of how much real worms differ (BVU)", fontsize=9.5)
+    fig.text(0.02, 1.02, "Which artificial networks look like a worm, when recorded like one?", fontsize=17,
+             family="Newsreader 16pt", color=INK)
+    fig.text(0.02, 0.985, f"Each network recorded through the worm's calcium instrument and cut into worm-length pieces; "
+             f"measured on {len(d['measures'])} calibrated measurements. Dot: median piece; bar: 90% interval.",
+             fontsize=9.3, color=MUTED)
+    fig.text(0.02, -0.03, "Blue: standard networks. Pink: with added slow state. Amber: tuned on worm data. "
+             "Shaded: inside the largest distance of any real worm from the other 13 (band: its 90% interval). "
+             "Descriptive, one species (docs/MAP.md, amendments 12 and 13).", fontsize=7.8, color="#6a5f9a")
+    save(fig, "worm_distance")
+
+
+def worm_measures():
+    d = json.loads((ROOT / "docs/figures/map_worm.json").read_text())["primary"]
+    use = d["measures"]
+    W = d["positions"]["worms"]
+    C = d["positions"]["ai_crops"]
+    ais = d["ais"]
+    fig, axes = plt.subplots(1, len(use), figsize=(3.0 * len(use), 7.5), sharey=True)
+    order = sorted(ais, key=lambda k: ais[k]["median_crop_distance"])
+    col = lambda a: CAT["amber"] if a["fitted_on_worms"] else (CAT["pink"] if a["role"] == "augmented" else CAT["blue"])
+    for ax, m in zip(np.atleast_1d(axes), use):
+        wv = [w[m] for w in W.values()]
+        ax.axvspan(min(wv), max(wv), color="#1d1840")
+        ax.scatter(wv, [len(order) + 0.8] * len(wv), s=22, color=INK, zorder=3)
+        for i, k in enumerate(order):
+            y = len(order) - 1 - i
+            v = [c[m] for c in C[k]]
+            ax.scatter(v, [y] * len(v), s=6, color=col(ais[k]), alpha=0.35, linewidth=0)
+            ax.scatter([np.median(v)], [y], s=40, color=col(ais[k]), zorder=3, edgecolor=BG, linewidth=1)
+        ax.set_title(NAMES[m], fontsize=10.5, color=INK, pad=8)
+        for s_ in ("top", "right", "left"):
+            ax.spines[s_].set_visible(False)
+        ax.tick_params(axis="x", labelsize=8)
+    ax0 = np.atleast_1d(axes)[0]
+    ax0.set_yticks(list(range(len(order))) + [len(order) + 0.8])
+    ax0.set_yticklabels([LABEL.get(k, k) for k in order[::-1]] + ["real worms"], fontsize=9.5, color=INK)
+    ax0.tick_params(axis="y", length=0)
+    fig.text(0.01, 1.03, "Where the networks differ from worms, measurement by measurement", fontsize=17,
+             family="Newsreader 16pt", color=INK)
+    fig.text(0.01, 0.995, "Shaded: the range of the 14 real worms. Small dots: worm-length pieces of each network; "
+             "large dot: their median.", fontsize=9.3, color=MUTED)
+    save(fig, "worm_measures")
+
+
 if __name__ == "__main__":
     fonts()
     for name in sys.argv[1:] or ["instrument"]:

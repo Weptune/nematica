@@ -60,12 +60,18 @@ def calcium(A, decay=8.0, frame=2, snr=4.0, gain=None, rng=None):
     k = np.exp(-np.arange(int(6 * max(decay, 0.2)) + 1) / max(decay, 1e-3))
     k /= k.sum()
     T = len(R)
-    F = np.fft.irfft(np.fft.rfft(R, n=2 * T, axis=0) * np.fft.rfft(k, n=2 * T)[:, None], axis=0)[:T]
+    K = np.fft.rfft(k, n=2 * T)[:, None]
     if frame > 1:                                       # fractional frames: sample by linear interpolation
         pos = np.arange(0, T - 1, frame)
         i0 = pos.astype(int)
         w = (pos - i0)[:, None]
-        F = F[i0] * (1 - w) + F[np.minimum(i0 + 1, T - 1)] * w
+    parts = []
+    for a in range(0, R.shape[1], 32):                  # blocks of units (memory; the same values)
+        Fb = np.fft.irfft(np.fft.rfft(R[:, a:a + 32], n=2 * T, axis=0) * K, axis=0)[:T]
+        if frame > 1:
+            Fb = Fb[i0] * (1 - w) + Fb[np.minimum(i0 + 1, T - 1)] * w
+        parts.append(Fb)
+    F = np.hstack(parts)
     sd = F.std(0) + 1e-12
     return F + rng.standard_normal(F.shape) * sd / snr
 
