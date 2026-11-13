@@ -22,7 +22,8 @@ from nematica.map import ai, instrument, pipeline, zoo  # noqa: E402
 CACHE = ROOT / "data/cache/map_ais"
 TOK = ROOT / "data/external/books/tokens.npy"
 KEEP = 300
-GROUPS = {"calcium": ["R2"], "deconv": ["R5m"]}   # amendment 12: the spike arm is closed; amendment 15: mouse
+GROUPS = {"calcium": ["R2"], "spikes": ["R4g"]}   # amendment 12: single-unit spikes closed; 16: the mouse
+                                                  # two-photon arm (R5m) failed step 2; 17: pooled R4 units
 
 
 def thirds(n=200_000):
@@ -41,16 +42,17 @@ def _drop_cache(model):
         info.delete_revisions(*revs).execute()
 
 
-def lm(name, seeds=None, ou=None):
-    """Instances: released seeds when given (PolyPythia), else disjoint thirds of the text."""
+def lm(name, seeds=None, ou=None, keep=KEEP, n_tok=None):
+    """Instances: released seeds when given (PolyPythia), else disjoint thirds of the text. `n_tok` tokens per
+    instance (amendment 17; default 120,000 for seeds and a third of 200,000 otherwise)."""
     out = []
     if seeds:
-        t = np.load(TOK)[:120_000]
+        t = np.load(TOK)[:n_tok or 120_000]
         for i, s in enumerate(seeds):                  # amendment 13: each instance its own OU realisation
-            out.append(ai.record(s, t, keep=KEEP, ou_tau=ou, seed=i)[:2])
+            out.append(ai.record(s, t, keep=keep, ou_tau=ou, seed=i)[:2])
         return out
-    for i, part in enumerate(thirds()):
-        out.append(ai.record(name, part, keep=KEEP, ou_tau=ou, seed=i)[:2])
+    for i, part in enumerate(thirds(3 * n_tok if n_tok else 200_000)):
+        out.append(ai.record(name, part, keep=keep, ou_tau=ou, seed=i)[:2])
     return out
 
 
@@ -88,6 +90,45 @@ MOUSE_SPECS = {
     "A2": lambda: [(zoo.task_rnn(seed=s, trials=1_560_000, every=100)[0], []) for s in range(3)],
     "A10": lambda: [zoo.lab_network(individual=i, frames=300_000)[:2] for i in range(3)],
 }
+# Amendment 17 (pooled R4 units, groups of 8): at least 400 units; AI individuals are 5,000-timescale crops.
+# The language models not yet recorded for the worms are recorded once, with 480 units and 40,000 tokens
+# per instance, for both preparations (each crop needs at most about 4,500 tokens).
+LM_TOK, G_KEEP = 40_000, 480
+
+
+def _keep(A, n=G_KEEP, seed=0):
+    A = np.asarray(A, np.float32)
+    return A[:, np.sort(np.random.default_rng(seed).choice(A.shape[1], n, replace=False))] if A.shape[1] > n else A
+
+
+R4G_SPECS = {
+    "A1": lambda: [zoo.random_rnn(n=480, seed=s, steps=200_000)[:2] for s in range(3)],
+    "A1-slow": lambda: [(zoo.with_slow_drives(zoo.random_rnn(n=480, seed=s, steps=280_000)[0], seed=s), [])
+                        for s in range(3)],
+    "A2": lambda: [(zoo.task_rnn(seed=s, n=512, trials=330_000, every=100)[0], []) for s in range(3)],
+    "A3": lambda: [zoo.char_net("gru", seed=s, n=512)[:2] for s in range(3)],
+    "A4": lambda: [(_keep(a, seed=s), seg) for s in range(3) for a, seg in [zoo.lif_network(seed=s)[:2]]],
+    "A5": lambda: [zoo.char_net("cfc", seed=s, n=512)[:2] for s in range(3)],
+    "A6-14m": lambda: lm(None, poly("14m"), keep=G_KEEP, n_tok=LM_TOK),
+    "A6-160m": lambda: lm(None, poly("160m"), keep=G_KEEP, n_tok=LM_TOK),
+    "A6-410m": lambda: lm(None, poly("410m"), keep=G_KEEP, n_tok=LM_TOK),
+    "A6-1b": lambda: lm("EleutherAI/pythia-1b", keep=G_KEEP, n_tok=LM_TOK),
+    "A6-410m-ou": lambda: lm(None, poly("410m"), ou=200, keep=G_KEEP, n_tok=LM_TOK),
+    "A7-130m": lambda: lm("state-spaces/mamba-130m-hf", keep=G_KEEP, n_tok=LM_TOK),
+    "A7-370m": lambda: lm("state-spaces/mamba-370m-hf", keep=G_KEEP, n_tok=LM_TOK),
+}
+LM_SHARED = {"A6-410m", "A6-1b", "A6-410m-ou", "A7-130m", "A7-370m"}
+
+
+def builder(aid, pid):
+    """(activity key, builder) for one AI at one preparation; None: not recorded there."""
+    if pid == "R5m" and aid in MOUSE_SPECS:
+        return "R5m", MOUSE_SPECS[aid]
+    if pid == "R4g" or (pid == "R2" and aid in LM_SHARED):
+        return ("R4g", R4G_SPECS[aid]) if aid in R4G_SPECS else None
+    return "std", SPECS[aid][2]
+
+
 FITTED_ON = {"A10": ["R1", "R2"]}                          # candidates (c), (d): worm preparations left out
 
 
@@ -101,6 +142,10 @@ def code_hash():
 
 
 def profile(pid, d):
+    if pid == "R4g":                                    # amendment 17: R4's single-unit numbers, groups of 8
+        sys.path.insert(0, str(ROOT / "scripts"))
+        from map_step2_r4g import r4g_profile
+        return "spikes", r4g_profile()
     if pid in GROUPS.get("deconv", []):                 # amendment 16: the mouse profile of step 2
         sys.path.insert(0, str(ROOT / "scripts"))
         from map_step2_mouse import mouse_profile
@@ -116,7 +161,9 @@ def profile(pid, d):
 VARIANTS = {"": {}, "hold2k": {"hold_mult": 2}, "interp": {"interp": True},
             "noise05": {"noise": 0.05}, "noise10": {"noise": 0.10}}     # amendment 13: worm noise sensitivity
 CROP_LEN = {"R2": 1600, "R5m": 3000}      # amendment 13: one baseline worm recording, in frames; 16: mouse
-MAX_CROPS = {"R2": 4, "R5m": 1}           # amendment 16 (compute): one crop per mouse-instrument recording
+CROP_LEN["R4g"] = int(round(5000 * json.loads((ROOT / "docs/figures/map_step1.json").read_text())
+                            ["preparations"]["R4"]["median"]["bins_per_tau"]))   # amendment 17: 5,000 timescales
+MAX_CROPS = {"R2": 4, "R5m": 1, "R4g": 1}  # amendments 16 and 17 (compute): one crop per recording
 N_DRAWS = 40                               # as for the worms
 
 
@@ -133,17 +180,22 @@ def run(aid, variant=""):
         todo = [p for p in todo if p in ONLY]
     if not todo:
         return
-    if todo != ["R5m"] and "R5m" in todo and aid in MOUSE_SPECS:   # different activity for the mouse
-        for p in todo:
-            ONLY[:] = [p]
-            run(aid, variant)
-        ONLY.clear()
-        return
+    keys = {}
+    for p in todo:
+        b = builder(aid, p)
+        if b is not None:
+            keys.setdefault(b[0], (b[1], []))[1].append(p)
+    for key, (build, pids) in keys.items():
+        _record(aid, variant, build, pids, d, suf)
+
+
+def _record(aid, variant, build, todo, d, suf):
     t0 = time.time()
-    inst = (MOUSE_SPECS[aid] if todo == ["R5m"] and aid in MOUSE_SPECS else SPECS[aid][2])()
+    inst = build()
     acts = [np.asarray(a, np.float32) for a, _ in inst]
     segs = [s for _, s in inst]
-    print(aid, "activity", [a.shape for a in acts], f"{time.time() - t0:.0f}s", flush=True)
+    del inst
+    print(aid, todo, "activity", [a.shape for a in acts], f"{time.time() - t0:.0f}s", flush=True)
     for model in MODELS.get(aid, []):
         if not any(aid2 != aid and model in MODELS.get(aid2, []) and not done(aid2) for aid2 in SPECS):
             _drop_cache(model)

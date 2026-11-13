@@ -1393,3 +1393,18 @@ groups of 4) timescale spread failed (-0.1). These checks chose G = 8; they are 
 6. *Candidate under test.* From the worms (exploratory map, amendment 14), the one measurement where every
    recorded AI sits on one side of the worms is **timescale spread** (AIs lower). It is the measurement this
    arm can confirm or refute in a second species; the others are reported.
+
+## Step 2 under amendment 17 (14 Nov 2026): four measurements survive pooled mouse units
+
+`docs/figures/map_step2_r4g.json` (R4's single-unit numbers, groups of 8, 480-unit synthetic systems; 0 of
+336 matches unreached). C1 / largest C4 ratio: **shared fraction 0.98 / 0.03, slow memory 0.94 / 0.26,
+timescale spread 0.94 / 0.31, coupling spread 0.96 / 0.14** pass; drift (-0.17) fails; spectrum steepness
+and sparsity are undefined on counts. So the pooled mouse arm goes ahead with these four, and the worm's
+candidate (timescale spread) can be tested in a second species.
+
+**Code-hash carry-over (mechanical).** Adding the deconvolved and pooled instruments changed
+`recording.py`, `pipeline.py`, `zoo.py` and `scripts/map_ais.py`, so the worm AI results (A1, A1-slow, A2,
+A3, A6-14m, A6-160m at R2) no longer matched the code hash. A worm-path run with the old and new code
+(two synthetic instances, matching, recording, measures and budget) gave bit-identical numbers; the new
+branches are inactive for R2 (no pooling key, the calcium dispatch unchanged; `task_rnn` with `every=1` is the
+original code path). Their stored hash was updated, with the old hash kept in `hash_carried_from`.

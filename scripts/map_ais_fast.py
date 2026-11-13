@@ -16,14 +16,20 @@ import map_ais as AIS  # noqa: E402
 from nematica.map import pipeline, recording  # noqa: E402
 
 PRE_HOLD = 16
+TRUNC = {"R4g": 25_000}       # amendment 17 (memory): native steps kept before the hold; a 5,000-timescale crop
+                              # needs about 2,500 native steps at this hold
 
 
 def run(aid, pids=("R2",)):
     import json
     d = json.loads((ROOT / "docs/figures/map_step1.json").read_text())["preparations"]
-    inst = AIS.SPECS[aid][2]()
-    acts = [recording.hold(np.asarray(a, np.float32), PRE_HOLD) for a, _ in inst]
+    built = {}
     for pid in pids:
+        key, build = AIS.builder(aid, pid)              # amendment 17: R4g activity has 480 units
+        if key not in built:
+            built.clear()
+            built[key] = [recording.hold(np.asarray(a, np.float32)[:TRUNC.get(pid)], PRE_HOLD) for a, _ in build()]
+        acts = built[key]
         rt, prof = AIS.profile(pid, d)
         try:
             r = pipeline.ai_at_prep(acts, rt, prof, recs_per_instance=7 if aid in AIS.PAIRED else 2,
