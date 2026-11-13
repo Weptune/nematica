@@ -29,7 +29,7 @@ def _z(X):
     return (X[:, keep] - X[:, keep].mean(0)) / sd[keep]
 
 
-def _acov(Z, max_lag, block=256):
+def _acov(Z, max_lag, block=32):
     """Autocovariance by FFT, computed for blocks of units (memory; the same values as all units at once)."""
     T = len(Z)
     out = np.empty((max_lag + 1, Z.shape[1]))
