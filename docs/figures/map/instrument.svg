@@ -1,0 +1,3570 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="783.890062pt" height="547.017938pt" viewBox="0 0 783.890062 547.017938" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-11-13T13:17:53.543222</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 547.017938 
+L 783.890062 547.017938 
+L 783.890062 0 
+L 0 0 
+z
+" style="fill: #0d0a24"/>
+  </g>
+  <g id="axes_1">
+   <g id="PathCollection_1">
+    <defs>
+     <path id="m895f192f9c" d="M 0 5.477226 
+C 1.452577 5.477226 2.845856 4.900111 3.872983 3.872983 
+C 4.900111 2.845856 5.477226 1.452577 5.477226 0 
+C 5.477226 -1.452577 4.900111 -2.845856 3.872983 -3.872983 
+C 2.845856 -4.900111 1.452577 -5.477226 0 -5.477226 
+C -1.452577 -5.477226 -2.845856 -4.900111 -3.872983 -3.872983 
+C -4.900111 -2.845856 -5.477226 -1.452577 -5.477226 0 
+C -5.477226 1.452577 -4.900111 2.845856 -3.872983 3.872983 
+C -2.845856 4.900111 -1.452577 5.477226 0 5.477226 
+z
+" style="stroke: #e4dcff"/>
+    </defs>
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m895f192f9c" x="263.25" y="450.920432" style="fill: #e4dcff; stroke: #e4dcff"/>
+    </g>
+   </g>
+   <g id="PathCollection_2">
+    <defs>
+     <path id="m405cef1e57" d="M 0 5.477226 
+C 1.452577 5.477226 2.845856 4.900111 3.872983 3.872983 
+C 4.900111 2.845856 5.477226 1.452577 5.477226 0 
+C 5.477226 -1.452577 4.900111 -2.845856 3.872983 -3.872983 
+C 2.845856 -4.900111 1.452577 -5.477226 0 -5.477226 
+C -1.452577 -5.477226 -2.845856 -4.900111 -3.872983 -3.872983 
+C -4.900111 -2.845856 -5.477226 -1.452577 -5.477226 0 
+C -5.477226 1.452577 -4.900111 2.845856 -3.872983 3.872983 
+C -2.845856 4.900111 -1.452577 5.477226 0 5.477226 
+z
+" style="stroke: #c47f2f; stroke-width: 2"/>
+    </defs>
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m405cef1e57" x="415.65375" y="450.920432" style="fill: #0d0a24; stroke: #c47f2f; stroke-width: 2"/>
+    </g>
+   </g>
+   <g id="PathCollection_3">
+    <defs>
+     <path id="m0eb5855472" d="M 0 2.236068 
+C 0.593012 2.236068 1.161816 2.000462 1.581139 1.581139 
+C 2.000462 1.161816 2.236068 0.593012 2.236068 0 
+C 2.236068 -0.593012 2.000462 -1.161816 1.581139 -1.581139 
+C 1.161816 -2.000462 0.593012 -2.236068 0 -2.236068 
+C -0.593012 -2.236068 -1.161816 -2.000462 -1.581139 -1.581139 
+C -2.000462 -1.161816 -2.236068 -0.593012 -2.236068 0 
+C -2.236068 0.593012 -2.000462 1.161816 -1.581139 1.581139 
+C -1.161816 2.000462 -0.593012 2.236068 0 2.236068 
+z
+" style="stroke: #2a2350"/>
+    </defs>
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m0eb5855472" x="612.174375" y="450.920432" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="line2d_1">
+    <path d="M 383.56875 432.829484 
+L 383.56875 186.7926 
+" clip-path="url(#p74c59ff9a8)" style="fill: none; stroke: #2a2350; stroke-linecap: square"/>
+   </g>
+   <g id="PathCollection_4">
+    <defs>
+     <path id="mb67dc13039" d="M 0 7.582875 
+C 2.011002 7.582875 3.939909 6.783896 5.361903 5.361903 
+C 6.783896 3.939909 7.582875 2.011002 7.582875 0 
+C 7.582875 -2.011002 6.783896 -3.939909 5.361903 -5.361903 
+C 3.939909 -6.783896 2.011002 -7.582875 0 -7.582875 
+C -2.011002 -7.582875 -3.939909 -6.783896 -5.361903 -5.361903 
+C -6.783896 -3.939909 -7.582875 -2.011002 -7.582875 0 
+C -7.582875 2.011002 -6.783896 3.939909 -5.361903 5.361903 
+C -3.939909 6.783896 -2.011002 7.582875 0 7.582875 
+z
+" style="stroke: #e4dcff"/>
+    </defs>
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#mb67dc13039" x="263.25" y="201.265358" style="fill: #e4dcff; stroke: #e4dcff"/>
+    </g>
+   </g>
+   <g id="PathCollection_5">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#mb67dc13039" x="263.25" y="237.447253" style="fill: #e4dcff; stroke: #e4dcff"/>
+    </g>
+   </g>
+   <g id="PathCollection_6">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#mb67dc13039" x="263.25" y="273.629147" style="fill: #e4dcff; stroke: #e4dcff"/>
+    </g>
+   </g>
+   <g id="PathCollection_7">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#mb67dc13039" x="263.25" y="309.811042" style="fill: #e4dcff; stroke: #e4dcff"/>
+    </g>
+   </g>
+   <g id="PathCollection_8">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#mb67dc13039" x="263.25" y="345.992937" style="fill: #e4dcff; stroke: #e4dcff"/>
+    </g>
+   </g>
+   <g id="PathCollection_9">
+    <defs>
+     <path id="m8c262f90ac" d="M 0 2.54951 
+C 0.676138 2.54951 1.324674 2.280877 1.802776 1.802776 
+C 2.280877 1.324674 2.54951 0.676138 2.54951 0 
+C 2.54951 -0.676138 2.280877 -1.324674 1.802776 -1.802776 
+C 1.324674 -2.280877 0.676138 -2.54951 0 -2.54951 
+C -0.676138 -2.54951 -1.324674 -2.280877 -1.802776 -1.802776 
+C -2.280877 -1.324674 -2.54951 -0.676138 -2.54951 0 
+C -2.54951 0.676138 -2.280877 1.324674 -1.802776 1.802776 
+C -1.324674 2.280877 -0.676138 2.54951 0 2.54951 
+z
+" style="stroke: #2a2350"/>
+    </defs>
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="263.25" y="382.174832" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="PathCollection_10">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="263.25" y="418.356726" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="text_1">
+    <!-- The network -->
+    <g style="fill: #e4dcff" transform="translate(232.604766 137.464474) scale(0.105 -0.105)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-2f" d="M 1775 0 
+L 1775 4038 
+L 166 4038 
+L 166 4500 
+L 3953 4500 
+L 3953 4038 
+L 2338 4038 
+L 2338 0 
+L 1775 0 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-4f" d="M 513 0 
+L 513 4688 
+L 1038 4688 
+L 1038 2581 
+L 984 2719 
+Q 1116 3034 1408 3242 
+Q 1700 3450 2122 3450 
+Q 2478 3450 2736 3290 
+Q 2994 3131 3134 2836 
+Q 3275 2541 3275 2125 
+L 3275 0 
+L 2750 0 
+L 2750 2084 
+Q 2750 2513 2589 2763 
+Q 2428 3013 2019 3013 
+Q 1581 3013 1309 2702 
+Q 1038 2391 1038 1766 
+L 1038 0 
+L 513 0 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-48" d="M 1878 -75 
+Q 1397 -75 1045 140 
+Q 694 356 503 751 
+Q 313 1147 313 1684 
+Q 313 2225 503 2622 
+Q 694 3019 1041 3234 
+Q 1388 3450 1856 3450 
+Q 2125 3450 2395 3364 
+Q 2666 3278 2889 3067 
+Q 3113 2856 3248 2489 
+Q 3384 2122 3384 1563 
+L 650 1563 
+L 650 1988 
+L 2928 1988 
+L 2778 1791 
+Q 2763 2234 2634 2503 
+Q 2506 2772 2301 2892 
+Q 2097 3013 1847 3013 
+Q 1550 3013 1334 2858 
+Q 1119 2703 1003 2406 
+Q 888 2109 888 1681 
+Q 888 1050 1145 706 
+Q 1403 363 1878 363 
+Q 2219 363 2451 534 
+Q 2684 706 2794 1031 
+L 3309 856 
+Q 3188 563 2984 355 
+Q 2781 147 2501 36 
+Q 2222 -75 1878 -75 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-b1" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-5c" d="M 509 0 
+L 509 3375 
+L 1003 3375 
+L 1003 2613 
+L 981 2750 
+Q 1116 3041 1406 3245 
+Q 1697 3450 2113 3450 
+Q 2472 3450 2731 3290 
+Q 2991 3131 3131 2836 
+Q 3272 2541 3272 2125 
+L 3272 0 
+L 2747 0 
+L 2747 2084 
+Q 2747 2500 2576 2756 
+Q 2406 3013 2016 3013 
+Q 1594 3013 1314 2692 
+Q 1034 2372 1034 1766 
+L 1034 0 
+L 509 0 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-6c" d="M 1231 0 
+Q 1031 0 881 133 
+Q 731 266 731 469 
+L 731 2938 
+L 188 2938 
+L 188 3375 
+L 731 3375 
+L 731 4081 
+L 1256 4194 
+L 1256 3375 
+L 1925 3375 
+L 1925 2938 
+L 1256 2938 
+L 1256 609 
+Q 1256 506 1286 472 
+Q 1316 438 1413 438 
+L 1928 438 
+L 1928 0 
+L 1231 0 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-73" d="M 1131 0 
+L 194 3375 
+L 750 3375 
+L 1553 256 
+L 1456 256 
+L 2256 3375 
+L 2931 3375 
+L 3747 231 
+L 3634 231 
+L 4444 3375 
+L 5000 3375 
+L 4063 0 
+L 3325 0 
+L 2550 3019 
+L 2644 3019 
+L 1869 0 
+L 1131 0 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-5e" d="M 1909 -75 
+Q 1434 -75 1071 148 
+Q 709 372 506 769 
+Q 303 1166 303 1688 
+Q 303 2209 506 2606 
+Q 709 3003 1071 3226 
+Q 1434 3450 1909 3450 
+Q 2384 3450 2746 3226 
+Q 3109 3003 3312 2606 
+Q 3516 2209 3516 1688 
+Q 3516 1166 3312 769 
+Q 3109 372 2746 148 
+Q 2384 -75 1909 -75 
+z
+M 1909 363 
+Q 2388 363 2664 719 
+Q 2941 1075 2941 1688 
+Q 2941 2303 2664 2658 
+Q 2388 3013 1909 3013 
+Q 1431 3013 1154 2658 
+Q 878 2303 878 1688 
+Q 878 1075 1154 719 
+Q 1431 363 1909 363 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-69" d="M 509 0 
+L 509 3375 
+L 1003 3375 
+L 1003 2659 
+L 984 2741 
+Q 1134 3091 1436 3270 
+Q 1738 3450 2047 3450 
+Q 2138 3450 2223 3434 
+Q 2309 3419 2384 3381 
+L 2316 2888 
+Q 2144 2941 1975 2941 
+Q 1869 2941 1711 2898 
+Q 1553 2856 1398 2729 
+Q 1244 2603 1139 2353 
+Q 1034 2103 1034 1688 
+L 1034 0 
+L 509 0 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-59" d="M 513 0 
+L 513 4688 
+L 1038 4688 
+L 1038 1866 
+L 2622 3375 
+L 3338 3375 
+L 1944 2094 
+L 3366 0 
+L 2744 0 
+L 1563 1744 
+L 1038 1259 
+L 1038 0 
+L 513 0 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-2f"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-4f" transform="translate(62.703125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(120.75 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(178.078125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(203.46875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(261.578125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(317.25 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-73" transform="translate(351.234375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(431.515625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(490.75 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-59" transform="translate(528.546875 0)"/>
+    </g>
+    <!-- itself -->
+    <g style="fill: #e4dcff" transform="translate(251.314453 152.474552) scale(0.105 -0.105)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-50" d="M 513 0 
+L 513 3375 
+L 1038 3375 
+L 1038 0 
+L 513 0 
+z
+M 775 3941 
+Q 594 3941 466 4069 
+Q 338 4197 338 4378 
+Q 338 4563 466 4689 
+Q 594 4816 775 4816 
+Q 959 4816 1086 4689 
+Q 1213 4563 1213 4378 
+Q 1213 4197 1086 4069 
+Q 959 3941 775 3941 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-6a" d="M 1663 -75 
+Q 1297 -75 998 45 
+Q 700 166 503 411 
+Q 306 656 241 1034 
+L 791 1141 
+Q 825 744 1061 550 
+Q 1297 356 1653 356 
+Q 2006 356 2215 534 
+Q 2425 713 2425 969 
+Q 2425 1188 2276 1316 
+Q 2128 1444 1847 1497 
+L 1438 1575 
+Q 1272 1606 1094 1662 
+Q 916 1719 761 1819 
+Q 606 1919 511 2081 
+Q 416 2244 416 2491 
+Q 416 2822 589 3033 
+Q 763 3244 1048 3347 
+Q 1334 3450 1666 3450 
+Q 2028 3450 2297 3337 
+Q 2566 3225 2734 3015 
+Q 2903 2806 2959 2509 
+L 2381 2394 
+Q 2359 2584 2279 2725 
+Q 2200 2866 2048 2942 
+Q 1897 3019 1656 3019 
+Q 1366 3019 1156 2897 
+Q 947 2775 947 2528 
+Q 947 2391 1017 2294 
+Q 1088 2197 1230 2133 
+Q 1372 2069 1588 2022 
+L 2003 1934 
+Q 2266 1881 2487 1776 
+Q 2709 1672 2843 1487 
+Q 2978 1303 2978 1000 
+Q 2978 666 2811 423 
+Q 2644 181 2348 53 
+Q 2053 -75 1663 -75 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-5a" d="M 1003 0 
+Q 803 0 653 133 
+Q 503 266 503 469 
+L 503 4688 
+L 1028 4688 
+L 1028 609 
+Q 1028 506 1058 472 
+Q 1088 438 1184 438 
+L 1513 438 
+L 1513 0 
+L 1003 0 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-4d" d="M 681 0 
+L 681 3988 
+Q 681 4366 859 4527 
+Q 1038 4688 1456 4688 
+L 1878 4688 
+L 1878 4250 
+L 1381 4250 
+Q 1288 4250 1247 4209 
+Q 1206 4169 1206 4075 
+L 1206 0 
+L 681 0 
+z
+M 178 2938 
+L 178 3375 
+L 1963 3375 
+L 1963 2938 
+L 178 2938 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-50"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(24.609375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(57.765625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(109.765625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(167.09375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-4d" transform="translate(193.265625 0)"/>
+    </g>
+   </g>
+   <g id="text_2">
+    <!-- no instrument -->
+    <g style="fill: #9a90c4" transform="translate(237.583125 178.650316) scale(0.08 -0.08)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-6d" d="M 1600 -75 
+Q 1247 -75 987 84 
+Q 728 244 587 541 
+Q 447 838 447 1250 
+L 447 3375 
+L 972 3375 
+L 972 1291 
+Q 972 878 1128 620 
+Q 1284 363 1691 363 
+Q 1994 363 2216 519 
+Q 2438 675 2561 987 
+Q 2684 1300 2684 1769 
+L 2684 3375 
+L 3209 3375 
+L 3209 0 
+L 2716 0 
+L 2716 794 
+L 2738 656 
+Q 2606 344 2314 134 
+Q 2022 -75 1600 -75 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-5b" d="M 509 0 
+L 509 3375 
+L 1003 3375 
+L 1003 2797 
+Q 1122 3059 1397 3254 
+Q 1672 3450 2050 3450 
+Q 2384 3450 2632 3267 
+Q 2881 3084 3003 2750 
+Q 3163 3059 3439 3254 
+Q 3716 3450 4084 3450 
+Q 4569 3450 4851 3098 
+Q 5134 2747 5134 2125 
+L 5134 0 
+L 4609 0 
+L 4609 2084 
+Q 4609 2372 4550 2580 
+Q 4491 2788 4355 2900 
+Q 4219 3013 3984 3013 
+Q 3728 3013 3523 2867 
+Q 3319 2722 3201 2444 
+Q 3084 2166 3084 1766 
+L 3084 0 
+L 2559 0 
+L 2559 2084 
+Q 2559 2372 2500 2580 
+Q 2441 2788 2306 2900 
+Q 2172 3013 1941 3013 
+Q 1684 3013 1478 2869 
+Q 1272 2725 1153 2447 
+Q 1034 2169 1034 1766 
+L 1034 0 
+L 509 0 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(58.109375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(117.78125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(143.171875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(167.390625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(225.40625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(275.984375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(309.96875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(348.203125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(406.3125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(493.5625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(550.890625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(607.6875 0)"/>
+    </g>
+   </g>
+   <g id="PathCollection_11">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#mb67dc13039" x="343.4625" y="201.265358" style="fill: #e4dcff; stroke: #e4dcff"/>
+    </g>
+   </g>
+   <g id="PathCollection_12">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#mb67dc13039" x="343.4625" y="237.447253" style="fill: #e4dcff; stroke: #e4dcff"/>
+    </g>
+   </g>
+   <g id="PathCollection_13">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#mb67dc13039" x="343.4625" y="273.629147" style="fill: #e4dcff; stroke: #e4dcff"/>
+    </g>
+   </g>
+   <g id="PathCollection_14">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#mb67dc13039" x="343.4625" y="309.811042" style="fill: #e4dcff; stroke: #e4dcff"/>
+    </g>
+   </g>
+   <g id="PathCollection_15">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#mb67dc13039" x="343.4625" y="345.992937" style="fill: #e4dcff; stroke: #e4dcff"/>
+    </g>
+   </g>
+   <g id="PathCollection_16">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="343.4625" y="382.174832" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="PathCollection_17">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="343.4625" y="418.356726" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="text_3">
+    <!-- Worm -->
+    <g style="fill: #e4dcff" transform="translate(329.043047 137.310255) scale(0.105 -0.105)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-36" d="M 1131 0 
+L 194 4500 
+L 738 4500 
+L 1550 425 
+L 1541 425 
+L 2681 4500 
+L 3306 4500 
+L 4441 425 
+L 4431 425 
+L 5244 4500 
+L 5788 4500 
+L 4850 0 
+L 4019 0 
+L 2925 4094 
+L 3050 4094 
+L 1963 0 
+L 1131 0 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-36"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(90.46875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(149.703125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(187.40625 0)"/>
+    </g>
+    <!-- calcium imaging -->
+    <g style="fill: #e4dcff" transform="translate(304.210547 151.474591) scale(0.105 -0.105)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-44" d="M 1856 -75 
+Q 1381 -75 1034 140 
+Q 688 356 500 751 
+Q 313 1147 313 1688 
+Q 313 2228 500 2623 
+Q 688 3019 1034 3234 
+Q 1381 3450 1856 3450 
+Q 2219 3450 2505 3317 
+Q 2791 3184 2989 2936 
+Q 3188 2688 3281 2338 
+L 2747 2197 
+Q 2659 2591 2432 2802 
+Q 2206 3013 1856 3013 
+Q 1391 3013 1139 2667 
+Q 888 2322 888 1688 
+Q 888 1050 1139 706 
+Q 1391 363 1856 363 
+Q 2203 363 2428 567 
+Q 2653 772 2744 1159 
+L 3275 1009 
+Q 3200 753 3069 553 
+Q 2938 353 2758 212 
+Q 2578 72 2351 -1 
+Q 2125 -75 1856 -75 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-3b" d="M 1375 -75 
+Q 1038 -75 789 54 
+Q 541 184 406 409 
+Q 272 634 272 919 
+Q 272 1222 450 1478 
+Q 628 1734 1001 1889 
+Q 1375 2044 1959 2044 
+L 2522 2044 
+L 2466 1988 
+L 2466 2172 
+Q 2466 2578 2303 2795 
+Q 2141 3013 1759 3013 
+Q 1400 3013 1206 2827 
+Q 1013 2641 1000 2328 
+L 409 2463 
+Q 438 2734 617 2957 
+Q 797 3181 1098 3315 
+Q 1400 3450 1797 3450 
+Q 2206 3450 2464 3295 
+Q 2722 3141 2844 2850 
+Q 2966 2559 2966 2150 
+L 2966 609 
+Q 2966 506 2995 472 
+Q 3025 438 3122 438 
+L 3313 438 
+L 3313 0 
+L 2978 0 
+Q 2766 0 2622 133 
+Q 2478 266 2478 469 
+L 2478 706 
+L 2556 706 
+Q 2506 575 2412 439 
+Q 2319 303 2175 186 
+Q 2031 69 1832 -3 
+Q 1634 -75 1375 -75 
+z
+M 1494 363 
+Q 1753 363 1975 491 
+Q 2197 619 2333 892 
+Q 2469 1166 2469 1603 
+L 2469 1631 
+L 1941 1631 
+Q 1525 1631 1286 1522 
+Q 1047 1413 947 1252 
+Q 847 1091 847 931 
+Q 847 772 919 644 
+Q 991 516 1134 439 
+Q 1278 363 1494 363 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-4e" d="M 1697 -1294 
+Q 944 -1294 587 -1083 
+Q 231 -872 231 -431 
+Q 231 -181 359 16 
+Q 488 213 803 319 
+Q 684 391 609 509 
+Q 534 628 534 775 
+Q 534 950 643 1089 
+Q 753 1228 956 1288 
+Q 706 1434 567 1686 
+Q 428 1938 428 2272 
+Q 428 2634 589 2898 
+Q 750 3163 1048 3306 
+Q 1347 3450 1759 3450 
+Q 2172 3450 2473 3306 
+Q 2775 3163 2939 2897 
+Q 3103 2631 3103 2266 
+Q 3103 1906 2939 1645 
+Q 2775 1384 2472 1242 
+Q 2169 1100 1750 1100 
+L 1459 1100 
+Q 1066 1100 1066 866 
+Q 1066 644 1447 644 
+L 2122 644 
+Q 2522 644 2767 551 
+Q 3013 459 3142 314 
+Q 3272 169 3319 0 
+Q 3366 -169 3366 -322 
+Q 3366 -819 3006 -1056 
+Q 2647 -1294 1891 -1294 
+L 1697 -1294 
+z
+M 1697 -875 
+L 1891 -875 
+Q 2822 -875 2822 -319 
+Q 2822 -88 2655 59 
+Q 2488 206 2084 206 
+L 1503 206 
+Q 1191 206 981 79 
+Q 772 -47 772 -334 
+Q 772 -609 998 -742 
+Q 1225 -875 1697 -875 
+z
+M 1759 1469 
+Q 2156 1469 2368 1673 
+Q 2581 1878 2581 2266 
+Q 2581 2650 2368 2862 
+Q 2156 3075 1759 3075 
+Q 1366 3075 1156 2864 
+Q 947 2653 947 2266 
+Q 947 1878 1156 1673 
+Q 1366 1469 1759 1469 
+z
+M 2316 3097 
+L 2316 3431 
+Q 2316 3634 2466 3767 
+Q 2616 3900 2816 3900 
+L 3222 3900 
+L 3222 3463 
+L 2888 3463 
+Q 2791 3463 2761 3428 
+Q 2731 3394 2731 3291 
+L 2731 3097 
+L 2316 3097 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-44"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(55.859375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(110.984375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(136.859375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(191.984375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(216.203125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(274.3125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(361.5625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(386.953125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(411.171875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(498.671875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-4e" transform="translate(553.703125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(608.828125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(633.046875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-4e" transform="translate(692.140625 0)"/>
+    </g>
+   </g>
+   <g id="text_4">
+    <!-- 8 frames per -->
+    <g style="fill: #9a90c4" transform="translate(319.9275 166.499066) scale(0.08 -0.08)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-89" d="M 1850 -75 
+Q 1388 -75 1030 95 
+Q 672 266 470 572 
+Q 269 878 269 1278 
+Q 269 1706 525 2045 
+Q 781 2384 1275 2475 
+Q 1016 2538 822 2672 
+Q 628 2806 523 3001 
+Q 419 3197 419 3438 
+Q 419 3766 601 4023 
+Q 784 4281 1107 4428 
+Q 1431 4575 1853 4575 
+Q 2278 4575 2598 4428 
+Q 2919 4281 3100 4023 
+Q 3281 3766 3281 3438 
+Q 3281 3197 3176 3001 
+Q 3072 2806 2881 2672 
+Q 2691 2538 2431 2475 
+Q 2925 2384 3181 2045 
+Q 3438 1706 3438 1278 
+Q 3438 878 3234 572 
+Q 3031 266 2673 95 
+Q 2316 -75 1850 -75 
+z
+M 1853 419 
+Q 2319 419 2587 659 
+Q 2856 900 2856 1319 
+Q 2856 1728 2587 1973 
+Q 2319 2219 1853 2219 
+Q 1391 2219 1117 1973 
+Q 844 1728 844 1319 
+Q 844 897 1117 658 
+Q 1391 419 1853 419 
+z
+M 1853 2681 
+Q 2256 2681 2487 2865 
+Q 2719 3050 2719 3378 
+Q 2719 3719 2487 3920 
+Q 2256 4122 1853 4122 
+Q 1450 4122 1215 3920 
+Q 981 3719 981 3378 
+Q 981 3050 1215 2865 
+Q 1450 2681 1853 2681 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-66" d="M 509 -1219 
+L 509 3375 
+L 1003 3375 
+L 1003 2672 
+L 988 2722 
+Q 1125 3091 1444 3270 
+Q 1763 3450 2122 3450 
+Q 2534 3450 2846 3234 
+Q 3159 3019 3334 2622 
+Q 3509 2225 3509 1684 
+Q 3509 1144 3332 748 
+Q 3156 353 2843 139 
+Q 2531 -75 2122 -75 
+Q 1791 -75 1466 90 
+Q 1141 256 975 650 
+L 1022 675 
+L 1022 -1219 
+L 509 -1219 
+z
+M 1978 363 
+Q 2397 363 2665 708 
+Q 2934 1053 2934 1697 
+Q 2934 2322 2675 2667 
+Q 2416 3013 1984 3013 
+Q 1722 3013 1501 2875 
+Q 1281 2738 1150 2447 
+Q 1019 2156 1019 1697 
+Q 1019 1019 1300 691 
+Q 1581 363 1978 363 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-89"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(57.90625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-4d" transform="translate(83.296875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(115.90625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(152.96875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(208.09375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(295.34375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(352.671875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(403.9375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(429.328125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(490.90625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(548.234375 0)"/>
+    </g>
+    <!-- timescale -->
+    <g style="fill: #9a90c4" transform="translate(325.50375 178.650316) scale(0.08 -0.08)">
+     <use xlink:href="#SchibstedGrotesk-Regular-6c"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(33.984375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(58.203125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(145.453125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(202.78125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(254.78125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(310.640625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(365.765625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(391.640625 0)"/>
+    </g>
+   </g>
+   <g id="PathCollection_18">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="423.675" y="201.265358" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="PathCollection_19">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#mb67dc13039" x="423.675" y="237.447253" style="fill: #e4dcff; stroke: #e4dcff"/>
+    </g>
+   </g>
+   <g id="PathCollection_20">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="423.675" y="273.629147" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="PathCollection_21">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="423.675" y="309.811042" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="text_5">
+    <!-- undefined -->
+    <g style="fill: #2a2350" transform="translate(406.203516 343.67907) scale(0.075 -0.075)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-46" d="M 1650 -75 
+Q 1241 -75 927 140 
+Q 613 356 438 753 
+Q 263 1150 263 1691 
+Q 263 2231 439 2626 
+Q 616 3022 928 3236 
+Q 1241 3450 1650 3450 
+Q 1981 3450 2306 3284 
+Q 2631 3119 2797 2725 
+L 2738 2700 
+L 2738 4688 
+L 3263 4688 
+L 3263 0 
+L 2769 0 
+L 2769 703 
+L 2784 653 
+Q 2647 284 2328 104 
+Q 2009 -75 1650 -75 
+z
+M 1788 363 
+Q 2053 363 2272 500 
+Q 2491 638 2622 930 
+Q 2753 1222 2753 1678 
+Q 2753 2359 2472 2686 
+Q 2191 3013 1794 3013 
+Q 1375 3013 1106 2667 
+Q 838 2322 838 1678 
+Q 838 1053 1097 708 
+Q 1356 363 1788 363 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-7c" d="M 681 0 
+L 681 3988 
+Q 681 4366 859 4527 
+Q 1038 4688 1456 4688 
+L 1878 4688 
+L 1878 4250 
+L 1381 4250 
+Q 1288 4250 1247 4209 
+Q 1206 4169 1206 4075 
+L 1206 0 
+L 681 0 
+z
+M 178 2938 
+L 178 3375 
+L 1963 3375 
+L 1963 2938 
+L 178 2938 
+z
+M 2626 0 
+L 2626 3375 
+L 3151 3375 
+L 3151 0 
+L 2626 0 
+z
+M 2888 3941 
+Q 2707 3941 2579 4069 
+Q 2451 4197 2451 4378 
+Q 2451 4563 2579 4689 
+Q 2707 4816 2888 4816 
+Q 3072 4816 3199 4689 
+Q 3326 4563 3326 4378 
+Q 3326 4197 3199 4069 
+Q 3072 3941 2888 3941 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-6d"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(58.109375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(117.25 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(175.9375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-7c" transform="translate(232.046875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(289.28125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(347.390625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(406.96875 0)"/>
+    </g>
+    <!-- for spikes -->
+    <g style="fill: #2a2350" transform="translate(406.783594 353.192351) scale(0.075 -0.075)">
+     <use xlink:href="#SchibstedGrotesk-Regular-4d"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(31.046875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(90.28125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(130.421875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(155.8125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(206.9375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(265.921875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-59" transform="translate(290.140625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(341.84375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(399.171875 0)"/>
+    </g>
+   </g>
+   <g id="PathCollection_22">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="423.675" y="382.174832" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="PathCollection_23">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="423.675" y="418.356726" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="text_6">
+    <!-- Mouse cortex -->
+    <g style="fill: #e4dcff" transform="translate(390.317813 137.310255) scale(0.105 -0.105)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-1f" d="M 388 0 
+L 638 4500 
+L 1563 4500 
+L 2838 406 
+L 2713 406 
+L 3994 4500 
+L 4919 4500 
+L 5169 0 
+L 4625 0 
+L 4406 4075 
+L 4416 4075 
+L 3094 0 
+L 2469 0 
+L 1141 4075 
+L 1150 4075 
+L 931 0 
+L 388 0 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-74" d="M 156 0 
+L 1463 1750 
+L 275 3375 
+L 881 3375 
+L 1797 2091 
+L 2694 3375 
+L 3338 3375 
+L 2094 1750 
+L 3413 0 
+L 2738 0 
+L 1769 1353 
+L 781 0 
+L 156 0 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-1f"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(86.8125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(146.484375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(204.109375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(256.109375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(313.4375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(338.828125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(393.953125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(453.1875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(493.328125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(525.3125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-74" transform="translate(579.515625 0)"/>
+    </g>
+    <!-- Neuropixels -->
+    <g style="fill: #e4dcff" transform="translate(394.580977 151.536114) scale(0.105 -0.105)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-20" d="M 513 0 
+L 513 4500 
+L 1294 4500 
+L 3703 478 
+L 3606 459 
+L 3606 4500 
+L 4150 4500 
+L 4150 0 
+L 3431 0 
+L 959 4044 
+L 1056 4066 
+L 1056 0 
+L 513 0 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-20"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(72.609375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(129.9375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(188.046875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(225.203125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(284.4375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(343.421875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-74" transform="translate(366.671875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(419.65625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(476.984375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(502.90625 0)"/>
+    </g>
+   </g>
+   <g id="text_7">
+    <!-- 0.16 spikes per -->
+    <g style="fill: #9a90c4" transform="translate(396.615625 166.579066) scale(0.08 -0.08)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-81" d="M 1956 -75 
+Q 1175 -75 744 536 
+Q 313 1147 313 2250 
+Q 313 3353 744 3964 
+Q 1175 4575 1956 4575 
+Q 2741 4575 3170 3964 
+Q 3600 3353 3600 2250 
+Q 3600 1147 3170 536 
+Q 2741 -75 1956 -75 
+z
+M 1956 375 
+Q 2475 375 2740 853 
+Q 3006 1331 3006 2250 
+Q 3006 3169 2740 3647 
+Q 2475 4125 1956 4125 
+Q 1438 4125 1172 3647 
+Q 906 3169 906 2250 
+Q 906 1331 1172 853 
+Q 1438 375 1956 375 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-b3" d="M 897 -75 
+Q 697 -75 559 62 
+Q 422 200 422 400 
+Q 422 600 559 737 
+Q 697 875 897 875 
+Q 1097 875 1234 737 
+Q 1372 600 1372 400 
+Q 1372 200 1234 62 
+Q 1097 -75 897 -75 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-82" d="M 1134 0 
+L 1134 3584 
+Q 888 3372 672 3226 
+Q 456 3081 191 2981 
+L 191 3513 
+Q 328 3578 481 3676 
+Q 634 3775 829 3967 
+Q 1025 4159 1281 4500 
+L 1684 4500 
+L 1684 0 
+L 1134 0 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-87" d="M 1975 -75 
+Q 1156 -75 732 525 
+Q 309 1125 309 2159 
+Q 309 2666 412 3105 
+Q 516 3544 727 3873 
+Q 938 4203 1256 4389 
+Q 1575 4575 2006 4575 
+Q 2450 4575 2776 4392 
+Q 3103 4209 3290 3934 
+Q 3478 3659 3509 3375 
+L 2938 3228 
+Q 2919 3631 2676 3878 
+Q 2434 4125 2016 4125 
+Q 1700 4125 1490 3987 
+Q 1281 3850 1154 3625 
+Q 1028 3400 964 3133 
+Q 900 2866 879 2603 
+Q 859 2341 859 2131 
+L 809 2181 
+Q 941 2488 1245 2725 
+Q 1550 2963 2041 2963 
+Q 2434 2963 2767 2786 
+Q 3100 2609 3300 2270 
+Q 3500 1931 3500 1444 
+Q 3500 981 3309 639 
+Q 3119 297 2775 111 
+Q 2431 -75 1975 -75 
+z
+M 1975 375 
+Q 2434 375 2686 664 
+Q 2938 953 2938 1453 
+Q 2938 1956 2688 2234 
+Q 2438 2513 1994 2513 
+Q 1538 2513 1258 2223 
+Q 978 1934 978 1434 
+Q 978 947 1248 661 
+Q 1519 375 1975 375 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-81"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b3" transform="translate(58.015625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-82" transform="translate(78.234375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-87" transform="translate(112.5625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(172.03125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(197.421875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(248.546875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(307.53125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-59" transform="translate(331.75 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(383.453125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(440.78125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(492.046875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(517.4375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(579.015625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(636.34375 0)"/>
+    </g>
+    <!-- unit per timescale -->
+    <g style="fill: #9a90c4" transform="translate(390.330625 177.935316) scale(0.08 -0.08)">
+     <use xlink:href="#SchibstedGrotesk-Regular-6d"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(58.109375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(116.21875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(140.828125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(174.8125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(200.203125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(261.78125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(319.109375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(359.25 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(384.640625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(418.625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(442.84375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(530.09375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(587.421875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(639.421875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(695.28125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(750.40625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(776.28125 0)"/>
+    </g>
+   </g>
+   <g id="PathCollection_24">
+    <defs>
+     <path id="m054358d9d3" d="M 0 7.582875 
+C 2.011002 7.582875 3.939909 6.783896 5.361903 5.361903 
+C 6.783896 3.939909 7.582875 2.011002 7.582875 0 
+C 7.582875 -2.011002 6.783896 -3.939909 5.361903 -5.361903 
+C 3.939909 -6.783896 2.011002 -7.582875 0 -7.582875 
+C -2.011002 -7.582875 -3.939909 -6.783896 -5.361903 -5.361903 
+C -6.783896 -3.939909 -7.582875 -2.011002 -7.582875 0 
+C -7.582875 2.011002 -6.783896 3.939909 -5.361903 5.361903 
+C -3.939909 6.783896 -2.011002 7.582875 0 7.582875 
+z
+" style="stroke: #c47f2f; stroke-width: 2.2"/>
+    </defs>
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m054358d9d3" x="503.8875" y="201.265358" style="fill: #0d0a24; stroke: #c47f2f; stroke-width: 2.2"/>
+    </g>
+   </g>
+   <g id="PathCollection_25">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="503.8875" y="237.447253" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="PathCollection_26">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="503.8875" y="273.629147" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="PathCollection_27">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="503.8875" y="309.811042" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="text_8">
+    <!-- undefined -->
+    <g style="fill: #2a2350" transform="translate(486.416016 343.67907) scale(0.075 -0.075)">
+     <use xlink:href="#SchibstedGrotesk-Regular-6d"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(58.109375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(117.25 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(175.9375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-7c" transform="translate(232.046875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(289.28125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(347.390625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(406.96875 0)"/>
+    </g>
+    <!-- for spikes -->
+    <g style="fill: #2a2350" transform="translate(486.996094 353.192351) scale(0.075 -0.075)">
+     <use xlink:href="#SchibstedGrotesk-Regular-4d"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(31.046875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(90.28125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(130.421875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(155.8125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(206.9375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(265.921875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-59" transform="translate(290.140625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(341.84375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(399.171875 0)"/>
+    </g>
+   </g>
+   <g id="PathCollection_28">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="503.8875" y="382.174832" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="PathCollection_29">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="503.8875" y="418.356726" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="text_9">
+    <!-- Rat culture -->
+    <g style="fill: #e4dcff" transform="translate(477.626836 137.464474) scale(0.105 -0.105)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-2d" d="M 513 0 
+L 513 4500 
+L 2228 4500 
+Q 3791 4500 3791 3316 
+Q 3791 2122 2219 2122 
+L 1075 2122 
+L 1075 0 
+L 513 0 
+z
+M 3153 0 
+L 1959 2278 
+L 2597 2278 
+L 3791 0 
+L 3153 0 
+z
+M 1075 2584 
+L 2228 2584 
+Q 2703 2584 2959 2770 
+Q 3216 2956 3216 3306 
+Q 3216 3659 2959 3848 
+Q 2703 4038 2228 4038 
+L 1075 4038 
+L 1075 2584 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-2d"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(63.03125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(116.25 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(150.234375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(175.625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(230.75 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(288.765625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(313.90625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(347.546875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(405.65625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(442.875 0)"/>
+    </g>
+    <!-- HD-MEA -->
+    <g style="fill: #e4dcff" transform="translate(482.785781 152.276857) scale(0.105 -0.105)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-16" d="M 513 0 
+L 513 4500 
+L 1075 4500 
+L 1075 2556 
+L 3531 2556 
+L 3531 4500 
+L 4094 4500 
+L 4094 0 
+L 3531 0 
+L 3531 2094 
+L 1075 2094 
+L 1075 0 
+L 513 0 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-d" d="M 513 0 
+L 513 4500 
+L 1872 4500 
+Q 2666 4500 3173 4231 
+Q 3681 3963 3925 3464 
+Q 4169 2966 4169 2281 
+Q 4169 1506 3881 1000 
+Q 3594 494 3069 247 
+Q 2544 0 1831 0 
+L 513 0 
+z
+M 1075 463 
+L 1775 463 
+Q 3559 463 3559 2250 
+Q 3559 2797 3382 3198 
+Q 3206 3600 2823 3819 
+Q 2441 4038 1816 4038 
+L 1075 4038 
+L 1075 463 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-c9" d="M 513 1725 
+L 513 2213 
+L 2609 2213 
+L 2609 1725 
+L 513 1725 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-f" d="M 513 0 
+L 513 4500 
+L 3478 4500 
+L 3478 4038 
+L 1075 4038 
+L 1075 2625 
+L 3178 2625 
+L 3178 2163 
+L 1075 2163 
+L 1075 463 
+L 3522 463 
+L 3522 0 
+L 513 0 
+z
+" transform="scale(0.015625)"/>
+      <path id="SchibstedGrotesk-Regular-1" d="M 63 0 
+L 1963 4500 
+L 2525 4500 
+L 4419 0 
+L 3819 0 
+L 2244 3913 
+L 663 0 
+L 63 0 
+z
+M 1038 1475 
+L 1038 1938 
+L 3444 1938 
+L 3444 1475 
+L 1038 1475 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-16"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-d" transform="translate(71.96875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-c9" transform="translate(141.296875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-1f" transform="translate(186.5625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-f" transform="translate(273.375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-1" transform="translate(331.921875 0)"/>
+    </g>
+   </g>
+   <g id="text_10">
+    <!-- 0.22 -->
+    <g style="fill: #9a90c4" transform="translate(495.825625 178.499691) scale(0.08 -0.08)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-83" d="M 219 0 
+L 219 369 
+L 1800 1709 
+Q 2122 1984 2326 2209 
+Q 2531 2434 2628 2665 
+Q 2725 2897 2725 3181 
+Q 2725 3491 2617 3702 
+Q 2509 3913 2306 4019 
+Q 2103 4125 1809 4125 
+Q 1472 4125 1264 3992 
+Q 1056 3859 954 3634 
+Q 853 3409 834 3128 
+L 234 3313 
+Q 253 3613 451 3903 
+Q 650 4194 997 4384 
+Q 1344 4575 1806 4575 
+Q 2069 4575 2334 4500 
+Q 2600 4425 2823 4261 
+Q 3047 4097 3183 3833 
+Q 3319 3569 3319 3194 
+Q 3319 2659 3028 2239 
+Q 2738 1819 2216 1397 
+L 994 406 
+L 597 481 
+L 3406 481 
+L 3406 0 
+L 219 0 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-81"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b3" transform="translate(58.015625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-83" transform="translate(86.046875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-83" transform="translate(144.3125 0)"/>
+    </g>
+   </g>
+   <g id="PathCollection_30">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m054358d9d3" x="584.1" y="201.265358" style="fill: #0d0a24; stroke: #c47f2f; stroke-width: 2.2"/>
+    </g>
+   </g>
+   <g id="PathCollection_31">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#mb67dc13039" x="584.1" y="237.447253" style="fill: #e4dcff; stroke: #e4dcff"/>
+    </g>
+   </g>
+   <g id="PathCollection_32">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="584.1" y="273.629147" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="PathCollection_33">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m054358d9d3" x="584.1" y="309.811042" style="fill: #0d0a24; stroke: #c47f2f; stroke-width: 2.2"/>
+    </g>
+   </g>
+   <g id="text_11">
+    <!-- undefined -->
+    <g style="fill: #2a2350" transform="translate(566.628516 343.67907) scale(0.075 -0.075)">
+     <use xlink:href="#SchibstedGrotesk-Regular-6d"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(58.109375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(117.25 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(175.9375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-7c" transform="translate(232.046875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(289.28125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(347.390625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(406.96875 0)"/>
+    </g>
+    <!-- for spikes -->
+    <g style="fill: #2a2350" transform="translate(567.208594 353.192351) scale(0.075 -0.075)">
+     <use xlink:href="#SchibstedGrotesk-Regular-4d"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(31.046875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(90.28125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(130.421875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(155.8125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(206.9375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(265.921875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-59" transform="translate(290.140625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(341.84375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(399.171875 0)"/>
+    </g>
+   </g>
+   <g id="PathCollection_34">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="584.1" y="382.174832" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="PathCollection_35">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="584.1" y="418.356726" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="text_12">
+    <!-- Mouse -->
+    <g style="fill: #e4dcff" transform="translate(567.644531 137.310255) scale(0.105 -0.105)">
+     <use xlink:href="#SchibstedGrotesk-Regular-1f"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(86.8125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(146.484375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(204.109375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(256.109375 0)"/>
+    </g>
+    <!-- organoid -->
+    <g style="fill: #e4dcff" transform="translate(562.744805 151.474591) scale(0.105 -0.105)">
+     <use xlink:href="#SchibstedGrotesk-Regular-5e"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(59.234375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-4e" transform="translate(96.453125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(151.1875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(206.3125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(264.421875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(323.609375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(347.828125 0)"/>
+    </g>
+   </g>
+   <g id="text_13">
+    <!-- 0.46 -->
+    <g style="fill: #9a90c4" transform="translate(576.05875 178.499691) scale(0.08 -0.08)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-85" d="M 2481 0 
+L 2481 1488 
+L 2488 1488 
+L 2488 4150 
+L 2625 3850 
+L 631 1481 
+L 444 1644 
+L 3556 1644 
+L 3556 1163 
+L 194 1163 
+L 194 1700 
+L 2566 4500 
+L 3031 4500 
+L 3031 0 
+L 2481 0 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-81"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b3" transform="translate(58.015625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-85" transform="translate(82.671875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-87" transform="translate(141.5625 0)"/>
+    </g>
+   </g>
+   <g id="PathCollection_36">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="664.3125" y="201.265358" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="PathCollection_37">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="664.3125" y="237.447253" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="PathCollection_38">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="664.3125" y="273.629147" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="PathCollection_39">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="664.3125" y="309.811042" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="text_14">
+    <!-- undefined -->
+    <g style="fill: #2a2350" transform="translate(646.841016 343.67907) scale(0.075 -0.075)">
+     <use xlink:href="#SchibstedGrotesk-Regular-6d"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(58.109375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(117.25 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(175.9375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-7c" transform="translate(232.046875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(289.28125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(347.390625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(406.96875 0)"/>
+    </g>
+    <!-- for spikes -->
+    <g style="fill: #2a2350" transform="translate(647.421094 353.192351) scale(0.075 -0.075)">
+     <use xlink:href="#SchibstedGrotesk-Regular-4d"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(31.046875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(90.28125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(130.421875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(155.8125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(206.9375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(265.921875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-59" transform="translate(290.140625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(341.84375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(399.171875 0)"/>
+    </g>
+   </g>
+   <g id="PathCollection_40">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="664.3125" y="382.174832" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="PathCollection_41">
+    <g clip-path="url(#p74c59ff9a8)">
+     <use xlink:href="#m8c262f90ac" x="664.3125" y="418.356726" style="fill: #2a2350; stroke: #2a2350"/>
+    </g>
+   </g>
+   <g id="text_15">
+    <!-- Rat planar -->
+    <g style="fill: #e4dcff" transform="translate(639.654727 136.526036) scale(0.105 -0.105)">
+     <use xlink:href="#SchibstedGrotesk-Regular-2d"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(63.03125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(116.25 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(150.234375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(175.625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(234.75 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(260.921875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(316.046875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(374.40625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(429.53125 0)"/>
+    </g>
+    <!-- culture -->
+    <g style="fill: #e4dcff" transform="translate(647.272148 152.369552) scale(0.105 -0.105)">
+     <use xlink:href="#SchibstedGrotesk-Regular-44"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(55.125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(113.140625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(138.28125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(171.921875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(230.03125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(267.25 0)"/>
+    </g>
+   </g>
+   <g id="text_16">
+    <!-- 0.09 -->
+    <g style="fill: #9a90c4" transform="translate(656.079375 178.499691) scale(0.08 -0.08)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-8a" d="M 1838 -75 
+Q 1378 -75 1051 108 
+Q 725 291 542 566 
+Q 359 841 328 1122 
+L 900 1272 
+Q 919 863 1147 619 
+Q 1375 375 1841 375 
+Q 2147 375 2347 512 
+Q 2547 650 2664 875 
+Q 2781 1100 2837 1367 
+Q 2894 1634 2912 1896 
+Q 2931 2159 2934 2369 
+L 2984 2281 
+Q 2853 1978 2548 1739 
+Q 2244 1500 1759 1500 
+Q 1363 1500 1030 1683 
+Q 697 1866 495 2209 
+Q 294 2553 294 3038 
+Q 294 3509 492 3854 
+Q 691 4200 1044 4387 
+Q 1397 4575 1856 4575 
+Q 2316 4575 2628 4395 
+Q 2941 4216 3130 3898 
+Q 3319 3581 3401 3168 
+Q 3484 2756 3484 2291 
+Q 3484 1825 3395 1400 
+Q 3306 975 3111 642 
+Q 2916 309 2602 117 
+Q 2288 -75 1838 -75 
+z
+M 1828 1950 
+Q 2284 1950 2562 2250 
+Q 2841 2550 2841 3069 
+Q 2841 3559 2580 3842 
+Q 2319 4125 1863 4125 
+Q 1400 4125 1140 3833 
+Q 881 3541 881 3031 
+Q 881 2531 1132 2240 
+Q 1384 1950 1828 1950 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-81"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b3" transform="translate(58.015625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-81" transform="translate(83.015625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-8a" transform="translate(146.453125 0)"/>
+    </g>
+   </g>
+   <g id="text_17">
+    <!-- Shared fraction -->
+    <g style="fill: #e4dcff" transform="translate(138.928875 205.038795) scale(0.105 -0.105)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-2e" d="M 2044 -75 
+Q 1525 -75 1139 98 
+Q 753 272 515 601 
+Q 278 931 200 1397 
+L 869 1534 
+Q 891 981 1191 684 
+Q 1491 388 2028 388 
+Q 2353 388 2579 494 
+Q 2806 600 2926 794 
+Q 3047 988 3047 1250 
+Q 3047 1600 2845 1770 
+Q 2644 1941 2294 2019 
+L 1706 2150 
+Q 1544 2188 1330 2253 
+Q 1116 2319 916 2447 
+Q 716 2575 583 2794 
+Q 450 3013 450 3353 
+Q 450 3788 673 4056 
+Q 897 4325 1255 4450 
+Q 1613 4575 2016 4575 
+Q 2481 4575 2814 4426 
+Q 3147 4278 3351 4006 
+Q 3556 3734 3628 3356 
+L 2969 3219 
+Q 2944 3506 2828 3704 
+Q 2713 3903 2503 4008 
+Q 2294 4113 1981 4113 
+Q 1728 4113 1508 4038 
+Q 1288 3963 1150 3803 
+Q 1013 3644 1013 3388 
+Q 1013 3119 1198 2958 
+Q 1384 2797 1819 2697 
+L 2413 2559 
+Q 2728 2488 3009 2344 
+Q 3291 2200 3466 1942 
+Q 3641 1684 3641 1263 
+Q 3641 841 3448 541 
+Q 3256 241 2898 83 
+Q 2541 -75 2044 -75 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-2e"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-4f" transform="translate(61.71875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(120.0625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(175.1875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(212.40625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(271.984375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(330.921875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-4d" transform="translate(356.3125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(388.921875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(425.984375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(481.109375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(535.3125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(569.296875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(593.03125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(652.265625 0)"/>
+    </g>
+   </g>
+   <g id="text_18">
+    <!-- Slow memory -->
+    <g style="fill: #e4dcff" transform="translate(146.413406 241.22069) scale(0.105 -0.105)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-75" d="M 659 -1219 
+L 659 -781 
+L 1172 -781 
+Q 1228 -781 1259 -745 
+Q 1291 -709 1319 -631 
+L 1563 66 
+L 1509 -175 
+L 153 3375 
+L 741 3375 
+L 1816 266 
+L 1700 294 
+L 2772 3375 
+L 3353 3375 
+L 1744 -841 
+Q 1678 -1013 1522 -1116 
+Q 1366 -1219 1197 -1219 
+L 659 -1219 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-2e"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(61.921875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(87.515625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-73" transform="translate(146.3125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(227.46875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(252.859375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(340.109375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(397.4375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(484.6875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(543.921875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-75" transform="translate(584.3125 0)"/>
+    </g>
+   </g>
+   <g id="text_19">
+    <!-- Timescale spread -->
+    <g style="fill: #e4dcff" transform="translate(127.142625 277.402585) scale(0.105 -0.105)">
+     <use xlink:href="#SchibstedGrotesk-Regular-2f"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(63.4375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(87.65625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(174.90625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(232.234375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(284.234375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(340.09375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(395.21875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(421.09375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(478.421875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(503.8125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(554.9375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(614.015625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(651.234375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(708.5625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(763.6875 0)"/>
+    </g>
+   </g>
+   <g id="text_20">
+    <!-- Coupling spread -->
+    <g style="fill: #e4dcff" transform="translate(134.057859 313.58448) scale(0.105 -0.105)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-b" d="M 2409 -75 
+Q 1772 -75 1292 225 
+Q 813 525 547 1054 
+Q 281 1584 281 2272 
+Q 281 2941 536 3459 
+Q 791 3978 1266 4276 
+Q 1741 4575 2403 4575 
+Q 3075 4575 3578 4228 
+Q 4081 3881 4247 3172 
+L 3650 3031 
+Q 3516 3588 3183 3850 
+Q 2850 4113 2394 4113 
+Q 1919 4113 1583 3872 
+Q 1247 3631 1069 3212 
+Q 891 2794 891 2253 
+Q 891 1703 1073 1281 
+Q 1256 859 1587 623 
+Q 1919 388 2369 388 
+Q 2859 388 3215 684 
+Q 3572 981 3669 1509 
+L 4284 1341 
+Q 4100 647 3594 286 
+Q 3088 -75 2409 -75 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-b"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(70.3125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(129.984375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(188.09375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(247.21875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(273.734375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(297.953125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-4e" transform="translate(357.046875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(412.5625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(437.953125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(489.078125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(548.15625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(585.375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(642.703125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(697.828125 0)"/>
+    </g>
+   </g>
+   <g id="text_21">
+    <!-- Sparsity -->
+    <g style="fill: #e4dcff" transform="translate(173.752781 349.766374) scale(0.105 -0.105)">
+     <use xlink:href="#SchibstedGrotesk-Regular-2e"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(61.28125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(121.640625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(176.765625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(214.3125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(265.4375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(290.046875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-75" transform="translate(323.9375 0)"/>
+    </g>
+   </g>
+   <g id="text_22">
+    <!-- Drift -->
+    <g style="fill: #e4dcff" transform="translate(192.332859 385.948269) scale(0.105 -0.105)">
+     <use xlink:href="#SchibstedGrotesk-Regular-d"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(69.671875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(108.84375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-4d" transform="translate(133.796875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(167.78125 0)"/>
+    </g>
+   </g>
+   <g id="text_23">
+    <!-- Spectrum steepness -->
+    <g style="fill: #e4dcff" transform="translate(113.233406 422.130164) scale(0.105 -0.105)">
+     <use xlink:href="#SchibstedGrotesk-Regular-2e"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(61.28125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(122.859375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(181.65625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(235.859375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(269.84375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(308.078125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(366.1875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(453.4375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(478.828125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(529.40625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(561.390625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(620.1875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(677.515625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(736.59375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(794.703125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(852.03125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(903.828125 0)"/>
+    </g>
+   </g>
+   <g id="text_24">
+    <!-- passes calibration -->
+    <g style="fill: #9a90c4" transform="translate(275.281875 454.154807) scale(0.09 -0.09)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-43" d="M 2122 -75 
+Q 1791 -75 1466 90 
+Q 1141 256 975 650 
+L 1003 675 
+L 1003 0 
+L 509 0 
+L 509 4688 
+L 1034 4688 
+L 1034 2672 
+L 988 2722 
+Q 1125 3091 1444 3270 
+Q 1763 3450 2122 3450 
+Q 2534 3450 2846 3234 
+Q 3159 3019 3334 2622 
+Q 3509 2225 3509 1684 
+Q 3509 1144 3332 748 
+Q 3156 353 2843 139 
+Q 2531 -75 2122 -75 
+z
+M 1978 363 
+Q 2397 363 2665 708 
+Q 2934 1053 2934 1697 
+Q 2934 2322 2675 2667 
+Q 2416 3013 1984 3013 
+Q 1722 3013 1501 2875 
+Q 1281 2738 1150 2447 
+Q 1019 2156 1019 1697 
+Q 1019 1019 1300 691 
+Q 1581 363 1978 363 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-66"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(60.359375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(115.484375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(167.28125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(219.28125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(276.609375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(327.875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(353.265625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(409.125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(464.25 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(490.765625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-43" transform="translate(514.984375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(574.015625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(611.078125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(664.296875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(698.28125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(722.015625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(781.25 0)"/>
+    </g>
+   </g>
+   <g id="text_25">
+    <!-- passes only with 6.7x longer windows -->
+    <g style="fill: #9a90c4" transform="translate(427.685625 454.154807) scale(0.09 -0.09)">
+     <defs>
+      <path id="SchibstedGrotesk-Regular-88" d="M 781 0 
+Q 1028 1163 1500 2136 
+Q 1972 3109 2669 4019 
+L 169 4019 
+L 169 4500 
+L 3225 4500 
+L 3225 4078 
+Q 2906 3600 2623 3119 
+Q 2341 2638 2108 2139 
+Q 1875 1641 1706 1109 
+Q 1538 578 1444 0 
+L 781 0 
+z
+" transform="scale(0.015625)"/>
+     </defs>
+     <use xlink:href="#SchibstedGrotesk-Regular-66"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(60.359375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(115.484375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(167.28125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(219.28125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(276.609375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(327.875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(353.265625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(412.5 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(470.609375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-75" transform="translate(494.78125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(549.5625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-73" transform="translate(574.953125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(656.109375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(680.71875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-4f" transform="translate(714.703125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(771.4375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-87" transform="translate(796.828125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b3" transform="translate(854.734375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-88" transform="translate(877.546875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-74" transform="translate(925.84375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(981.703125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(1007.09375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(1032.6875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(1091.921875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-4e" transform="translate(1151.015625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(1206.234375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(1263.5625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(1303.703125 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-73" transform="translate(1329.09375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(1410.25 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(1434.46875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(1493.609375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(1552.109375 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-73" transform="translate(1610.90625 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(1691.578125 0)"/>
+    </g>
+   </g>
+   <g id="text_26">
+    <!-- fails -->
+    <g style="fill: #9a90c4" transform="translate(624.20625 454.154807) scale(0.09 -0.09)">
+     <use xlink:href="#SchibstedGrotesk-Regular-4d"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(31.875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(87 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(111.21875 0)"/>
+     <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(137.140625 0)"/>
+    </g>
+   </g>
+  </g>
+  <g id="text_27">
+   <!-- Record an AI the way a brain is recorded, and most measurements stop working -->
+   <g style="fill: #e4dcff" transform="translate(25.2 37.695) scale(0.17 -0.17)">
+    <defs>
+     <path id="Newsreader16pt-Regular-16" d="M 1974 2320 
+Q 2371 2320 2635 2533 
+Q 2899 2746 2899 3155 
+Q 2899 3418 2779 3603 
+Q 2659 3789 2382 3888 
+Q 2106 3987 1638 3987 
+L 845 3987 
+L 854 4288 
+L 1958 4288 
+Q 2490 4288 2816 4142 
+Q 3142 3997 3292 3752 
+Q 3443 3507 3443 3210 
+Q 3443 2931 3320 2712 
+Q 3197 2493 2958 2347 
+Q 2720 2202 2371 2147 
+L 2371 2170 
+Q 2582 2157 2716 2088 
+Q 2851 2019 2948 1873 
+Q 3046 1728 3136 1478 
+L 3446 630 
+Q 3526 416 3596 320 
+Q 3667 224 3758 201 
+Q 3850 179 3984 179 
+L 3984 0 
+Q 3696 -22 3521 -16 
+Q 3347 -10 3243 44 
+Q 3139 99 3072 212 
+Q 3005 326 2934 522 
+L 2634 1360 
+Q 2544 1616 2467 1758 
+Q 2390 1901 2283 1960 
+Q 2176 2019 1990 2019 
+L 854 2019 
+L 845 2320 
+L 1974 2320 
+z
+M 1290 4288 
+L 1290 291 
+L 1795 125 
+L 1795 0 
+L 272 0 
+L 272 125 
+L 778 291 
+L 778 3997 
+L 272 4163 
+L 272 4288 
+L 1290 4288 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-43" d="M 1517 2790 
+Q 1827 2790 2054 2652 
+Q 2282 2515 2418 2251 
+Q 2554 1987 2586 1606 
+L 627 1606 
+L 634 1821 
+L 2278 1898 
+L 2061 1763 
+Q 2038 1994 1969 2168 
+Q 1901 2342 1779 2440 
+Q 1658 2538 1469 2538 
+Q 1245 2538 1075 2414 
+Q 906 2291 811 2054 
+Q 717 1818 717 1475 
+Q 717 1120 856 861 
+Q 995 602 1244 461 
+Q 1494 320 1827 320 
+Q 1949 320 2065 352 
+Q 2182 384 2297 448 
+Q 2413 512 2522 605 
+L 2602 518 
+Q 2442 320 2275 190 
+Q 2109 61 1923 -1 
+Q 1738 -64 1523 -64 
+Q 1152 -64 862 117 
+Q 573 298 406 611 
+Q 240 925 240 1325 
+Q 240 1728 393 2061 
+Q 547 2394 833 2592 
+Q 1120 2790 1517 2790 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-41" d="M 1747 2790 
+Q 2010 2790 2165 2731 
+Q 2320 2672 2389 2585 
+Q 2458 2499 2458 2416 
+Q 2458 2326 2421 2259 
+Q 2384 2192 2317 2155 
+Q 2250 2118 2163 2118 
+Q 2070 2118 1996 2158 
+Q 1923 2198 1860 2257 
+Q 1798 2317 1736 2376 
+Q 1674 2435 1600 2475 
+Q 1526 2515 1434 2515 
+Q 1258 2515 1093 2411 
+Q 928 2307 821 2092 
+Q 714 1878 714 1552 
+Q 714 1174 842 897 
+Q 970 621 1203 470 
+Q 1437 320 1754 320 
+Q 1930 320 2098 393 
+Q 2266 467 2422 605 
+L 2499 518 
+Q 2346 320 2186 190 
+Q 2026 61 1846 -1 
+Q 1667 -64 1459 -64 
+Q 1101 -64 825 113 
+Q 550 291 395 596 
+Q 240 902 240 1286 
+Q 240 1590 339 1862 
+Q 438 2134 628 2342 
+Q 819 2550 1100 2670 
+Q 1382 2790 1747 2790 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-4d" d="M 1626 182 
+Q 1866 182 2054 299 
+Q 2243 416 2352 661 
+Q 2461 906 2461 1286 
+Q 2461 1696 2353 1976 
+Q 2246 2256 2054 2400 
+Q 1862 2544 1603 2544 
+Q 1363 2544 1174 2427 
+Q 986 2310 877 2065 
+Q 768 1821 768 1440 
+Q 768 1034 875 752 
+Q 982 470 1176 326 
+Q 1370 182 1626 182 
+z
+M 1606 -64 
+Q 1203 -64 894 113 
+Q 586 291 413 606 
+Q 240 922 240 1331 
+Q 240 1754 421 2083 
+Q 602 2413 914 2601 
+Q 1226 2790 1622 2790 
+Q 2029 2790 2336 2612 
+Q 2643 2435 2816 2121 
+Q 2989 1808 2989 1395 
+Q 2989 973 2808 643 
+Q 2627 314 2315 125 
+Q 2003 -64 1606 -64 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-50" d="M 2042 2768 
+Q 2205 2768 2278 2691 
+Q 2352 2614 2352 2490 
+Q 2352 2346 2259 2258 
+Q 2166 2170 2003 2170 
+Q 1933 2170 1862 2197 
+Q 1792 2224 1713 2249 
+Q 1635 2275 1542 2275 
+Q 1469 2275 1379 2254 
+Q 1290 2234 1203 2195 
+Q 1117 2157 1053 2106 
+L 982 2218 
+Q 1171 2358 1329 2460 
+Q 1488 2563 1619 2632 
+Q 1750 2701 1856 2734 
+Q 1962 2768 2042 2768 
+z
+M 1114 2205 
+L 1114 272 
+L 1610 118 
+L 1610 0 
+L 160 0 
+L 160 118 
+L 646 272 
+L 646 2157 
+Q 605 2202 539 2237 
+Q 474 2272 382 2309 
+Q 291 2346 173 2384 
+L 173 2464 
+L 1014 2790 
+L 1082 2790 
+L 1114 2205 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-42" d="M 2416 1907 
+Q 2416 2173 2227 2349 
+Q 2038 2525 1674 2525 
+Q 1389 2525 1189 2384 
+Q 989 2243 886 1985 
+Q 784 1728 784 1376 
+Q 784 1024 897 779 
+Q 1011 534 1212 408 
+Q 1414 282 1680 282 
+Q 1926 282 2152 360 
+Q 2378 438 2592 605 
+L 2592 378 
+Q 2362 240 2202 152 
+Q 2042 64 1920 17 
+Q 1798 -29 1694 -46 
+Q 1590 -64 1475 -64 
+Q 1075 -64 800 99 
+Q 525 262 384 553 
+Q 243 845 243 1222 
+Q 243 1590 363 1880 
+Q 483 2170 692 2373 
+Q 902 2576 1172 2683 
+Q 1443 2790 1744 2790 
+Q 1898 2790 2045 2764 
+Q 2192 2739 2349 2686 
+Q 2506 2634 2685 2544 
+L 2416 2362 
+L 2416 3987 
+Q 2378 4035 2317 4076 
+Q 2256 4118 2177 4158 
+Q 2099 4198 2006 4237 
+L 2006 4294 
+L 2851 4541 
+L 2912 4541 
+L 2883 4022 
+L 2883 448 
+Q 2912 416 2960 385 
+Q 3008 355 3065 326 
+Q 3123 298 3180 278 
+Q 3238 259 3290 253 
+L 3290 157 
+L 2525 -51 
+L 2461 -51 
+L 2416 435 
+L 2416 1907 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-3" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-3f" d="M 1926 1738 
+L 1978 1514 
+Q 1600 1427 1360 1339 
+Q 1120 1251 985 1158 
+Q 851 1066 798 962 
+Q 746 858 746 733 
+Q 746 515 875 400 
+Q 1005 285 1190 285 
+Q 1341 285 1465 361 
+Q 1590 438 1665 563 
+Q 1741 688 1741 832 
+L 1741 1984 
+Q 1741 2214 1622 2352 
+Q 1504 2490 1232 2490 
+Q 1136 2490 1011 2459 
+Q 886 2429 768 2368 
+L 931 2515 
+Q 922 2426 904 2336 
+Q 886 2246 862 2176 
+Q 838 2106 803 2067 
+Q 752 2013 675 1987 
+Q 598 1962 522 1962 
+Q 422 1962 364 2008 
+Q 307 2054 307 2125 
+Q 307 2224 404 2334 
+Q 502 2445 664 2542 
+Q 826 2640 1024 2701 
+Q 1222 2762 1427 2762 
+Q 1706 2762 1878 2677 
+Q 2051 2592 2129 2427 
+Q 2208 2262 2208 2022 
+L 2208 560 
+Q 2208 461 2237 395 
+Q 2266 330 2322 296 
+Q 2378 262 2461 262 
+Q 2534 262 2619 291 
+Q 2704 320 2784 368 
+L 2784 221 
+Q 2653 77 2507 9 
+Q 2362 -58 2237 -58 
+Q 2083 -58 1972 11 
+Q 1862 80 1804 209 
+Q 1747 339 1747 515 
+L 1766 547 
+Q 1725 368 1611 230 
+Q 1498 93 1339 14 
+Q 1181 -64 1002 -64 
+Q 682 -64 474 115 
+Q 266 294 266 630 
+Q 266 810 338 957 
+Q 410 1104 592 1233 
+Q 774 1363 1099 1486 
+Q 1424 1610 1926 1738 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-4c" d="M 1114 2205 
+L 1114 272 
+L 1610 118 
+L 1610 0 
+L 160 0 
+L 160 118 
+L 646 272 
+L 646 2157 
+Q 595 2211 492 2262 
+Q 390 2314 173 2384 
+L 173 2464 
+L 950 2790 
+L 1018 2790 
+L 1114 2205 
+z
+M 1997 118 
+L 2493 272 
+L 2493 1786 
+Q 2493 1958 2419 2084 
+Q 2346 2211 2202 2280 
+Q 2058 2349 1850 2349 
+Q 1597 2349 1381 2254 
+Q 1165 2160 1082 2029 
+L 957 2131 
+Q 1126 2314 1278 2440 
+Q 1430 2566 1576 2643 
+Q 1722 2720 1875 2755 
+Q 2029 2790 2198 2790 
+Q 2586 2790 2773 2542 
+Q 2960 2294 2960 1757 
+L 2960 272 
+L 3453 118 
+L 3453 0 
+L 1997 0 
+L 1997 118 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-5" d="M 1123 1603 
+L 1123 1894 
+L 3238 1894 
+L 3238 1603 
+L 1123 1603 
+z
+M 3974 298 
+L 4448 125 
+L 4448 0 
+L 2880 0 
+L 2880 125 
+L 3434 291 
+L 1955 3824 
+L 2170 3824 
+L 784 291 
+L 1306 125 
+L 1306 0 
+L -45 0 
+L -45 125 
+L 445 291 
+L 2106 4352 
+L 2256 4352 
+L 3974 298 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-d" d="M 1795 125 
+L 1795 0 
+L 272 0 
+L 272 125 
+L 778 291 
+L 778 3997 
+L 272 4163 
+L 272 4288 
+L 1795 4288 
+L 1795 4163 
+L 1290 3997 
+L 1290 291 
+L 1795 125 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-52" d="M 979 768 
+Q 979 554 1108 446 
+Q 1238 339 1478 339 
+Q 1590 339 1721 361 
+Q 1853 384 2006 429 
+L 2006 278 
+Q 1821 147 1681 75 
+Q 1542 3 1430 -24 
+Q 1318 -51 1210 -51 
+Q 998 -51 841 27 
+Q 685 106 598 261 
+Q 512 416 512 643 
+L 512 2294 
+L 166 2534 
+L 166 2592 
+Q 237 2643 305 2696 
+Q 374 2749 444 2803 
+Q 515 2858 585 2914 
+Q 656 2970 729 3027 
+Q 803 3085 880 3146 
+L 979 3146 
+L 979 2630 
+L 979 768 
+z
+M 797 2432 
+L 797 2726 
+L 1914 2726 
+L 1862 2432 
+L 797 2432 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-46" d="M 1926 118 
+L 2422 272 
+L 2422 1786 
+Q 2422 1958 2348 2084 
+Q 2275 2211 2131 2280 
+Q 1987 2349 1779 2349 
+Q 1526 2349 1310 2254 
+Q 1094 2160 1011 2029 
+L 886 2131 
+Q 1056 2314 1208 2440 
+Q 1360 2566 1505 2643 
+Q 1651 2720 1804 2755 
+Q 1958 2790 2128 2790 
+Q 2515 2790 2702 2542 
+Q 2890 2294 2890 1757 
+L 2890 272 
+L 3382 118 
+L 3382 0 
+L 1926 0 
+L 1926 118 
+z
+M 1539 0 
+L 90 0 
+L 90 118 
+L 576 272 
+L 576 3898 
+Q 534 3949 467 4000 
+Q 400 4051 304 4104 
+Q 208 4157 83 4208 
+L 83 4272 
+L 1011 4541 
+L 1075 4541 
+L 1043 4029 
+L 1043 272 
+L 1539 118 
+L 1539 0 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-55" d="M 3891 2470 
+L 3475 2589 
+L 3475 2726 
+L 4496 2726 
+L 4496 2589 
+L 4154 2470 
+L 3334 -64 
+L 3181 -64 
+L 2230 2170 
+L 2349 2170 
+L 1414 -64 
+L 1261 -64 
+L 413 2438 
+L 16 2589 
+L 16 2726 
+L 1315 2726 
+L 1315 2589 
+L 899 2454 
+L 1539 544 
+L 1421 544 
+L 2355 2790 
+L 2464 2790 
+L 3424 544 
+L 3306 544 
+L 3891 2470 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-57" d="M 1837 470 
+L 1594 -118 
+L 426 2438 
+L 29 2589 
+L 29 2726 
+L 1344 2726 
+L 1344 2589 
+L 928 2454 
+L 1837 470 
+z
+M 704 -1696 
+Q 541 -1696 432 -1605 
+Q 323 -1514 323 -1357 
+Q 323 -1274 356 -1211 
+Q 390 -1149 448 -1112 
+Q 506 -1075 570 -1075 
+Q 637 -1075 689 -1104 
+Q 742 -1133 800 -1161 
+Q 858 -1190 928 -1190 
+Q 995 -1190 1052 -1161 
+Q 1110 -1133 1164 -1057 
+Q 1219 -982 1274 -845 
+L 1648 109 
+L 1802 522 
+L 2518 2470 
+L 2099 2589 
+L 2099 2726 
+L 3133 2726 
+L 3133 2589 
+L 2797 2470 
+L 1581 -704 
+Q 1434 -1088 1299 -1304 
+Q 1165 -1520 1021 -1608 
+Q 877 -1696 704 -1696 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-40" d="M 662 182 
+L 998 182 
+L 496 -51 
+L 394 -13 
+L 464 656 
+L 464 3898 
+Q 422 3949 355 4000 
+Q 288 4051 192 4104 
+Q 96 4157 -29 4208 
+L -29 4272 
+L 899 4541 
+L 963 4541 
+L 931 4029 
+L 931 819 
+Q 931 646 1024 505 
+Q 1117 365 1291 283 
+Q 1466 202 1706 202 
+Q 1978 202 2168 342 
+Q 2358 483 2460 742 
+Q 2563 1002 2563 1350 
+Q 2563 1702 2449 1947 
+Q 2336 2192 2134 2318 
+Q 1933 2445 1667 2445 
+Q 1478 2445 1308 2413 
+Q 1139 2381 993 2317 
+Q 848 2253 723 2154 
+L 723 2381 
+Q 896 2486 1053 2563 
+Q 1210 2640 1350 2689 
+Q 1491 2739 1622 2764 
+Q 1754 2790 1872 2790 
+Q 2275 2790 2548 2627 
+Q 2822 2464 2963 2174 
+Q 3104 1885 3104 1504 
+Q 3104 1152 2990 864 
+Q 2877 576 2669 368 
+Q 2461 160 2181 48 
+Q 1901 -64 1568 -64 
+Q 1434 -64 1293 -38 
+Q 1152 -13 997 40 
+Q 842 93 662 182 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-47" d="M 854 3779 
+Q 685 3779 577 3889 
+Q 470 4000 470 4160 
+Q 470 4320 577 4430 
+Q 685 4541 854 4541 
+Q 1024 4541 1131 4430 
+Q 1238 4320 1238 4160 
+Q 1238 4000 1131 3889 
+Q 1024 3779 854 3779 
+z
+M 1139 2790 
+L 1120 2272 
+L 1120 272 
+L 1616 118 
+L 1616 0 
+L 166 0 
+L 166 118 
+L 653 272 
+L 653 2195 
+Q 618 2234 542 2280 
+Q 467 2326 372 2371 
+Q 278 2416 179 2445 
+L 179 2544 
+L 1082 2790 
+L 1139 2790 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-51" d="M 1219 2790 
+Q 1398 2790 1545 2755 
+Q 1693 2720 1878 2627 
+L 1926 1872 
+L 1789 1872 
+L 1475 2650 
+L 1693 2381 
+Q 1574 2474 1467 2520 
+Q 1360 2566 1229 2566 
+Q 989 2566 849 2460 
+Q 710 2355 710 2166 
+Q 710 2010 796 1910 
+Q 883 1811 1024 1739 
+Q 1165 1667 1325 1594 
+Q 1446 1539 1564 1470 
+Q 1683 1402 1779 1306 
+Q 1875 1210 1934 1075 
+Q 1994 941 1994 752 
+Q 1994 490 1864 307 
+Q 1734 125 1512 30 
+Q 1290 -64 1005 -64 
+Q 819 -64 673 -37 
+Q 528 -10 384 51 
+L 240 822 
+L 390 822 
+L 819 26 
+L 429 275 
+Q 550 218 632 189 
+Q 714 160 781 152 
+Q 848 144 918 144 
+Q 1222 144 1400 265 
+Q 1578 387 1578 627 
+Q 1578 762 1515 851 
+Q 1453 941 1349 1006 
+Q 1245 1072 1123 1126 
+Q 1002 1181 886 1238 
+Q 733 1318 605 1417 
+Q 477 1517 400 1667 
+Q 323 1818 323 2042 
+Q 323 2278 440 2444 
+Q 557 2611 760 2700 
+Q 963 2790 1219 2790 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-94" d="M 182 -960 
+Q 474 -723 610 -515 
+Q 746 -307 746 -141 
+Q 746 -48 682 9 
+Q 618 67 534 108 
+Q 451 150 387 195 
+Q 323 240 323 307 
+Q 323 483 428 598 
+Q 534 714 720 714 
+Q 899 714 1022 581 
+Q 1146 448 1146 202 
+Q 1146 38 1102 -117 
+Q 1059 -272 964 -432 
+Q 870 -592 716 -761 
+Q 563 -931 339 -1123 
+L 182 -960 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-4b" d="M 1114 2205 
+L 1114 272 
+L 1578 118 
+L 1578 0 
+L 160 0 
+L 160 118 
+L 646 272 
+L 646 2157 
+Q 595 2211 492 2262 
+Q 390 2314 173 2384 
+L 173 2464 
+L 950 2790 
+L 1018 2790 
+L 1114 2205 
+z
+M 2829 2029 
+L 2829 272 
+L 3290 118 
+L 3290 0 
+L 1898 0 
+L 1898 118 
+L 2362 272 
+L 2362 1830 
+Q 2362 2003 2286 2118 
+Q 2211 2234 2078 2291 
+Q 1946 2349 1773 2349 
+Q 1555 2349 1352 2265 
+Q 1149 2182 1072 2054 
+L 954 2173 
+Q 1114 2342 1254 2460 
+Q 1395 2579 1532 2651 
+Q 1670 2723 1812 2756 
+Q 1955 2790 2115 2790 
+Q 2374 2790 2531 2678 
+Q 2688 2566 2758 2392 
+Q 2829 2218 2829 2029 
+z
+M 4544 1840 
+L 4544 272 
+L 5037 118 
+L 5037 0 
+L 3613 0 
+L 3613 118 
+L 4077 272 
+L 4077 1830 
+Q 4077 2006 4001 2120 
+Q 3926 2234 3793 2291 
+Q 3661 2349 3488 2349 
+Q 3270 2349 3067 2265 
+Q 2864 2182 2787 2054 
+L 2669 2173 
+Q 2829 2342 2969 2460 
+Q 3110 2579 3248 2651 
+Q 3386 2723 3528 2756 
+Q 3670 2790 3830 2790 
+Q 4211 2790 4377 2542 
+Q 4544 2294 4544 1840 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-53" d="M 1008 902 
+Q 1008 707 1061 593 
+Q 1114 480 1243 430 
+Q 1373 381 1600 381 
+Q 1818 381 2021 464 
+Q 2224 547 2304 675 
+L 2426 554 
+Q 2266 381 2126 262 
+Q 1987 144 1856 72 
+Q 1725 0 1587 -32 
+Q 1450 -64 1290 -64 
+Q 906 -64 723 181 
+Q 541 426 541 915 
+L 541 2413 
+L 86 2605 
+L 86 2730 
+L 1037 2774 
+L 1008 2419 
+L 1008 902 
+z
+M 2310 -51 
+L 2262 531 
+L 2262 2413 
+L 1808 2605 
+L 1808 2730 
+L 2765 2774 
+L 2733 2419 
+L 2733 448 
+Q 2762 416 2810 385 
+Q 2858 355 2915 326 
+Q 2973 298 3030 278 
+Q 3088 259 3139 253 
+L 3139 157 
+L 2374 -51 
+L 2310 -51 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-4e" d="M 2675 1350 
+Q 2675 1878 2427 2161 
+Q 2179 2445 1779 2445 
+Q 1594 2445 1426 2413 
+Q 1258 2381 1110 2317 
+Q 963 2253 835 2154 
+L 835 2381 
+Q 1014 2493 1176 2569 
+Q 1338 2646 1482 2696 
+Q 1626 2746 1752 2768 
+Q 1878 2790 1984 2790 
+Q 2387 2790 2660 2627 
+Q 2934 2464 3075 2174 
+Q 3216 1885 3216 1504 
+Q 3216 1021 3009 669 
+Q 2803 317 2462 126 
+Q 2122 -64 1715 -64 
+Q 1562 -64 1414 -38 
+Q 1267 -13 1110 40 
+Q 954 93 774 182 
+L 1043 182 
+L 1043 -1360 
+L 1587 -1514 
+L 1587 -1632 
+L 90 -1632 
+L 90 -1514 
+L 576 -1360 
+L 576 2157 
+Q 534 2202 468 2237 
+Q 403 2272 312 2309 
+Q 221 2346 102 2384 
+L 102 2464 
+L 880 2790 
+L 947 2790 
+L 1043 2397 
+L 1043 819 
+Q 1043 643 1137 502 
+Q 1232 362 1406 282 
+Q 1581 202 1818 202 
+Q 2090 202 2280 342 
+Q 2470 483 2572 742 
+Q 2675 1002 2675 1350 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-49" d="M 1696 1501 
+L 1744 1632 
+L 2944 269 
+L 3341 118 
+L 3341 0 
+L 1994 0 
+L 1994 118 
+L 2368 253 
+L 1379 1373 
+L 957 1373 
+L 957 1629 
+L 1501 1629 
+L 2317 2470 
+L 1901 2589 
+L 1901 2726 
+L 3075 2726 
+L 3075 2589 
+L 2666 2470 
+L 1696 1501 
+z
+M 1043 272 
+L 1539 118 
+L 1539 0 
+L 90 0 
+L 90 118 
+L 576 272 
+L 576 3898 
+Q 534 3949 467 4000 
+Q 400 4051 304 4104 
+Q 208 4157 83 4208 
+L 83 4272 
+L 1011 4541 
+L 1075 4541 
+L 1043 4029 
+L 1043 272 
+z
+" transform="scale(0.015625)"/>
+     <path id="Newsreader16pt-Regular-45" d="M 1354 -1696 
+Q 1050 -1696 810 -1646 
+Q 570 -1597 403 -1501 
+Q 237 -1405 150 -1265 
+Q 64 -1126 64 -944 
+Q 64 -816 131 -701 
+Q 198 -586 340 -486 
+Q 483 -387 702 -305 
+Q 922 -224 1229 -160 
+L 1392 -160 
+L 1392 -237 
+Q 1062 -291 873 -388 
+Q 685 -486 606 -617 
+Q 528 -749 528 -906 
+Q 528 -1082 622 -1210 
+Q 717 -1338 913 -1405 
+Q 1110 -1472 1418 -1472 
+Q 1715 -1472 1940 -1382 
+Q 2166 -1293 2292 -1142 
+Q 2419 -992 2419 -816 
+Q 2419 -691 2361 -604 
+Q 2304 -518 2177 -459 
+Q 2051 -400 1844 -366 
+Q 1638 -333 1338 -314 
+Q 1037 -294 843 -238 
+Q 650 -182 541 -97 
+Q 432 -13 389 92 
+Q 346 198 346 314 
+Q 346 531 547 681 
+Q 749 832 1091 902 
+L 1171 845 
+Q 998 822 905 737 
+Q 813 653 813 512 
+Q 813 435 840 372 
+Q 867 310 948 262 
+Q 1030 214 1196 180 
+Q 1363 147 1642 128 
+Q 1920 109 2147 59 
+Q 2374 10 2536 -83 
+Q 2698 -176 2786 -317 
+Q 2874 -458 2874 -659 
+Q 2874 -928 2690 -1165 
+Q 2506 -1402 2165 -1549 
+Q 1824 -1696 1354 -1696 
+z
+M 1373 781 
+Q 1059 781 803 910 
+Q 547 1040 398 1267 
+Q 250 1494 250 1782 
+Q 250 2080 398 2307 
+Q 547 2534 803 2662 
+Q 1059 2790 1373 2790 
+Q 1610 2790 1813 2716 
+Q 2016 2643 2169 2507 
+Q 2323 2371 2409 2188 
+Q 2496 2006 2496 1789 
+Q 2496 1494 2347 1265 
+Q 2198 1037 1944 909 
+Q 1690 781 1373 781 
+z
+M 1398 995 
+Q 1674 995 1829 1196 
+Q 1984 1398 1984 1757 
+Q 1984 2138 1809 2357 
+Q 1635 2576 1347 2576 
+Q 1075 2576 918 2376 
+Q 762 2176 762 1814 
+Q 762 1437 936 1216 
+Q 1110 995 1398 995 
+z
+M 1766 2563 
+L 1664 2746 
+Q 1872 2714 2041 2715 
+Q 2211 2717 2350 2734 
+Q 2490 2752 2611 2771 
+Q 2733 2790 2842 2790 
+Q 2954 2790 3013 2729 
+Q 3072 2669 3072 2544 
+Q 3072 2426 2992 2344 
+Q 2912 2262 2800 2262 
+Q 2710 2262 2628 2308 
+Q 2547 2355 2441 2416 
+Q 2336 2477 2174 2521 
+Q 2013 2566 1766 2563 
+z
+" transform="scale(0.015625)"/>
+    </defs>
+    <use xlink:href="#Newsreader16pt-Regular-16"/>
+    <use xlink:href="#Newsreader16pt-Regular-43" transform="translate(61.34375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-41" transform="translate(105.296875 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-4d" transform="translate(146.34375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-50" transform="translate(196.796875 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-42" transform="translate(232.453125 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3" transform="translate(285.546875 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3f" transform="translate(307.75 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-4c" transform="translate(350.953125 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3" transform="translate(405.703125 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-5" transform="translate(424.40625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-d" transform="translate(493.15625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3" transform="translate(525.453125 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-52" transform="translate(547.65625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-46" transform="translate(579.8125 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-43" transform="translate(633.46875 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3" transform="translate(677.421875 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-55" transform="translate(697.53125 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3f" transform="translate(767.234375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-57" transform="translate(807.4375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3" transform="translate(855.140625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3f" transform="translate(877.34375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3" transform="translate(920.546875 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-40" transform="translate(942.75 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-50" transform="translate(995.046875 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3f" transform="translate(1031.390625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-47" transform="translate(1074.59375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-4c" transform="translate(1101.296875 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3" transform="translate(1156.046875 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-47" transform="translate(1178.25 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-51" transform="translate(1204.953125 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3" transform="translate(1240.296875 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-50" transform="translate(1262.5 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-43" transform="translate(1298.65625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-41" transform="translate(1342.609375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-4d" transform="translate(1383.65625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-50" transform="translate(1434.109375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-42" transform="translate(1469.765625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-43" transform="translate(1522.859375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-42" transform="translate(1566.8125 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-94" transform="translate(1619.90625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3" transform="translate(1640.40625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3f" transform="translate(1662.609375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-4c" transform="translate(1705.8125 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-42" transform="translate(1760.5625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3" transform="translate(1813.65625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-4b" transform="translate(1835.859375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-4d" transform="translate(1915.40625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-51" transform="translate(1965.859375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-52" transform="translate(2001.203125 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3" transform="translate(2033.359375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-4b" transform="translate(2055.5625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-43" transform="translate(2135.109375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3f" transform="translate(2179.0625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-51" transform="translate(2222.265625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-53" transform="translate(2257.609375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-50" transform="translate(2308.765625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-43" transform="translate(2344.921875 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-4b" transform="translate(2388.875 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-43" transform="translate(2468.421875 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-4c" transform="translate(2512.375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-52" transform="translate(2567.125 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-51" transform="translate(2599.28125 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3" transform="translate(2634.625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-51" transform="translate(2656.828125 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-52" transform="translate(2692.171875 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-4d" transform="translate(2723.625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-4e" transform="translate(2774.078125 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-3" transform="translate(2828.125 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-55" transform="translate(2848.234375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-4d" transform="translate(2917.390625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-50" transform="translate(2967.84375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-49" transform="translate(3004.546875 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-47" transform="translate(3056.140625 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-4c" transform="translate(3082.84375 0)"/>
+    <use xlink:href="#Newsreader16pt-Regular-45" transform="translate(3137.59375 0)"/>
+   </g>
+  </g>
+  <g id="text_28">
+   <!-- Does each measurement still track the property it is meant to measure after the recording? -->
+   <g style="fill: #9a90c4" transform="translate(25.2 54.984438) scale(0.095 -0.095)">
+    <defs>
+     <path id="SchibstedGrotesk-Regular-be" d="M 1519 1238 
+L 1513 1559 
+Q 1509 1816 1582 1983 
+Q 1656 2150 1778 2262 
+Q 1900 2375 2037 2469 
+Q 2175 2563 2297 2667 
+Q 2419 2772 2497 2923 
+Q 2575 3075 2575 3309 
+Q 2575 3700 2342 3906 
+Q 2109 4113 1709 4113 
+Q 1391 4113 1192 3984 
+Q 994 3856 895 3620 
+Q 797 3384 772 3059 
+L 172 3244 
+Q 184 3481 301 3717 
+Q 419 3953 625 4147 
+Q 831 4341 1109 4458 
+Q 1388 4575 1725 4575 
+Q 1984 4575 2240 4495 
+Q 2497 4416 2706 4255 
+Q 2916 4094 3042 3847 
+Q 3169 3600 3169 3266 
+Q 3169 2922 3044 2705 
+Q 2919 2488 2733 2348 
+Q 2547 2209 2359 2101 
+Q 2172 1994 2040 1872 
+Q 1909 1750 1903 1559 
+L 1891 1238 
+Q 1797 1238 1705 1238 
+Q 1613 1238 1519 1238 
+z
+M 1703 -75 
+Q 1506 -75 1367 62 
+Q 1228 200 1228 400 
+Q 1228 597 1367 736 
+Q 1506 875 1703 875 
+Q 1900 875 2039 736 
+Q 2178 597 2178 400 
+Q 2178 200 2039 62 
+Q 1900 -75 1703 -75 
+z
+" transform="scale(0.015625)"/>
+    </defs>
+    <use xlink:href="#SchibstedGrotesk-Regular-d"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(71.53125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(133.109375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(190.4375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(241.703125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(267.09375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(324.421875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(379.546875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-4f" transform="translate(434.671875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(491.40625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(516.796875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(604.046875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(661.375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(716.5 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(767.765625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(825.875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(863.09375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(920.421875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(1007.671875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(1065 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(1121.796875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(1155.78125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(1181.171875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(1231.75 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(1265.734375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(1289.953125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(1315.875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(1342.046875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(1367.4375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(1401.421875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(1438.484375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(1493.609375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-59" transform="translate(1548.734375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(1603.90625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(1629.296875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-4f" transform="translate(1663.28125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(1721.328125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(1778.65625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(1804.046875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(1863.125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(1900.28125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(1959.515625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(2021.09375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(2078.421875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(2118.5625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-75" transform="translate(2152.453125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(2207.234375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(2232.625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(2257.234375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(2291.21875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(2316.609375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(2340.296875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(2391.5625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(2416.953125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(2504.203125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(2561.53125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(2616.65625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(2673.453125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(2707.4375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(2732.828125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(2764.71875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(2824.390625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(2849.78125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(2937.03125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(2994.359375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(3049.484375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(3100.75 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(3158.859375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(3196.078125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(3253.40625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(3278.796875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-4d" transform="translate(3332.609375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(3366.59375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(3398.578125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(3455.90625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(3496.046875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(3521.4375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-4f" transform="translate(3555.421875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(3613.46875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(3670.796875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(3696.1875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(3733.40625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(3792.203125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(3847.328125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(3906.5625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(3944.453125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(4003.390625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(4027.609375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-4e" transform="translate(4086.703125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-be" transform="translate(4142.21875 0)"/>
+   </g>
+   <!-- Synthetic networks with known properties, recorded through each real dataset's own instrument. -->
+   <g style="fill: #9a90c4" transform="translate(25.2 66.711) scale(0.095 -0.095)">
+    <defs>
+     <path id="SchibstedGrotesk-Regular-b5" d="M 522 -997 
+L 334 -728 
+L 438 -653 
+Q 613 -525 697 -398 
+Q 781 -272 781 -109 
+L 781 38 
+L 856 -75 
+Q 663 -75 527 56 
+Q 391 188 391 388 
+Q 391 591 528 727 
+Q 666 863 859 863 
+Q 972 863 1086 806 
+Q 1200 750 1276 620 
+Q 1353 491 1353 269 
+Q 1353 -25 1189 -331 
+Q 1025 -638 688 -878 
+L 522 -997 
+z
+" transform="scale(0.015625)"/>
+     <path id="SchibstedGrotesk-Regular-de" d="M 334 2822 
+L 334 4500 
+L 941 4500 
+L 769 2822 
+L 334 2822 
+z
+" transform="scale(0.015625)"/>
+    </defs>
+    <use xlink:href="#SchibstedGrotesk-Regular-2e"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-75" transform="translate(60.984375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(115.421875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(172.21875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-4f" transform="translate(206.203125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(264.25 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(319.921875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(353.90625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(377.828125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(432.953125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(458.34375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(516.453125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(572.125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-73" transform="translate(606.109375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(686.390625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(745.625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-59" transform="translate(783.421875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(836.9375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(888.203125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-73" transform="translate(913.59375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(994.75 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(1019.359375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-4f" transform="translate(1053.34375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(1110.078125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-59" transform="translate(1135.46875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(1190.0625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(1248.171875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-73" transform="translate(1306.96875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(1388.125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(1446.234375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(1471.625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(1530.703125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(1567.859375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(1627.09375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(1688.671875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(1746 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(1786.140625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(1820.125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(1844.046875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(1901.375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b5" transform="translate(1952.390625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(1978.90625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(2004.296875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(2041.515625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(2100.3125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(2155.4375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(2214.671875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(2252.5625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(2311.25 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(2370.828125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(2429.765625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(2455.15625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-4f" transform="translate(2489.140625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(2547.296875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(2584.453125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(2644.125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-4e" transform="translate(2702.234375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-4f" transform="translate(2757.75 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(2814.484375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(2839.875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(2897.203125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(2952.328125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-4f" transform="translate(3007.453125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(3064.1875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(3089.578125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(3126.796875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(3184.125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(3239.25 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(3265.421875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(3290.8125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(3349.75 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(3402.96875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(3436.421875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(3491.546875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(3543.546875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(3599.21875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-de" transform="translate(3633.203125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(3647.078125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(3698.34375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(3723.734375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-73" transform="translate(3782.53125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(3863.6875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(3921.796875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(3947.1875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(3971.40625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(4029.421875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(4080 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(4113.984375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(4152.21875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(4210.328125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(4297.578125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(4354.90625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(4411.703125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b3" transform="translate(4444.375 0)"/>
+   </g>
+  </g>
+  <g id="text_29">
+   <!-- C1: rank correlation with the true property at least 0.9; C4: robust to unit count and network speed. 50 units per draw. Spike rows: 20 ms bins, spikes per unit per timescale as shown. docs/MAP.md, step 2. -->
+   <g style="fill: #6a5f9a" transform="translate(25.2 519.807) scale(0.078 -0.078)">
+    <defs>
+     <path id="SchibstedGrotesk-Regular-b7" d="M 897 -75 
+Q 697 -75 559 62 
+Q 422 200 422 400 
+Q 422 600 559 737 
+Q 697 875 897 875 
+Q 1097 875 1234 737 
+Q 1372 600 1372 400 
+Q 1372 200 1234 62 
+Q 1097 -75 897 -75 
+z
+M 897 2500 
+Q 697 2500 559 2637 
+Q 422 2775 422 2975 
+Q 422 3175 559 3312 
+Q 697 3450 897 3450 
+Q 1097 3450 1234 3312 
+Q 1372 3175 1372 2975 
+Q 1372 2775 1234 2637 
+Q 1097 2500 897 2500 
+z
+" transform="scale(0.015625)"/>
+     <path id="SchibstedGrotesk-Regular-b9" d="M 522 -997 
+L 334 -728 
+L 438 -653 
+Q 613 -525 697 -398 
+Q 781 -272 781 -109 
+L 781 38 
+L 856 -75 
+Q 663 -75 527 56 
+Q 391 188 391 388 
+Q 391 591 528 727 
+Q 666 863 859 863 
+Q 972 863 1086 806 
+Q 1200 750 1276 620 
+Q 1353 491 1353 269 
+Q 1353 -25 1189 -331 
+Q 1025 -638 688 -878 
+L 522 -997 
+z
+M 897 2500 
+Q 697 2500 559 2637 
+Q 422 2775 422 2975 
+Q 422 3175 559 3312 
+Q 697 3450 897 3450 
+Q 1097 3450 1234 3312 
+Q 1372 3175 1372 2975 
+Q 1372 2775 1234 2637 
+Q 1097 2500 897 2500 
+z
+" transform="scale(0.015625)"/>
+     <path id="SchibstedGrotesk-Regular-86" d="M 1881 -75 
+Q 1491 -75 1134 86 
+Q 778 247 539 558 
+Q 300 869 259 1319 
+L 828 1497 
+Q 863 1022 1117 698 
+Q 1372 375 1863 375 
+Q 2166 375 2395 520 
+Q 2625 666 2756 922 
+Q 2888 1178 2888 1509 
+Q 2888 2013 2598 2281 
+Q 2309 2550 1881 2550 
+Q 1503 2550 1289 2361 
+Q 1075 2172 975 1938 
+L 431 1994 
+L 613 4500 
+L 3188 4500 
+L 3188 4019 
+L 1078 4019 
+L 959 2319 
+L 806 2331 
+Q 975 2619 1275 2816 
+Q 1575 3013 2006 3013 
+Q 2419 3013 2747 2825 
+Q 3075 2638 3265 2303 
+Q 3456 1969 3456 1528 
+Q 3456 1041 3237 680 
+Q 3019 319 2659 122 
+Q 2300 -75 1881 -75 
+z
+" transform="scale(0.015625)"/>
+     <path id="SchibstedGrotesk-Regular-c7" d="M 147 -816 
+L 2181 4959 
+L 2697 4959 
+L 663 -816 
+L 147 -816 
+z
+" transform="scale(0.015625)"/>
+     <path id="SchibstedGrotesk-Regular-2a" d="M 513 0 
+L 513 4500 
+L 2134 4500 
+Q 2919 4500 3312 4178 
+Q 3706 3856 3706 3247 
+Q 3706 2650 3314 2322 
+Q 2922 1994 2125 1994 
+L 1075 1994 
+L 1075 0 
+L 513 0 
+z
+M 1075 2456 
+L 2134 2456 
+Q 2622 2456 2876 2665 
+Q 3131 2875 3131 3238 
+Q 3131 3563 2903 3800 
+Q 2675 4038 2134 4038 
+L 1075 4038 
+L 1075 2456 
+z
+" transform="scale(0.015625)"/>
+    </defs>
+    <use xlink:href="#SchibstedGrotesk-Regular-b"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-82" transform="translate(70.3125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b7" transform="translate(104.640625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(132.671875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(158.0625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(195.125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(250.25 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-59" transform="translate(308.359375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(363.53125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(388.921875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(444.046875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(503.28125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(540.984375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(578.203125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(635.53125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(661.703125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(714.921875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(748.90625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(772.640625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(831.875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(889.984375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-73" transform="translate(915.375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(996.53125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(1021.140625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-4f" transform="translate(1055.125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(1111.859375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(1137.25 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-4f" transform="translate(1171.234375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(1229.28125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(1286.609375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(1312 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(1345.984375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(1384.21875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(1442.078125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(1499.40625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(1524.796875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(1583.875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(1621.03125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(1680.265625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(1741.84375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(1799.171875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(1839.3125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-75" transform="translate(1873.203125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(1927.984375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(1953.375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(2006.59375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(2040.578125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(2065.96875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(2091.84375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(2149.171875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(2204.296875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(2254.875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(2288.859375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-81" transform="translate(2314.25 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b3" transform="translate(2372.265625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-8a" transform="translate(2398.734375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b9" transform="translate(2458.109375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(2484.921875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b" transform="translate(2510.3125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-85" transform="translate(2580.625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b7" transform="translate(2637.5625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(2665.59375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(2690.984375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(2728.140625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-43" transform="translate(2787.375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(2847.234375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(2904.859375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(2955.4375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(2989.421875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(3014.8125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(3046.703125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(3106.375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(3131.765625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(3189.875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(3247.984375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(3272.59375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(3306.578125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(3331.96875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(3387.09375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(3446.765625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(3504.875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(3561.671875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(3595.65625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(3621.046875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(3676.171875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(3735.3125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(3794.25 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(3819.640625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(3877.75 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(3933.421875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-73" transform="translate(3967.40625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(4047.6875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(4106.921875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-59" transform="translate(4144.71875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(4199.890625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(4225.28125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(4276.40625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(4337.984375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(4396.78125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(4456.359375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b3" transform="translate(4515.15625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(4543.1875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-86" transform="translate(4568.578125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-81" transform="translate(4628.640625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(4689.78125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(4715.171875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(4773.28125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(4831.390625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(4856 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(4889.15625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(4940.421875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(4965.8125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(5027.390625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(5084.71875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(5124.859375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(5150.25 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(5209.1875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(5246.25 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-73" transform="translate(5299.234375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b3" transform="translate(5374.046875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(5402.078125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-2e" transform="translate(5427.46875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(5488.75 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(5547.734375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-59" transform="translate(5571.953125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(5623.65625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(5680.984375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(5706.375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(5743.53125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-73" transform="translate(5802.328125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(5883 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b7" transform="translate(5934.265625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(5962.296875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-83" transform="translate(5987.6875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-81" transform="translate(6045.5625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(6106.703125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(6132.09375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(6219.25 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(6270.515625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-43" transform="translate(6295.90625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(6354.84375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(6379.0625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(6437.078125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b5" transform="translate(6488.09375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(6514.609375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(6540 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(6591.125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(6650.109375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-59" transform="translate(6674.328125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(6726.03125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(6783.359375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(6834.625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(6860.015625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(6921.59375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(6978.921875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(7019.0625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6d" transform="translate(7044.453125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(7102.5625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(7160.671875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(7185.28125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(7219.265625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(7244.65625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(7306.234375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-69" transform="translate(7363.5625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(7403.703125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(7429.09375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-50" transform="translate(7463.078125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(7487.296875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(7574.546875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(7631.875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(7683.875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(7739.734375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5a" transform="translate(7794.859375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(7820.734375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(7878.0625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-3b" transform="translate(7903.453125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(7958.578125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(8009.84375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(8035.234375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-4f" transform="translate(8086.359375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(8144.515625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-73" transform="translate(8203.3125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5c" transform="translate(8284.46875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b3" transform="translate(8343.265625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(8371.296875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(8396.6875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5e" transform="translate(8455.1875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-44" transform="translate(8516.765625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(8572.71875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-c7" transform="translate(8620.5625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-1f" transform="translate(8662.3125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-1" transform="translate(8749.859375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-2a" transform="translate(8819.875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b3" transform="translate(8867.328125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-5b" transform="translate(8895.21875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-46" transform="translate(8983.5 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b5" transform="translate(9042.53125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(9069.046875 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6a" transform="translate(9094.4375 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-6c" transform="translate(9145.015625 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-48" transform="translate(9177 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-66" transform="translate(9234.328125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b1" transform="translate(9293.3125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-83" transform="translate(9318.703125 0)"/>
+    <use xlink:href="#SchibstedGrotesk-Regular-b3" transform="translate(9375.6875 0)"/>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p74c59ff9a8">
+   <rect x="70.74" y="118.047" width="641.7" height="343.728"/>
+  </clipPath>
+ </defs>
+</svg>
