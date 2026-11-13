@@ -1087,3 +1087,52 @@ sparsity), but with one preparation type no H1 to H8 test is possible. What is r
    Because this is one species and one instrument, nothing here generalises to "brains". It says which
    artificial systems are indistinguishable from worms, as worms are recorded.
 5. The A10 lab network was tuned on worms (on R1-like data), so it is reported but marked as fitted.
+
+## Review 14 (13 Nov 2026, before any worm measurement): not ready
+
+A fifth independent review checked amendments 5 to 12, steps 1 and 2 and the code against the files.
+**Confirmed:**
+- no brain measure exists;
+- amendments 6 to 9 rest on metadata, 10 and 11 on instrument numbers and synthetic runs;
+- amendment 11 is reported honestly and dropped when its rerun failed;
+- the step-2 rerun's claims match the JSON, whose hash (61e367da1247c9c6) matches the current code, with
+  all 90 jobs recomputed fresh (so the calcium set did not rely on carried-over results).
+
+**Overreach:** "cannot be recovered" (step-2 section) holds for one synthetic generator, one Poisson
+recording model and 50-unit draws, not in general. *(Corrected: read the spike result in that scope.)* The
+exploratory checks with 200-unit draws and 600-timescale windows (`data/cache/spikeR.py`, one seed) also
+failed to rescue the spike profiles and are reported here.
+
+**Before worm measurement:**
+1. The two 800-frame ranges of each baseline worm were treated as segment boundaries, so every worm falls
+   short of one 150-timescale window. The timestamps show no gap at frame 800. *(The step-1 sentence "the
+   13 baseline worms can" was therefore wrong.)*
+2. There are 14 baseline and 16 heat worms, not 13 and 17. The brain script would also measure every
+   preparation.
+3. Recording length is not matched: AI recordings are 2,400 to 4,000 timescales long against 193 to 277 for
+   worms. Slow memory and detrending depend on length (A1-slow: 0.32 whole, 0.19 on worm-length crops). Step 2
+   at R2 also used about 1,000-timescale synthetic recordings without detrending.
+4. AI values are means over many recordings while each worm is one recording, which favours AIs in an
+   envelope rule.
+5. Amendment 12 has no code:
+   - h1 to h6 need a powered group;
+   - a nan in one AI drops a measure for everyone;
+   - C3 with unit halves misses temporal sampling error;
+   - the envelope rule is noisy (simulated median 1.52 BVU, 90% 1.33 to 1.80) and must be reported with its
+     uncertainty and as a percentile.
+6. The worm noise target (0.013) is effectively unconstrained by a 0.05 tolerance, and the budget barely
+   moves it. The paper keeps the activity channel unfiltered, so "denoised" was not supported. A noise
+   sensitivity is needed, and AIs with native timescales below 1.5 steps must be flagged.
+7. The committed `map_ais.py` crashed (GROUPS lookup). No code hash is stored in the AI outputs.
+
+**Minor:**
+- the step-2 text cited the first run's hash; the match count was hard-coded (540 and 450, all reached);
+- the 6e7/N length cap was not memory-only (it touched only 3,000-unit jobs);
+- R10d drift is -0.37;
+- step 1's hash is 4ff3d00427a81b2c;
+- detrending is not applied inside matching;
+- candidate (b)'s three instances share one OU realisation;
+- A10's instances share a base network;
+- A8 and A9 are silently missing.
+
+*Status: all accepted. Amendment 13 follows.*
