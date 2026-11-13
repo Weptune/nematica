@@ -80,7 +80,7 @@ def decision_task(batch, T=60, rng=None, coh=(0.0, 0.05, 0.1, 0.2, 0.4)):
     return X, y
 
 
-def task_rnn(seed=0, n=128, train_steps=1500, trials=1500):
+def task_rnn(seed=0, n=128, train_steps=1500, trials=6000):
     import torch
     torch.set_num_threads(2)
 
@@ -100,13 +100,14 @@ def task_rnn(seed=0, n=128, train_steps=1500, trials=1500):
 
     torch.manual_seed(seed)
     net = Net()
-    rng = np.random.default_rng(seed)
+    torch.nn.init.orthogonal_(net.rnn.weight_hh_l0)       # learns the task (about 78%, ideal observer 79%);
+    rng = np.random.default_rng(seed)                     # the default init with lr 3e-3 stayed at chance
 
     def batches(i):
         X, y = decision_task(64, rng=rng)
         return torch.tensor(X), torch.tensor(y)
 
-    final = _train(net, batches, train_steps, seed=seed)
+    final = _train(net, batches, train_steps, lr=1e-3, seed=seed)
     X, y = decision_task(trials, rng=np.random.default_rng(seed + 777))
     with torch.no_grad():
         h0 = torch.zeros(1, 1, n)

@@ -201,7 +201,7 @@ def match_calcium(A, prep, rng=None, n_iter=14, rounds=8, seed=0, segments=None,
         state = {"decay": float(d), "frame": float(frame), "snr": snr, "hold": k, "achieved": got}
         if best is None or _err(prep, got) < _err(prep, best["achieved"]):
             best = state
-        if _err(prep, got) <= 1:
+        if _err(prep, got) <= 1 or not np.isfinite(t_y):
             break
         d = d * prep["decay_over_tau"] / got["decay_over_tau"]
         frame = frame * t_y / prep["frames_per_tau"]
