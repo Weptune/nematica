@@ -1590,3 +1590,7 @@ instance stayed at chance (accuracy 0.50), so it was not a task-trained network.
 1e-4 reached 0.80 (the ideal observer is 0.79). A2 at 512 units now trains with lr 3e-4. A recording is
 refused if accuracy is below 0.7. The 128-unit default is unchanged. The AI job was stopped and restarted;
 A1 is recorded again under the new code hash, and its numbers are unchanged in method.
+*Addendum (same day):* the accuracy guard first read accuracy from the continuous session (state carried
+across trials), which differs from how the task is trained and from the original accuracy (independent
+trials, fresh state). It refused seed 1 (0.65 in the continuous session); on independent trials seed 1
+reaches 0.79. Accuracy is now computed on independent trials, as originally. The job was restarted again.

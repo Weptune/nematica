@@ -141,9 +141,9 @@ def _long_session(net, n, trials, every, seed, chunk=6000):
             X, y = decision_task(min(chunk, trials - a), rng=rng)
             h, h0 = net.rnn(torch.tensor(X.reshape(1, -1, 3)), h0)     # trials back to back, one call
             H = h[0].numpy()
-            if acc is None:
-                o = net.out(h[0].reshape(len(X), X.shape[1], n)[:, -1]).numpy()
-                acc = float((o.argmax(-1) == y).mean())
+            if acc is None:                              # as in the original: independent trials, fresh state
+                _, o = net(torch.tensor(X))
+                acc = float((o[:, -1].argmax(-1).numpy() == y).mean())
             m = (len(H) // every) * every
             out.append(H[:m].reshape(-1, every, n).mean(1).astype(np.float32))
     return np.concatenate(out), acc
