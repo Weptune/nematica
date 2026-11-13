@@ -1196,3 +1196,15 @@ measurement:
 - AI results made before amendment 13 (no code hash, or another crop length) are rejected, and the two such
   files (A1, A1-slow) were deleted and are recomputed;
 - each variant reports the noise share it actually reached.
+
+**Worm measurement notes (13 Nov 2026):**
+- The 14 baseline worms were measured (`docs/figures/map_brains.json`).
+- Their split-half SEs came out nan. A unit half's own timescale can exceed 1/150 of the 1,600 frames, so
+  that half had no full window. The fix is mechanical and changes no measured value: **C3's halves now use
+  the whole recording's timescale** (`measure_matched(..., tau_fixed=...)`), so their windows are the
+  recording's own. The worms' values were recomputed and are identical; only the SEs were filled in.
+- AI instances are now each matched to the instrument on their own (A1's seed-1 network runs at half the
+  speed of seed 0, and with one set of knobs its crops were shorter than a window).
+- Cached AI results are reused only if their code hash equals the current code's.
+- The AI job that was running when `measures.py` gained the `tau_fixed` argument (default off) stamps the
+  new hash; its computations do not touch that argument.

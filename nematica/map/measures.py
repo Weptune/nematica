@@ -314,7 +314,7 @@ def _spans(T, segments):
 
 
 def measure_matched(X, seed=0, n_units=N_UNITS, n_draws=N_DRAWS, window_tau=None, only=None,
-                    segments=None, tau_floor=TAU_FLOOR):
+                    segments=None, tau_floor=TAU_FLOOR, tau_fixed=None):
     """Every system measured the same way: tau_med from all units (floored at tau_floor samples); then n_draws
     draws of n_units units and one window of window_tau * tau_med samples inside one segment; window
     measurements averaged over draws. Slow fraction uses the drawn units over the longest segment.
@@ -324,7 +324,7 @@ def measure_matched(X, seed=0, n_units=N_UNITS, n_draws=N_DRAWS, window_tau=None
         window_tau = SPIKE_WINDOW_TAU if _is_counts(X) else WINDOW_TAU
     X = X[:, X.std(0) > 1e-9]
     rng = np.random.default_rng(seed)
-    t_raw = tau_med(X, segments=segments)
+    t_raw = tau_med(X, segments=segments) if tau_fixed is None else float(tau_fixed)   # tau_fixed: C3 halves
     if not np.isfinite(t_raw) or X.shape[1] < n_units:
         return {"tau_med": t_raw, "error": "too few units or no timescale"}
     t = max(t_raw, tau_floor)
@@ -396,7 +396,8 @@ def split_half_se(X, seed=0, n_splits=5, segments=None, **kw):
             sa = sb = segments
             kw2["n_units"] = h
             scale = np.sqrt(h / n)
-        a = measure_matched(A, seed=seed + 10 * k, segments=sa, **kw2)
+        kw2.setdefault("tau_fixed", t)                    # amendment 13: halves use the whole recording's
+        a = measure_matched(A, seed=seed + 10 * k, segments=sa, **kw2)    # timescale (and so its windows)
         b = measure_matched(Bm, seed=seed + 10 * k + 1, segments=sb, **kw2)
         for m in MEASURES:
             sq[m].append((a.get(m, np.nan) - b.get(m, np.nan)) ** 2 / 4)

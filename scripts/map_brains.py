@@ -42,9 +42,13 @@ def run_prep(pid):
     spec = s1.PREPS[pid]
     CACHE.mkdir(parents=True, exist_ok=True)
     done = {p.stem[len(pid) + 1:] for p in CACHE.glob(f"{pid}_*.pkl")}
+    def stale_se(f):                                    # amendment 13: SEs computed before the C3 fix are redone
+        r = pickle.loads(f.read_bytes())
+        return not r.get("error") and not any(np.isfinite(v) for v in r.get("se", {}).values())
+    done = {d for d in done if not stale_se(CACHE / f"{pid}_{d}.pkl")}
     for ind in spec["load"](done):
         f = CACHE / f"{pid}_{ind['id']}.pkl"
-        if ind.get("cached") or f.exists():
+        if ind.get("cached") or (f.exists() and not stale_se(f)):
             continue
         if pid == "R2" and ind.get("kind") != "baseline":   # amendment 13: the 14 baseline worms only
             continue

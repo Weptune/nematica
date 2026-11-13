@@ -26,12 +26,12 @@
      },
      "se": {
       "spectrum_steepness": NaN,
-      "shared_fraction": NaN,
-      "slow_fraction": NaN,
-      "timescale_spread": NaN,
-      "coupling_spread": NaN,
-      "drift": NaN,
-      "sparsity": NaN
+      "shared_fraction": 0.037015338437044146,
+      "slow_fraction": 0.009211544843999357,
+      "timescale_spread": 0.02748872628983411,
+      "coupling_spread": 0.06358138918771469,
+      "drift": 0.02259310379667811,
+      "sparsity": 0.42875879812282985
      },
      "tau_med": 10.621166175298141,
      "error": null,
@@ -190,13 +190,13 @@
       "sparsity": 0.40757884055621857
      },
      "se": {
-      "spectrum_steepness": NaN,
-      "shared_fraction": NaN,
-      "slow_fraction": NaN,
-      "timescale_spread": NaN,
-      "coupling_spread": NaN,
-      "drift": NaN,
-      "sparsity": NaN
+      "spectrum_steepness": 0.1153890208266225,
+      "shared_fraction": 0.021379051111504944,
+      "slow_fraction": 0.012356344527092028,
+      "timescale_spread": 0.035506651240071956,
+      "coupling_spread": 0.014619119593200704,
+      "drift": 0.01830158301132682,
+      "sparsity": 0.19599194626620123
      },
      "tau_med": 10.062641162151303,
      "error": null,
@@ -470,7 +470,7 @@
   }
  },
  "provenance": {
-  "code_sha256_16": "303a1fa7a4159dac",
-  "seconds_last_run": 470
+  "code_sha256_16": "6b8c4a0635e340f4",
+  "seconds_last_run": 90
  }
 }

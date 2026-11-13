@@ -108,7 +108,9 @@ def run(aid, variant=""):
     CACHE.mkdir(parents=True, exist_ok=True)
     d = json.loads((ROOT / "docs/figures/map_step1.json").read_text())["preparations"]
     suf = f"_{variant}" if variant else ""
-    todo = [p for g in GROUPS.values() for p in g if not (CACHE / f"{aid}_{p}{suf}.pkl").exists()]
+    def fresh(f):                                       # a cached result counts only if made by this code
+        return f.exists() and pickle.loads(f.read_bytes()).get("code_sha256_16") == code_hash()
+    todo = [p for g in GROUPS.values() for p in g if not fresh(CACHE / f"{aid}_{p}{suf}.pkl")]
     if not todo:
         return
     t0 = time.time()
@@ -140,7 +142,8 @@ MODELS = {"A6-14m": [], "A6-160m": poly("160m"), "A6-410m": poly("410m"), "A6-41
 
 
 def done(aid):
-    return all((CACHE / f"{aid}_{p}.pkl").exists() for g in GROUPS.values() for p in g)
+    return all((CACHE / f"{aid}_{p}.pkl").exists() and pickle.loads((CACHE / f"{aid}_{p}.pkl").read_bytes())
+               .get("code_sha256_16") == code_hash() for g in GROUPS.values() for p in g)
 
 
 PAIRED = {"A3", "A5", "A6-14m", "A6-1b", "A6-410m", "A7-370m"}     # H4, H5, H6: 3 instances x 7 = 21 recordings

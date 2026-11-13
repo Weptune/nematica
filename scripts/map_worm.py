@@ -64,7 +64,7 @@ def load_ais(variant="", cal=()):
         if not f.exists():
             continue
         r = pickle.loads(f.read_bytes())
-        if "code_sha256_16" not in r or r.get("crop_len") != AIS.CROP_LEN["R2"]:
+        if r.get("code_sha256_16") != AIS.code_hash() or r.get("crop_len") != AIS.CROP_LEN["R2"]:
             STALE[aid + suf] = "stale result (before amendment 13)"
             continue
         n0 = len(r.get("replicates", []))

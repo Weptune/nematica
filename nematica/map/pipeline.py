@@ -57,25 +57,30 @@ def ai_at_prep(instances, rtype, inst, segments=None, recs_per_instance=4, n_dra
             return (c[0], []) if c else (Y[:0], [])
         return Y, seg
     reps = []
+    ks = [k] + [recording.match(A, rtype, inst, seed=seed, segments=segments, hold_mult=hold_mult, interp=interp)
+                for A in instances[1:]]                  # amendment 13: every instance matched on its own
     for i, A in enumerate(instances):
+        ki = ks[i]
         for r in range(recs_per_instance):
             s = 1000 * i + 50 + r
             if crop_len:                                 # every crop of one recording is an AI individual
-                Yf, segf = _rec(A, k, s)
+                Yf, segf = _rec(A, ki, s)
                 for j, Y in enumerate(crops(Yf, segf, crop_len, max_crops)):
                     reps.append({**_meas(Y, s + 100 * j, [], n_draws, tau_floor, rtype), "instance": i, "crop": j})
             else:
-                Y, seg = rec(A, k, s)
+                Y, seg = rec(A, ki, s)
                 reps.append({**_meas(Y, s, seg, n_draws, tau_floor, rtype), "instance": i})
     names = measures.MEASURES
     if crop_len and not reps:                            # amendment 13: too slow for one brain-length crop
         return {"values": {m: np.nan for m in names}, "replicates": [], "reached": bool(k["reached"]), "knobs": k,
+                "knobs_per_instance": ks,
                 "achieved": k["achieved"], "native_tau": k.get("native_tau"), "crop_len": crop_len,
                 "budget": {m: np.nan for m in names},
                 "error": "no crop: a recording is shorter than one brain recording (network too slow)"}
     vals = {m: (float(np.nanmean(v)) if np.isfinite(v).sum() >= 0.8 * len(v) else np.nan)
             for m in names for v in [np.array([r[m] for r in reps], float)]}
-    out = {"values": vals, "replicates": reps, "reached": bool(k["reached"]), "knobs": k,
+    out = {"values": vals, "replicates": reps, "reached": bool(all(x["reached"] for x in ks)), "knobs": k,
+           "knobs_per_instance": ks,
            "achieved": k["achieved"], "native_tau": k.get("native_tau"), "crop_len": crop_len}
     if budget:
         A = instances[0]
