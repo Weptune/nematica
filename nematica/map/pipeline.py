@@ -22,6 +22,8 @@ KNOBS = {"calcium": ("decay", "frame", "snr"), "spikes": ("bin_steps", "mean_cou
 
 
 def _meas(Y, seed, seg, n_draws, tau_floor, rtype=None):
+    if len(Y) == 0:                                      # no recording (e.g. no crop): every value undefined
+        return {m: np.nan for m in measures.MEASURES} | {"tau_med": np.nan, "resolution_limited": None}
     if rtype == "calcium":                               # amendment 5: per-segment detrending in the calcium group
         Y = measures.detrend(Y, seg)
     r = measures.measure_matched(Y, seed=seed, n_draws=n_draws, segments=seg, tau_floor=tau_floor)
@@ -82,8 +84,9 @@ def ai_at_prep(instances, rtype, inst, segments=None, recs_per_instance=4, n_dra
     out = {"values": vals, "replicates": reps, "reached": bool(all(x["reached"] for x in ks)), "knobs": k,
            "knobs_per_instance": ks,
            "achieved": k["achieved"], "native_tau": k.get("native_tau"), "crop_len": crop_len}
-    if budget:
-        A = instances[0]
+    if budget:                                           # on the first instance that yields a crop
+        bi = min(r["instance"] for r in reps) if reps else 0
+        A, k = instances[bi], ks[bi]
         base = {}
         for s in (50, 51):                                       # instance 0, recordings 0 and 1 (first crop)
             Y, seg = rec(A, k, s)
