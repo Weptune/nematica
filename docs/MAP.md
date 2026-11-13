@@ -1212,3 +1212,37 @@ measurement:
   crops need (4 crops plus 20%). Recording r of an instance uses the r-th such stretch, so recordings of one
   instance differ in activity as well as noise. Slow A2 (timescale about 930 steps) is kept every 10th step.
   Matching, the budget and the crop rules are unchanged.
+
+## The registered worm map cannot be drawn (14 Nov 2026), and amendment 14 (exploratory, post hoc)
+
+**Registered result.** The C3 gate depends on the worms alone and is now final. The pooled split-half SE of
+each worm measurement, over the between-worm SD (BVU, 14 worms):
+
+| measurement | BVU | SE / BVU | C3 (< 0.5) |
+|---|---|---|---|
+| shared fraction | 0.031 | 1.01 | fails |
+| slow memory | 0.057 | 0.31 | passes |
+| timescale spread | 0.094 | 0.47 | passes |
+| coupling spread | 0.058 | 0.70 | fails |
+| sparsity | 0.43 | 0.56 | fails |
+
+Two measurements remain, against the registered minimum of three, so **the registered worm map is not
+drawn**, whatever the AIs show. With 16-minute recordings (about 200 timescales), a worm's own measurement
+error is as large as the differences between worms on three of the five calibrated measurements: the
+ruler is no longer than its error bars.
+
+Separately, the mismatch budget came out undefined for most AIs. Sweeping the frame by 1.5x pushes a
+1,600-frame piece below one 150-timescale window. This is a flaw in the sweep (it is much wider than the
+10% frame tolerance of matching) and is not used to decide anything.
+
+**Amendment 14, exploratory and labelled post hoc everywhere it is shown.** It was written after the C3
+outcome above, and after some AI values had appeared in run logs (for example A1's shared fraction about
+0.56 against the worms' 0.22 to 0.34). It is a like-for-like comparison: every AI piece and every worm
+carries the same instrument, the same length and the same noise. So the question "is this network inside
+the cloud of worms *as recorded*?" is fair even where C3 fails. What changes from the registered rules:
+- all five calibrated measurements are used, and C3 is reported, not applied;
+- the budget sweeps the frame by x/÷1.1 (matching's tolerance) and decay and SNR by x/÷1.5; it is
+  reported, not applied;
+- everything else is as registered in amendment 13: envelope, crops, bootstrap, nan rules, pairs, variants.
+
+No claim of a test is made from it.
