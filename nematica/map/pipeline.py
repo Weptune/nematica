@@ -21,7 +21,9 @@ from . import measures, recording
 KNOBS = {"calcium": ("decay", "frame", "snr"), "spikes": ("bin_steps", "mean_count", "gain")}
 
 
-def _meas(Y, seed, seg, n_draws, tau_floor):
+def _meas(Y, seed, seg, n_draws, tau_floor, rtype=None):
+    if rtype == "calcium":                               # amendment 5: per-segment detrending in the calcium group
+        Y = measures.detrend(Y, seg)
     r = measures.measure_matched(Y, seed=seed, n_draws=n_draws, segments=seg, tau_floor=tau_floor)
     return {m: r.get(m, np.nan) for m in measures.MEASURES} | {"tau_med": r.get("tau_med", np.nan),
                                                              "resolution_limited": r.get("resolution_limited")}
@@ -38,7 +40,7 @@ def ai_at_prep(instances, rtype, inst, segments=None, recs_per_instance=4, n_dra
         for r in range(recs_per_instance):
             s = 1000 * i + 50 + r
             Y, seg = rec(A, k, s)
-            reps.append({**_meas(Y, s, seg, n_draws, tau_floor), "instance": i})
+            reps.append({**_meas(Y, s, seg, n_draws, tau_floor, rtype), "instance": i})
     names = measures.MEASURES
     vals = {m: (float(np.nanmean(v)) if np.isfinite(v).sum() >= 0.8 * len(v) else np.nan)
             for m in names for v in [np.array([r[m] for r in reps], float)]}
@@ -56,7 +58,7 @@ def ai_at_prep(instances, rtype, inst, segments=None, recs_per_instance=4, n_dra
                     kk = dict(k)
                     kk[knob] = max(k[knob] * f, 1.0) if knob in ("frame", "bin_steps") else k[knob] * f
                     Y, seg = rec(A, kk, s)
-                    v = _meas(Y, s, seg, n_draws, tau_floor)
+                    v = _meas(Y, s, seg, n_draws, tau_floor, rtype)
                     for m in names:
                         d = abs(v[m] - base[s][m])
                         c[m] = max(c[m], d) if np.isfinite(d) else np.nan
