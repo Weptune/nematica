@@ -128,9 +128,15 @@ def run(aid, variant=""):
         opts = dict(VARIANTS[variant])
         if "noise" in opts:
             prof = {**prof, "noise": opts.pop("noise")}
-        r = pipeline.ai_at_prep(acts, rt, prof, segments=segs[0] or None,
-                                recs_per_instance=(7 if aid in PAIRED else 2) if not variant else 2,
-                                budget=not variant, crop_len=CROP_LEN.get(pid), n_draws=N_DRAWS, **opts)
+        try:
+            r = pipeline.ai_at_prep(acts, rt, prof, segments=segs[0] or None,
+                                    recs_per_instance=(7 if aid in PAIRED else 2) if not variant else 2,
+                                    budget=not variant, crop_len=CROP_LEN.get(pid), n_draws=N_DRAWS, **opts)
+        except Exception as e:  # noqa: BLE001  (e.g. no timescale: activity white at the native step)
+            from nematica.map import measures as M_
+            r = {"values": {m: float("nan") for m in M_.MEASURES}, "replicates": [], "reached": False,
+                 "error": f"could not be recorded: {type(e).__name__}: {e}", "crop_len": CROP_LEN.get(pid),
+                 "native_tau": float(M_.tau_med(acts[0]))}
         r["code_sha256_16"] = code_hash()
         r["family"], r["role"] = SPECS[aid][0], SPECS[aid][1]
         (CACHE / f"{aid}_{pid}{suf}.pkl").write_bytes(pickle.dumps(r))
