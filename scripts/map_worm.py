@@ -102,15 +102,20 @@ def boot_median(a, c, use, B, rng, n=500):
     return np.array(out)
 
 
-def analyse(W, A_all, cal, variant=""):
+def analyse(W, A_all, cal, variant="", exploratory=False):
     inds = W["individuals"]
     A = [a for a in A_all if a["at"]["R2"]["reached"]]
     B = An.bvu([W], cal)
     use, why = [], {}
+    gates = {}
     for m in cal:
         sd = B[m]["sd"]
         if not np.isfinite(sd) or sd <= 0:
             why[m] = "no between-worm spread"; continue
+        gates[m] = {"c3_se_over_bvu": float(W["se"].get(m, np.nan) / sd),
+                    "budget_over_bvu": float(An.group_budget([W], A, m) / sd)}
+        if exploratory:                                   # amendment 14: reported, not applied
+            use.append(m); continue
         if not np.isfinite(W["se"].get(m, np.nan)) or W["se"][m] >= 0.5 * sd:
             why[m] = "C3"; continue
         if not variant:
@@ -118,7 +123,8 @@ def analyse(W, A_all, cal, variant=""):
             if not np.isfinite(b) or b > sd:
                 why[m] = "budget"; continue
         use.append(m)
-    out = {"variant": variant or "primary", "measures": use, "dropped": why, "bvu": B,
+    out = {"variant": variant or "primary", "exploratory": exploratory, "gates": gates,
+           "measures": use, "dropped": why, "bvu": B,
            "mapped_ais": [a["id"] for a in A],
            "unmapped_ais": {**{a["id"]: a["at"]["R2"].get("error") or "matching not reached"
                                for a in A_all if a not in A}, **STALE},
@@ -174,11 +180,12 @@ def analyse(W, A_all, cal, variant=""):
 def main():
     cal = json.loads((ROOT / "docs/figures/map_step2_worm.json").read_text())["worm_set"]
     W = worms(cal)
-    res = {"worms": len(W["individuals"]), "calibrated": cal, "primary": analyse(W, load_ais("", cal), cal)}
+    res = {"worms": len(W["individuals"]), "calibrated": cal, "registered": analyse(W, load_ais("", cal), cal),
+           "primary": analyse(W, load_ais("", cal), cal, exploratory=True)}      # amendment 14
     for v in ("interp", "noise05", "noise10"):
         A = load_ais(v, cal)
         if A:
-            res[v] = analyse(W, A, res["primary"]["measures"] or cal, v)
+            res[v] = analyse(W, A, cal, v, exploratory=True)
     (ROOT / "docs/figures/map_worm.json").write_text(json.dumps(res, indent=1, default=float))
     p = res["primary"]
     print("measures", p["measures"], "dropped", p["dropped"], "envelope", p.get("envelope"), p.get("envelope_ci90"))

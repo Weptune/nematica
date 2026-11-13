@@ -1241,8 +1241,8 @@ outcome above, and after some AI values had appeared in run logs (for example A1
 carries the same instrument, the same length and the same noise. So the question "is this network inside
 the cloud of worms *as recorded*?" is fair even where C3 fails. What changes from the registered rules:
 - all five calibrated measurements are used, and C3 is reported, not applied;
-- the budget sweeps the frame by x/÷1.1 (matching's tolerance) and decay and SNR by x/÷1.5; it is
-  reported, not applied;
+- the budget is reported, not applied. Where the 1.5x frame sweep leaves pieces shorter than a window, it is
+  shown as undefined;
 - everything else is as registered in amendment 13: envelope, crops, bootstrap, nan rules, pairs, variants.
 
 No claim of a test is made from it.
