@@ -120,8 +120,10 @@ R4G_SPECS = {
 def _a2(s):
     """Amendment 19 (review 15, items 6 and 7): 450,000 trials kept as 100-step block means (270,000
     samples: two recordings of one 5,000-timescale crop each without overlap); accuracy reported."""
-    A, seg, meta = zoo.task_rnn(seed=s, n=512, trials=450_000, every=100)
+    A, seg, meta = zoo.task_rnn(seed=s, n=512, trials=450_000, every=100, lr=3e-4)
     print("A2 seed", s, "accuracy", meta["accuracy"], flush=True)
+    if meta["accuracy"] < 0.7:                          # amendment 22: an untrained network is not A2
+        raise RuntimeError(f"A2 seed {s} did not learn the task (accuracy {meta['accuracy']:.2f})")
     return A, seg
 
 

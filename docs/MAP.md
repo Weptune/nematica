@@ -1582,3 +1582,11 @@ Also changed:
 One edge case is left unfixed on purpose. The overlap flag misses the case where an activity is exactly
 two stretches long. Fixing it would change the code hash of the AI job now running, and the case does not
 arise with the planned lengths.
+
+## Amendment 22 (14 Nov 2026): the 512-unit task RNN did not learn at the old learning rate
+
+With 512 units and the registered settings (orthogonal init, Adam lr 1e-3, 1,500 steps), A2's first
+instance stayed at chance (accuracy 0.50), so it was not a task-trained network. A check with lr 3e-4 or
+1e-4 reached 0.80 (the ideal observer is 0.79). A2 at 512 units now trains with lr 3e-4. A recording is
+refused if accuracy is below 0.7. The 128-unit default is unchanged. The AI job was stopped and restarted;
+A1 is recorded again under the new code hash, and its numbers are unchanged in method.

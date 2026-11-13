@@ -80,7 +80,7 @@ def decision_task(batch, T=60, rng=None, coh=(0.0, 0.05, 0.1, 0.2, 0.4)):
     return X, y
 
 
-def task_rnn(seed=0, n=128, train_steps=1500, trials=6000, every=1):
+def task_rnn(seed=0, n=128, train_steps=1500, trials=6000, every=1, lr=1e-3):
     """`every` > 1 (amendments 16 and 19): a session `trials` long is generated in chunks of 6,000 trials and
     kept as means over consecutive blocks of `every` steps (review 15, item 7: block means, not decimation,
     which aliased the 60-step trial structure), so very long sessions fit in memory; task accuracy is
@@ -111,7 +111,7 @@ def task_rnn(seed=0, n=128, train_steps=1500, trials=6000, every=1):
         X, y = decision_task(64, rng=rng)
         return torch.tensor(X), torch.tensor(y)
 
-    final = _train(net, batches, train_steps, lr=1e-3, seed=seed)
+    final = _train(net, batches, train_steps, lr=lr, seed=seed)   # amendment 22: lr 3e-4 at 512 units
     if every > 1:
         A, acc = _long_session(net, n, trials, every, seed)
         return A, [], {"family": "A2", "seed": seed, "loss": final, "every": every, "accuracy": acc}
