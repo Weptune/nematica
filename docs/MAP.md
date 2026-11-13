@@ -1246,3 +1246,57 @@ the cloud of worms *as recorded*?" is fair even where C3 fails. What changes fro
 - everything else is as registered in amendment 13: envelope, crops, bootstrap, nan rules, pairs, variants.
 
 No claim of a test is made from it.
+
+## Amendment 15 (14 Nov 2026): back to the original question, by replication across species (registered before any mouse number or measure)
+
+The user asked to keep pushing for the original question: what differentiates real from artificial neural
+networks in general. The data, not the analysis, has been the limit: a ruler needs recordings long and rich
+enough that individuals differ by more than their own recording noise. This amendment changes the design
+from one pooled, powered group to **replication across species**, and adds the one public dataset in reach
+that has long, many-neuron recordings in several individuals.
+
+**Design.**
+- Each species is analysed on its own: its real individuals, every AI recorded through *that species'*
+  instrument and cut to *that species'* recording length, the ruler from its own individuals, and the
+  gates (C1 and C4 at its numbers; C3; budget).
+- **A candidate answer** to the question is a measurement that, in every species where it passes the
+  gates, puts every standard AI family outside the real individuals' envelope *on the same side* (all
+  AIs above, or all below, the individuals' range), while the individuals of that species fall inside.
+- Two species agreeing is the minimum for the word "general"; with one, the result is reported as
+  single-species.
+- Augmented AIs (slow drives, OU latent, the lab network) are reported against the same envelope.
+- The worm data (amendment 13) is species 1. Its registered map failed C3 on three measurements; under
+  this design the worm contributes only on the measurements that pass C3 (slow memory and timescale
+  spread).
+
+**Species 2: mouse visual cortex**, Stringer et al. 2019 (figshare 6163622), spontaneous activity (gray or
+black screen):
+- 7 mice, about 10,000 neurons each, 1 to 2 hours; individual = mouse (for MP030, its first recording);
+- the files hold `Fsp`, suite2p's OASIS deconvolution of GCaMP6s fluorescence (10 to 12 planes at 30 Hz,
+  so 2.5 to 3 Hz per plane).
+
+**The deconvolved instrument (new recording model).**
+1. An AI is recorded through the calcium model (softplus, then a GCaMP6s indicator with 1/e decay 1.25 s,
+   suite2p's recommended value for GCaMP6s, at the mouse's frame rate, plus white noise).
+2. A rolling maximin baseline is subtracted (60 s window, as in suite2p).
+3. Non-negative AR(1) deconvolution follows: OASIS (Friedrich, Zhou and Paninski 2017), with the same
+   1.25 s decay and no sparsity penalty, as in suite2p. It is implemented here from the paper.
+
+The matched targets, measured on each mouse's `Fsp` with `instrument_numbers` and applied identically to the
+AIs' deconvolved output:
+- samples per timescale (the frame knob);
+- the median fraction of exactly-zero samples per unit, which sets how sparse the deconvolved output is
+  (the noise knob);
+- the white-noise share (reported).
+
+Sensitivity: an indicator decay of 1.5 s.
+
+**Order (as before):**
+1. step 1 for the mice (instrument numbers only);
+2. step 2 (calibration of every measurement through the deconvolved instrument at the mouse numbers and
+   mouse recording length);
+3. AIs recorded through the mouse instrument;
+4. an independent review;
+5. then the mice are measured and the cross-species rule is applied.
+
+The spike datasets stay closed (step 2).
