@@ -1140,7 +1140,8 @@ failed to rescue the spike profiles and are reported here.
 ## Amendment 13 (13 Nov 2026, answering review 14, before any worm measurement)
 
 - **A baseline worm is one continuous stretch** (its two 800-frame ranges have no time gap), detrended as a
-  whole: 1,600 frames, about 200 to 280 timescales. Step 1 for R2 was recomputed. The worm map's
+  whole: 1,600 frames, 151 to 244 timescales (median 197; *corrected after review 14's follow-up, which
+  read the recomputed step 1*). Step 1 for R2 was recomputed. The worm map's
   instrument is the median over the **14** baseline worms: decay ratio 0.079, 8.1 frames per timescale,
   noise share 0.014. Only baseline worms are measured (`map_brains.py` now measures R2 baseline only).
 - **Length is matched** (items 3 and 4). Every AI is recorded through the worm instrument, and each
@@ -1178,3 +1179,20 @@ failed to rescue the spike profiles and are reported here.
   - the 6e7/N cap was not memory-only (3,000-unit jobs only);
   - R10d drift is -0.37;
   - step 1's hash is 4ff3d00427a81b2c.
+
+**Review 14 follow-up (13 Nov 2026):** the same reviewer checked amendment 13. Its verdict: *the 14 baseline
+worms may be measured* once the following are registered and committed. They are, now, before any worm
+measurement:
+- step 1 for R2 (hash 0f38591d9991dcf3) and step 2 for worms are committed;
+- `map_step2_worm.json` was produced at hash 7a79e8304069d4ab. One line of `recording.py` changed afterwards:
+  matching now stops when a timescale is undefined. That can only affect unreached matches, and all of them
+  were reached, so the result stands without a rerun;
+- C1 for worms averages up to 4 crops per synthetic system, while each worm is a single crop. This is
+  accepted and stated, since it makes C1 more lenient; slow memory passes at 0.94, close to the bar;
+- **nan rules:** a worm with a nan in a calibrated measurement is left out of the worm map (reported); an
+  AI crop with a nan is dropped from its AI (reported); an AI keeping fewer than half its crops is
+  unmapped; an AI whose recording is shorter than one worm recording is unmapped as too slow;
+- the envelope's bootstrap never puts copies of a worm into its own leave-one-out centroid;
+- AI results made before amendment 13 (no code hash, or another crop length) are rejected, and the two such
+  files (A1, A1-slow) were deleted and are recomputed;
+- each variant reports the noise share it actually reached.

@@ -40,22 +40,41 @@ def rms(v, c, use, B):
     return An._rms([v[m] - c[m] for m in use], use, B, "sd")
 
 
-def worms():
+def worms(cal):
+    """Amendment 13 nan rule: a worm with a nan in a calibrated measurement is left out (reported)."""
     b = json.loads((ROOT / "docs/figures/map_brains.json").read_text())["preparations"]["R2"]
-    rows = [r for r in b["individuals"] if not r.get("error")]
+    rows = [r for r in b["individuals"] if not r.get("error")
+            and all(np.isfinite(r["values"].get(m, np.nan)) for m in cal)]
     se = {m: float(np.sqrt(np.mean(np.square([r["se"].get(m, np.nan) for r in rows])))) for m in rows[0]["values"]}
     return {"id": "R2", "kind": "real", "dataset": "Atanas 2023", "species_type": "worm",
             "individuals": [r["values"] for r in rows], "se": se, "ids": [r["id"] for r in rows]}
 
 
-def load_ais(variant=""):
+STALE = {}
+
+
+def load_ais(variant="", cal=()):
+    """AI results at the worm instrument. Files without a code hash or with another crop length are stale
+    (made before amendment 13) and rejected. Amendment 13 nan rule: a crop with a nan in a calibrated
+    measurement is dropped from its AI; an AI keeping fewer than half its crops is unmapped."""
     suf = f"_{variant}" if variant else ""
     out = []
     for aid, (fam, role, _) in AIS.SPECS.items():
         f = AIS.CACHE / f"{aid}_R2{suf}.pkl"
-        if f.exists():
-            out.append({"id": aid, "kind": "ai", "family": fam, "role": role, "fitted": aid in AIS.FITTED_ON,
-                        "at": {"R2": pickle.loads(f.read_bytes())}})
+        if not f.exists():
+            continue
+        r = pickle.loads(f.read_bytes())
+        if "code_sha256_16" not in r or r.get("crop_len") != AIS.CROP_LEN["R2"]:
+            STALE[aid + suf] = "stale result (before amendment 13)"
+            continue
+        n0 = len(r.get("replicates", []))
+        r["replicates"] = [x for x in r.get("replicates", []) if all(np.isfinite(x.get(m, np.nan)) for m in cal)]
+        r["crops_dropped"] = n0 - len(r["replicates"])
+        if n0 == 0 or len(r["replicates"]) < 0.5 * n0:
+            r["reached"] = False
+            r["error"] = r.get("error") or "fewer than half its crops finite"
+        out.append({"id": aid, "kind": "ai", "family": fam, "role": role, "fitted": aid in AIS.FITTED_ON,
+                    "at": {"R2": r}})
     return out
 
 
@@ -85,8 +104,7 @@ def boot_median(a, c, use, B, rng, n=500):
 
 def analyse(W, A_all, cal, variant=""):
     inds = W["individuals"]
-    finite = lambda a: all(np.isfinite(a["at"]["R2"]["values"].get(m, np.nan)) for m in cal)
-    A = [a for a in A_all if a["at"]["R2"]["reached"] and finite(a)]
+    A = [a for a in A_all if a["at"]["R2"]["reached"]]
     B = An.bvu([W], cal)
     use, why = [], {}
     for m in cal:
@@ -102,8 +120,9 @@ def analyse(W, A_all, cal, variant=""):
         use.append(m)
     out = {"variant": variant or "primary", "measures": use, "dropped": why, "bvu": B,
            "mapped_ais": [a["id"] for a in A],
-           "unmapped_ais": {a["id"]: ("not reached" if not a["at"]["R2"]["reached"] else "nan in a measurement")
-                            for a in A_all if a not in A}}
+           "unmapped_ais": {**{a["id"]: a["at"]["R2"].get("error") or "matching not reached"
+                               for a in A_all if a not in A}, **STALE},
+           "crops_dropped": {a["id"]: a["at"]["R2"].get("crops_dropped", 0) for a in A}}
     if len(use) < MIN_MEASURES:
         out["note"] = f"fewer than {MIN_MEASURES} usable measurements: no map"
         return out
@@ -111,9 +130,9 @@ def analyse(W, A_all, cal, variant=""):
     loo = [rms(x, centroid([y for j, y in enumerate(inds) if j != i], use), use, B) for i, x in enumerate(inds)]
     env = float(max(loo))
     env_boot = []
-    for _ in range(500):
-        s = [inds[i] for i in rng.integers(len(inds), size=len(inds))]
-        env_boot.append(max(rms(x, centroid([y for j, y in enumerate(s) if j != i], use), use, B) for i, x in enumerate(s)))
+    for _ in range(500):                                 # copies of a worm never enter its own centroid
+        idx = rng.integers(len(inds), size=len(inds))
+        env_boot.append(max(rms(inds[i], centroid([inds[j] for j in idx if j != i], use), use, B) for i in set(idx)))
     c = centroid(inds, use)
     res = {}
     for a in A:
@@ -125,7 +144,8 @@ def analyse(W, A_all, cal, variant=""):
                         "percentile_among_worms": float(np.mean(np.array(loo) <= med) * 100),
                         "role": a["role"], "family": a["family"], "fitted_on_worms": a["fitted"],
                         "native_tau": a["at"]["R2"].get("native_tau"),
-                        "below_calibrated_speed": bool((a["at"]["R2"].get("native_tau") or 99) < 1.5)}
+                        "below_calibrated_speed": bool((a["at"]["R2"].get("native_tau") or 99) < 1.5),
+                        "noise_reached": a["at"]["R2"]["achieved"].get("noise")}
     g = {a["id"]: a for a in A}
     pairs = {}
     for name, (x, y, rule) in PAIRS.items():
@@ -152,11 +172,11 @@ def analyse(W, A_all, cal, variant=""):
 
 
 def main():
-    W = worms()
     cal = json.loads((ROOT / "docs/figures/map_step2_worm.json").read_text())["worm_set"]
-    res = {"worms": len(W["individuals"]), "calibrated": cal, "primary": analyse(W, load_ais(), cal)}
+    W = worms(cal)
+    res = {"worms": len(W["individuals"]), "calibrated": cal, "primary": analyse(W, load_ais("", cal), cal)}
     for v in ("interp", "noise05", "noise10"):
-        A = load_ais(v)
+        A = load_ais(v, cal)
         if A:
             res[v] = analyse(W, A, res["primary"]["measures"] or cal, v)
     (ROOT / "docs/figures/map_worm.json").write_text(json.dumps(res, indent=1, default=float))

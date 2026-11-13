@@ -68,6 +68,11 @@ def ai_at_prep(instances, rtype, inst, segments=None, recs_per_instance=4, n_dra
                 Y, seg = rec(A, k, s)
                 reps.append({**_meas(Y, s, seg, n_draws, tau_floor, rtype), "instance": i})
     names = measures.MEASURES
+    if crop_len and not reps:                            # amendment 13: too slow for one brain-length crop
+        return {"values": {m: np.nan for m in names}, "replicates": [], "reached": bool(k["reached"]), "knobs": k,
+                "achieved": k["achieved"], "native_tau": k.get("native_tau"), "crop_len": crop_len,
+                "budget": {m: np.nan for m in names},
+                "error": "no crop: a recording is shorter than one brain recording (network too slow)"}
     vals = {m: (float(np.nanmean(v)) if np.isfinite(v).sum() >= 0.8 * len(v) else np.nan)
             for m in names for v in [np.array([r[m] for r in reps], float)]}
     out = {"values": vals, "replicates": reps, "reached": bool(k["reached"]), "knobs": k,
