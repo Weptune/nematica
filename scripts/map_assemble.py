@@ -24,7 +24,7 @@ PAIRS_H3B = [("A1-slow", "A1"), ("A6-410m-ou", "A6-410m")]
 H4 = ("A6-1b", "A6-14m")
 H5 = ("A7-370m", "A6-410m")
 H6 = ("A5", "A3")
-H8 = ["R9", "R10b", "R10d", "R10c"]
+H8 = ["R9", "R10b", "R10d"]
 
 
 def preps_of(group):
@@ -78,6 +78,7 @@ def main():
     res = {}
     for group in AIS.GROUPS:
         P0, A0 = preps_of(group), ais_of(group)
+        An.MIN_TYPES, An.MIN_MEASURES = (3, 2) if group == "spikes" else (4, 3)      # amendment 11
         P, A = An.mapped(P0, A0)
         calibrated = step2["group_sets"].get(group, [])
         B = An.bvu(P, calibrated)

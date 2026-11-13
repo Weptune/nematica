@@ -1,7 +1,7 @@
 """Step 2 of the map (docs/MAP.md): the calibration gate rerun at each mapped preparation's own instrument
 numbers from step 1 (docs/figures/map_step1.json), through the registered matching call. Profiles: the
-spike preparations that can be mapped (R4, R9, R10b, R10c, R10d: at least 3 individuals with at least 50
-units) and the baseline worms (R2, calcium arm, descriptive). A measurement is used in a group only if it
+spike preparations that can be mapped (R4, R9, R10b, R10d: at least 3 individuals with at least 50
+units; amendment 11) and the baseline worms (R2, calcium arm, descriptive). A measurement is used in a group only if it
 passes (C1 >= 0.9 and every C4 ratio < 0.5) at **every** preparation's profile of that group.
 Writes docs/figures/map_step2.json.
 """
@@ -14,7 +14,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 import map_calibrate as cal  # noqa: E402
 
-SPIKE_PREPS = ["R4", "R9", "R10b", "R10c", "R10d"]
+SPIKE_PREPS = ["R4", "R9", "R10b", "R10d"]          # amendment 11: R10c has 2 individuals with 50+ units
 CALCIUM_PREPS = ["R2"]
 
 

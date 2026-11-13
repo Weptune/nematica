@@ -1025,3 +1025,28 @@ whose recording would exceed 10^8 unit-samples are not measured (nan); this affe
   without matching the instrument, and once the instrument is matched they cannot be recovered.
 - The calcium arm at worm-like quality keeps five measurements. **That is where a powered comparison is
   still possible**, if more calcium preparations of distinct types can be added (amendment 11).
+
+## Amendment 11 (13 Nov 2026, after step 2, before any brain measurement): a relaxed spike protocol
+
+Step 2 left the spike group unmappable. On the user's instruction to go for the strongest results that can
+still be shown, the spike protocol is relaxed here. This is decided before any brain activity is measured,
+and **the rules are weaker than registered, so every spike-group result will be labelled as resting on
+amendment 11.**
+- *Why windows.* An exploratory check (one seed, not part of any gate) at the R10b and R4 numbers showed
+  that 1,500-timescale windows recover what 150-timescale windows lose:
+  - R10b: shared fraction 0.9 to 1.0, timescale spread 0.3 to 0.9, coupling spread from undefined to
+    1.0, slow memory 1.0;
+  - R4: shared fraction 0.8 to 1.0, slow memory 1.0; timescale spread at most 0.8 even with 5,000
+    timescales (R4 has 2.3 bins per timescale), and coupling spread undefined (its noise share 0.83 is
+    above the 0.8 disattenuation limit).
+- **Spike windows are 1,000 timescales** (`measures.SPIKE_WINDOW_TAU`), applied to every spike-count
+  recording, brain and AI alike. The rule: the largest round number below 0.9 times the shortest mapped
+  spike individual (1,152 timescales, an R10b organoid). That is about 90 to 460 spikes per unit per window.
+  Calcium and native windows stay 150.
+- **R10c (mouse slices) is not mapped:** only 2 of its 3 slices have at least 50 units. The spike group is
+  therefore three types: mouse in vivo (R4), rat culture (R9, R10d), mouse organoid (R10b).
+- **For the spike group only, MIN_TYPES is 3 (was 4) and MIN_MEASURES is 2 (was 3).** With three types,
+  H1's 80% rule means every preparation's nearest neighbour must be real; with two measurements, distances
+  are coarse. Every other gate stands: C1 and C4 at every preparation's numbers (rerun now), C3, the
+  maximum budget, instrument transfer, controls.
+- The graded controls now use this protocol (3 types x 3 individuals, the spike set from the rerun step 2).

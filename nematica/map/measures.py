@@ -18,6 +18,7 @@ MEASURES = ("spectrum_steepness", "shared_fraction", "slow_fraction", "timescale
             "coupling_spread", "drift", "sparsity")          # shared_dim dropped (amendment 2): never recovered its property
 TAU_FLOOR = 2.0                     # samples; below this a system is resolution-limited (flagged)
 N_UNITS, N_DRAWS, WINDOW_TAU = 50, 40, 150
+SPIKE_WINDOW_TAU = 1000             # amendment 11: windows for spike counts (about 90 to 460 spikes per unit)
 NULL_SHIFT_TAU = 20                 # circular shifts of at least this many tau_med
 
 
@@ -312,13 +313,15 @@ def _spans(T, segments):
     return list(zip(b[:-1], b[1:]))
 
 
-def measure_matched(X, seed=0, n_units=N_UNITS, n_draws=N_DRAWS, window_tau=WINDOW_TAU, only=None,
+def measure_matched(X, seed=0, n_units=N_UNITS, n_draws=N_DRAWS, window_tau=None, only=None,
                     segments=None, tau_floor=TAU_FLOOR):
     """Every system measured the same way: tau_med from all units (floored at tau_floor samples); then n_draws
     draws of n_units units and one window of window_tau * tau_med samples inside one segment; window
     measurements averaged over draws. Slow fraction uses the drawn units over the longest segment.
     Returns means, SDs over draws, tau_med and flags."""
     X = np.asarray(X, float)
+    if window_tau is None:                               # amendment 11: spike counts get longer windows
+        window_tau = SPIKE_WINDOW_TAU if _is_counts(X) else WINDOW_TAU
     X = X[:, X.std(0) > 1e-9]
     rng = np.random.default_rng(seed)
     t_raw = tau_med(X, segments=segments)
@@ -368,7 +371,7 @@ def split_half_se(X, seed=0, n_splits=5, segments=None, **kw):
     X = np.asarray(X, float)
     X = X[:, X.std(0) > 1e-9]
     n = kw.get("n_units", N_UNITS)
-    w = kw.get("window_tau", WINDOW_TAU)
+    w = kw.get("window_tau") or (SPIKE_WINDOW_TAU if _is_counts(X) else WINDOW_TAU)
     t = tau_med(X, segments=segments)
     sq = {m: [] for m in MEASURES}
     scale = 1.0

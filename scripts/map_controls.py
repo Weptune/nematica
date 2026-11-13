@@ -1,7 +1,8 @@
 """Graded controls for the frozen analysis (docs/MAP.md, amendment 10; review 13 item 10), with every gate on,
 in the spike group at realistic instrument numbers and the minimum powered size.
 
-Each world: 4 preparation types x 3 individuals. Each preparation gets one of the real spike instruments from
+Each world (amendment 11): 3 preparation types x 3 individuals, the spike group's measurement set from
+step 2, MIN_TYPES 3 and MIN_MEASURES 2. Each preparation gets one of the real spike instruments from
 step 1 (R4, R9, R10b, R10c); each fake individual is recorded to that instrument by the registered matching
 call, and the preparation's instrument numbers are then measured from its individuals with the frozen
 `instrument_numbers`. Four standard fake AI families lie at a separation s from the brains' region (s times
@@ -31,8 +32,10 @@ N, T = 150, 6000
 DRAWS = 10
 SEPARATIONS = (0.0, 1.0, 2.0, 3.0)
 SEEDS = (0, 1)
-PREP_SOURCES = ("R4", "R9", "R10b", "R10c")
-CAL = ["shared_fraction", "slow_fraction", "timescale_spread", "coupling_spread", "drift", "spectrum_steepness"]
+PREP_SOURCES = ("R4", "R9", "R10b")                  # amendment 11: the minimum spike group, 3 types
+CAL = json.loads((ROOT / "docs/figures/map_step2.json").read_text())["group_sets"]["spikes"] \
+    if (ROOT / "docs/figures/map_step2.json").exists() else []
+analysis.MIN_TYPES, analysis.MIN_MEASURES = 3, 2            # amendment 11, spike group
 BRAIN = dict(alpha=1.4, slow=0.3, coupling=0.6, private=0.7, tau_spread=0.3)
 LOGP = ("alpha", "coupling", "private", "tau_spread")
 CODE = ["nematica/map/measures.py", "nematica/map/recording.py", "nematica/map/synthetic.py",
