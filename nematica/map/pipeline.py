@@ -64,7 +64,10 @@ def ai_at_prep(instances, rtype, inst, segments=None, recs_per_instance=4, n_dra
 
     def _rec(A, kk, s, r=0):
         As, seg = stretch(A, kk, r)
-        return recording.record_matched(As, rtype, kk, rng=np.random.default_rng(s), segments=seg, interp=interp)
+        Y, seg = recording.record_matched(As, rtype, kk, rng=np.random.default_rng(s), segments=seg, interp=interp)
+        if inst.get("group"):                            # amendment 17: pooled units
+            Y = recording.pool(Y, int(inst["group"]))
+        return Y, seg
 
     def rec(A, kk, s):
         """A recording, or (amendment 13) its first crop of crop_len samples (one 'individual')."""

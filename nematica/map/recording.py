@@ -119,6 +119,15 @@ SAMPLE_KNOB = {"calcium": "frame", "deconv": "frame", "spikes": "bin_steps"}
 TAU_KEY = {"calcium": "frames_per_tau", "deconv": "frames_per_tau", "spikes": "bins_per_tau"}
 
 
+def pool(Y, G, seed=0):
+    """Amendment 17: sum the counts of G randomly chosen units per group (seeded partition; leftover units
+    dropped). Returns time x groups."""
+    Y = np.asarray(Y)
+    n = (Y.shape[1] // G) * G
+    p = np.random.default_rng(seed).permutation(Y.shape[1])[:n]
+    return Y[:, p].reshape(len(Y), n // G, G).sum(2)
+
+
 def per_sample(k, rtype):
     """Native steps per recorded sample for matched knobs k."""
     return k[SAMPLE_KNOB[rtype]] / k["hold"]

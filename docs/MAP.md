@@ -1358,3 +1358,38 @@ deconvolved recordings are close to white from frame to frame (step 1), so prope
 network's own timescale are averaged away inside each 400 ms frame, and the remaining frame-to-frame
 structure is dominated by the noise needed to reach the mouse's white share. The registered sensitivity
 (3.85 timescales per frame) is not run: it cannot change the primary verdict.
+
+## Amendment 17 (14 Nov 2026): species 2 becomes mouse Neuropixels with pooled units (registered before any grouped measure of real data)
+
+The mouse two-photon arm failed step 2. The one other species with long, many-unit recordings is the
+mouse again, through electrodes: R4 (Stringer et al. 2019, 3 mice, 8 probes each, spontaneous). Single
+units failed step 2 there (amendments 11 and 12: sparse counts at a white share of 0.83 hide most
+properties). **Exploratory synthetic checks made while drafting this amendment** (no real data read):
+summing the counts of 8 randomly chosen units into one "group" before measuring raised the recovery
+(one seed, 5 levels, R4's matched numbers): shared fraction, slow memory and timescale spread all rho 1.0,
+coupling spread 0.7. With groups of 4 timescale spread fell to 0.8; in the rat planar culture (R10d,
+groups of 4) timescale spread failed (-0.1). These checks chose G = 8; they are reported here as such.
+
+**Design (amendment 15's rule unchanged; species 2 replaced):**
+1. *Grouped-spike instrument.* Each unit is recorded through the registered spike model, matched to R4's
+   single-unit numbers exactly as before (amendment 10). Then units are pooled into groups of **G = 8** by
+   a seeded random partition (leftover units dropped) and counts are summed per 20 ms bin. Real R4 units
+   (every included unit of all 8 probes, at most 2,400) are pooled the same way. Measures run on groups:
+   50-group draws, 1,000-timescale windows (amendment 11), split-half SE over group halves.
+2. *Step 2* at R4's numbers with pooling, synthetic systems of 480 units (60 groups); C4 population levels
+   480, 960 and 2,400 units. Gates as before.
+3. *Recording length.* Every measure is a mean over windows of 1,000 timescales, so its expectation does not
+   depend on recording length beyond the window, only its variance does. Mice are measured on their first
+   20 minutes (about 25,600 timescales; what step 1 read). **AI individuals are crops of 5,000 recorded
+   timescales** (compute), one per recording. Sensitivity: mice measured as the mean of 5,000-timescale
+   crops.
+4. *AIs need at least 400 units* for 50 groups of 8, so for this arm: random RNN 480 units (A1, A1-slow),
+   task RNN 512 (A2, retrained as registered, every 100th step kept), GRU and CfC 512 (A3, A5, retrained),
+   language models keep 480 MLP or SSM units, the spiking network keeps 480 of its 1,000 neurons. The lab
+   network (A10, 120 units, augmented) is not recorded here. Population size is a C4 knob, so a measure that
+   passes is insensitive to it by construction (on synthetic systems).
+5. *Power.* Three mice give a ruler with 2 degrees of freedom. The cross-species rule is applied as
+   written, and any result from this arm is labelled as resting on three individuals.
+6. *Candidate under test.* From the worms (exploratory map, amendment 14), the one measurement where every
+   recorded AI sits on one side of the worms is **timescale spread** (AIs lower). It is the measurement this
+   arm can confirm or refute in a second species; the others are reported.

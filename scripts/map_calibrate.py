@@ -49,6 +49,7 @@ SEEDS = (0, 1)
 MIN_REC_TAU = 240
 MAX_T = 80000
 CAL_CROPS = 2                  # amendment 16 (deconvolved instrument only): crops a calibration system must hold
+C4_BASE = {}                   # amendment 17: parameters every C4 system shares (e.g. N=480 for pooling)
 BIG_TAU = 30                   # systems with at least this native timescale run one at a time (memory)
 CODE = ["nematica/map/measures.py", "nematica/map/recording.py", "nematica/map/synthetic.py",
         "nematica/map/analysis.py", "nematica/map/instrument.py", "nematica/map/deconv.py",
@@ -93,6 +94,8 @@ def system(job):
                     out[(rt, pn)] = ({m: np.nan for m in M}, bool(k["reached"]), np.nan)   # reported as nan
                     continue
                 Y, seg = recording.record_matched(B, rt, k, rng=np.random.default_rng(s + 7))
+                if prof.get("group"):                    # amendment 17: pooled units
+                    Y = recording.pool(Y, int(prof["group"]))
                 if prof.get("crop_len"):                 # amendment 13: brain-length crops, detrended
                     from nematica.map.pipeline import crops
                     cs = crops(Y, seg, int(prof["crop_len"]), 4)
@@ -168,7 +171,7 @@ def main(profiles=None, out_path=None, cache_tag="", c4=None, sweep=None):
                     p = dict(N=v, K=min(100, v))
                 else:
                     p = {}
-                jobs.append((p, 300 + s, s, v if knob == "gain" else 1.0)); tags.append(("C4", knob, v))
+                jobs.append(({**C4_BASE, **p}, 300 + s, s, v if knob == "gain" else 1.0)); tags.append(("C4", knob, v))
     results = run_cached(jobs, t0, cache_tag)
     res = {p: [] for p in SWEEP_}
     c4 = {k: {key: {v: [] for v in vals} for key in KEYS} for k, vals in C4_.items()}
