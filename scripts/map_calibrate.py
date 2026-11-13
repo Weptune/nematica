@@ -80,8 +80,13 @@ def system(job):
                 k = recording.match(A, rt, prof, seed=s)
                 B = A
                 need = int(k["needs_steps"] * MIN_REC_TAU / recording.MATCH_MIN_TAU) if np.isfinite(k["needs_steps"]) else 0
-                if need > len(A):
-                    B = synthetic.population(np.random.default_rng(gseed), **{**params, "T": min(need, MAX_T)})
+                if need > len(A):                        # memory: at most 60 million unit-samples
+                    tmax = min(MAX_T, int(6e7 / params.get("N", 300)))
+                    B = synthetic.population(np.random.default_rng(gseed), **{**params, "T": min(need, tmax)})
+                per_sample = (k["frame"] if rt == "calcium" else k["bin_steps"]) / k["hold"]
+                if B.shape[1] >= 3000 and len(B) / per_sample * B.shape[1] > 1e8:   # memory (8 GB): not measured;
+                    out[(rt, pn)] = ({m: np.nan for m in M}, bool(k["reached"]), np.nan)   # reported as nan
+                    continue
                 Y, seg = recording.record_matched(B, rt, k, rng=np.random.default_rng(s + 7))
                 per = (k["frame"] if rt == "calcium" else k["bin_steps"]) / k["hold"]
                 tr = k["achieved"]["frames_per_tau" if rt == "calcium" else "bins_per_tau"] * per / t_true

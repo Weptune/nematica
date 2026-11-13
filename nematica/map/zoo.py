@@ -224,3 +224,36 @@ def lif_network(seed=0, n=1000, frac_e=0.8, p=0.1, seconds=300.0, dt=0.0005, ste
         if adaptation:
             a *= np.exp(-dt / 0.2)
     return out, [], {"family": "A4", "seed": seed, "adaptation": adaptation, "rate_hz": float(out.mean() / step)}
+
+
+# ---------------------------------------------------------------- A10 the lab network (candidate (c))
+def lab_network(seed=0, individual=0, frames=30000, share=0.4, g=0.75, quiet=0.3, sigma=0.8, gate=0.98):
+    """Candidate (c), amendment 2: the lab rate network (nematica/annlab.py) at the round-9 joint-search
+    setting of 6 Nov (slow drives 0.4 with time constant 90 frames, silent links 0.75, 30% quiet units,
+    individual variation sigma 0.8), watched without pokes; activity = tanh(state) per 0.5 s frame
+    (measurement noise is left to the recording model). Instances are individuals of one base network."""
+    from .. import annlab as L
+    br0 = L.make_brain(rho=1.3, share=share, tau=90.0, seed=seed, q=0.2)
+    qmask = np.random.default_rng(seed + 900).random(br0.n) < quiet
+    br0.b = br0.b.copy()
+    br0.b[qmask] = -2.5
+    gr = np.random.default_rng(12 + 100 * seed)
+    Wg0 = g * gr.standard_normal((br0.n, br0.n)) * (gr.random((br0.n, br0.n)) < 0.05)
+    np.fill_diagonal(Wg0, 0.0)
+    ind = L.individual(br0, sigma, 1000 + individual)
+    Wg = Wg0 * (1 + sigma * np.random.default_rng(1000 + individual + 777).standard_normal(Wg0.shape))
+    rng = np.random.default_rng(50_000 + individual)
+    n = ind.n
+    k = ind.D.shape[1] if ind.D is not None else 0
+    x, s = np.zeros(n), np.zeros(k)
+    a_ = np.exp(-0.5 / ind.tau)
+    out = np.empty((frames, n), np.float32)
+    for t in range(-400, frames):
+        if k:
+            s = a_ * s + np.sqrt(1 - a_ * a_) * rng.standard_normal(k)
+        inp = ind.W @ np.tanh(x) + ind.b + (ind.D @ s if k else 0.0)
+        inp = inp + Wg @ (np.maximum(np.tanh(x) - gate, 0.0) / (1 - gate))
+        x = (1 - L.LEAK) * x + L.LEAK * inp + ind.q * rng.standard_normal(n)
+        if t >= 0:
+            out[t] = np.tanh(x)
+    return out, [], {"family": "A10", "seed": seed, "individual": individual}

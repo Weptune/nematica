@@ -76,7 +76,9 @@ SPECS = {
     "A6-410m-ou": ("A6", "augmented", lambda: lm(None, poly("410m"), ou=200)),
     "A7-130m": ("A7", "standard", lambda: lm("state-spaces/mamba-130m-hf")),
     "A7-370m": ("A7", "standard", lambda: lm("state-spaces/mamba-370m-hf")),
+    "A10": ("A10", "augmented", lambda: [zoo.lab_network(individual=i)[:2] for i in range(3)]),
 }
+FITTED_ON = {"A10": ["R1", "R2"]}                          # candidates (c), (d): worm preparations left out
 
 
 def profile(pid, d):

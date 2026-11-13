@@ -263,17 +263,19 @@ def record_matched(A, rtype, knobs, rng=None, segments=None, interp=False):
     """Record A with matched knobs (including the hold factor), segment by segment (F11). Returns the recording
     and its segment starts. `interp=True` replaces the hold by linear interpolation (F15 sensitivity)."""
     k = knobs.get("hold", 1)
-    H = upsample(A, k, interp or knobs.get("interp", False))
+    ip = interp or knobs.get("interp", False)
     seg = [int(x) * k for x in (segments or [])]
     if rtype == "native":
-        return native(H), seg
+        return native(upsample(A, k, ip)), seg
     fn, kw = ((calcium, dict(decay=knobs["decay"], frame=knobs["frame"], snr=knobs["snr"])) if rtype == "calcium"
               else (spikes, dict(mean_count=knobs["mean_count"], bin_steps=knobs["bin_steps"], gain=knobs["gain"],
                                  rate_log_sd=knobs.get("rate_log_sd", 0.0))))
     rng = rng or np.random.default_rng(0)
     parts = []                                           # units are recorded independently: blocks of 400
-    for a in range(0, H.shape[1], 400):                  # units keep memory bounded (results are identical
-        Y, starts = _segments_record(fn, H[:, a:a + 400], seg, rng, **kw)   # in distribution)
+    A = np.asarray(A)
+    for a in range(0, A.shape[1], 400):                  # units keep memory bounded; each block is upsampled
+        H = upsample(A[:, a:a + 400], k, ip)             # on its own (the same values as upsampling all)
+        Y, starts = _segments_record(fn, H, seg, rng, **kw)
         parts.append(Y.astype(np.float32))
     return np.hstack(parts), starts
 

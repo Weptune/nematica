@@ -987,3 +987,41 @@ Code: `nematica/map/{measures,recording,instrument,analysis,pipeline}.py`, `scri
   - reported: the H1 decision rate and, at separation 0, the false-positive rate.
 
   Fake brains and fake AIs still share one generator and recording model; that limit is stated, not removed.
+
+## Step 2 results (13 Nov 2026; synthetic systems only, at each preparation's own instrument numbers)
+
+`docs/figures/map_step2.json` (code hash 62b1c7633483ad75). Through the registered matching call, C1 and C4
+were rerun at the numbers of the five mappable spike preparations (R4, R9, R10b, R10c, R10d) and of the
+baseline worms (R2). All 360 matches reached their targets. *Run notes:* the run was killed for memory three
+times on the 3,000-unit systems. Two memory-only changes were made: recording upsamples each block of units
+on its own, and autocovariances are computed in blocks of units. Both were checked to give bit-identical
+output, so finished jobs were carried over under the new code hash. A third change: 3,000-unit systems
+whose recording would exceed 10^8 unit-samples are not measured (nan); this affected only the two
+3,000-unit C4 jobs at the profiles with the longest recordings.
+
+| measurement | native | worms (R2) | R4 | R9 | R10b | R10c | R10d |
+|---|---|---|---|---|---|---|---|
+| shared fraction | ok | ok | 0.37 | 0.12 | 0.71 | -0.47 | -0.76 |
+| slow memory | ok | ok | ok | C4 0.55 | ok | C4 1.44 | C4 0.71 |
+| timescale spread | ok | ok | 0.12 | 0.12 | -0.49 | -0.49 | 0.30 |
+| coupling spread | ok | ok | nan | nan | 0.33 | nan | nan |
+| sparsity | ok | ok | (undefined for counts) | | | | |
+| drift | 0.86 | 0.57 | 0.15 | -0.22 | 0.02 | 0.07 | |
+| spectrum steepness | nan | nan | nan | nan | nan | nan | nan |
+
+(ok = C1 >= 0.9 and every C4 ratio < 0.5; otherwise the C1 Spearman, or the failing C4 ratio.)
+
+**Result.** At the worms' numbers five measurements pass. At every real spike preparation's numbers,
+**no more than one measurement passes** (slow memory, at R4 and R10b), and none passes at all five.
+- The spike group's measurement set (those passing at every preparation) is empty, so by amendment 3 the
+  spike group **cannot be mapped**: H8 and the spike arm of H3 to H6 are undecided.
+- The calcium group is unpowered (amendment 8), so H1 to H6 are not tested anywhere.
+- By the rule registered in amendment 3: *through matched recordings, with these measurements and these
+  data, brain vs AI comparison is not possible for spike data at the quality of these datasets*. Sparse
+  counts in 20 ms bins (0.014 to 0.10 spikes per bin), 50-unit draws and heavy-tailed rates leave each unit
+  mostly Poisson noise, and what remains does not track the systems' properties.
+- This is a result about the question: the commonly reported population statistics of spiking data (shared
+  variance, timescale spread, coupling) cannot be compared across brains and AIs at this recording quality
+  without matching the instrument, and once the instrument is matched they cannot be recovered.
+- The calcium arm at worm-like quality keeps five measurements. **That is where a powered comparison is
+  still possible**, if more calcium preparations of distinct types can be added (amendment 11).

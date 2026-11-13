@@ -19,7 +19,7 @@ import map_ais as AIS  # noqa: E402
 import map_step1 as s1  # noqa: E402
 from nematica.map import analysis as An  # noqa: E402
 
-H2_CANDIDATES = ["A1-slow", "A6-410m-ou"]
+H2_CANDIDATES = ["A1-slow", "A6-410m-ou", "A10"]
 PAIRS_H3B = [("A1-slow", "A1"), ("A6-410m-ou", "A6-410m")]
 H4 = ("A6-1b", "A6-14m")
 H5 = ("A7-370m", "A6-410m")
@@ -50,7 +50,8 @@ def ais_of(group, variant=""):
             if f.exists():
                 at[pid] = pickle.loads(f.read_bytes())
         if at:
-            out.append({"id": aid, "kind": "ai", "family": fam, "role": role, "fitted_on": [], "at": at})
+            out.append({"id": aid, "kind": "ai", "family": fam, "role": role,
+                        "fitted_on": AIS.FITTED_ON.get(aid, []), "at": at})
     return out
 
 

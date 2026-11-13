@@ -28,10 +28,14 @@ def _z(X):
     return (X[:, keep] - X[:, keep].mean(0)) / sd[keep]
 
 
-def _acov(Z, max_lag):
+def _acov(Z, max_lag, block=256):
+    """Autocovariance by FFT, computed for blocks of units (memory; the same values as all units at once)."""
     T = len(Z)
-    F = np.fft.rfft(Z, n=2 * T, axis=0)
-    return np.fft.irfft(F * np.conj(F), axis=0)[:max_lag + 1] / T
+    out = np.empty((max_lag + 1, Z.shape[1]))
+    for a in range(0, Z.shape[1], block):
+        F = np.fft.rfft(Z[:, a:a + block], n=2 * T, axis=0)
+        out[:, a:a + block] = np.fft.irfft(F * np.conj(F), axis=0)[:max_lag + 1] / T
+    return out
 
 
 def _acov_seg(Z, max_lag, segments=None):
