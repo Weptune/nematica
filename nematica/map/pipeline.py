@@ -48,8 +48,23 @@ def ai_at_prep(instances, rtype, inst, segments=None, recs_per_instance=4, n_dra
                max_crops=4):
     k = recording.match(instances[0], rtype, inst, seed=seed, segments=segments, hold_mult=hold_mult,
                         interp=interp)
-    _rec = lambda A, kk, s: recording.record_matched(A, rtype, kk, rng=np.random.default_rng(s),
-                                                     segments=segments, interp=interp)
+    def stretch(A, kk, r):
+        """Amendment 13 (memory): with crops, a recording needs only enough native steps for max_crops crops
+        (plus 20%); recording r of an instance uses the r-th such stretch of its activity (wrapping), so
+        recordings differ in activity, not only in noise. Segment starts are shifted accordingly."""
+        if not crop_len:
+            return A, segments
+        need = int(np.ceil(max_crops * crop_len * 1.2 * kk["frame" if rtype == "calcium" else "bin_steps"]
+                           / kk["hold"])) + 1
+        if need >= len(A):
+            return A, segments
+        a = (r * need) % max(len(A) - need, 1)
+        seg = [x - a for x in (segments or []) if a < x < a + need]
+        return A[a:a + need], seg
+
+    def _rec(A, kk, s, r=0):
+        As, seg = stretch(A, kk, r)
+        return recording.record_matched(As, rtype, kk, rng=np.random.default_rng(s), segments=seg, interp=interp)
 
     def rec(A, kk, s):
         """A recording, or (amendment 13) its first crop of crop_len samples (one 'individual')."""
@@ -66,7 +81,7 @@ def ai_at_prep(instances, rtype, inst, segments=None, recs_per_instance=4, n_dra
         for r in range(recs_per_instance):
             s = 1000 * i + 50 + r
             if crop_len:                                 # every crop of one recording is an AI individual
-                Yf, segf = _rec(A, ki, s)
+                Yf, segf = _rec(A, ki, s, r)
                 for j, Y in enumerate(crops(Yf, segf, crop_len, max_crops)):
                     reps.append({**_meas(Y, s + 100 * j, [], n_draws, tau_floor, rtype), "instance": i, "crop": j})
             else:

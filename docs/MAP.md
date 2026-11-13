@@ -1208,3 +1208,7 @@ measurement:
 - Cached AI results are reused only if their code hash equals the current code's.
 - The AI job that was running when `measures.py` gained the `tau_fixed` argument (default off) stamps the
   new hash; its computations do not touch that argument.
+- *(13 Nov, AI recordings)* For memory, a recording of a fast AI is made from only the native stretch its
+  crops need (4 crops plus 20%). Recording r of an instance uses the r-th such stretch, so recordings of one
+  instance differ in activity as well as noise. Slow A2 (timescale about 930 steps) is kept every 10th step.
+  Matching, the budget and the crop rules are unchanged.
