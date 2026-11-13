@@ -22,7 +22,7 @@ from nematica.map import ai, instrument, pipeline, zoo  # noqa: E402
 CACHE = ROOT / "data/cache/map_ais"
 TOK = ROOT / "data/external/books/tokens.npy"
 KEEP = 300
-GROUPS = {"calcium": ["R2"]}          # amendment 12: the spike arm is closed (step 2 rerun)
+GROUPS = {"calcium": ["R2"], "deconv": ["R5m"]}   # amendment 12: the spike arm is closed; amendment 15: mouse
 
 
 def thirds(n=200_000):
@@ -78,6 +78,16 @@ SPECS = {
     "A7-370m": ("A7", "standard", lambda: lm("state-spaces/mamba-370m-hf")),
     "A10": ("A10", "augmented", lambda: [zoo.lab_network(individual=i)[:2] for i in range(3)]),
 }
+# Amendment 16 (mouse instrument): one 3,000-frame crop spans 3,000 x 8.5 native timescales, so slow networks
+# are regenerated longer for R5m (two recordings' worth of distinct activity); the task RNN keeps every 100th
+# step (its timescale is about 1,500 steps; the mouse frame spans about 13,000).
+MOUSE_SPECS = {
+    "A1": lambda: [zoo.random_rnn(seed=s, steps=900_000)[:2] for s in range(3)],
+    "A1-slow": lambda: [(zoo.with_slow_drives(zoo.random_rnn(seed=s, steps=1_350_000)[0], seed=s), [])
+                        for s in range(3)],
+    "A2": lambda: [(zoo.task_rnn(seed=s, trials=1_560_000, every=100)[0], []) for s in range(3)],
+    "A10": lambda: [zoo.lab_network(individual=i, frames=300_000)[:2] for i in range(3)],
+}
 FITTED_ON = {"A10": ["R1", "R2"]}                          # candidates (c), (d): worm preparations left out
 
 
@@ -91,6 +101,11 @@ def code_hash():
 
 
 def profile(pid, d):
+    if pid in GROUPS.get("deconv", []):                 # amendment 16: the mouse profile of step 2
+        sys.path.insert(0, str(ROOT / "scripts"))
+        from map_step2_mouse import mouse_profile
+        p = mouse_profile()
+        return "deconv", {k: p[k] for k in ("taus_per_frame", "noise", "fs", "indicator_frames", "kernel_frames")}
     rt = "spikes" if pid in GROUPS.get("spikes", []) else "calcium"
     if pid == "R2":                                     # amendment 13: the 14 baseline worms' median
         rows = [r for r in d["R2"]["individuals"] if r.get("kind") == "baseline" and "error" not in r]
@@ -100,7 +115,8 @@ def profile(pid, d):
 
 VARIANTS = {"": {}, "hold2k": {"hold_mult": 2}, "interp": {"interp": True},
             "noise05": {"noise": 0.05}, "noise10": {"noise": 0.10}}     # amendment 13: worm noise sensitivity
-CROP_LEN = {"R2": 1600}                    # amendment 13: one baseline worm recording, in frames
+CROP_LEN = {"R2": 1600, "R5m": 3000}      # amendment 13: one baseline worm recording, in frames; 16: mouse
+MAX_CROPS = {"R2": 4, "R5m": 1}           # amendment 16 (compute): one crop per mouse-instrument recording
 N_DRAWS = 40                               # as for the worms
 
 
@@ -113,10 +129,18 @@ def run(aid, variant=""):
     def fresh(f):                                       # a cached result counts only if made by this code
         return f.exists() and pickle.loads(f.read_bytes()).get("code_sha256_16") == code_hash()
     todo = [p for g in GROUPS.values() for p in g if not fresh(CACHE / f"{aid}_{p}{suf}.pkl")]
+    if ONLY:
+        todo = [p for p in todo if p in ONLY]
     if not todo:
         return
+    if todo != ["R5m"] and "R5m" in todo and aid in MOUSE_SPECS:   # different activity for the mouse
+        for p in todo:
+            ONLY[:] = [p]
+            run(aid, variant)
+        ONLY.clear()
+        return
     t0 = time.time()
-    inst = SPECS[aid][2]()
+    inst = (MOUSE_SPECS[aid] if todo == ["R5m"] and aid in MOUSE_SPECS else SPECS[aid][2])()
     acts = [np.asarray(a, np.float32) for a, _ in inst]
     segs = [s for _, s in inst]
     print(aid, "activity", [a.shape for a in acts], f"{time.time() - t0:.0f}s", flush=True)
@@ -131,7 +155,8 @@ def run(aid, variant=""):
         try:
             r = pipeline.ai_at_prep(acts, rt, prof, segments=segs[0] or None,
                                     recs_per_instance=(7 if aid in PAIRED else 2) if not variant else 2,
-                                    budget=not variant, crop_len=CROP_LEN.get(pid), n_draws=N_DRAWS, **opts)
+                                    budget=not variant, crop_len=CROP_LEN.get(pid), n_draws=N_DRAWS,
+                                    max_crops=MAX_CROPS.get(pid, 4), **opts)
         except Exception as e:  # noqa: BLE001  (e.g. no timescale: activity white at the native step)
             from nematica.map import measures as M_
             r = {"values": {m: float("nan") for m in M_.MEASURES}, "replicates": [], "reached": False,
@@ -154,10 +179,13 @@ def done(aid):
                .get("code_sha256_16") == code_hash() for g in GROUPS.values() for p in g)
 
 
+ONLY = []                                  # preparations to restrict a run to (set by run itself or --only=)
 PAIRED = {"A3", "A5", "A6-14m", "A6-1b", "A6-410m", "A7-370m"}     # H4, H5, H6: 3 instances x 7 = 21 recordings
 
 if __name__ == "__main__":
     args = sys.argv[1:]
     variant = args.pop(0).split("=")[1] if args and args[0].startswith("--variant=") else ""
+    if args and args[0].startswith("--only="):
+        ONLY[:] = args.pop(0).split("=")[1].split(",")
     for aid in args or SPECS:
         run(aid, variant)

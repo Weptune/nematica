@@ -1346,3 +1346,15 @@ A synthetic check while writing this amendment (default system and four variants
 white-share target every time, with samples per recorded timescale 0.95 to 1.38 (mouse 0.71) and zero
 fraction 0.79 to 0.81 (mouse 0.63). The mouse is whiter and less often exactly zero than these synthetic
 systems; whether AIs also differ there is reported with the AI recordings.
+
+## Step 2 for the mouse (14 Nov 2026): no measurement survives the deconvolved instrument
+
+`docs/figures/map_step2_mouse.json` (amendment 16 profile: 8.5 native timescales per frame, white share
+0.78, indicator 1.8 frames, kernel 5 frames, 3,000-frame crops; every match reached its target, 0 of 352
+unreached). C1 Spearman (needs at least 0.9): shared fraction 0.69, slow memory -0.98 (inverted), timescale
+spread -0.12, drift 0.42; coupling spread and sparsity undefined (most values nan). **No measurement passes,
+so by amendment 15 the mouse two-photon arm cannot be mapped**, and the mice are not measured. The
+deconvolved recordings are close to white from frame to frame (step 1), so properties that live at the
+network's own timescale are averaged away inside each 400 ms frame, and the remaining frame-to-frame
+structure is dominated by the noise needed to reach the mouse's white share. The registered sensitivity
+(3.85 timescales per frame) is not run: it cannot change the primary verdict.

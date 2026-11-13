@@ -80,7 +80,10 @@ def decision_task(batch, T=60, rng=None, coh=(0.0, 0.05, 0.1, 0.2, 0.4)):
     return X, y
 
 
-def task_rnn(seed=0, n=128, train_steps=1500, trials=6000):
+def task_rnn(seed=0, n=128, train_steps=1500, trials=6000, every=1):
+    """`every` > 1 (amendment 16, the mouse instrument): a session `trials` long is generated in chunks of
+    6,000 trials and only every `every`-th step of the continuous session is kept, so very long sessions fit
+    in memory; every=1 is the original recording, unchanged."""
     import torch
     torch.set_num_threads(2)
 
@@ -108,6 +111,9 @@ def task_rnn(seed=0, n=128, train_steps=1500, trials=6000):
         return torch.tensor(X), torch.tensor(y)
 
     final = _train(net, batches, train_steps, lr=1e-3, seed=seed)
+    if every > 1:
+        return _long_session(net, n, trials, every, seed), [], {"family": "A2", "seed": seed, "loss": final,
+                                                                 "every": every}
     X, y = decision_task(trials, rng=np.random.default_rng(seed + 777))
     with torch.no_grad():
         h0 = torch.zeros(1, 1, n)
@@ -119,6 +125,22 @@ def task_rnn(seed=0, n=128, train_steps=1500, trials=6000):
         acc = float((o[:, -1].argmax(-1).numpy() == y).mean())
     return np.concatenate(acts).astype(np.float32), [], {"family": "A2", "seed": seed, "loss": final,
                                                           "accuracy": acc}
+
+
+def _long_session(net, n, trials, every, seed, chunk=6000):
+    import torch
+    rng = np.random.default_rng(seed + 777)
+    out, pos = [], 0
+    with torch.no_grad():
+        h0 = torch.zeros(1, 1, n)
+        for a in range(0, trials, chunk):
+            X, _ = decision_task(min(chunk, trials - a), rng=rng)
+            h, h0 = net.rnn(torch.tensor(X.reshape(1, -1, 3)), h0)     # trials back to back, one call
+            H = h[0].numpy()
+            first = (-pos) % every
+            out.append(H[first::every].astype(np.float32))
+            pos += len(H)
+    return np.concatenate(out)
 
 
 # ---------------------------------------------------------------- A3 GRU and A5 CfC on characters
