@@ -1050,3 +1050,40 @@ amendment 11.**
   are coarse. Every other gate stands: C1 and C4 at every preparation's numbers (rerun now), C3, the
   maximum budget, instrument transfer, controls.
 - The graded controls now use this protocol (3 types x 3 individuals, the spike set from the rerun step 2).
+
+## Step 2 under amendment 11, and amendment 12 (13 Nov 2026, before any brain measurement)
+
+**Step 2 rerun with 1,000-timescale spike windows** (`docs/figures/map_step2.json`, same gates). The
+spike group's measurement set is **still empty**:
+- R4 keeps slow memory only (shared fraction narrowly misses at C1 0.89);
+- R9 keeps shared fraction only (slow memory fails C4, 0.55);
+- R10b keeps shared fraction, slow memory and coupling spread;
+- R10d keeps none (shared fraction 0.74; slow memory fails C4, 0.71).
+
+No measurement passes at every spike preparation, even with windows 6.7 times longer and the bar lowered to
+two measurements. **The spike arm is closed:** at the quality of these datasets (0.06 to 0.5 spikes per unit
+per timescale) the comparison cannot be made with any measurement in this set, and each surviving
+measurement depends on how fast a network runs relative to the instrument (C4). This is reported as the
+study's first main result, with the numbers above. No spike-group test or map will be shown.
+
+**Amendment 12: the worm map (descriptive, registered now, before any worm or AI measure).** Calcium at the
+worms' numbers keeps five measurements (shared fraction, slow memory, timescale spread, coupling spread,
+sparsity), but with one preparation type no H1 to H8 test is possible. What is registered instead:
+1. Every AI (A1 to A7, A10, candidates (a) and (b)) is recorded through the worm instrument (R2's step-1
+   numbers), with budget, and measured like the worms.
+2. The 13 baseline worms of R2 are measured (the pre-heat recordings are shorter than a window). The
+   ruler is R2's own between-worm SD per measurement (BVU, 12 df), with the C3 and budget gates.
+3. **Worm envelope:** an AI is "worm-like" if its distance (RMS over the usable measurements, in worm
+   BVU, capped at 10) to the worm centroid is at most the largest distance of any single worm to the
+   centroid of the other 12 (leave-one-out). Reported for every AI with its interval over instances.
+4. **Descriptive questions, each answered by numbers, not a test:**
+   - which AIs fall inside the envelope;
+   - whether the augmented AIs (slow drives; the OU latent; the lab network) are closer than their bases
+     (H3(b)'s 30% rule, applied descriptively);
+   - whether bigger Pythia models are closer (H4's rule);
+   - whether Mamba is closer than Pythia on the slow measurements in use (H5's rule);
+   - whether CfC is closer than GRU (H6's rule).
+
+   Because this is one species and one instrument, nothing here generalises to "brains". It says which
+   artificial systems are indistinguishable from worms, as worms are recorded.
+5. The A10 lab network was tuned on worms (on R1-like data), so it is reported but marked as fitted.

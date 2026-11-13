@@ -22,7 +22,7 @@ from nematica.map import ai, instrument, pipeline, zoo  # noqa: E402
 CACHE = ROOT / "data/cache/map_ais"
 TOK = ROOT / "data/external/books/tokens.npy"
 KEEP = 300
-GROUPS = {"spikes": ["R4", "R9", "R10b", "R10d"], "calcium": ["R2"]}
+GROUPS = {"calcium": ["R2"]}          # amendment 12: the spike arm is closed (step 2 rerun)
 
 
 def thirds(n=200_000):
