@@ -139,6 +139,60 @@ def species(pid, cal, budget_gate):
     return out
 
 
+def distance_test(pid, S, cal, cap=10.0, min_measures=2, min_families=5):
+    """Amendment 20: every counted standard AI farther from the mice than any mouse from the other two."""
+    use = [m for m in cal if S["measures"][m]["usable"]]
+    if len(use) < min_measures:
+        return {"result": "not testable", "why": f"{len(use)} usable measurements", "measures": use}
+    R = reals(pid, cal)
+    A = {a: x for a, x in ais(pid).items() if x["mapped"]}
+    sd = {m: S["measures"][m]["ruler_sd"] for m in use}
+    def dist(v, c, ms):
+        z = [((v[m] - c[m]) / sd[m]) ** 2 for m in ms]
+        return float(min(np.sqrt(np.mean(z)), cap)) if np.all(np.isfinite(z)) else np.nan
+    def env(ms):
+        vals = [r["values"] for r in R]
+        return max(dist(v, {m: np.mean([w[m] for j, w in enumerate(vals) if j != i]) for m in ms}, ms)
+                   for i, v in enumerate(vals))
+    rng = np.random.default_rng(1)
+    res = {}
+    for a, x in A.items():
+        ms = [m for m in use if m not in TEMPORAL or x["within_calibrated_speed"]]
+        if len(ms) < min_measures:
+            res[a] = {"counted": False, "why": "fewer than 2 measurements within calibrated speed"}
+            continue
+        c = {m: float(np.mean([r["values"][m] for r in R])) for m in ms}
+        g = {}
+        for rep in x["r"]["replicates"]:
+            g.setdefault(rep["instance"], []).append(dist(rep, c, ms))
+        allv = [d for v in g.values() for d in v]
+        if np.isfinite(allv).sum() < 0.8 * len(allv):
+            res[a] = {"counted": x["role"] == "standard", "median": np.nan, "why": "undefined distances"}
+            continue
+        keys, boot = list(g), []
+        for _ in range(1000):
+            d = []
+            for k in rng.choice(len(keys), len(keys)):
+                v = g[keys[k]]
+                d += [v[j] for j in rng.integers(len(v), size=len(v))]
+            boot.append(np.nanmedian(d))
+        res[a] = {"counted": x["role"] == "standard", "family": x["family"], "role": x["role"], "measures": ms,
+                  "median": float(np.nanmedian(allv)), "ci90": [float(np.percentile(boot, 5)),
+                                                                 float(np.percentile(boot, 95))],
+                  "envelope": env(ms)}
+    cnt = {a: r for a, r in res.items() if r.get("counted")}
+    fams = sorted({r["family"] for r in cnt.values() if "family" in r})
+    if len(fams) < min_families:
+        verdict = "incomplete"
+    elif any(not np.isfinite(r.get("median", np.nan)) or r["median"] <= r["envelope"] for r in cnt.values()):
+        verdict = "not confirmed"
+    elif all(r["ci90"][0] > r["envelope"] for r in cnt.values()):
+        verdict = "confirmed"
+    else:
+        verdict = "unclear"
+    return {"result": verdict, "measures": use, "families_counted": fams, "ais": res}
+
+
 def main():
     worm_cal = json.loads((ROOT / "docs/figures/map_step2_worm.json").read_text())["worm_set"]
     mouse_cal = json.loads((ROOT / "docs/figures/map_step2_r4g.json").read_text())["r4g_set"]
@@ -159,6 +213,7 @@ def main():
                 "result": ("not testable (gates)" if not row["usable"] else "incomplete" if not complete
                            else "confirmed" if row["separating_side"] == side else "not confirmed")}
     out = {"discovery_worm": W, "confirmatory_mouse": M, "confirmatory_test": conf,
+           "confirmatory_distance_test": distance_test("R4g", M, mouse_cal),
            "exploratory": {k: {"worm": W["measures"].get(k, {}).get("separating_side"),
                                "mouse": M["measures"].get(k, {}).get("separating_side")}
                            for k in sorted(set(W["measures"]) | set(M["measures"]))}}

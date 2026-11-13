@@ -1519,3 +1519,32 @@ and C4 at crop length; C3 against the ruler's lower 90% bound; budget at most 1 
 counted standard AI (native timescale at least 1.5 steps, not pre-held; families A1 and A2 required) lies
 below the three mice by more than its margin. Possible results are "confirmed", "not confirmed",
 "incomplete", or "not testable". Everything else is exploratory.
+
+## Step 2 under amendment 19 (14 Nov 2026): timescale spread fails at crop length, so the confirmatory test is not testable
+
+Rerun at the registered crop length (11,718-bin crops; `docs/figures/map_step2_r4g.json`): C1 / largest
+C4 ratio: shared fraction 0.98 / 0.07, slow memory 0.98 / 0.07 and coupling spread 0.98 / 0.11 pass.
+**Timescale spread does not pass (0.89, threshold 0.9)**; drift fails (0.64). By amendment 19 the one
+confirmatory test (timescale spread, AIs below the mice) is therefore **not testable**. Timescale spread is
+still measured and reported, as exploratory. No real mouse data has been read for any measure.
+
+## Amendment 20 (14 Nov 2026, before any pooled-mouse measure): a replacement confirmatory test, non-directional
+
+The worm discovery (amendment 14, exploratory) had a second, non-directional pattern: every AI recorded
+was far outside the worms' envelope (3 to 7 ruler units against an envelope of 1.7). That pattern is
+registered now as the confirmatory test in the pooled mouse, before any mouse value exists. It answers
+whether AIs as recorded are distinguishable from animals, not which property differs. Which measurements
+drive the distance stays exploratory. This replacement is itself a forking path: the first confirmatory
+measure failed a synthetic gate, and a second test was then chosen. It is reported as such.
+
+- **Measurements:** those usable in the mouse (step 2 under amendment 19, C3 against the ruler's lower 90%
+  bound, budget at most 1 ruler unit); at least 2, otherwise "not testable". For an AI outside calibrated
+  speed (amendment 19, item 2) the temporal measurements are left out of its distance. If fewer than 2
+  remain, that AI is not counted.
+- **Distance** of a crop: RMS over the measurements of (value - mouse centroid) / ruler SD, capped at 10.
+  An AI's distance is the median over its crops, with a hierarchical bootstrap 90% interval.
+- **Envelope:** the largest distance of a mouse to the centroid of the other two, computed on the same
+  measurements the AI uses.
+- **Confirmed** if every counted standard AI's lower 90% bound exceeds the envelope and at least 5 of the 7
+  standard families are counted. **Not confirmed** if any counted standard AI's median is at or inside the
+  envelope. Otherwise "unclear"; with fewer than 5 families, "incomplete".

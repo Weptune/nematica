@@ -1,7 +1,7 @@
 {
  "provenance": {
-  "code_sha256_16": "80f3ba578acf2a12",
-  "git_head_at_run": "ed2582582146049c54bf0a2ca1e82a058b31fe90",
+  "code_sha256_16": "97f603a2229da632",
+  "git_head_at_run": "93a4468d1454782e490d9d04a2c73cdb6ebc2a31",
   "files": [
    "nematica/map/measures.py",
    "nematica/map/recording.py",
@@ -11,7 +11,7 @@
    "nematica/map/deconv.py",
    "scripts/map_calibrate.py"
   ],
-  "seconds": 402
+  "seconds": 614
  },
  "protocol": {
   "draws": 20,
@@ -26,7 +26,8 @@
      "count_per_bin": 0.069,
      "noise": 0.8256257934891025,
      "rate_log_sd": 1.2768354221081473,
-     "group": 8
+     "group": 8,
+     "crop_len": 11718
     }
    }
   },
@@ -75,32 +76,32 @@
   "spikes/R4g": {
    "spectrum_steepness": {
     "rho": NaN,
-    "range": NaN,
-    "finite": 2
+    "range": 0.48017740216807603,
+    "finite": 5
    },
    "shared_fraction": {
     "rho": 0.9847319278346618,
-    "range": 0.057519474893536454,
+    "range": 0.06229749555874848,
     "finite": 10
    },
    "slow_fraction": {
-    "rho": 0.9354953314429287,
-    "range": 0.060340035035599184,
+    "rho": 0.9847319278346618,
+    "range": 0.05942376734391646,
     "finite": 10
    },
    "timescale_spread": {
-    "rho": 0.9354953314429287,
-    "range": 0.2546639407831277,
+    "rho": 0.8862587350511957,
+    "range": 0.19461466025769086,
     "finite": 10
    },
    "coupling_spread": {
-    "rho": 0.9601136296387952,
-    "range": 0.13323481061102213,
+    "rho": 0.9847319278346618,
+    "range": 0.15339927128036007,
     "finite": 10
    },
    "drift": {
-    "rho": -0.1723280873710658,
-    "range": 0.00927980824157967,
+    "rho": 0.6400757530925302,
+    "range": 0.0024362734421188234,
     "finite": 10
    },
    "sparsity": {
@@ -178,58 +179,58 @@
   },
   "spikes/R4g": {
    "spectrum_steepness": {
-    "spectrum_steepness": null,
-    "shared_fraction": null,
-    "slow_fraction": null,
-    "timescale_spread": null,
-    "coupling_spread": null,
-    "drift": null,
-    "sparsity": null
+    "spectrum_steepness": 1.0,
+    "shared_fraction": 0.098764807552175,
+    "slow_fraction": 0.28522399179107577,
+    "timescale_spread": NaN,
+    "coupling_spread": 0.5902951612031103,
+    "drift": NaN,
+    "sparsity": NaN
    },
    "shared_fraction": {
-    "spectrum_steepness": 2.4382911127389617,
+    "spectrum_steepness": 2.1779895641139984,
     "shared_fraction": 1.0,
-    "slow_fraction": 0.05914407526413446,
-    "timescale_spread": 0.07933860155934262,
-    "coupling_spread": 0.19615239635830328,
-    "drift": 0.5571001428862593,
-    "sparsity": 0.5284185375689869
+    "slow_fraction": 0.0274544828107998,
+    "timescale_spread": 0.026607402124665426,
+    "coupling_spread": 0.07625490185268209,
+    "drift": 0.4618264568533538,
+    "sparsity": 0.5011644724568621
    },
    "slow_fraction": {
-    "spectrum_steepness": 0.3521137572660667,
-    "shared_fraction": 0.9456451296272618,
+    "spectrum_steepness": 0.2214050806638255,
+    "shared_fraction": 0.8609563809700403,
     "slow_fraction": 1.0,
-    "timescale_spread": 0.5443640441663269,
-    "coupling_spread": 0.3694501678605785,
-    "drift": 0.19265117489217662,
-    "sparsity": 0.7858899589697093
+    "timescale_spread": 0.4831012483991884,
+    "coupling_spread": 0.30005957607670286,
+    "drift": 0.17927337859305492,
+    "sparsity": 0.6043062397360882
    },
    "timescale_spread": {
-    "spectrum_steepness": 0.48666976398330647,
-    "shared_fraction": 0.26537085611758476,
-    "slow_fraction": 0.27963368212600287,
+    "spectrum_steepness": 0.5329761461740162,
+    "shared_fraction": 0.43260487912992374,
+    "slow_fraction": 0.2467158881269833,
     "timescale_spread": 1.0,
-    "coupling_spread": 0.1032195107557945,
-    "drift": 0.27424439180672155,
-    "sparsity": 0.441640563750085
+    "coupling_spread": 0.19412855580553537,
+    "drift": 0.24527605101889693,
+    "sparsity": 0.3394131914814314
    },
    "coupling_spread": {
-    "spectrum_steepness": 0.6258822013788977,
-    "shared_fraction": 0.5411608417305588,
-    "slow_fraction": 0.11905121026860738,
-    "timescale_spread": 0.12445234018635662,
+    "spectrum_steepness": 0.4729811803424847,
+    "shared_fraction": 0.415836513689492,
+    "slow_fraction": 0.15435544051099828,
+    "timescale_spread": 0.12226877588028004,
     "coupling_spread": 1.0,
-    "drift": 0.2872752967493063,
-    "sparsity": 0.1815164572351654
+    "drift": 0.2149320696366442,
+    "sparsity": 0.13524233745804376
    },
    "drift": {
-    "spectrum_steepness": 0.15921860050713743,
-    "shared_fraction": 0.2210979787632944,
-    "slow_fraction": 0.12127544748947243,
-    "timescale_spread": 0.11866535754788005,
-    "coupling_spread": 0.16165982746790306,
+    "spectrum_steepness": 0.375743958386006,
+    "shared_fraction": 0.4385528555152687,
+    "slow_fraction": 0.4198025112491624,
+    "timescale_spread": 0.3517832995068622,
+    "coupling_spread": 0.45196046598700607,
     "drift": 1.0,
-    "sparsity": 0.10808232454716192
+    "sparsity": 0.7302846704689643
    },
    "sparsity": {
     "spectrum_steepness": null,
@@ -265,21 +266,21 @@
   },
   "spikes/R4g": {
    "samples_per_tau": {
-    "spectrum_steepness": null,
-    "shared_fraction": 0.019610267078854448,
-    "slow_fraction": 0.256775192338835,
-    "timescale_spread": 0.30875209545207244,
-    "coupling_spread": 0.14379838011416352,
-    "drift": 0.25122315769436465,
+    "spectrum_steepness": 0.462359522195266,
+    "shared_fraction": 0.06780320046651446,
+    "slow_fraction": 0.04597467605263171,
+    "timescale_spread": 0.3076497525555826,
+    "coupling_spread": 0.11330971396141865,
+    "drift": 0.7876877639772473,
     "sparsity": null
    },
    "population": {
-    "spectrum_steepness": null,
-    "shared_fraction": 0.028065263062222123,
-    "slow_fraction": 0.18932354065934148,
-    "timescale_spread": 0.13759814448626534,
-    "coupling_spread": 0.0838166451344766,
-    "drift": 0.09123504439478841,
+    "spectrum_steepness": NaN,
+    "shared_fraction": 0.02650667159997512,
+    "slow_fraction": 0.0671479110100088,
+    "timescale_spread": 0.13354861214870536,
+    "coupling_spread": 0.09103737684461091,
+    "drift": 0.5465323353375883,
     "sparsity": null
    }
   }
@@ -311,7 +312,6 @@
   "spikes/R4g": [
    "shared_fraction",
    "slow_fraction",
-   "timescale_spread",
    "coupling_spread"
   ]
  },
@@ -320,12 +320,12 @@
   "count_per_bin": 0.069,
   "noise": 0.8256257934891025,
   "rate_log_sd": 1.2768354221081473,
-  "group": 8
+  "group": 8,
+  "crop_len": 11718
  },
  "r4g_set": [
   "shared_fraction",
   "slow_fraction",
-  "timescale_spread",
   "coupling_spread"
  ]
 }
