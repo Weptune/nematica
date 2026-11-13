@@ -1,0 +1,1285 @@
+{
+ "preparations": {
+  "R2": {
+   "group": "calcium",
+   "type": "C. elegans, freely moving, in vivo",
+   "rtype": "calcium",
+   "source": "Atanas et al. 2023 (WormWideWeb release, local copy of 30 recordings)",
+   "individuals": [
+    {
+     "id": "2022-06-14-07",
+     "kind": "baseline",
+     "n_units": 130,
+     "duration_s": 960.0302021834068,
+     "tau_med_s": 4.7848267128466455,
+     "noise": 0.013658330614497671,
+     "duration_tau": 200.640537222769,
+     "frames_per_tau": 7.974460306710291,
+     "decay_over_tau": 0.07990136503984792,
+     "decay_over_tau_x2": 0.15980273007969584
+    },
+    {
+     "id": "2022-06-14-13",
+     "kind": "baseline",
+     "n_units": 134,
+     "duration_s": 960.0302196340635,
+     "tau_med_s": 3.5694472414715195,
+     "noise": 0.014600007220759548,
+     "duration_tau": 268.95767178737935,
+     "frames_per_tau": 5.948891471907361,
+     "decay_over_tau": 0.10710739225773364,
+     "decay_over_tau_x2": 0.21421478451546727
+    },
+    {
+     "id": "2022-06-28-01",
+     "kind": "baseline",
+     "n_units": 142,
+     "duration_s": 960.0302159786224,
+     "tau_med_s": 3.806180170477134,
+     "noise": 0.014859743504367473,
+     "duration_tau": 252.2293146880315,
+     "frames_per_tau": 6.343433958019319,
+     "decay_over_tau": 0.10044563544338189,
+     "decay_over_tau_x2": 0.20089127088676378
+    },
+    {
+     "id": "2022-06-28-07",
+     "kind": "baseline",
+     "n_units": 142,
+     "duration_s": 960.0302197039127,
+     "tau_med_s": 3.8353308392647776,
+     "noise": 0.022708921581185648,
+     "duration_tau": 250.31223118367225,
+     "frames_per_tau": 6.392016852048927,
+     "decay_over_tau": 0.0996821921909777,
+     "decay_over_tau_x2": 0.1993643843819554
+    },
+    {
+     "id": "2022-07-20-01",
+     "kind": "baseline",
+     "n_units": 144,
+     "duration_s": 960.0302278995514,
+     "tau_med_s": 4.455945482127749,
+     "noise": 0.01593714965773657,
+     "duration_tau": 215.4492759729927,
+     "frames_per_tau": 7.426341967380598,
+     "decay_over_tau": 0.08579866772809289,
+     "decay_over_tau_x2": 0.17159733545618577
+    },
+    {
+     "id": "2022-08-02-01",
+     "kind": "baseline",
+     "n_units": 152,
+     "duration_s": 960.0302062928677,
+     "tau_med_s": 4.811642120564844,
+     "noise": 0.01684888251541239,
+     "duration_tau": 199.5223631013041,
+     "frames_per_tau": 8.019151212576743,
+     "decay_over_tau": 0.07945607263715096,
+     "decay_over_tau_x2": 0.15891214527430192
+    },
+    {
+     "id": "2022-12-21-06",
+     "kind": "heat (pre-pulse only)",
+     "n_units": 126,
+     "duration_s": 480.01510463654995,
+     "tau_med_s": 4.404916053460024,
+     "noise": 0.004371084236965805,
+     "duration_tau": 108.9725885376413,
+     "frames_per_tau": 7.341295739925129,
+     "decay_over_tau": 0.08679261561301965,
+     "decay_over_tau_x2": 0.1735852312260393
+    },
+    {
+     "id": "2023-01-05-01",
+     "kind": "heat (pre-pulse only)",
+     "n_units": 139,
+     "duration_s": 479.41508345361217,
+     "tau_med_s": 4.359833513589452,
+     "noise": 0.019965485473803724,
+     "duration_tau": 109.96178683412836,
+     "frames_per_tau": 7.266160572720139,
+     "decay_over_tau": 0.0876900883127567,
+     "decay_over_tau_x2": 0.1753801766255134
+    },
+    {
+     "id": "2023-01-05-18",
+     "kind": "heat (pre-pulse only)",
+     "n_units": 122,
+     "duration_s": 479.4150880230154,
+     "tau_med_s": 6.975335194906857,
+     "noise": 0.012430675947915804,
+     "duration_tau": 68.73004301973435,
+     "frames_per_tau": 11.62519278171533,
+     "decay_over_tau": 0.05480943569776083,
+     "decay_over_tau_x2": 0.10961887139552166
+    },
+    {
+     "id": "2023-01-06-01",
+     "kind": "heat (pre-pulse only)",
+     "n_units": 130,
+     "duration_s": 479.4150764309161,
+     "tau_med_s": 3.894861194786761,
+     "noise": 0.009764963568219431,
+     "duration_tau": 123.08913012679609,
+     "frames_per_tau": 6.491231184889659,
+     "decay_over_tau": 0.09815861637053964,
+     "decay_over_tau_x2": 0.1963172327410793
+    },
+    {
+     "id": "2023-01-06-08",
+     "kind": "heat (pre-pulse only)",
+     "n_units": 125,
+     "duration_s": 479.4150750589324,
+     "tau_med_s": 4.5157121609490405,
+     "noise": 0.01879482076915051,
+     "duration_tau": 106.16599507931802,
+     "frames_per_tau": 7.525950276291919,
+     "decay_over_tau": 0.0846630990216229,
+     "decay_over_tau_x2": 0.1693261980432458
+    },
+    {
+     "id": "2023-01-06-15",
+     "kind": "heat (pre-pulse only)",
+     "n_units": 121,
+     "duration_s": 480.0151015399024,
+     "tau_med_s": 3.2892841272483544,
+     "noise": 0.0022497247266181075,
+     "duration_tau": 145.93300030346063,
+     "frames_per_tau": 5.481967740925209,
+     "decay_over_tau": 0.11623021029667013,
+     "decay_over_tau_x2": 0.23246042059334027
+    },
+    {
+     "id": "2023-01-09-08",
+     "kind": "heat (pre-pulse only)",
+     "n_units": 131,
+     "duration_s": 479.41508752305526,
+     "tau_med_s": 3.694623184383609,
+     "noise": 0.004890543243432299,
+     "duration_tau": 129.76021196138257,
+     "frames_per_tau": 6.157511520078184,
+     "decay_over_tau": 0.10347853265565393,
+     "decay_over_tau_x2": 0.20695706531130786
+    },
+    {
+     "id": "2023-01-09-15",
+     "kind": "heat (pre-pulse only)",
+     "n_units": 147,
+     "duration_s": 480.0150953233242,
+     "tau_med_s": 3.578666960944979,
+     "noise": 0.010792395273947597,
+     "duration_tau": 134.13237402693989,
+     "frames_per_tau": 5.964257367422152,
+     "decay_over_tau": 0.10683145148958535,
+     "decay_over_tau_x2": 0.2136629029791707
+    },
+    {
+     "id": "2023-01-09-22",
+     "kind": "heat (pre-pulse only)",
+     "n_units": 146,
+     "duration_s": 479.415087662579,
+     "tau_med_s": 3.3593803969753506,
+     "noise": 0.02009051419029917,
+     "duration_tau": 142.70937822171757,
+     "frames_per_tau": 5.5987911233041014,
+     "decay_over_tau": 0.11380497016050803,
+     "decay_over_tau_x2": 0.22760994032101606
+    },
+    {
+     "id": "2023-01-09-28",
+     "kind": "baseline",
+     "n_units": 145,
+     "duration_s": 960.0302055478096,
+     "tau_med_s": 4.585500203772943,
+     "noise": 0.01033679624395245,
+     "duration_tau": 209.362155247076,
+     "frames_per_tau": 7.642259882698385,
+     "decay_over_tau": 0.0833745870343671,
+     "decay_over_tau_x2": 0.1667491740687342
+    },
+    {
+     "id": "2023-01-10-07",
+     "kind": "heat (pre-pulse only)",
+     "n_units": 144,
+     "duration_s": 479.4150875695632,
+     "tau_med_s": 2.8473135356582553,
+     "noise": 0.028261673571201296,
+     "duration_tau": 168.37453324532794,
+     "frames_per_tau": 4.745373214106122,
+     "decay_over_tau": 0.13427189561236366,
+     "decay_over_tau_x2": 0.2685437912247273
+    },
+    {
+     "id": "2023-01-10-14",
+     "kind": "heat (pre-pulse only)",
+     "n_units": 142,
+     "duration_s": 480.0150961615145,
+     "tau_med_s": 5.327860953617631,
+     "noise": 0.004934821000703693,
+     "duration_tau": 90.09527469660841,
+     "frames_per_tau": 8.879488993112705,
+     "decay_over_tau": 0.07175753818724999,
+     "decay_over_tau_x2": 0.14351507637449998
+    },
+    {
+     "id": "2023-01-16-08",
+     "kind": "heat (pre-pulse only)",
+     "n_units": 137,
+     "duration_s": 480.01509457826614,
+     "tau_med_s": 3.347380679081676,
+     "noise": 0.014355962139444789,
+     "duration_tau": 143.4002106715732,
+     "frames_per_tau": 5.578792361973755,
+     "decay_over_tau": 0.1142129391570904,
+     "decay_over_tau_x2": 0.2284258783141808
+    },
+    {
+     "id": "2023-01-16-15",
+     "kind": "heat (pre-pulse only)",
+     "n_units": 123,
+     "duration_s": 479.4150785005186,
+     "tau_med_s": 4.968827543915516,
+     "noise": 0.010280106107844356,
+     "duration_tau": 96.48454776571532,
+     "frames_per_tau": 8.281118774999488,
+     "decay_over_tau": 0.07694253472405799,
+     "decay_over_tau_x2": 0.15388506944811597
+    },
+    {
+     "id": "2023-01-16-22",
+     "kind": "heat (pre-pulse only)",
+     "n_units": 135,
+     "duration_s": 479.4150902205147,
+     "tau_med_s": 4.914553276931314,
+     "noise": 0.006103073206626175,
+     "duration_tau": 97.55008506487599,
+     "frames_per_tau": 8.190664308171772,
+     "decay_over_tau": 0.07779225583536564,
+     "decay_over_tau_x2": 0.15558451167073128
+    },
+    {
+     "id": "2023-01-17-07",
+     "kind": "heat (pre-pulse only)",
+     "n_units": 144,
+     "duration_s": 479.4150884532137,
+     "tau_med_s": 5.692113850518428,
+     "noise": 0.011741329521616717,
+     "duration_tau": 84.2244377121075,
+     "frames_per_tau": 9.486557841218351,
+     "decay_over_tau": 0.067165590126198,
+     "decay_over_tau_x2": 0.134331180252396
+    },
+    {
+     "id": "2023-01-17-14",
+     "kind": "heat (pre-pulse only)",
+     "n_units": 144,
+     "duration_s": 479.41508333734237,
+     "tau_med_s": 5.034532117921477,
+     "noise": 0.009511623358701427,
+     "duration_tau": 95.22535006396394,
+     "frames_per_tau": 8.390622869470185,
+     "decay_over_tau": 0.07593837458592181,
+     "decay_over_tau_x2": 0.15187674917184363
+    },
+    {
+     "id": "2023-01-19-01",
+     "kind": "baseline",
+     "n_units": 124,
+     "duration_s": 960.030197352171,
+     "tau_med_s": 4.770249050511829,
+     "noise": 0.0031687094871711285,
+     "duration_tau": 201.253684490365,
+     "frames_per_tau": 7.950165007173321,
+     "decay_over_tau": 0.08014553994713433,
+     "decay_over_tau_x2": 0.16029107989426866
+    },
+    {
+     "id": "2023-01-19-08",
+     "kind": "baseline",
+     "n_units": 147,
+     "duration_s": 960.0301962345839,
+     "tau_med_s": 4.503609044255158,
+     "noise": 0.0022448441915180473,
+     "duration_tau": 213.1690799091912,
+     "frames_per_tau": 7.505778983901375,
+     "decay_over_tau": 0.0848906248474784,
+     "decay_over_tau_x2": 0.1697812496949568
+    },
+    {
+     "id": "2023-01-19-15",
+     "kind": "baseline",
+     "n_units": 144,
+     "duration_s": 960.0301869213581,
+     "tau_med_s": 4.284235550438492,
+     "noise": 0.024540753872754784,
+     "duration_tau": 224.0843612866008,
+     "frames_per_tau": 7.140168063551843,
+     "decay_over_tau": 0.08923743368789455,
+     "decay_over_tau_x2": 0.1784748673757891
+    },
+    {
+     "id": "2023-01-19-22",
+     "kind": "baseline",
+     "n_units": 153,
+     "duration_s": 960.0301988422871,
+     "tau_med_s": 4.185338493066098,
+     "noise": 0.026203419062036715,
+     "duration_tau": 229.3793442114135,
+     "frames_per_tau": 6.97534473080243,
+     "decay_over_tau": 0.09134606112957412,
+     "decay_over_tau_x2": 0.18269212225914824
+    },
+    {
+     "id": "2023-01-23-15",
+     "kind": "baseline",
+     "n_units": 147,
+     "duration_s": 960.0302006118,
+     "tau_med_s": 3.4657972254627167,
+     "noise": 0.023353665579589178,
+     "duration_tau": 277.001260650391,
+     "frames_per_tau": 5.776146997465809,
+     "decay_over_tau": 0.11031060415963395,
+     "decay_over_tau_x2": 0.2206212083192679
+    },
+    {
+     "id": "2023-01-23-21",
+     "kind": "baseline",
+     "n_units": 126,
+     "duration_s": 960.0302260369062,
+     "tau_med_s": 4.290403586361632,
+     "noise": 0.034903809721964885,
+     "duration_tau": 223.7622188012004,
+     "frames_per_tau": 7.150447508841991,
+     "decay_over_tau": 0.08910914279739993,
+     "decay_over_tau_x2": 0.17821828559479985
+    },
+    {
+     "id": "2023-03-07-01",
+     "kind": "baseline",
+     "n_units": 153,
+     "duration_s": 960.0301899015903,
+     "tau_med_s": 4.962831428729944,
+     "noise": 0.007540669043221149,
+     "duration_tau": 193.44404574049275,
+     "frames_per_tau": 8.271125605728992,
+     "decay_over_tau": 0.0770354970395226,
+     "decay_over_tau_x2": 0.1540709940790452
+    }
+   ],
+   "median": {
+    "decay_over_tau": 0.08724135196288818,
+    "frames_per_tau": 7.303728156322634,
+    "noise": 0.013044503281206737,
+    "n_individuals": 30,
+    "n_excluded": 0,
+    "tau_med_s": 4.382374783524738,
+    "duration_tau": 157.15376677439428,
+    "n_units": 142.0,
+    "decay_over_tau_x2": 0.17448270392577636
+   }
+  },
+  "R10d": {
+   "group": "spikes",
+   "type": "rat cortical culture",
+   "rtype": "spikes",
+   "source": "DANDI 001603",
+   "individuals": [
+    {
+     "id": "sub-PR1",
+     "kind": "rat planar culture (binned matrix)",
+     "n_units": 219,
+     "duration_s": 300.0,
+     "tau_med_s": 0.03875264689485438,
+     "noise": 0.48569318403671125,
+     "duration_tau": 7741.406691882879,
+     "bins_per_tau": 1.937632344742719,
+     "count_per_bin": 0.045533333333333335,
+     "duration_total_s": 300.0
+    },
+    {
+     "id": "sub-PR2",
+     "kind": "rat planar culture (binned matrix)",
+     "n_units": 246,
+     "duration_s": 300.0,
+     "tau_med_s": 0.05095858273761296,
+     "noise": 0.2351576544008821,
+     "duration_tau": 5887.133901362752,
+     "bins_per_tau": 2.547929136880648,
+     "count_per_bin": 0.061,
+     "duration_total_s": 300.0
+    },
+    {
+     "id": "sub-PR3",
+     "kind": "rat planar culture (binned matrix)",
+     "n_units": 157,
+     "duration_s": 300.0,
+     "tau_med_s": 0.04655744143493435,
+     "noise": 0.2875649316893091,
+     "duration_tau": 6443.653060687634,
+     "bins_per_tau": 2.3278720717467176,
+     "count_per_bin": 0.034866666666666664,
+     "duration_total_s": 300.0
+    },
+    {
+     "id": "sub-PR4",
+     "kind": "rat planar culture (binned matrix)",
+     "n_units": 154,
+     "duration_s": 300.0,
+     "tau_med_s": 0.02677971360069904,
+     "noise": 0.28549035327135985,
+     "duration_tau": 11202.509648653187,
+     "bins_per_tau": 1.338985680034952,
+     "count_per_bin": 0.0431,
+     "duration_total_s": 300.0
+    },
+    {
+     "id": "sub-PR5",
+     "kind": "rat planar culture",
+     "n_units": 196,
+     "duration_s": 1159.5,
+     "tau_med_s": 0.1385102682080918,
+     "noise": 0.7248855952549947,
+     "duration_tau": 8371.220523939912,
+     "bins_per_tau": 6.925513410404591,
+     "count_per_bin": 0.01436826218197499,
+     "duration_total_s": 1159.5184
+    },
+    {
+     "id": "sub-PR6",
+     "kind": "rat planar culture",
+     "n_units": 83,
+     "duration_s": 900.98,
+     "tau_med_s": 0.3008640704971677,
+     "noise": 0.8871306340717823,
+     "duration_tau": 2994.6413957344957,
+     "bins_per_tau": 15.043203524858384,
+     "count_per_bin": 0.01664853825834092,
+     "duration_total_s": 900.9825999999999
+    },
+    {
+     "id": "sub-PR7",
+     "kind": "rat planar culture",
+     "n_units": 309,
+     "duration_s": 859.22,
+     "tau_med_s": NaN,
+     "noise": 1.0,
+     "duration_tau": NaN,
+     "bins_per_tau": NaN,
+     "count_per_bin": 0.012639370591932217,
+     "duration_total_s": 859.22865
+    },
+    {
+     "id": "sub-PR8",
+     "kind": "rat planar culture",
+     "n_units": 195,
+     "duration_s": 900.98,
+     "tau_med_s": 0.14380824237597367,
+     "noise": 0.9524703579784244,
+     "duration_tau": 6265.148541656389,
+     "bins_per_tau": 7.190412118798684,
+     "count_per_bin": 0.012564096872294612,
+     "duration_total_s": 900.98115
+    }
+   ],
+   "median": {
+    "bins_per_tau": 2.547929136880648,
+    "count_per_bin": 0.034866666666666664,
+    "noise": 0.48569318403671125,
+    "n_individuals": 7,
+    "n_excluded": 1,
+    "tau_med_s": 0.05095858273761296,
+    "duration_tau": 6443.653060687634,
+    "n_units": 195.5
+   }
+  },
+  "R9": {
+   "group": "spikes",
+   "type": "rat cortical culture",
+   "rtype": "spikes",
+   "source": "DANDI 002020",
+   "individuals": [
+    {
+     "id": "sub-19880",
+     "kind": "last-day session",
+     "n_units": 500,
+     "duration_s": 1200.0,
+     "tau_med_s": 0.021825745158744553,
+     "noise": 0.2888184445891036,
+     "duration_tau": 54980.94068596857,
+     "bins_per_tau": 1.0912872579372277,
+     "count_per_bin": 0.02354166666666667,
+     "units_total": 1002
+    },
+    {
+     "id": "sub-23280",
+     "kind": "last-day session",
+     "n_units": 12,
+     "duration_s": 1200.0,
+     "tau_med_s": NaN,
+     "noise": 1.0,
+     "duration_tau": NaN,
+     "bins_per_tau": NaN,
+     "count_per_bin": 0.014150000000000001
+    },
+    {
+     "id": "sub-23282",
+     "kind": "last-day session",
+     "n_units": 1,
+     "duration_s": 1200.0,
+     "error": "fewer than 2 units"
+    },
+    {
+     "id": "sub-23302",
+     "kind": "last-day session",
+     "n_units": 2,
+     "duration_s": 1200.0,
+     "tau_med_s": NaN,
+     "noise": 0.9794741857848708,
+     "duration_tau": NaN,
+     "bins_per_tau": NaN,
+     "count_per_bin": 0.014375
+    },
+    {
+     "id": "sub-23311",
+     "kind": "last-day session",
+     "n_units": 14,
+     "duration_s": 1200.0,
+     "tau_med_s": NaN,
+     "noise": 0.9955656104356664,
+     "duration_tau": NaN,
+     "bins_per_tau": NaN,
+     "count_per_bin": 0.006358333333333334
+    },
+    {
+     "id": "sub-23312",
+     "kind": "last-day session",
+     "n_units": 497,
+     "duration_s": 1200.0,
+     "tau_med_s": 0.18578533169538375,
+     "noise": 0.6919119631015594,
+     "duration_tau": 6459.067511139883,
+     "bins_per_tau": 9.289266584769187,
+     "count_per_bin": 0.061766666666666664,
+     "units_total": 958
+    },
+    {
+     "id": "sub-23317",
+     "kind": "last-day session",
+     "n_units": 256,
+     "duration_s": 1200.0,
+     "tau_med_s": 0.6595846963124101,
+     "noise": 0.88209164627237,
+     "duration_tau": 1819.3266258433987,
+     "bins_per_tau": 32.97923481562051,
+     "count_per_bin": 0.013616666666666666
+    }
+   ],
+   "median": {
+    "bins_per_tau": 9.289266584769187,
+    "count_per_bin": 0.02354166666666667,
+    "noise": 0.6919119631015594,
+    "n_individuals": 3,
+    "n_excluded": 4,
+    "tau_med_s": 0.18578533169538375,
+    "duration_tau": 6459.067511139883,
+    "n_units": 135.0
+   }
+  },
+  "R10a": {
+   "group": "spikes",
+   "type": "human brain organoid",
+   "rtype": "spikes",
+   "source": "DANDI 001603",
+   "individuals": [
+    {
+     "id": "sub-HO1",
+     "kind": "human organoid",
+     "n_units": 48,
+     "duration_s": 179.18,
+     "tau_med_s": 0.05890574405663869,
+     "noise": 0.5151601907957724,
+     "duration_tau": 3041.808619337971,
+     "bins_per_tau": 2.9452872028319343,
+     "count_per_bin": 0.05028462998102467,
+     "duration_total_s": 179.19295000000002
+    },
+    {
+     "id": "sub-HO2",
+     "kind": "human organoid",
+     "n_units": 12,
+     "duration_s": 175.94,
+     "tau_med_s": 0.25236457026145026,
+     "noise": 0.7029224014779765,
+     "duration_tau": 697.1660079611246,
+     "bins_per_tau": 12.618228513072513,
+     "count_per_bin": 0.03921791519836308,
+     "duration_total_s": 175.9406
+    },
+    {
+     "id": "sub-HO3",
+     "kind": "human organoid",
+     "n_units": 8,
+     "duration_s": 180.14000000000001,
+     "tau_med_s": 0.8409081801765469,
+     "noise": 0.9266701128643143,
+     "duration_tau": 214.22077254876984,
+     "bins_per_tau": 42.04540900882734,
+     "count_per_bin": 0.05584545353613855,
+     "duration_total_s": 180.14945
+    },
+    {
+     "id": "sub-HO4",
+     "kind": "human organoid",
+     "n_units": 11,
+     "duration_s": 179.98,
+     "tau_med_s": 0.4617721138409442,
+     "noise": 0.7283311327518818,
+     "duration_tau": 389.759352298163,
+     "bins_per_tau": 23.08860569204721,
+     "count_per_bin": 0.08078675408378709,
+     "duration_total_s": 179.98575
+    },
+    {
+     "id": "sub-HO5",
+     "kind": "human organoid",
+     "n_units": 161,
+     "duration_s": 599.96,
+     "tau_med_s": NaN,
+     "noise": 1.0,
+     "duration_tau": NaN,
+     "bins_per_tau": NaN,
+     "count_per_bin": 0.011467431162077471,
+     "duration_total_s": 599.9752000000001
+    },
+    {
+     "id": "sub-HO6",
+     "kind": "human organoid",
+     "n_units": 33,
+     "duration_s": 599.9,
+     "tau_med_s": NaN,
+     "noise": 1.0,
+     "duration_tau": NaN,
+     "bins_per_tau": NaN,
+     "count_per_bin": 0.014469078179696617,
+     "duration_total_s": 599.9121
+    },
+    {
+     "id": "sub-HO7",
+     "kind": "human organoid",
+     "n_units": 21,
+     "duration_s": 599.84,
+     "tau_med_s": NaN,
+     "noise": 0.9604259081047006,
+     "duration_tau": NaN,
+     "bins_per_tau": NaN,
+     "count_per_bin": 0.01460389437183249,
+     "duration_total_s": 599.8507999999999
+    },
+    {
+     "id": "sub-HO8",
+     "kind": "human organoid",
+     "n_units": 25,
+     "duration_s": 599.9,
+     "tau_med_s": NaN,
+     "noise": 1.0,
+     "duration_tau": NaN,
+     "bins_per_tau": NaN,
+     "count_per_bin": 0.015269211535255876,
+     "duration_total_s": 599.9011
+    }
+   ],
+   "median": {
+    "bins_per_tau": 17.85341710255986,
+    "count_per_bin": 0.05306504175858161,
+    "noise": 0.7156267671149291,
+    "n_individuals": 4,
+    "n_excluded": 4,
+    "tau_med_s": 0.3570683420511972,
+    "duration_tau": 543.4626801296438,
+    "n_units": 23.0
+   }
+  },
+  "R10b": {
+   "group": "spikes",
+   "type": "mouse brain organoid",
+   "rtype": "spikes",
+   "source": "DANDI 001603",
+   "individuals": [
+    {
+     "id": "sub-MO1",
+     "kind": "mouse organoid (binned matrix)",
+     "n_units": 95,
+     "duration_s": 606.42,
+     "tau_med_s": 0.1116305490635401,
+     "noise": 0.5330603471814677,
+     "duration_tau": 5432.383922566088,
+     "bins_per_tau": 5.581527453177005,
+     "count_per_bin": 0.11579433395996175,
+     "duration_total_s": 606.428
+    },
+    {
+     "id": "sub-MO10",
+     "kind": "mouse organoid",
+     "n_units": 39,
+     "duration_s": 608.7,
+     "tau_med_s": 0.2955823159451144,
+     "noise": 0.8741790077360502,
+     "duration_tau": 2059.3248214247947,
+     "bins_per_tau": 14.77911579725572,
+     "count_per_bin": 0.08572367340233283,
+     "duration_total_s": 608.7048
+    },
+    {
+     "id": "sub-MO11",
+     "kind": "mouse organoid",
+     "n_units": 16,
+     "duration_s": 619.28,
+     "tau_med_s": 0.0453251633738263,
+     "noise": 0.5665049471829333,
+     "duration_tau": 13663.050586103627,
+     "bins_per_tau": 2.266258168691315,
+     "count_per_bin": 0.14011432631442966,
+     "duration_total_s": 619.28125
+    },
+    {
+     "id": "sub-MO12",
+     "kind": "mouse organoid",
+     "n_units": 20,
+     "duration_s": 620.88,
+     "tau_med_s": 0.08108739120425336,
+     "noise": 0.4438719961970841,
+     "duration_tau": 7656.924101011557,
+     "bins_per_tau": 4.054369560212668,
+     "count_per_bin": 0.1899239788687025,
+     "duration_total_s": 620.89675
+    },
+    {
+     "id": "sub-MO13",
+     "kind": "mouse organoid",
+     "n_units": 15,
+     "duration_s": 604.38,
+     "tau_med_s": 0.0891573630122738,
+     "noise": 0.6873741779031521,
+     "duration_tau": 6778.800758349014,
+     "bins_per_tau": 4.45786815061369,
+     "count_per_bin": 0.1052648995664979,
+     "duration_total_s": 604.384
+    },
+    {
+     "id": "sub-MO14",
+     "kind": "mouse organoid",
+     "n_units": 44,
+     "duration_s": 605.6800000000001,
+     "tau_med_s": 0.017086282050224878,
+     "noise": 0.6501084284432226,
+     "duration_tau": 35448.32036715843,
+     "bins_per_tau": 0.8543141025112438,
+     "count_per_bin": 0.09689935279355436,
+     "duration_total_s": 605.69095
+    },
+    {
+     "id": "sub-MO2",
+     "kind": "mouse organoid (binned matrix)",
+     "n_units": 189,
+     "duration_s": 606.12,
+     "tau_med_s": 0.10524314450348547,
+     "noise": 0.6252538344626158,
+     "duration_tau": 5759.2349873195435,
+     "bins_per_tau": 5.262157225174273,
+     "count_per_bin": 0.13436283244242064,
+     "duration_total_s": 606.13
+    },
+    {
+     "id": "sub-MO3",
+     "kind": "mouse organoid (binned matrix)",
+     "n_units": 198,
+     "duration_s": 602.32,
+     "tau_med_s": 0.08945712980380657,
+     "noise": 0.8199710272485935,
+     "duration_tau": 6733.057513928534,
+     "bins_per_tau": 4.4728564901903285,
+     "count_per_bin": 0.06406893345729844,
+     "duration_total_s": 602.338
+    },
+    {
+     "id": "sub-MO4",
+     "kind": "mouse organoid (binned matrix)",
+     "n_units": 174,
+     "duration_s": 604.48,
+     "tau_med_s": 0.030583394329491788,
+     "noise": 0.773992352255918,
+     "duration_tau": 19764.974204223483,
+     "bins_per_tau": 1.5291697164745894,
+     "count_per_bin": 0.12193951826363156,
+     "duration_total_s": 604.498
+    },
+    {
+     "id": "sub-MO5",
+     "kind": "mouse organoid (binned matrix)",
+     "n_units": 78,
+     "duration_s": 662.84,
+     "tau_med_s": 0.018659169283348785,
+     "noise": 0.6726619347808046,
+     "duration_tau": 35523.55359096883,
+     "bins_per_tau": 0.9329584641674392,
+     "count_per_bin": 0.19712147727958482,
+     "duration_total_s": 662.859
+    },
+    {
+     "id": "sub-MO6",
+     "kind": "mouse organoid (binned matrix)",
+     "n_units": 158,
+     "duration_s": 623.8000000000001,
+     "tau_med_s": 0.05281031629242243,
+     "noise": 0.8804837437799669,
+     "duration_tau": 11812.086042921635,
+     "bins_per_tau": 2.6405158146211214,
+     "count_per_bin": 0.10048092337287592,
+     "duration_total_s": 623.818
+    },
+    {
+     "id": "sub-MO7",
+     "kind": "mouse organoid (binned matrix)",
+     "n_units": 74,
+     "duration_s": 764.2,
+     "tau_med_s": 0.22309261140414754,
+     "noise": 0.5732467849740737,
+     "duration_tau": 3425.4832340260673,
+     "bins_per_tau": 11.154630570207377,
+     "count_per_bin": 0.07810782517665532,
+     "duration_total_s": 764.213
+    },
+    {
+     "id": "sub-MO8",
+     "kind": "mouse organoid (binned matrix)",
+     "n_units": 37,
+     "duration_s": 600.72,
+     "tau_med_s": 0.29317227762330206,
+     "noise": 0.8013432761537189,
+     "duration_tau": 2049.0341203811463,
+     "bins_per_tau": 14.658613881165103,
+     "count_per_bin": 0.0687175389532561,
+     "duration_total_s": 600.736
+    },
+    {
+     "id": "sub-MO9",
+     "kind": "mouse organoid (binned matrix)",
+     "n_units": 148,
+     "duration_s": 630.94,
+     "tau_med_s": 0.5478560376996301,
+     "noise": 0.9675974425343405,
+     "duration_tau": 1151.652909857903,
+     "bins_per_tau": 27.392801884981502,
+     "count_per_bin": 0.06856436428186516,
+     "duration_total_s": 630.956
+    }
+   ],
+   "median": {
+    "bins_per_tau": 4.46536232040201,
+    "count_per_bin": 0.10287291146968691,
+    "noise": 0.6800180563419784,
+    "n_individuals": 14,
+    "n_excluded": 0,
+    "tau_med_s": 0.08930724640804019,
+    "duration_tau": 6755.929136138774,
+    "n_units": 76.0
+   }
+  },
+  "R10c": {
+   "group": "spikes",
+   "type": "mouse neonatal slice",
+   "rtype": "spikes",
+   "source": "DANDI 001603",
+   "individuals": [
+    {
+     "id": "sub-M1S1",
+     "kind": "mouse slice",
+     "n_units": 41,
+     "duration_s": 377.96,
+     "tau_med_s": 0.08302907709318692,
+     "noise": 0.727130554333223,
+     "duration_tau": 4552.140204759835,
+     "bins_per_tau": 4.151453854659346,
+     "count_per_bin": 0.020954598370197905,
+     "duration_total_s": 377.96905000000004
+    },
+    {
+     "id": "sub-M2S1",
+     "kind": "mouse slice",
+     "n_units": 214,
+     "duration_s": 1166.8600000000001,
+     "tau_med_s": 0.5124763720176563,
+     "noise": 0.9771691083649188,
+     "duration_tau": 2276.904973015611,
+     "bins_per_tau": 25.623818600882814,
+     "count_per_bin": 0.013986253706528631,
+     "duration_total_s": 1166.8685500000001
+    },
+    {
+     "id": "sub-M3S1",
+     "kind": "mouse slice",
+     "n_units": 62,
+     "duration_s": 861.6,
+     "tau_med_s": 0.0811537016602205,
+     "noise": 0.687164670997226,
+     "duration_tau": 10616.89094118469,
+     "bins_per_tau": 4.057685083011025,
+     "count_per_bin": 0.011954503249767875,
+     "duration_total_s": 861.6161000000001
+    }
+   ],
+   "median": {
+    "bins_per_tau": 4.151453854659346,
+    "count_per_bin": 0.013986253706528631,
+    "noise": 0.727130554333223,
+    "n_individuals": 3,
+    "n_excluded": 0,
+    "tau_med_s": 0.08302907709318692,
+    "duration_tau": 4552.140204759835,
+    "n_units": 62.0
+   }
+  },
+  "R6": {
+   "group": "spikes",
+   "type": "mouse, in vivo",
+   "rtype": "spikes",
+   "source": "Finkelstein et al., DANDI 000060",
+   "individuals": [
+    {
+     "id": "sub-353936",
+     "kind": "whole session (task)",
+     "n_units": 37,
+     "duration_s": 1200.0,
+     "tau_med_s": 0.6741826256023795,
+     "noise": 0.8385426175280857,
+     "duration_tau": 1779.933143379073,
+     "bins_per_tau": 33.709131280118974,
+     "count_per_bin": 0.15318333333333334,
+     "duration_total_s": 3841.0701699997117
+    },
+    {
+     "id": "sub-353938",
+     "kind": "whole session (task)",
+     "n_units": 56,
+     "duration_s": 1200.0,
+     "tau_med_s": 1.2540207301234692,
+     "noise": 0.9597902458816459,
+     "duration_tau": 956.9219799754424,
+     "bins_per_tau": 62.70103650617346,
+     "count_per_bin": 0.05605,
+     "duration_total_s": 5783.089334998337
+    },
+    {
+     "id": "sub-353939",
+     "kind": "whole session (task)",
+     "n_units": 34,
+     "duration_s": 1200.0,
+     "tau_med_s": 2.718874481855632,
+     "noise": 0.9834726949800805,
+     "duration_tau": 441.35910208734606,
+     "bins_per_tau": 135.9437240927816,
+     "count_per_bin": 0.054724999999999996,
+     "duration_total_s": 4603.751525999368
+    },
+    {
+     "id": "sub-359855",
+     "kind": "whole session (task)",
+     "n_units": 50,
+     "duration_s": 1200.0,
+     "tau_med_s": 1.026454837476719,
+     "noise": 0.8837772584843024,
+     "duration_tau": 1169.0723801837187,
+     "bins_per_tau": 51.32274187383595,
+     "count_per_bin": 0.06864166666666667,
+     "duration_total_s": 4367.470415999518
+    },
+    {
+     "id": "sub-359856",
+     "kind": "whole session (task)",
+     "n_units": 40,
+     "duration_s": 1200.0,
+     "tau_med_s": 1.4716646589912963,
+     "noise": 0.9063049706521404,
+     "duration_tau": 815.4031508934244,
+     "bins_per_tau": 73.58323294956482,
+     "count_per_bin": 0.093775,
+     "duration_total_s": 5732.445447918845
+    },
+    {
+     "id": "sub-365938",
+     "kind": "whole session (task)",
+     "n_units": 23,
+     "duration_s": 1200.0,
+     "tau_med_s": 1.1955898266821443,
+     "noise": 0.8800258356236847,
+     "duration_tau": 1003.6887009402667,
+     "bins_per_tau": 59.77949133410721,
+     "count_per_bin": 0.03358333333333333,
+     "duration_total_s": 7794.81128999901
+    },
+    {
+     "id": "sub-365939",
+     "kind": "whole session (task)",
+     "n_units": 38,
+     "duration_s": 1200.0,
+     "tau_med_s": 0.9234112566152995,
+     "noise": 0.8940577734701048,
+     "duration_tau": 1299.529317412176,
+     "bins_per_tau": 46.17056283076498,
+     "count_per_bin": 0.05505,
+     "duration_total_s": 6521.127001001274
+    },
+    {
+     "id": "sub-365942",
+     "kind": "whole session (task)",
+     "n_units": 70,
+     "duration_s": 1200.0,
+     "tau_med_s": 1.4271914292736896,
+     "noise": 0.9540443071342788,
+     "duration_tau": 840.8122241952439,
+     "bins_per_tau": 71.35957146368447,
+     "count_per_bin": 0.03426666666666667,
+     "duration_total_s": 2641.302367000212
+    },
+    {
+     "id": "sub-365943",
+     "kind": "whole session (task)",
+     "n_units": 39,
+     "duration_s": 1200.0,
+     "tau_med_s": 0.7165189922511089,
+     "noise": 0.9303575328141864,
+     "duration_tau": 1674.7637019779818,
+     "bins_per_tau": 35.82594961255545,
+     "count_per_bin": 0.025716666666666665,
+     "duration_total_s": 4742.047118000445
+    }
+   ],
+   "median": {
+    "bins_per_tau": 59.77949133410721,
+    "count_per_bin": 0.05505,
+    "noise": 0.9063049706521404,
+    "n_individuals": 9,
+    "n_excluded": 0,
+    "tau_med_s": 1.1955898266821443,
+    "duration_tau": 1003.6887009402667,
+    "n_units": 39.0
+   }
+  },
+  "R4": {
+   "group": "spikes",
+   "type": "mouse, in vivo",
+   "rtype": "spikes",
+   "source": "Stringer et al. 2019, figshare 7739750",
+   "individuals": [
+    {
+     "id": "Krebs",
+     "kind": "spontaneous, 8 probes",
+     "n_units": 490,
+     "duration_s": 1200.0,
+     "tau_med_s": 0.04687196703806926,
+     "noise": 0.8256257934891025,
+     "duration_tau": 25601.656508790507,
+     "bins_per_tau": 2.343598351903463,
+     "count_per_bin": 0.069,
+     "units_total": 1462,
+     "duration_total_s": 1301.8511807252466
+    },
+    {
+     "id": "Robbins",
+     "kind": "spontaneous, 8 probes",
+     "n_units": 482,
+     "duration_s": 1200.0,
+     "tau_med_s": 0.10392155759503181,
+     "noise": 0.8827383761933363,
+     "duration_tau": 11547.17103718015,
+     "bins_per_tau": 5.1960778797515905,
+     "count_per_bin": 0.10638333333333333,
+     "units_total": 2296,
+     "duration_total_s": 2225.7675053270264
+    },
+    {
+     "id": "Waksman",
+     "kind": "spontaneous, 8 probes",
+     "n_units": 479,
+     "duration_s": 1200.0,
+     "tau_med_s": 0.0359001781641586,
+     "noise": 0.7914486814082771,
+     "duration_tau": 33426.01795770572,
+     "bins_per_tau": 1.79500890820793,
+     "count_per_bin": 0.060616666666666666,
+     "units_total": 2688,
+     "duration_total_s": 2485.4476636362524
+    }
+   ],
+   "median": {
+    "bins_per_tau": 2.343598351903463,
+    "count_per_bin": 0.069,
+    "noise": 0.8256257934891025,
+    "n_individuals": 3,
+    "n_excluded": 0,
+    "tau_med_s": 0.04687196703806926,
+    "duration_tau": 25601.656508790507,
+    "n_units": 482.0
+   }
+  },
+  "R3": {
+   "group": "calcium",
+   "type": "zebrafish larva, in vivo",
+   "rtype": "calcium",
+   "source": "Chen et al. 2018, figshare 7272617 (streamed)",
+   "individuals": [
+    {
+     "id": "subject_1",
+     "error": "no Spontaneous block"
+    },
+    {
+     "id": "subject_2",
+     "error": "no Spontaneous block"
+    },
+    {
+     "id": "subject_3",
+     "error": "no Spontaneous block"
+    },
+    {
+     "id": "subject_4",
+     "error": "no Spontaneous block"
+    },
+    {
+     "id": "subject_5",
+     "error": "no Spontaneous block"
+    },
+    {
+     "id": "subject_6",
+     "error": "no Spontaneous block"
+    },
+    {
+     "id": "subject_7",
+     "error": "no Spontaneous block"
+    },
+    {
+     "id": "subject_8",
+     "error": "TimeSeries unreadable: OSError"
+    },
+    {
+     "id": "subject_09",
+     "error": "TimeSeries unreadable: OSError"
+    },
+    {
+     "id": "subject_10",
+     "kind": "Spontaneous block, 720 frames",
+     "n_units": 433,
+     "duration_s": 365.48223350253807,
+     "tau_med_s": 2.7673514377201207,
+     "noise": 0.5265093226778936,
+     "duration_tau": 132.0693239466687,
+     "frames_per_tau": 5.451682332308638,
+     "decay_over_tau": 0.05213270064742938,
+     "decay_over_tau_x2": 0.10426540129485876,
+     "units_total": 83396
+    },
+    {
+     "id": "subject_11",
+     "error": "TimeSeries unreadable: OSError"
+    },
+    {
+     "id": "subject_12",
+     "kind": "Spontaneous block, 640 frames",
+     "n_units": 409,
+     "duration_s": 250.0,
+     "tau_med_s": 2.9437316518864884,
+     "noise": 0.47340426429817795,
+     "duration_tau": 84.9262193582719,
+     "frames_per_tau": 7.535953028829411,
+     "decay_over_tau": 0.04900905420385086,
+     "decay_over_tau_x2": 0.09801810840770173,
+     "units_total": 58105
+    },
+    {
+     "id": "subject_13",
+     "kind": "Spontaneous block, 1200 frames",
+     "n_units": 421,
+     "duration_s": 515.0214592274679,
+     "tau_med_s": 3.4073150984985094,
+     "noise": 0.6843853339648385,
+     "duration_tau": 151.15169696351848,
+     "frames_per_tau": 7.9390441795015265,
+     "decay_over_tau": 0.04234111020506179,
+     "decay_over_tau_x2": 0.08468222041012358,
+     "units_total": 73202
+    },
+    {
+     "id": "subject_14",
+     "kind": "Spontaneous block, 500 frames",
+     "n_units": 428,
+     "duration_s": 220.26431718061673,
+     "tau_med_s": 2.3031114441731333,
+     "noise": 0.4806494719320533,
+     "duration_tau": 95.63771555123178,
+     "frames_per_tau": 5.228062978273012,
+     "decay_over_tau": 0.06264113030826098,
+     "decay_over_tau_x2": 0.12528226061652195,
+     "units_total": 72412
+    },
+    {
+     "id": "subject_15",
+     "kind": "Spontaneous block, 600 frames",
+     "n_units": 414,
+     "duration_s": 257.51072961373393,
+     "tau_med_s": 2.8272890677058773,
+     "noise": 0.4852919885034564,
+     "duration_tau": 91.0804390520576,
+     "frames_per_tau": 6.587583527754694,
+     "decay_over_tau": 0.05102750395662928,
+     "decay_over_tau_x2": 0.10205500791325856,
+     "units_total": 53180
+    },
+    {
+     "id": "subject_16",
+     "kind": "Spontaneous block, 517 frames",
+     "n_units": 420,
+     "duration_s": 258.5,
+     "tau_med_s": 2.8462553764908574,
+     "noise": 0.4905674926602804,
+     "duration_tau": 90.82108448002447,
+     "frames_per_tau": 5.692510752981715,
+     "decay_over_tau": 0.05068747705512144,
+     "decay_over_tau_x2": 0.10137495411024287,
+     "units_total": 62737
+    },
+    {
+     "id": "subject_17",
+     "error": "stated frame rate 38.0 Hz outside 1 to 5"
+    },
+    {
+     "id": "subject_18",
+     "kind": "Spontaneous block, 1000 frames",
+     "n_units": 361,
+     "duration_s": 500.0,
+     "tau_med_s": 2.066243399566201,
+     "noise": 0.689569957562201,
+     "duration_tau": 241.9850440199702,
+     "frames_per_tau": 4.132486799132402,
+     "decay_over_tau": 0.0698221245953817,
+     "decay_over_tau_x2": 0.1396442491907634,
+     "units_total": 59498
+    }
+   ],
+   "median": {
+    "decay_over_tau": 0.05102750395662928,
+    "frames_per_tau": 5.692510752981715,
+    "noise": 0.4905674926602804,
+    "n_individuals": 7,
+    "n_excluded": 11,
+    "tau_med_s": 2.8272890677058773,
+    "duration_tau": 95.63771555123178,
+    "n_units": 420.0,
+    "decay_over_tau_x2": 0.10205500791325856
+   }
+  }
+ },
+ "provenance": {
+  "code_sha256_16": "b999b7da794825c2",
+  "seconds_last_run": 10
+ }
+}

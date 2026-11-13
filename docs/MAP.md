@@ -887,3 +887,55 @@ Spontaneous block). The Spontaneous blocks last about 4 to 9 minutes.
   of R9. For subjects with several sessions the first curated-spikes session is used.
 - So the spike group has five types (mouse in vivo: R4, R6; rat culture: R9, R10d; human organoid;
   mouse organoid; mouse slice) and is powered if its measures survive step 2.
+
+## Amendment 9 and step 1 results (13 Nov 2026; instrument numbers only, no measure computed)
+
+**Amendment 9 (made during step 1, mechanical):** instrument numbers use at most 500 randomly chosen units
+per individual (seeded; memory; aggregates are pooled or medians, so a random subset is unbiased); a
+preparation's numbers are medians over the individuals whose numbers are all finite, with the count of
+excluded individuals reported; curated spikes shipped only as a 1 ms binned matrix (four rat planar
+cultures) are summed into 20 ms bins; the three zebrafish archives over 4 GB store member offsets 2^32 too
+large and a wrong CRC, so offsets are corrected and the CRC check is left to HDF5 (fish 8, 9 and 11 still
+failed to open and are excluded). Every individual's numbers equal what the final code
+(`docs/figures/map_step1.json`, hash b999b7da794825c2) produces; the cached values were computed before
+loader-only changes that do not alter them (checked: the two cultures with over 500 units were recomputed
+under the unit cap).
+
+**Step 1 results** (`docs/figures/map_step1.json`; medians over individuals):
+
+| prep | type | individuals usable / tried | units | timescale | samples per timescale | noise share | length in timescales | other |
+|---|---|---|---|---|---|---|---|---|
+| R2 | worm, freely moving | 30 / 30 | 142 | 4.4 s | 7.3 frames | 0.013 | 157 (baseline 193 to 277; pre-heat 84 to 98) | decay ratio 0.087 (x2: 0.17) |
+| R3 | zebrafish | 7 / 18 | 420 | 2.8 s | 5.7 frames | 0.49 | 96 (91 to 242) | decay ratio 0.051 (x2: 0.10) |
+| R4 | mouse, Neuropixels | 3 / 3 | 482 (of 1,462 to 2,688) | 47 ms | 2.3 bins | 0.83 | 25,600 | 0.069 spikes per bin |
+| R6 | mouse ALM | 9 / 9 | 39 | 1.2 s | 60 bins | 0.91 | 1,000 | 0.055 |
+| R9 | rat culture (HD-MEA) | 3 / 7 | 135 | 0.19 s | 9.3 bins | 0.69 | 6,500 | 0.024 |
+| R10a | human organoid | 4 / 8 | 23 | 0.36 s | 18 bins | 0.72 | 540 | 0.053 |
+| R10b | mouse organoid | 14 / 14 | 76 | 89 ms | 4.5 bins | 0.68 | 6,800 | 0.10 |
+| R10c | mouse slice | 3 / 3 | 62 | 83 ms | 4.2 bins | 0.73 | 4,600 | 0.014 |
+| R10d | rat planar culture | 7 / 8 | 196 | 51 ms | 2.5 bins | 0.49 | 6,400 | 0.035 |
+
+Not loaded: R1 (no rest, amendment 6), R5 (deconvolved only; Allen fallback not yet loaded), R11 (volumes
+only), R7 and R8 (exploratory).
+
+**What step 1 shows, before any measure:**
+1. *Recordings shorter than a window.* The registered window is 150 timescales. Zebrafish Spontaneous blocks
+   are 91 to 242 timescales (median 96), so at most one or two fish could be measured; the pre-heat worm
+   recordings (84 to 98) cannot; the 13 baseline worms can. **The calcium group can be mapped, at best,
+   for worms alone**, so the calcium arm is descriptive only (already unpowered by amendment 8).
+2. *Too few units.* The protocol draws 50 units. R6 (median 39) and R10a (median 23) fall below it in most
+   individuals and cannot be measured as registered.
+3. *Where the timescale estimator fails.* In 9 spike individuals (4 of 7 cultures, 4 of 8 human organoids,
+   1 planar culture) the population timescale is undefined: either very few units (1 to 14) or a lag-1
+   autocovariance below lag 2 (refractoriness or bursts at 20 ms, which the white-noise model does not
+   describe), which makes the extrapolated signal variance negative. They are excluded and counted.
+4. *The spike group can still be powered*: mouse in vivo (R4), rat culture (R9, R10d), mouse organoid
+   (R10b) and mouse slice (R10c) are four types with at least 3 individuals of at least 50 units. Their
+   noise shares are 0.49 to 0.83, between calibration profiles A (0.6) and R (0.97), so step 2 decides.
+   R4's 2.3 bins per timescale is close to the 2-sample floor.
+5. *The worm traces are probably pre-processed:* a white-noise share of 0.013 is far below any raw
+   fluorescence; `trace_original` in this release appears to be denoised. This is flagged; an AI matched
+   to it will be recorded with almost no noise.
+
+*Next:* step 2 (calibration at each spike preparation's own numbers) and review 13's items 4 to 10, both
+before any brain measurement; then an independent review of steps 1 and 2.

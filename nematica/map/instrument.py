@@ -106,8 +106,9 @@ KEYS = {"calcium": ("decay_over_tau", "frames_per_tau", "noise"),
 
 def preparation_numbers(individuals, rtype):
     """Median over individuals (those without an error)."""
-    rows = [r for r in individuals if "error" not in r]
-    return {k: float(np.median([r[k] for r in rows])) for k in KEYS[rtype]} | {"n_individuals": len(rows)}
+    rows = [r for r in individuals if "error" not in r and all(np.isfinite(r.get(k, np.nan)) for k in KEYS[rtype])]
+    return {k: float(np.median([r[k] for r in rows])) if rows else np.nan for k in KEYS[rtype]} | {
+        "n_individuals": len(rows), "n_excluded": len(individuals) - len(rows)}
 
 
 def group_numbers(preps, rtype):
