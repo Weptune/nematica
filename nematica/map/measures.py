@@ -287,24 +287,14 @@ def _is_counts(X):
 
 
 def sparsity(X):
-    """Median excess kurtosis of unit activity, corrected for measurement noise (amendment 4).
-    Counts (non-negative integers, spike recordings): the kurtosis of the underlying rate, from factorial
-    moments (for Poisson counts E[C(C-1)...(C-k+1)] = E[rate^k]), so Poisson noise drops out exactly.
-    Otherwise: disattenuated for white noise (the excess kurtosis of signal plus independent Gaussian noise is
-    the signal's times (1 - noise share)^2), and nan when the median noise share is above
-    MAX_NOISE_FOR_DISATTENUATION."""
+    """Median excess kurtosis of unit activity, disattenuated for white noise (the excess kurtosis of signal
+    plus independent Gaussian noise is the signal's times (1 - noise share)^2); nan when the median noise share
+    is above MAX_NOISE_FOR_DISATTENUATION. Amendment 10: **not defined for spike counts** (nan): the
+    factorial-moment estimate of amendment 4 was unusable at 0.1 to 0.5 spikes per bin and depended on the
+    spread of rates (review 13, item 5)."""
     X = np.asarray(X, float)
     if _is_counts(X):
-        m1 = X.mean(0)
-        f2 = (X * (X - 1)).mean(0)
-        f3 = (X * (X - 1) * (X - 2)).mean(0)
-        f4 = (X * (X - 1) * (X - 2) * (X - 3)).mean(0)
-        var = f2 - m1 ** 2
-        mu4 = f4 - 4 * f3 * m1 + 6 * f2 * m1 ** 2 - 3 * m1 ** 4
-        ok = var > 1e-12
-        if not ok.any():
-            return np.nan
-        return float(np.median(mu4[ok] / var[ok] ** 2 - 3))
+        return np.nan
     Z = _z(X)
     nf = noise_fraction(Z)
     if np.median(nf) > MAX_NOISE_FOR_DISATTENUATION:
@@ -364,27 +354,43 @@ def measure_matched(X, seed=0, n_units=N_UNITS, n_draws=N_DRAWS, window_tau=WIND
     return out
 
 
-def split_half_se(X, seed=0, n_splits=3, segments=None, **kw):
-    """C3 (amendment 4): standard error of each matched value from disjoint halves: two unit pools when there
-    are at least 2 x n_units units, otherwise the first and second half of the recording (all units).
-    SE^2 = mean over n_splits random splits of (a - b)^2 / 4. Missing values are nan (they fail the gate)."""
+def split_half_se(X, seed=0, n_splits=5, segments=None, **kw):
+    """C3 (amendments 4 and 10): standard error of each matched value from disjoint halves, SE^2 = mean over
+    n_splits random splits of (a - b)^2 / 4. Halves: two unit pools when there are at least 2 x n_units
+    units; otherwise the first and second half of the recording when each half is at least
+    1.2 x window_tau timescales; otherwise (amendment 10, review 13 item 9) two unit pools of h = floor(n/2)
+    units each (at least 20), measured with n_units = h, and the SE scaled by sqrt(h / n_units) (the SE of a
+    mean over units shrinks as 1/sqrt(units)). Missing values are nan (they fail the gate)."""
     X = np.asarray(X, float)
     X = X[:, X.std(0) > 1e-9]
     n = kw.get("n_units", N_UNITS)
+    w = kw.get("window_tau", WINDOW_TAU)
+    t = tau_med(X, segments=segments)
     sq = {m: [] for m in MEASURES}
+    scale = 1.0
     for k in range(n_splits):
         rng = np.random.default_rng(seed + 991 + k)
+        kw2 = dict(kw)
         if X.shape[1] >= 2 * n:
             p = rng.permutation(X.shape[1]); h = X.shape[1] // 2
             A, Bm = X[:, p[:h]], X[:, p[h:2 * h]]
             sa = sb = segments
-        else:
+        elif np.isfinite(t) and len(X) / 2 >= 1.2 * w * t:
             h = len(X) // 2
             A, Bm = X[:h], X[h:2 * h]
             sa = [s_ for s_ in (segments or []) if s_ < h]
             sb = [s_ - h for s_ in (segments or []) if s_ > h]
-        a = measure_matched(A, seed=seed + 10 * k, segments=sa, **kw)
-        b = measure_matched(Bm, seed=seed + 10 * k + 1, segments=sb, **kw)
+        else:
+            h = X.shape[1] // 2
+            if h < 20:
+                return {m: np.nan for m in MEASURES}
+            p = rng.permutation(X.shape[1])
+            A, Bm = X[:, p[:h]], X[:, p[h:2 * h]]
+            sa = sb = segments
+            kw2["n_units"] = h
+            scale = np.sqrt(h / n)
+        a = measure_matched(A, seed=seed + 10 * k, segments=sa, **kw2)
+        b = measure_matched(Bm, seed=seed + 10 * k + 1, segments=sb, **kw2)
         for m in MEASURES:
             sq[m].append((a.get(m, np.nan) - b.get(m, np.nan)) ** 2 / 4)
-    return {m: float(np.sqrt(np.mean(v))) if np.isfinite(v).all() else np.nan for m, v in sq.items()}
+    return {m: float(np.sqrt(np.mean(v)) * scale) if np.isfinite(v).all() else np.nan for m, v in sq.items()}

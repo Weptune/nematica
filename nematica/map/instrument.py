@@ -97,11 +97,12 @@ def instrument_numbers(ind, rtype):
             return {**out, "error": f"spikes must be binned at {SPIKE_BIN_S} s"}
         out["bins_per_tau"] = float(t)
         out["count_per_bin"] = float(np.median(X.mean(0)))
+        out["rate_log_sd"] = float(np.std(np.log(X.mean(0))))          # amendment 10: spread of unit rates
     return out
 
 
 KEYS = {"calcium": ("decay_over_tau", "frames_per_tau", "noise"),
-        "spikes": ("bins_per_tau", "count_per_bin", "noise")}
+        "spikes": ("bins_per_tau", "count_per_bin", "noise", "rate_log_sd")}
 
 
 def preparation_numbers(individuals, rtype):

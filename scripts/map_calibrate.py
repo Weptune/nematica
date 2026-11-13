@@ -104,11 +104,11 @@ def _cached(args):
     return r
 
 
-def run_cached(jobs, t0):
+def run_cached(jobs, t0, cache_tag=""):
     """Each job's result is cached under the code hash (a rerun after a crash skips finished jobs). Large
     systems (3,000 units, or 30 samples per tau) run one at a time to bound memory."""
     CACHE.mkdir(parents=True, exist_ok=True)
-    tag = code_hash()
+    tag = code_hash() + cache_tag
     big = [i for i, j in enumerate(jobs) if j[0].get("N", 0) >= 3000 or j[0].get("tau_fast", 0) >= 30]
     small = [i for i in range(len(jobs)) if i not in big]
     out = {}
@@ -123,14 +123,23 @@ def run_cached(jobs, t0):
     return [out[i] for i in range(len(jobs))]
 
 
-def main():
+def main(profiles=None, out_path=None, cache_tag="", c4=None, sweep=None):
+    """Run C1, C4, X and TAU for the given profiles (default: the synthetic A and R profiles) and write the
+    JSON (default docs/figures/map_calibration.json). Step 2 (scripts/map_step2.py) calls this with each
+    preparation's own instrument numbers."""
+    global PROFILES, KEYS
+    if profiles is not None:
+        PROFILES = profiles
+        KEYS = [(rt, pn) for rt, ps in PROFILES.items() for pn in ps]
+    C4_ = c4 if c4 is not None else C4
+    SWEEP_ = sweep if sweep is not None else SWEEP
     t0 = time.time()
     jobs, tags = [], []
-    for prop, (par, levels, sign, fixed) in SWEEP.items():
+    for prop, (par, levels, sign, fixed) in SWEEP_.items():
         for lv in levels:
             for s in SEEDS:
                 jobs.append(({**fixed, par: lv}, 1000 * s + 17, s, 1.0)); tags.append(("C1", prop, lv))
-    for knob, vals in C4.items():
+    for knob, vals in C4_.items():
         for v in vals:
             for s in SEEDS:
                 if knob == "samples_per_tau":
@@ -140,10 +149,10 @@ def main():
                 else:
                     p = {}
                 jobs.append((p, 300 + s, s, v if knob == "gain" else 1.0)); tags.append(("C4", knob, v))
-    results = run_cached(jobs, t0)
-    res = {p: [] for p in SWEEP}
-    c4 = {k: {key: {v: [] for v in vals} for key in KEYS} for k, vals in C4.items()}
-    taur = {key: {v: [] for v in C4["samples_per_tau"]} for key in KEYS}
+    results = run_cached(jobs, t0, cache_tag)
+    res = {p: [] for p in SWEEP_}
+    c4 = {k: {key: {v: [] for v in vals} for key in KEYS} for k, vals in C4_.items()}
+    taur = {key: {v: [] for v in C4_.get("samples_per_tau", [])} for key in KEYS}
     unreached = 0
     for (kind, name, lv), r in zip(tags, results):
         unreached += sum(not ok for _, ok, _ in r.values())
@@ -152,6 +161,8 @@ def main():
         else:
             for key in KEYS:
                 c4[name][key][lv].append(r[key][0])
+                if name == "samples_per_tau":
+                    pass
                 if name == "samples_per_tau":
                     taur[key][lv].append(r[key][2])
     head = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=ROOT).stdout.strip()
@@ -164,7 +175,11 @@ def main():
         out["C1"][kk], out["X"][kk], out["C4"][kk] = {}, {}, {}
         out["TAU"][kk] = {str(v): float(np.mean(t)) for v, t in taur[key].items()}
         for m in M:
-            par, levels, sign, _ = SWEEP[m]
+            if m not in SWEEP_:
+                out["C1"][kk][m] = {"rho": float("nan"), "range": float("nan"), "finite": 0}
+                out["X"][kk][m] = {}
+                continue
+            par, levels, sign, _ = SWEEP_[m]
             x = np.array([lv for lv, v in res[m]]); y = np.array([v[key][m] for lv, v in res[m]])
             ok = np.isfinite(y)
             rho = float(spearmanr(x[ok], y[ok])[0] * sign) if ok.sum() >= 6 else float("nan")
@@ -172,12 +187,12 @@ def main():
             rngc = float(np.nanmax(means) - np.nanmin(means)) if np.isfinite(means).sum() > 1 else float("nan")
             out["C1"][kk][m] = {"rho": rho, "range": rngc, "finite": int(ok.sum())}
             out["X"][kk][m] = {}
-            for prop in SWEEP:
+            for prop in SWEEP_:
                 lv_ = sorted(set(lv for lv, _ in res[prop]))
                 mm = [np.nanmean([v[key][m] for lv, v in res[prop] if lv == l]) for l in lv_]
                 ch = float(np.nanmax(mm) - np.nanmin(mm)) if np.isfinite(mm).sum() > 1 else float("nan")
                 out["X"][kk][m][prop] = ch / rngc if rngc == rngc and rngc > 0 else None
-        for knob, vals in C4.items():
+        for knob, vals in C4_.items():
             if knob == "gain" and key[0] != "calcium":
                 continue
             out["C4"][kk][knob] = {}
@@ -188,7 +203,7 @@ def main():
                 out["C4"][kk][knob][m] = ch / rngc if rngc == rngc and rngc > 0 else None
         out["used"][kk] = [m for m in M if out["C1"][kk][m]["rho"] >= 0.9 and all(
             v[m] is not None and v[m] == v[m] and v[m] < 0.5 for v in out["C4"][kk].values())]
-    (ROOT / "docs/figures/map_calibration.json").write_text(json.dumps(out, indent=1))
+    (out_path or ROOT / "docs/figures/map_calibration.json").write_text(json.dumps(out, indent=1))
     print("unreached matches:", unreached, "of", len(jobs) * 4)
     for key in KEYS:
         kk = "/".join(key)

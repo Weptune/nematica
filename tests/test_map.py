@@ -204,3 +204,35 @@ def test_match_with_segments_reaches():
     A = synthetic.population(np.random.default_rng(4), N=100, T=8000)
     k = R.match(A, "calcium", dict(decay_over_tau=0.3, frames_per_tau=4, noise=0.3), segments=[2000, 4000, 6000])
     assert k["reached"]
+
+
+# ---------------------------------------------------------------- amendment 10
+def test_sparsity_undefined_for_counts():
+    C = np.random.default_rng(0).poisson(0.3, size=(2000, 20)).astype(float)
+    assert np.isnan(M.sparsity(C))
+
+
+def test_spike_match_with_rate_spread_hits_median_count():
+    A = synthetic.population(np.random.default_rng(1), N=100, T=8000)
+    k = R.match(A, "spikes", dict(bins_per_tau=4, count_per_bin=0.1, noise=0.7, rate_log_sd=1.0))
+    Y, _ = R.record_matched(A, "spikes", k, rng=np.random.default_rng(0))
+    assert k["reached"] and abs(np.median(Y.mean(0)) - 0.1) < 0.02
+    assert 0.7 < np.std(np.log(Y.mean(0) + 1e-9)) < 1.4
+
+
+def test_transfer_gate(world):
+    preps, ais, ms = world
+    B = An.bvu(preps, ms)
+    ais[0]["at"]["p1"]["values"]["sparsity"] += 0.5           # moves 5 BVU between instruments
+    use, why = An.usable_measures(preps, ais, ms, B)
+    assert "sparsity" not in use and "transfer" in why["sparsity"]
+
+
+def test_bootstrap_needs_instances(world):
+    preps, ais, ms = world
+    B = An.bvu(preps, ms)
+    for a in ais[:2]:
+        for p in preps:
+            for r in a["at"][p["id"]]["replicates"]:
+                r["instance"] = 0                              # one network seed only
+    assert not An.h4(preps, ais[0], ais[1], ms, B)["decided"]

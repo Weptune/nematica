@@ -80,23 +80,35 @@ def mapped(preps, ais):
 
 
 def group_budget(preps, ais, m):
-    """F12: each AI's mismatch-budget change at a preparation is computed with common random numbers and the
-    no-change floor removed (by the pipeline); the group's budget is the median over AIs of each AI's largest
-    change over the preparations. Missing anywhere: nan (fails the gate, F10)."""
-    per_ai = []
+    """Amendment 10 (review 13, item 6): each AI's mismatch-budget change at a preparation (computed by the
+    pipeline with common random numbers and its seed-to-seed floor subtracted); the group's budget is the
+    **largest** change over AIs and preparations. Missing anywhere: nan (fails the gate)."""
+    c = [a["at"].get(p["id"], {}).get("budget", {}).get(m, np.nan) for a in ais for p in preps]
+    return float(max(c)) if c and np.all(np.isfinite(c)) else np.nan
+
+
+TRANSFER_LIMIT = 0.5
+
+
+def transfer_range(preps, ais, m):
+    """Amendment 10 (review 13, item 4), the instrument-transfer gate: how far one AI's value moves when it
+    is recorded at the different preparations' instruments of the group; the largest range over AIs. A large
+    range means instrument differences, not systems, would set real-to-real distances."""
+    r = []
     for a in ais:
-        c = [a["at"].get(p["id"], {}).get("budget", {}).get(m, np.nan) for p in preps]
-        if not np.all(np.isfinite(c)):
+        v = [ai_value(a, m, p["id"]) for p in preps]
+        if not np.all(np.isfinite(v)):
             return np.nan
-        per_ai.append(max(c))
-    return float(np.median(per_ai)) if per_ai else np.nan
+        r.append(max(v) - min(v))
+    return float(max(r)) if r else np.nan
 
 
 def usable_measures(preps, ais, calibrated, B, budget_limit=BUDGET_LIMIT, c3_limit=C3_LIMIT):
     """Measurements used in a group: calibrated at the group's instrument numbers (step 2); a finite BVU;
     finite in every mapped system (a nan anywhere drops the measurement for the group, so nan never shrinks a
     distance); every preparation's pooled split-half SE below c3_limit BVU (C3; missing fails); the group's
-    budget (group_budget) at most budget_limit BVU (missing fails)."""
+    budget (group_budget) at most budget_limit BVU (missing fails); every AI's range across the group's
+    instruments below TRANSFER_LIMIT BVU (amendment 10)."""
     use, why = [], {}
     for m in calibrated:
         sd = B.get(m, {}).get("sd", np.nan)
@@ -111,6 +123,9 @@ def usable_measures(preps, ais, calibrated, B, budget_limit=BUDGET_LIMIT, c3_lim
         b = group_budget(preps, ais, m)
         if not np.isfinite(b) or b > budget_limit * sd:
             why[m] = "mismatch budget: missing or too large"; continue
+        tr = transfer_range(preps, ais, m)
+        if len(preps) > 1 and (not np.isfinite(tr) or tr >= TRANSFER_LIMIT * sd):
+            why[m] = "instrument transfer: an AI moves too much across the group's instruments"; continue
         use.append(m)
     return use, why
 
@@ -247,16 +262,35 @@ def _resample_prep(p, rng):
 
 
 def _resample_ai(a, preps, measures, rng):
+    """Amendment 10 (review 13, item 7): hierarchical. Replicates carry an `instance` key (a network seed, a
+    model checkpoint or text segment set); instances are drawn with replacement, then each drawn instance's
+    recordings with replacement, and everything drawn is averaged. Replicates without the key count as one
+    instance each."""
     at = {}
     for p in preps:
         reps = a["at"][p["id"]]["replicates"]
-        idx = rng.integers(len(reps), size=len(reps))
-        at[p["id"]] = {"values": {m: float(np.mean([reps[i].get(m, np.nan) for i in idx])) for m in measures}}
+        groups = {}
+        for i, r in enumerate(reps):
+            groups.setdefault(r.get("instance", i), []).append(r)
+        keys = list(groups)
+        drawn = []
+        for k in rng.choice(len(keys), size=len(keys)):
+            g = groups[keys[k]]
+            drawn += [g[j] for j in rng.integers(len(g), size=len(g))]
+        at[p["id"]] = {"values": {m: float(np.mean([r.get(m, np.nan) for r in drawn])) for m in measures}}
     return {**a, "at": at}
 
 
+MIN_INSTANCES = 3
+
+
 def enough_replicates(a, preps):
-    return all(len(a["at"].get(p["id"], {}).get("replicates", [])) >= MIN_REPLICATES for p in preps)
+    """At least MIN_REPLICATES recordings from at least MIN_INSTANCES instances at every instrument."""
+    for p in preps:
+        reps = a["at"].get(p["id"], {}).get("replicates", [])
+        if len(reps) < MIN_REPLICATES or len({r.get("instance", i) for i, r in enumerate(reps)}) < MIN_INSTANCES:
+            return False
+    return True
 
 
 def boot_diff(a, b, preps, measures, B, n=200, seed=0):
@@ -279,7 +313,7 @@ def _paired(name, a, b, preps, measures, B, rule):
     if not powered(preps, measures):
         return {"decided": False, "why": "group not powered"}
     if not (enough_replicates(a, preps) and enough_replicates(b, preps)):
-        return {"decided": False, "why": f"fewer than {MIN_REPLICATES} replicates"}
+        return {"decided": False, "why": f"fewer than {MIN_REPLICATES} replicates or {MIN_INSTANCES} instances"}
     ci = boot_diff(a, b, preps, measures, B)
     return {"decided": True, "ci": ci, "holds": all(rule(lo, hi) for lo, hi in ci.values())}
 
