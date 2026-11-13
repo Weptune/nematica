@@ -63,7 +63,9 @@ SPECS = {
     "A1": ("A1", "standard", lambda: [zoo.random_rnn(seed=s)[:2] for s in range(3)]),
     "A1-slow": ("A1", "augmented", lambda: [(zoo.with_slow_drives(zoo.random_rnn(seed=s)[0], seed=s), [])
                                              for s in range(3)]),
-    "A2": ("A2", "standard", lambda: [zoo.task_rnn(seed=s)[:2] for s in range(3)]),
+    # A2 runs at a timescale of about 930 steps; it is kept every 10th step (the worm instrument samples it
+    # every ~115 steps), which leaves its recording unchanged in effect and fits in memory (amendment 13)
+    "A2": ("A2", "standard", lambda: [(zoo.task_rnn(seed=s)[0][::10], []) for s in range(3)]),
     "A3": ("A3", "standard", lambda: [zoo.char_net("gru", seed=s)[:2] for s in range(3)]),
     "A4": ("A4", "standard", lambda: [zoo.lif_network(seed=s)[:2] for s in range(3)]),
     "A5": ("A5", "standard", lambda: [zoo.char_net("cfc", seed=s)[:2] for s in range(3)]),
