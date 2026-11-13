@@ -1548,3 +1548,37 @@ measure failed a synthetic gate, and a second test was then chosen. It is report
 - **Confirmed** if every counted standard AI's lower 90% bound exceeds the envelope and at least 5 of the 7
   standard families are counted. **Not confirmed** if any counted standard AI's median is at or inside the
   envelope. Otherwise "unclear"; with fewer than 5 families, "incomplete".
+
+## Review 15 follow-up and amendment 21 (14 Nov 2026, before any pooled-mouse measure)
+
+The reviewer checked the fixes (diff 618f9ab..dc8d5ec). Items 1, 2 and 4 to 11 are fixed in code. Three
+problems were left, all biasing toward "confirmed"; they are fixed now:
+- *The mouse SE was too small (item 3).* Every crop of a mouse uses the same groups, so dividing the RMS crop
+  split-half SE by the square root of the number of crops understated it by up to 2.4 times. **Fixed:** no
+  division.
+- *The leave-one-out envelope of 3 mice carries almost no information.* It is bounded to about 1.2 to 1.7
+  by algebra, and a genuine fourth mouse falls outside it 30 to 50% of the time. **Fixed:** an AI must be
+  farther than the **95% quantile of a new mouse's distance** under the 3-individual normal model, simulated
+  for its number of measurements: 4.9 for 1 measurement, 5.2 for 2, 5.4 for 3. "Confirmed" needs every
+  counted AI's lower 90% bound above it. The leave-one-out envelope is reported only.
+- *Noise asymmetry.* An RMS distance on single noisy crops is biased upward, and mice are means over 2 to 6
+  crops. **Fixed:** an AI's distance is computed on its mean over all its crops (6 or more), so the AI is no
+  noisier than a mouse, which makes the bias conservative. The interval is a hierarchical bootstrap of that
+  mean.
+
+Also changed:
+- the budget gate now uses only the AIs that are counted for that measurement (item 9);
+- the mouse crop length is 5,000 of the mouse's own single-unit step-1 timescales, as for the AIs (Krebs,
+  Robbins and Waksman: 11,718, 25,980 and 8,975 bins);
+- a mouse value needs 80% of its crops finite.
+- One relaxation, stated because it raises the chance of a complete test: **an AI counts with at least one
+  usable measurement** within calibrated speed (it was two). Without it, the families outside calibrated
+  speed would keep only shared fraction and be dropped, leaving 2 of the 5 required families, and the test
+  would be "incomplete" by construction.
+- Expected outcome stated in advance: usable mouse measurements are likely shared fraction and slow memory
+  (coupling spread may fail its budget). Families A3 to A7 would then be judged on shared fraction alone,
+  and A1 and A2 on both.
+
+One edge case is left unfixed on purpose. The overlap flag misses the case where an activity is exactly
+two stretches long. Fixing it would change the code hash of the AI job now running, and the case does not
+arise with the planned lengths.

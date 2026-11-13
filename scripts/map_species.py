@@ -109,7 +109,9 @@ def species(pid, cal, budget_gate):
         lo, hi = float(vals.min()), float(vals.max())
         tq = stats.t.ppf(0.95, n - 1) * np.sqrt(1 + 1 / n)
         pi = [float(vals.mean() - tq * sd), float(vals.mean() + tq * sd)]
-        budget = An.group_budget([{"id": pid}], [{"at": {pid: x["r"]}} for x in mapped.values()], m)
+        cnt_ai = [x for x in mapped.values() if x["role"] == "standard"     # review 15 follow-up, item 9: the
+                  and (m not in TEMPORAL or x["within_calibrated_speed"])]  # budget over counted AIs only
+        budget = An.group_budget([{"id": pid}], [{"at": {pid: x["r"]}} for x in cnt_ai], m)
         gates = {"c3_se_over_ruler": se / sd, "c3_se_over_ruler_lower90": se / sd_lo,
                  "budget_over_ruler": budget / sd if np.isfinite(budget) else np.nan}
         usable = gates["c3_se_over_ruler_lower90"] < 0.5 and (
@@ -139,8 +141,22 @@ def species(pid, cal, budget_gate):
     return out
 
 
+def new_mouse_quantile(n, k, q=0.95, sims=40000, seed=7):
+    """Amendment 21 (review 15 follow-up, item 7): the q-quantile of a NEW individual's distance (RMS over k
+    independent measurements of (value - mean of n) / SD of n) under a normal model, by simulation."""
+    rng = np.random.default_rng(seed)
+    Z = rng.standard_normal((sims, n + 1, k))
+    ref, new = Z[:, :n], Z[:, n]
+    d = np.sqrt(np.mean(((new - ref.mean(1)) / ref.std(1, ddof=1)) ** 2, axis=1))
+    return float(np.quantile(d, q))
+
+
 def distance_test(pid, S, cal, cap=10.0, min_measures=2, min_families=5):
-    """Amendment 20: every counted standard AI farther from the mice than any mouse from the other two."""
+    """Amendments 20 and 21: every counted standard AI farther from the mice than a new mouse would be.
+    Threshold: the 95% quantile of a new individual's distance for the AI's number of measurements (the
+    leave-one-out envelope is reported only descriptively). AI value: the mean over all its crops (all
+    instances), so it is no noisier than a mouse's crop mean; 90% interval by hierarchical bootstrap of that
+    mean. An AI counts with at least 1 measurement within calibrated speed."""
     use = [m for m in cal if S["measures"][m]["usable"]]
     if len(use) < min_measures:
         return {"result": "not testable", "why": f"{len(use)} usable measurements", "measures": use}
@@ -150,7 +166,7 @@ def distance_test(pid, S, cal, cap=10.0, min_measures=2, min_families=5):
     def dist(v, c, ms):
         z = [((v[m] - c[m]) / sd[m]) ** 2 for m in ms]
         return float(min(np.sqrt(np.mean(z)), cap)) if np.all(np.isfinite(z)) else np.nan
-    def env(ms):
+    def loo(ms):
         vals = [r["values"] for r in R]
         return max(dist(v, {m: np.mean([w[m] for j, w in enumerate(vals) if j != i]) for m in ms}, ms)
                    for i, v in enumerate(vals))
@@ -158,35 +174,40 @@ def distance_test(pid, S, cal, cap=10.0, min_measures=2, min_families=5):
     res = {}
     for a, x in A.items():
         ms = [m for m in use if m not in TEMPORAL or x["within_calibrated_speed"]]
-        if len(ms) < min_measures:
-            res[a] = {"counted": False, "why": "fewer than 2 measurements within calibrated speed"}
+        if not ms:
+            res[a] = {"counted": False, "why": "no usable measurement within calibrated speed"}
+            continue
+        reps = x["r"]["replicates"]
+        ok = [r for r in reps if all(np.isfinite(r.get(m, np.nan)) for m in ms)]
+        if len(ok) < 0.8 * len(reps):
+            res[a] = {"counted": x["role"] == "standard", "median": np.nan, "why": "undefined values"}
             continue
         c = {m: float(np.mean([r["values"][m] for r in R])) for m in ms}
         g = {}
-        for rep in x["r"]["replicates"]:
-            g.setdefault(rep["instance"], []).append(dist(rep, c, ms))
-        allv = [d for v in g.values() for d in v]
-        if np.isfinite(allv).sum() < 0.8 * len(allv):
-            res[a] = {"counted": x["role"] == "standard", "median": np.nan, "why": "undefined distances"}
-            continue
+        for r in ok:
+            g.setdefault(r["instance"], []).append(r)
+        def mean_of(rs):
+            return {m: float(np.mean([r[m] for r in rs])) for m in ms}
         keys, boot = list(g), []
         for _ in range(1000):
-            d = []
-            for k in rng.choice(len(keys), len(keys)):
-                v = g[keys[k]]
-                d += [v[j] for j in rng.integers(len(v), size=len(v))]
-            boot.append(np.nanmedian(d))
+            rs = []
+            for kk in rng.choice(len(keys), len(keys)):
+                v = g[keys[kk]]
+                rs += [v[j] for j in rng.integers(len(v), size=len(v))]
+            boot.append(dist(mean_of(rs), c, ms))
+        thr = new_mouse_quantile(len(R), len(ms))
         res[a] = {"counted": x["role"] == "standard", "family": x["family"], "role": x["role"], "measures": ms,
-                  "median": float(np.nanmedian(allv)), "ci90": [float(np.percentile(boot, 5)),
-                                                                 float(np.percentile(boot, 95))],
-                  "envelope": env(ms)}
+                  "distance": dist(mean_of(ok), c, ms), "median": dist(mean_of(ok), c, ms),
+                  "ci90": [float(np.percentile(boot, 5)), float(np.percentile(boot, 95))],
+                  "threshold_new_mouse_q95": thr, "loo_envelope": loo(ms), "crops": len(ok)}
     cnt = {a: r for a, r in res.items() if r.get("counted")}
     fams = sorted({r["family"] for r in cnt.values() if "family" in r})
     if len(fams) < min_families:
         verdict = "incomplete"
-    elif any(not np.isfinite(r.get("median", np.nan)) or r["median"] <= r["envelope"] for r in cnt.values()):
+    elif any(not np.isfinite(r.get("median", np.nan)) or r["median"] <= r["threshold_new_mouse_q95"]
+             for r in cnt.values()):
         verdict = "not confirmed"
-    elif all(r["ci90"][0] > r["envelope"] for r in cnt.values()):
+    elif all(r["ci90"][0] > r["threshold_new_mouse_q95"] for r in cnt.values()):
         verdict = "confirmed"
     else:
         verdict = "unclear"

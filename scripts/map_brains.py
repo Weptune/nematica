@@ -61,7 +61,9 @@ def measure_r4g(ind):
     square root of the number of crops. Sensitivity: the whole 20 minutes as one recording."""
     X, seg = prepare_r4g(ind)
     t = measures.tau_med(X, segments=seg)
-    L = int(round(CROP_TAU * t))
+    s1r = [r for r in json.loads((ROOT / "docs/figures/map_step1.json").read_text())["preparations"]["R4"]
+           ["individuals"] if r["id"] == ind["id"]][0]
+    L = int(round(CROP_TAU * s1r["bins_per_tau"]))          # amendment 21: as the AIs, single-unit step-1 numbers
     cs = [X[a:a + L] for a in range(0, len(X) - L + 1, L)]
     vals, ses = [], []
     for j, c in enumerate(cs):
@@ -69,12 +71,15 @@ def measure_r4g(ind):
         vals.append({m: v.get(m, np.nan) for m in measures.MEASURES})
         ses.append(measures.split_half_se(c, seed=j, n_splits=5) if "error" not in v else {})
     k = len(cs)
-    mean = {m: float(np.nanmean([x[m] for x in vals])) if k else np.nan for m in measures.MEASURES}
-    se = {m: float(np.sqrt(np.nanmean([x.get(m, np.nan) ** 2 for x in ses]) / k)) if k else np.nan
-          for m in measures.MEASURES}
+    def fin(v):                                          # amendment 21: the AIs' 80%-finite rule
+        v = np.array(v, float)
+        return float(np.nanmean(v)) if k and np.isfinite(v).sum() >= 0.8 * k else np.nan
+    mean = {m: fin([x[m] for x in vals]) for m in measures.MEASURES}
+    se = {m: float(np.sqrt(np.nanmean([x.get(m, np.nan) ** 2 for x in ses]))) if k else np.nan
+          for m in measures.MEASURES}                   # amendment 21: no division by sqrt(k) (groups shared)
     w = measures.measure_matched(X, seed=0, segments=seg)
     return {"id": ind["id"], "values": mean, "se": se, "crops": vals, "crop_se": ses, "n_crops": k,
-            "crop_len_bins": L, "tau_med": float(t), "n_groups": int(X.shape[1]),
+            "crop_len_bins": L, "tau_med_pooled": float(t), "n_groups": int(X.shape[1]),
             "whole": {m: w.get(m, np.nan) for m in measures.MEASURES}, "error": None if k else "no crop"}
 
 
