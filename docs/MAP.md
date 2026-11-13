@@ -1437,3 +1437,85 @@ windows).
 - Strict version (reported): every standard AI's whole 90% interval beyond the envelope.
 - Augmented AIs (slow drives, OU latent, lab network) are reported against the same envelope: whether a
   cheap change moves an AI inside it.
+
+## Review 15 (14 Nov 2026, independent, before any pooled-mouse measure): not ready
+
+A reviewer who had not written the code read amendments 15 to 18 and the code diff since fdcfe95 (no real
+data read; only small synthetic checks). Findings, and what was done (all before any pooled-mouse measure;
+the AI job that was running was stopped and its results will be redone):
+
+1. *BLOCKING. Language-model crops cannot fit at R4g.* Contexts of 2,048 tokens (1,920 after burn-in) are
+   shorter than a 5,000-timescale crop (about 3,000 to 4,500 tokens), and crops never crossed a context
+   boundary, so A6 and A7 would all come out unmapped. **Fixed:** at R4g, crops may span context
+   boundaries and carry the boundaries inside them to the measures, which keep every 1,000-timescale window
+   (about 600 tokens) inside one context. The worm crops are unchanged.
+2. *BLOCKING. Timescale spread is confounded with an AI's native speed.* Pre-holding (A4, A5) gives every
+   unit the same triangular autocorrelation. AIs whose native timescale is below one step (A3 0.70, A6 0.84
+   to 0.92) are held to reach the instrument, and holding compresses their spread: in the reviewer's check,
+   a true log-timescale IQR of 0.39 at 0.7 steps reads 0.18, while at 3 or 12 steps it reads correctly.
+   Both push AIs toward "lower spread", the candidate's direction, and the worm discovery leaned on A3 and
+   Pythia. **Fixed (rule):** for the temporal measurements (timescale spread, slow memory) an AI counts only
+   if its native timescale is at least 1.5 steps in every instance and it was not pre-held; the rest are
+   reported as outside calibrated speed. This leaves A1 (random RNN) and A2 (task RNN) as the counted
+   standard families, so the confirmatory claim is about slow-enough recurrent networks, not about AIs in
+   general. A4 (spiking network) has no definable timescale at all in its asynchronous state.
+3. *BLOCKING. Recording length is not like for like.* Slow memory is computed over the whole recording, and
+   the timescale that sets every window comes from the whole recording, so amendment 17's claim that only
+   variance depends on length is false. A synthetic check gave slow memory 0.081 on 5,000 timescales against
+   0.107 on 25,600, which is about 40% of the C1 range, in the "AIs lower" direction. The registered
+   sensitivity was not implemented either. **Fixed:** each mouse is cut into non-overlapping crops of 5,000
+   of its own timescales, and each crop is measured exactly as an AI crop is. The mouse's value is the mean
+   over crops; its SE is the RMS crop split-half SE divided by the square root of the number of crops. The
+   whole 20 minutes is kept as the sensitivity.
+4. *BLOCKING. Discovery data was counted as its own replication, and the worm budget was waived without
+   saying so.* **Fixed:**
+   - The worms are the discovery set, and every worm verdict is exploratory.
+   - The pooled mouse is the only confirmatory test, of one hypothesis fixed now: on timescale spread,
+     every counted standard AI lies below the mice.
+   - Waiving the worm budget is a stated deviation from amendment 15. Its reason: the budget cannot be
+     computed at 1,600-frame crops (see the note under amendment 18).
+5. *BLOCKING. Three mice make a bare range envelope too weak.* **Adopted:**
+   - (a) An AI counts as below or above only if it lies beyond the envelope edge by more than the larger of
+     its own budget and 2 x the pooled real SE.
+   - (b) Strict version: the AI's whole 90% interval must lie outside the t(df) 90% prediction interval for
+     a new individual.
+   - (c) C3 is judged against the lower 90% bound of the ruler.
+   - (d) The confirmatory test needs both counted families (A1 and A2) mapped; otherwise its result is
+     "incomplete".
+6. *A2's two recordings overlapped by about 93%.* **Fixed:** 450,000 trials, and results now carry an overlap
+   flag.
+7. *A2 was decimated, which aliased the trial structure, and its accuracy went unreported.* **Fixed:** the
+   long session now uses means over blocks of 100 steps, and accuracy is reported.
+8. *Edge cases in the cross-species script.* **Fixed:** a mapped AI with an undefined value counts as not
+   separating; the finite-crop rule is the pipeline's (80%); the worm set comes from `map_worm.worms`;
+   error results now carry their crop length.
+9. *Every AI recording used the same pooling partition.* **Fixed:** there is now one seeded partition per
+   recording.
+10. *Step 2 under amendment 17 was not run at the registered crop length.* **Rerun:** synthetic systems are
+    now measured in 11,718-bin crops.
+11. *Memory and hashing problems in `map_ais_fast.py`.* The hold produced float64 data, and the R2 path was
+    untruncated (it would have run out of memory). **Fixed:** data is cast to float32 after the hold, R2 is
+    truncated, and the script is now part of the code hash.
+12. *A second hand edit of the hash carry-over should be avoided.* **Adopted:** every AI is now recorded
+    once, with the same activity used at both instruments (480 or more units; 40,000 tokens per language-model
+    instance), and the worm AIs are re-recorded too. The 6 Nov worm AI numbers are superseded. The lab
+    network (A10) keeps its own size and is recorded for the worms only.
+13. *Note: coupling spread is likely to fail the mouse budget* (A1's budget there was already undefined).
+    Reported, not changed.
+14. *Note: mouse groups mix probes and areas, while the AIs are one layer.* Registered as a sensitivity
+    (pooling within probe), to be run if time allows. It is not part of the confirmatory test.
+15. *Note: the worm language-model protocol change* is now covered by item 12.
+16. *Note: G = 8 was chosen on synthetic checks.* Listed as a forking path (amendment 17).
+17. *Note: unit inclusion and rate-multiplier blocks* are negligible. No change.
+
+## Amendment 19 (14 Nov 2026): the changes above, registered before any pooled-mouse measure
+
+Code: `pipeline.crops_across`, `ai_at_prep(cross_segments=...)` with a per-recording pooling seed and an
+overlap flag; `zoo.task_rnn` with block means and accuracy; `scripts/map_ais.py` (shared activity, `CROSS`,
+`_a2`, hash includes `map_ais_fast.py`); `scripts/map_ais_fast.py`; `scripts/map_brains.py`
+(`measure_r4g`); `scripts/map_species.py` (the rules of items 2, 4, 5 and 8); `scripts/map_step2_r4g.py`
+(crop length). **The one confirmatory test:** in the pooled mouse, timescale spread passes its gates (C1
+and C4 at crop length; C3 against the ruler's lower 90% bound; budget at most 1 ruler unit), and every
+counted standard AI (native timescale at least 1.5 steps, not pre-held; families A1 and A2 required) lies
+below the three mice by more than its margin. Possible results are "confirmed", "not confirmed",
+"incomplete", or "not testable". Everything else is exploratory.

@@ -48,6 +48,7 @@ DRAWS = 20
 SEEDS = (0, 1)
 MIN_REC_TAU = 240
 MAX_T = 80000
+UNIT_SAMPLES = 6e7             # memory: at most this many unit-samples of native activity per system
 CAL_CROPS = 2                  # amendment 16 (deconvolved instrument only): crops a calibration system must hold
 C4_BASE = {}                   # amendment 17: parameters every C4 system shares (e.g. N=480 for pooling)
 BIG_TAU = 30                   # systems with at least this native timescale run one at a time (memory)
@@ -84,10 +85,11 @@ def system(job):
                 k = recording.match(A, rt, prof, seed=s)
                 B = A
                 need = int(k["needs_steps"] * MIN_REC_TAU / recording.MATCH_MIN_TAU) if np.isfinite(k["needs_steps"]) else 0
-                if rt == "deconv" and prof.get("crop_len"):   # amendment 16: enough for CAL_CROPS whole crops
+                if prof.get("crop_len") and (rt == "deconv" or prof.get("group")):   # amendments 16, 19: enough
+                                                                                      # for CAL_CROPS whole crops
                     need = max(need, int(prof["crop_len"] * recording.per_sample(k, rt) * CAL_CROPS * 1.05))
                 if need > len(A):                        # memory: at most 60 million unit-samples
-                    tmax = min(MAX_T, int(6e7 / params.get("N", 300)))
+                    tmax = min(MAX_T, int(UNIT_SAMPLES / params.get("N", 300)))
                     B = synthetic.population(np.random.default_rng(gseed), **{**params, "T": min(need, tmax)})
                 per_sample = recording.per_sample(k, rt)
                 if B.shape[1] >= 3000 and len(B) / per_sample * B.shape[1] > 1e8:   # memory (8 GB): not measured;
@@ -95,7 +97,7 @@ def system(job):
                     continue
                 Y, seg = recording.record_matched(B, rt, k, rng=np.random.default_rng(s + 7))
                 if prof.get("group"):                    # amendment 17: pooled units
-                    Y = recording.pool(Y, int(prof["group"]))
+                    Y = recording.pool(Y, int(prof["group"]), seed=s + 7)
                 if prof.get("crop_len"):                 # amendment 13: brain-length crops, detrended
                     from nematica.map.pipeline import crops
                     cs = crops(Y, seg, int(prof["crop_len"]), 4)

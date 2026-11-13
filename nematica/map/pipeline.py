@@ -43,9 +43,20 @@ def crops(Y, seg, length, max_crops):
     return out
 
 
+def crops_across(Y, seg, length, max_crops):
+    """Amendment 19 (review 15, item 1): crops that may span segment (context) boundaries; returns
+    (crop, segment starts inside the crop), so measures still keep windows inside one segment."""
+    out = []
+    for s in range(0, len(Y) - length + 1, length):
+        out.append((Y[s:s + length], [x - s for x in (seg or []) if s < x < s + length]))
+        if len(out) >= max_crops:
+            break
+    return out
+
+
 def ai_at_prep(instances, rtype, inst, segments=None, recs_per_instance=4, n_draws=20, seed=0,
                hold_mult=1, interp=False, tau_floor=measures.TAU_FLOOR, budget=True, crop_len=None,
-               max_crops=4):
+               max_crops=4, cross_segments=False):
     k = recording.match(instances[0], rtype, inst, seed=seed, segments=segments, hold_mult=hold_mult,
                         interp=interp)
     def stretch(A, kk, r):
@@ -56,6 +67,8 @@ def ai_at_prep(instances, rtype, inst, segments=None, recs_per_instance=4, n_dra
             return A, segments
         need = int(np.ceil(max_crops * crop_len * 1.2 * kk[recording.SAMPLE_KNOB[rtype]]
                            / kk["hold"])) + 1
+        if need * recs_per_instance > len(A):            # amendment 19 (review 15, item 6): stretches overlap
+            overlap[0] = True
         if need >= len(A):
             return A, segments
         a = (r * need) % max(len(A) - need, 1)
@@ -65,17 +78,21 @@ def ai_at_prep(instances, rtype, inst, segments=None, recs_per_instance=4, n_dra
     def _rec(A, kk, s, r=0):
         As, seg = stretch(A, kk, r)
         Y, seg = recording.record_matched(As, rtype, kk, rng=np.random.default_rng(s), segments=seg, interp=interp)
-        if inst.get("group"):                            # amendment 17: pooled units
-            Y = recording.pool(Y, int(inst["group"]))
+        if inst.get("group"):                            # amendment 17: pooled units; amendment 19 (review 15,
+            Y = recording.pool(Y, int(inst["group"]), seed=s)   # item 9): one partition per recording
         return Y, seg
 
     def rec(A, kk, s):
         """A recording, or (amendment 13) its first crop of crop_len samples (one 'individual')."""
         Y, seg = _rec(A, kk, s)
+        if crop_len and cross_segments:
+            c = crops_across(Y, seg, crop_len, 1)
+            return c[0] if c else (Y[:0], [])
         if crop_len:
             c = crops(Y, seg, crop_len, 1)
             return (c[0], []) if c else (Y[:0], [])
         return Y, seg
+    overlap = [False]
     reps = []
     ks = [k] + [recording.match(A, rtype, inst, seed=seed, segments=segments, hold_mult=hold_mult, interp=interp)
                 for A in instances[1:]]                  # amendment 13: every instance matched on its own
@@ -85,8 +102,10 @@ def ai_at_prep(instances, rtype, inst, segments=None, recs_per_instance=4, n_dra
             s = 1000 * i + 50 + r
             if crop_len:                                 # every crop of one recording is an AI individual
                 Yf, segf = _rec(A, ki, s, r)
-                for j, Y in enumerate(crops(Yf, segf, crop_len, max_crops)):
-                    reps.append({**_meas(Y, s + 100 * j, [], n_draws, tau_floor, rtype), "instance": i, "crop": j})
+                cs = (crops_across(Yf, segf, crop_len, max_crops) if cross_segments
+                      else [(c, []) for c in crops(Yf, segf, crop_len, max_crops)])
+                for j, (Y, sc) in enumerate(cs):
+                    reps.append({**_meas(Y, s + 100 * j, sc, n_draws, tau_floor, rtype), "instance": i, "crop": j})
             else:
                 Y, seg = rec(A, ki, s)
                 reps.append({**_meas(Y, s, seg, n_draws, tau_floor, rtype), "instance": i})
@@ -100,6 +119,7 @@ def ai_at_prep(instances, rtype, inst, segments=None, recs_per_instance=4, n_dra
     vals = {m: (float(np.nanmean(v)) if np.isfinite(v).sum() >= 0.8 * len(v) else np.nan)
             for m in names for v in [np.array([r[m] for r in reps], float)]}
     out = {"values": vals, "replicates": reps, "reached": bool(all(x["reached"] for x in ks)), "knobs": k,
+           "stretches_overlap": overlap[0],
            "knobs_per_instance": ks,
            "achieved": k["achieved"], "native_tau": k.get("native_tau"), "crop_len": crop_len}
     if budget:                                           # on the first instance that yields a crop

@@ -258,3 +258,17 @@ def test_deconv_matching_reaches_noise_target():
     assert k["reached"] and abs(k["frame"] / k["hold"] - 8.5 * k["native_tau"]) < 1e-6
     Y, _ = recording.record_matched(A, "deconv", k, rng=np.random.default_rng(1))
     assert Y.min() >= 0 and len(Y) > 900
+
+
+def test_crops_across_carry_inner_boundaries():
+    from nematica.map.pipeline import crops_across
+    Y = np.arange(100)[:, None].astype(float)
+    cs = crops_across(Y, [30, 70], 40, 4)
+    assert len(cs) == 2 and cs[0][1] == [30] and cs[1][1] == [30]
+
+
+def test_pool_partitions_differ_by_seed_and_sum_counts():
+    from nematica.map import recording
+    Y = np.random.default_rng(0).poisson(1.0, (50, 24))
+    a, b = recording.pool(Y, 8, seed=1), recording.pool(Y, 8, seed=2)
+    assert a.shape == (50, 3) and a.sum() == Y.sum() and not np.array_equal(a, b)

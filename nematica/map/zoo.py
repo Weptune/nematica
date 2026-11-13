@@ -81,9 +81,10 @@ def decision_task(batch, T=60, rng=None, coh=(0.0, 0.05, 0.1, 0.2, 0.4)):
 
 
 def task_rnn(seed=0, n=128, train_steps=1500, trials=6000, every=1):
-    """`every` > 1 (amendment 16, the mouse instrument): a session `trials` long is generated in chunks of
-    6,000 trials and only every `every`-th step of the continuous session is kept, so very long sessions fit
-    in memory; every=1 is the original recording, unchanged."""
+    """`every` > 1 (amendments 16 and 19): a session `trials` long is generated in chunks of 6,000 trials and
+    kept as means over consecutive blocks of `every` steps (review 15, item 7: block means, not decimation,
+    which aliased the 60-step trial structure), so very long sessions fit in memory; task accuracy is
+    reported on the first chunk. every=1 is the original recording, unchanged."""
     import torch
     torch.set_num_threads(2)
 
@@ -112,8 +113,8 @@ def task_rnn(seed=0, n=128, train_steps=1500, trials=6000, every=1):
 
     final = _train(net, batches, train_steps, lr=1e-3, seed=seed)
     if every > 1:
-        return _long_session(net, n, trials, every, seed), [], {"family": "A2", "seed": seed, "loss": final,
-                                                                 "every": every}
+        A, acc = _long_session(net, n, trials, every, seed)
+        return A, [], {"family": "A2", "seed": seed, "loss": final, "every": every, "accuracy": acc}
     X, y = decision_task(trials, rng=np.random.default_rng(seed + 777))
     with torch.no_grad():
         h0 = torch.zeros(1, 1, n)
@@ -128,19 +129,24 @@ def task_rnn(seed=0, n=128, train_steps=1500, trials=6000, every=1):
 
 
 def _long_session(net, n, trials, every, seed, chunk=6000):
+    """Block means over `every` steps; chunk * 60 steps must be a multiple of `every` (blocks never straddle
+    chunks); a final partial block is dropped. Returns (activity, accuracy on the first chunk)."""
     import torch
+    assert (chunk * 60) % every == 0
     rng = np.random.default_rng(seed + 777)
-    out, pos = [], 0
+    out, acc = [], None
     with torch.no_grad():
         h0 = torch.zeros(1, 1, n)
         for a in range(0, trials, chunk):
-            X, _ = decision_task(min(chunk, trials - a), rng=rng)
+            X, y = decision_task(min(chunk, trials - a), rng=rng)
             h, h0 = net.rnn(torch.tensor(X.reshape(1, -1, 3)), h0)     # trials back to back, one call
             H = h[0].numpy()
-            first = (-pos) % every
-            out.append(H[first::every].astype(np.float32))
-            pos += len(H)
-    return np.concatenate(out)
+            if acc is None:
+                o = net.out(h[0].reshape(len(X), X.shape[1], n)[:, -1]).numpy()
+                acc = float((o.argmax(-1) == y).mean())
+            m = (len(H) // every) * every
+            out.append(H[:m].reshape(-1, every, n).mean(1).astype(np.float32))
+    return np.concatenate(out), acc
 
 
 # ---------------------------------------------------------------- A3 GRU and A5 CfC on characters

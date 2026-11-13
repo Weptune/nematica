@@ -16,7 +16,7 @@ import map_ais as AIS  # noqa: E402
 from nematica.map import pipeline, recording  # noqa: E402
 
 PRE_HOLD = 16
-TRUNC = {"R4g": 25_000}       # amendment 17 (memory): native steps kept before the hold; a 5,000-timescale crop
+TRUNC = {"R4g": 25_000, "R2": 25_000}       # amendment 17 (memory): native steps kept before the hold; a 5,000-timescale crop
                               # needs about 2,500 native steps at this hold
 
 
@@ -28,15 +28,17 @@ def run(aid, pids=("R2",)):
         key, build = AIS.builder(aid, pid)              # amendment 17: R4g activity has 480 units
         if key not in built:
             built.clear()
-            built[key] = [recording.hold(np.asarray(a, np.float32)[:TRUNC.get(pid)], PRE_HOLD) for a, _ in build()]
+            built[key] = [recording.hold(np.asarray(a, np.float32)[:TRUNC.get(pid)], PRE_HOLD).astype(np.float32)
+                          for a, _ in build()]          # review 15, item 11: float32 after the hold
         acts = built[key]
         rt, prof = AIS.profile(pid, d)
         try:
             r = pipeline.ai_at_prep(acts, rt, prof, recs_per_instance=7 if aid in AIS.PAIRED else 2,
                                     budget=True, crop_len=AIS.CROP_LEN[pid], n_draws=AIS.N_DRAWS,
-                                    max_crops=AIS.MAX_CROPS.get(pid, 4))
+                                    max_crops=AIS.MAX_CROPS.get(pid, 4), cross_segments=pid in AIS.CROSS)
         except Exception as e:  # noqa: BLE001
-            r = {"values": {}, "replicates": [], "reached": False, "error": f"{type(e).__name__}: {e}"}
+            r = {"values": {}, "replicates": [], "reached": False, "error": f"{type(e).__name__}: {e}",
+                 "crop_len": AIS.CROP_LEN[pid]}
         r["family"], r["role"] = AIS.SPECS[aid][0], AIS.SPECS[aid][1]
         r["code_sha256_16"] = AIS.code_hash()
         r["pre_hold"] = PRE_HOLD

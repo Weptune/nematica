@@ -1,10 +1,21 @@
-"""Cross-species rule (docs/MAP.md, amendments 15, 17 and 18). RUN ONLY AFTER the worm and pooled-mouse
+"""Cross-species rule (docs/MAP.md, amendments 15, 17, 18 and 19). RUN ONLY AFTER the worm and pooled-mouse
 measurements, the AI recordings at both instruments, and the independent review.
 
-Species 1: worms (R2, 14 baseline worms; measurements passing worm step 2 and C3). Species 2: mouse, R4 with
-units pooled in groups of 8 ("R4g", 3 mice; measurements passing step 2 under amendment 17, C3 and budget).
-For each usable measurement: the real envelope (min to max over individuals), each AI's median over crops
-with a hierarchical bootstrap 90% interval, and the separating side over the standard AI families.
+Amendment 19 (answering review 15):
+- The worms are the DISCOVERY set (the candidate was found there, amendment 14); every worm verdict is
+  exploratory. The pooled mouse ("R4g", 3 mice) is the only CONFIRMATORY test, of one hypothesis fixed in
+  advance: on timescale spread, every counted standard AI lies below the mice.
+- Native speed (review 15, item 2): for the temporal measurements (timescale spread, slow memory) an AI
+  counts toward a separating side only if its native timescale is at least 1.5 native steps in every
+  instance and it was not pre-held; others are reported as "outside calibrated speed".
+- Margin (item 5a): an AI is "below" (or "above") only if it lies beyond the real envelope's edge by more
+  than max(its own budget for that measurement, 2 x the pooled real SE). Strict version (5b): beyond the
+  t(df) 90% prediction interval for a new individual, mean +/- t_0.95(df) sqrt(1 + 1/n) SD.
+- C3 (5c) is judged against the lower 90% bound of the ruler (chi-square, df = n - 1).
+- An AI is mapped at a measurement if at least 80% of its crops are finite there (the pipeline's rule); a
+  mapped standard AI with an undefined value counts as not separating (8a).
+- The confirmatory test needs both slow-enough standard families (A1 random RNN and A2 task RNN) mapped
+  and counted; otherwise it is "incomplete".
 Writes docs/figures/map_species.json."""
 import json
 import pickle
@@ -12,19 +23,29 @@ import sys
 from pathlib import Path
 
 import numpy as np
+from scipy import stats
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 import map_ais as AIS  # noqa: E402
+import map_worm  # noqa: E402
 from nematica.map import analysis as An  # noqa: E402
 
 STANDARD = ["A1", "A2", "A3", "A4", "A5", "A6", "A7"]
+TEMPORAL = {"timescale_spread", "slow_fraction"}
+MIN_NATIVE_TAU = 1.5
+CONFIRM = ("timescale_spread", "below")
+CONFIRM_FAMILIES = {"A1", "A2"}
 
 
-def reals(pid):
+def reals(pid, cal):
+    if pid == "R2":                                    # review 15, item 8d: the worm map's own nan rule
+        W = map_worm.worms(cal)
+        b = json.loads((ROOT / "docs/figures/map_brains.json").read_text())["preparations"]["R2"]["individuals"]
+        return [r for r in b if r["id"] in W["ids"]]
     b = json.loads((ROOT / "docs/figures/map_brains.json").read_text())["preparations"][pid]["individuals"]
-    return [r for r in b if not r.get("error")]
+    return [r for r in b if not r.get("error") and all(np.isfinite(r["values"].get(m, np.nan)) for m in cal)]
 
 
 def ais(pid):
@@ -38,17 +59,22 @@ def ais(pid):
             out[aid] = {"family": fam, "role": role, "mapped": False, "why": "stale or other crop length"}
             continue
         ok = bool(r.get("reached")) and len(r.get("replicates", [])) > 0 and not r.get("error")
+        taus = [k.get("native_tau", np.nan) for k in r.get("knobs_per_instance", [])] or [np.nan]
+        speed = bool(np.all(np.isfinite(taus)) and min(taus) >= MIN_NATIVE_TAU and not r.get("pre_hold"))
         out[aid] = {"family": fam, "role": role, "mapped": ok, "why": None if ok else (r.get("error") or "not reached"),
-                    "r": r}
+                    "native_tau_min": float(np.nanmin(taus)) if np.isfinite(taus).any() else None,
+                    "pre_hold": r.get("pre_hold"), "within_calibrated_speed": speed,
+                    "stretches_overlap": r.get("stretches_overlap"), "r": r}
     return out
 
 
 def ai_value(r, m, rng, n=1000):
-    reps = [x for x in r["replicates"] if np.isfinite(x.get(m, np.nan))]
-    if len(reps) < 0.5 * len(r["replicates"]) or not reps:
+    reps = r["replicates"]
+    fin = [x for x in reps if np.isfinite(x.get(m, np.nan))]
+    if not fin or len(fin) < 0.8 * len(reps):
         return np.nan, [np.nan, np.nan]
     g = {}
-    for x in reps:
+    for x in fin:
         g.setdefault(x["instance"], []).append(x[m])
     keys = list(g)
     boot = []
@@ -58,75 +84,87 @@ def ai_value(r, m, rng, n=1000):
             v = g[keys[k]]
             d += [v[j] for j in rng.integers(len(v), size=len(v))]
         boot.append(np.median(d))
-    return float(np.median([x[m] for x in reps])), [float(np.percentile(boot, 5)), float(np.percentile(boot, 95))]
+    return float(np.median([x[m] for x in fin])), [float(np.percentile(boot, 5)), float(np.percentile(boot, 95))]
 
 
-def species(pid, usable_rule):
-    R = reals(pid)
+def ruler(vals):
+    n = len(vals)
+    sd = float(np.std(vals, ddof=1))
+    lo = sd * np.sqrt((n - 1) / stats.chi2.ppf(0.95, n - 1))
+    return sd, float(lo)
+
+
+def species(pid, cal, budget_gate):
+    R = reals(pid, cal)
     A = ais(pid)
-    cal, gates = usable_rule(R, A)
     rng = np.random.default_rng(0)
-    out = {"individuals": len(R), "gates": gates, "usable": cal, "measures": {}, "ais": {
-        a: {k: v for k, v in x.items() if k != "r"} for a, x in A.items()}}
-    for m in gates:
+    n = len(R)
+    out = {"individuals": n, "ids": [r["id"] for r in R], "calibrated": cal, "measures": {},
+           "ais": {a: {k: v for k, v in x.items() if k != "r"} for a, x in A.items()}}
+    mapped = {a: x for a, x in A.items() if x["mapped"]}
+    for m in cal:
         vals = np.array([r["values"][m] for r in R], float)
-        lo, hi = float(np.nanmin(vals)), float(np.nanmax(vals))
-        row = {"real": vals.tolist(), "envelope": [lo, hi], "ai": {}}
-        for a, x in A.items():
-            if not x["mapped"]:
-                continue
+        sd, sd_lo = ruler(vals)
+        se = float(np.sqrt(np.mean(np.square([r["se"].get(m, np.nan) for r in R]))))
+        lo, hi = float(vals.min()), float(vals.max())
+        tq = stats.t.ppf(0.95, n - 1) * np.sqrt(1 + 1 / n)
+        pi = [float(vals.mean() - tq * sd), float(vals.mean() + tq * sd)]
+        budget = An.group_budget([{"id": pid}], [{"at": {pid: x["r"]}} for x in mapped.values()], m)
+        gates = {"c3_se_over_ruler": se / sd, "c3_se_over_ruler_lower90": se / sd_lo,
+                 "budget_over_ruler": budget / sd if np.isfinite(budget) else np.nan}
+        usable = gates["c3_se_over_ruler_lower90"] < 0.5 and (
+            not budget_gate or (np.isfinite(gates["budget_over_ruler"]) and gates["budget_over_ruler"] <= 1))
+        row = {"real": vals.tolist(), "envelope": [lo, hi], "prediction_interval90": pi, "ruler_sd": sd,
+               "ruler_sd_lower90": sd_lo, "pooled_se": se, "gates": gates, "usable": bool(usable), "ai": {}}
+        for a, x in mapped.items():
             v, ci = ai_value(x["r"], m, rng)
-            row["ai"][a] = {"value": v, "ci90": ci, "family": x["family"], "role": x["role"],
-                            "side": "below" if v < lo else "above" if v > hi else "inside",
-                            "strict_side": "below" if ci[1] < lo else "above" if ci[0] > hi else "overlap"}
-        std = {a: y for a, y in row["ai"].items() if y["role"] == "standard" and np.isfinite(y["value"])}
-        fams = sorted({y["family"] for y in std.values()})
-        sides = {y["side"] for y in std.values()}
-        strict = {y["strict_side"] for y in std.values()}
-        row["separating_side"] = next(iter(sides)) if len(sides) == 1 and "inside" not in sides else None
-        row["strict_separating_side"] = next(iter(strict)) if len(strict) == 1 and "overlap" not in strict else None
-        row["families_present"] = fams
-        row["families_missing"] = [f for f in STANDARD if f not in fams]
-        row["usable"] = m in cal
+            b = x["r"].get("budget", {}).get(m, np.nan)
+            margin = float(np.nanmax([b if np.isfinite(b) else np.nan, 2 * se]))
+            side = ("undefined" if not np.isfinite(v) else "below" if v < lo - margin
+                    else "above" if v > hi + margin else "inside")
+            strict = ("undefined" if not np.isfinite(v) else "below" if ci[1] < pi[0]
+                      else "above" if ci[0] > pi[1] else "overlap")
+            counted = x["role"] == "standard" and (m not in TEMPORAL or x["within_calibrated_speed"])
+            row["ai"][a] = {"value": v, "ci90": ci, "family": x["family"], "role": x["role"], "margin": margin,
+                            "side": side, "strict_side": strict, "counted": counted,
+                            "within_calibrated_speed": x["within_calibrated_speed"]}
+        cnt = {a: y for a, y in row["ai"].items() if y["counted"]}
+        sides, strict = {y["side"] for y in cnt.values()}, {y["strict_side"] for y in cnt.values()}
+        row["separating_side"] = next(iter(sides)) if len(sides) == 1 and sides <= {"below", "above"} else None
+        row["strict_separating_side"] = (next(iter(strict)) if len(strict) == 1 and strict <= {"below", "above"}
+                                         else None)
+        row["families_counted"] = sorted({y["family"] for y in cnt.values()})
+        row["families_not_counted"] = [f for f in STANDARD if f not in row["families_counted"]]
         out["measures"][m] = row
     return out
 
 
-def worm_rule(R, A):
-    cal = json.loads((ROOT / "docs/figures/map_step2_worm.json").read_text())["worm_set"]
-    se = {m: float(np.sqrt(np.mean(np.square([r["se"].get(m, np.nan) for r in R])))) for m in cal}
-    sd = {m: float(np.std([r["values"][m] for r in R], ddof=1)) for m in cal}
-    gates = {m: {"c3_se_over_bvu": se[m] / sd[m]} for m in cal}
-    return [m for m in cal if gates[m]["c3_se_over_bvu"] < 0.5], gates
-
-
-def mouse_rule(R, A):
-    cal = json.loads((ROOT / "docs/figures/map_step2_r4g.json").read_text())["r4g_set"]
-    se = {m: float(np.sqrt(np.mean(np.square([r["se"].get(m, np.nan) for r in R])))) for m in cal}
-    sd = {m: float(np.std([r["values"][m] for r in R], ddof=1)) for m in cal}
-    mapped = [{"at": {"R4g": x["r"]}} for x in A.values() if x["mapped"]]
-    gates = {m: {"c3_se_over_bvu": se[m] / sd[m],
-                 "budget_over_bvu": An.group_budget([{"id": "R4g"}], mapped, m) / sd[m]} for m in cal}
-    use = [m for m in cal if gates[m]["c3_se_over_bvu"] < 0.5 and np.isfinite(gates[m]["budget_over_bvu"])
-           and gates[m]["budget_over_bvu"] <= 1]
-    return use, gates
-
-
 def main():
-    S = {"worm (R2)": species("R2", worm_rule), "mouse, pooled units (R4g)": species("R4g", mouse_rule)}
-    ms = sorted({m for s in S.values() for m in s["measures"]})
-    verdict = {}
-    for m in ms:
-        sides = {k: s["measures"][m]["separating_side"] for k, s in S.items() if m in s["usable"]}
-        uniq = set(sides.values())
-        verdict[m] = {"usable_in": list(sides), "sides": sides,
-                      "candidate": bool(sides) and len(uniq) == 1 and None not in uniq,
-                      "general_two_species": len(sides) == 2 and len(uniq) == 1 and None not in uniq,
-                      "incomplete": any(S[k]["measures"][m]["families_missing"] for k in sides)}
-    out = {"species": S, "verdict": verdict}
+    worm_cal = json.loads((ROOT / "docs/figures/map_step2_worm.json").read_text())["worm_set"]
+    mouse_cal = json.loads((ROOT / "docs/figures/map_step2_r4g.json").read_text())["r4g_set"]
+    # The worm budget is not applied (amendment 19: a stated deviation from amendment 15; with 1,600-frame
+    # crops the budget is undefined, see the note under amendment 18). The worms are discovery only.
+    W = species("R2", worm_cal, budget_gate=False)
+    M = species("R4g", mouse_cal, budget_gate=True)
+    m, side = CONFIRM
+    row = M["measures"].get(m)
+    if row is None:
+        conf = {"result": "not testable", "why": f"{m} did not pass step 2 under amendment 17"}
+    else:
+        fams = set(row["families_counted"])
+        complete = CONFIRM_FAMILIES <= fams
+        conf = {"measure": m, "predicted_side": side, "usable": row["usable"], "complete": complete,
+                "families_counted": row["families_counted"], "separating_side": row["separating_side"],
+                "strict_separating_side": row["strict_separating_side"],
+                "result": ("not testable (gates)" if not row["usable"] else "incomplete" if not complete
+                           else "confirmed" if row["separating_side"] == side else "not confirmed")}
+    out = {"discovery_worm": W, "confirmatory_mouse": M, "confirmatory_test": conf,
+           "exploratory": {k: {"worm": W["measures"].get(k, {}).get("separating_side"),
+                               "mouse": M["measures"].get(k, {}).get("separating_side")}
+                           for k in sorted(set(W["measures"]) | set(M["measures"]))}}
     (ROOT / "docs/figures/map_species.json").write_text(json.dumps(out, indent=1, default=float))
-    for m, v in verdict.items():
-        print(m, v)
+    print("confirmatory:", conf)
+    print("exploratory sides:", out["exploratory"])
 
 
 if __name__ == "__main__":

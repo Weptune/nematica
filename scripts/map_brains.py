@@ -51,6 +51,33 @@ def prepare_r4g(ind):
     return recording.pool(X, GROUP, seed=0), seg
 
 
+CROP_TAU = 5000
+
+
+def measure_r4g(ind):
+    """Amendment 19 (review 15, item 3), primary: each mouse's pooled recording is cut into non-overlapping
+    crops of 5,000 of its own timescales (timescale from the whole 20 minutes), each crop measured exactly as
+    an AI crop is; the mouse's value is the mean over crops and its SE the RMS crop split-half SE over the
+    square root of the number of crops. Sensitivity: the whole 20 minutes as one recording."""
+    X, seg = prepare_r4g(ind)
+    t = measures.tau_med(X, segments=seg)
+    L = int(round(CROP_TAU * t))
+    cs = [X[a:a + L] for a in range(0, len(X) - L + 1, L)]
+    vals, ses = [], []
+    for j, c in enumerate(cs):
+        v = measures.measure_matched(c, seed=j)
+        vals.append({m: v.get(m, np.nan) for m in measures.MEASURES})
+        ses.append(measures.split_half_se(c, seed=j, n_splits=5) if "error" not in v else {})
+    k = len(cs)
+    mean = {m: float(np.nanmean([x[m] for x in vals])) if k else np.nan for m in measures.MEASURES}
+    se = {m: float(np.sqrt(np.nanmean([x.get(m, np.nan) ** 2 for x in ses]) / k)) if k else np.nan
+          for m in measures.MEASURES}
+    w = measures.measure_matched(X, seed=0, segments=seg)
+    return {"id": ind["id"], "values": mean, "se": se, "crops": vals, "crop_se": ses, "n_crops": k,
+            "crop_len_bins": L, "tau_med": float(t), "n_groups": int(X.shape[1]),
+            "whole": {m: w.get(m, np.nan) for m in measures.MEASURES}, "error": None if k else "no crop"}
+
+
 def run_prep(pid):
     spec = s1.PREPS["R4" if pid == "R4g" else pid]
     CACHE.mkdir(parents=True, exist_ok=True)
@@ -67,8 +94,10 @@ def run_prep(pid):
             continue
         if "error" in ind:
             r = {"id": ind["id"], "error": ind["error"]}
+        elif pid == "R4g":
+            r = measure_r4g(ind)
         else:
-            X, seg = prepare_r4g(ind) if pid == "R4g" else prepare(ind, spec["rtype"])
+            X, seg = prepare(ind, spec["rtype"])
             v = measures.measure_matched(X, seed=0, segments=seg)
             se = measures.split_half_se(X, seed=0, n_splits=5, segments=seg) if "error" not in v else {}
             r = {"id": ind["id"], "values": {m: v.get(m, np.nan) for m in measures.MEASURES},

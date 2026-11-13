@@ -105,7 +105,7 @@ R4G_SPECS = {
     "A1": lambda: [zoo.random_rnn(n=480, seed=s, steps=200_000)[:2] for s in range(3)],
     "A1-slow": lambda: [(zoo.with_slow_drives(zoo.random_rnn(n=480, seed=s, steps=280_000)[0], seed=s), [])
                         for s in range(3)],
-    "A2": lambda: [(zoo.task_rnn(seed=s, n=512, trials=330_000, every=100)[0], []) for s in range(3)],
+    "A2": lambda: [_a2(s) for s in range(3)],
     "A3": lambda: [zoo.char_net("gru", seed=s, n=512)[:2] for s in range(3)],
     "A4": lambda: [(_keep(a, seed=s), seg) for s in range(3) for a, seg in [zoo.lif_network(seed=s)[:2]]],
     "A5": lambda: [zoo.char_net("cfc", seed=s, n=512)[:2] for s in range(3)],
@@ -117,16 +117,28 @@ R4G_SPECS = {
     "A7-130m": lambda: lm("state-spaces/mamba-130m-hf", keep=G_KEEP, n_tok=LM_TOK),
     "A7-370m": lambda: lm("state-spaces/mamba-370m-hf", keep=G_KEEP, n_tok=LM_TOK),
 }
-LM_SHARED = {"A6-410m", "A6-1b", "A6-410m-ou", "A7-130m", "A7-370m"}
+def _a2(s):
+    """Amendment 19 (review 15, items 6 and 7): 450,000 trials kept as 100-step block means (270,000
+    samples: two recordings of one 5,000-timescale crop each without overlap); accuracy reported."""
+    A, seg, meta = zoo.task_rnn(seed=s, n=512, trials=450_000, every=100)
+    print("A2 seed", s, "accuracy", meta["accuracy"], flush=True)
+    return A, seg
 
 
 def builder(aid, pid):
-    """(activity key, builder) for one AI at one preparation; None: not recorded there."""
+    """(activity key, builder) for one AI at one preparation; None: not recorded there. Amendment 19 (review
+    15, item 12): the worm and pooled-mouse recordings of an AI share one activity (R4G_SPECS), so every AI
+    is re-recorded for the worms too, with the same sizes; A10 (not recorded at R4g) keeps its own."""
     if pid == "R5m" and aid in MOUSE_SPECS:
         return "R5m", MOUSE_SPECS[aid]
-    if pid == "R4g" or (pid == "R2" and aid in LM_SHARED):
-        return ("R4g", R4G_SPECS[aid]) if aid in R4G_SPECS else None
+    if pid in ("R2", "R4g") and aid in R4G_SPECS:
+        return "shared", R4G_SPECS[aid]
+    if pid == "R4g":
+        return None
     return "std", SPECS[aid][2]
+
+
+CROSS = {"R4g"}                 # amendment 19 (review 15, item 1): crops may span context boundaries
 
 
 FITTED_ON = {"A10": ["R1", "R2"]}                          # candidates (c), (d): worm preparations left out
@@ -136,7 +148,7 @@ def code_hash():
     import hashlib
     h = hashlib.sha256()
     for f in ("nematica/map/measures.py", "nematica/map/recording.py", "nematica/map/pipeline.py",
-              "nematica/map/zoo.py", "nematica/map/ai.py", "scripts/map_ais.py"):
+              "nematica/map/zoo.py", "nematica/map/ai.py", "scripts/map_ais.py", "scripts/map_ais_fast.py"):
         h.update((ROOT / f).read_bytes())
     return h.hexdigest()[:16]
 
@@ -145,7 +157,7 @@ def profile(pid, d):
     if pid == "R4g":                                    # amendment 17: R4's single-unit numbers, groups of 8
         sys.path.insert(0, str(ROOT / "scripts"))
         from map_step2_r4g import r4g_profile
-        return "spikes", r4g_profile()
+        return "spikes", r4g_profile(with_crop=False)
     if pid in GROUPS.get("deconv", []):                 # amendment 16: the mouse profile of step 2
         sys.path.insert(0, str(ROOT / "scripts"))
         from map_step2_mouse import mouse_profile
@@ -208,7 +220,7 @@ def _record(aid, variant, build, todo, d, suf):
             r = pipeline.ai_at_prep(acts, rt, prof, segments=segs[0] or None,
                                     recs_per_instance=(7 if aid in PAIRED else 2) if not variant else 2,
                                     budget=not variant, crop_len=CROP_LEN.get(pid), n_draws=N_DRAWS,
-                                    max_crops=MAX_CROPS.get(pid, 4), **opts)
+                                    max_crops=MAX_CROPS.get(pid, 4), cross_segments=pid in CROSS, **opts)
         except Exception as e:  # noqa: BLE001  (e.g. no timescale: activity white at the native step)
             from nematica.map import measures as M_
             r = {"values": {m: float("nan") for m in M_.MEASURES}, "replicates": [], "reached": False,

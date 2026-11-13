@@ -14,15 +14,22 @@ GROUP = 8
 N_SYNTH = 480
 
 
-def r4g_profile():
+CROP_TAU = 5000               # amendment 17: an AI individual is a crop of 5,000 recorded timescales
+
+
+def r4g_profile(with_crop=True):
     m = json.loads((ROOT / "docs/figures/map_step1.json").read_text())["preparations"]["R4"]["median"]
-    return {k: m[k] for k in ("bins_per_tau", "count_per_bin", "noise", "rate_log_sd")} | {"group": GROUP}
+    p = {k: m[k] for k in ("bins_per_tau", "count_per_bin", "noise", "rate_log_sd")} | {"group": GROUP}
+    if with_crop:                 # amendment 19 (review 15, item 10): calibrated at the registered crop length
+        p["crop_len"] = int(round(CROP_TAU * m["bins_per_tau"]))
+    return p
 
 
 def main():
     out = ROOT / "docs/figures/map_step2_r4g.json"
     sweep = {m: (par, lv, sign, {**fx, "N": N_SYNTH}) for m, (par, lv, sign, fx) in cal.SWEEP.items()}
     cal.C4_BASE = {"N": N_SYNTH}
+    cal.MAX_T, cal.UNIT_SAMPLES, cal.BIG_TAU = 330000, 1.6e8, 12
     c4 = {"samples_per_tau": cal.C4["samples_per_tau"], "population": [480, 960, 2400]}
     cal.main(profiles={"native": {"-": None}, "spikes": {"R4g": r4g_profile()}}, out_path=out,
              cache_tag="_r4g", c4=c4, sweep=sweep)
