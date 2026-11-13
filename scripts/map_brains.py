@@ -38,8 +38,21 @@ def prepare(ind, rtype):
     return X, seg
 
 
+G_UNITS, GROUP = 2400, 8                # amendment 17: R4 pooled ("R4g")
+
+
+def prepare_r4g(ind):
+    """Amendment 17: every included unit (at most 2,400, seeded subset), pooled in seeded groups of 8."""
+    from nematica.map import recording
+    X, seg = instrument._rest(ind)
+    X = instrument.include_units(X, "spikes", float(ind["dt"]))
+    if X.shape[1] > G_UNITS:
+        X = X[:, np.sort(np.random.default_rng(0).choice(X.shape[1], G_UNITS, replace=False))]
+    return recording.pool(X, GROUP, seed=0), seg
+
+
 def run_prep(pid):
-    spec = s1.PREPS[pid]
+    spec = s1.PREPS["R4" if pid == "R4g" else pid]
     CACHE.mkdir(parents=True, exist_ok=True)
     done = {p.stem[len(pid) + 1:] for p in CACHE.glob(f"{pid}_*.pkl")}
     def stale_se(f):                                    # amendment 13: SEs computed before the C3 fix are redone
@@ -55,7 +68,7 @@ def run_prep(pid):
         if "error" in ind:
             r = {"id": ind["id"], "error": ind["error"]}
         else:
-            X, seg = prepare(ind, spec["rtype"])
+            X, seg = prepare_r4g(ind) if pid == "R4g" else prepare(ind, spec["rtype"])
             v = measures.measure_matched(X, seed=0, segments=seg)
             se = measures.split_half_se(X, seed=0, n_splits=5, segments=seg) if "error" not in v else {}
             r = {"id": ind["id"], "values": {m: v.get(m, np.nan) for m in measures.MEASURES},
@@ -71,10 +84,12 @@ def main(ids):
     for pid in ids:
         run_prep(pid)
     res = {}
-    for pid in s1.PREPS:
+    for pid in list(s1.PREPS) + ["R4g"]:
         rows = [pickle.loads(f.read_bytes()) for f in sorted(CACHE.glob(f"{pid}_*.pkl"))]
         if rows:
-            res[pid] = {"type": s1.PREPS[pid]["type"], "group": s1.PREPS[pid]["group"], "individuals": rows}
+            sp = s1.PREPS["R4" if pid == "R4g" else pid]
+            res[pid] = {"type": sp["type"] + (" (units pooled in groups of 8)" if pid == "R4g" else ""),
+                        "group": sp["group"], "individuals": rows}
     OUT.write_text(json.dumps({"preparations": res, "provenance": {
         "code_sha256_16": instrument.code_hash(["scripts/map_step1.py", "scripts/map_brains.py"]),
         "seconds_last_run": round(time.time() - t0)}}, indent=1, default=float))

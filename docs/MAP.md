@@ -1408,3 +1408,32 @@ A3, A6-14m, A6-160m at R2) no longer matched the code hash. A worm-path run with
 (two synthetic instances, matching, recording, measures and budget) gave bit-identical numbers; the new
 branches are inactive for R2 (no pooling key, the calcium dispatch unchanged; `task_rnn` with `every=1` is the
 original code path). Their stored hash was updated, with the old hash kept in `hash_carried_from`.
+
+**Why the registered worm map's budget was undefined (found 14 Nov 2026 while preparing the mouse
+analysis; no rule changed).** The budget re-records an AI with each knob moved by a factor of 1.5. With
+the frame shortened by 1.5, a 1,600-frame worm crop spans about 140 recorded timescales, less than one
+150-timescale window, so every measurement is undefined for that recording and the budget is nan for A1,
+A2, A3 and Pythia-14M (A1 at R2: 11.4 frames per timescale after the change instead of 8.0). Under the
+registered rule (a nan budget fails the gate) this, not C3, is what removed slow memory and timescale
+spread from the registered worm map. It is a consequence of worm recordings being barely one window long,
+not a code error, and it does not arise for the pooled mouse arm (5,000-timescale crops, 1,000-timescale
+windows).
+
+## Amendment 18 (14 Nov 2026): the cross-species rule made exact (before any mouse measure)
+
+`scripts/map_species.py` applies amendment 15's rule. Per species and measurement:
+- **Real envelope** = the range (minimum to maximum) of the individuals' values.
+- **An AI's value** = the median over its crops (its individuals); its 90% interval is the hierarchical
+  bootstrap over instances, then crops.
+- **A measurement is usable in a species** if it passes that species' gates: worms, C1 and C4 (step 2 for
+  worms) and C3 (amendment 15); mouse (pooled), C1 and C4 (step 2 under amendment 17), C3 (pooled mouse SE
+  below 0.5 BVU, BVU = SD over the 3 mice) and the budget (largest AI change at most 1 BVU).
+- **Separating side** in a species: "below" if every mapped standard AI's value is below the envelope's
+  minimum, "above" if every one is above its maximum, otherwise none. Standard families: A1 random RNN, A2
+  task RNN, A3 GRU, A4 spiking network, A5 CfC, A6 Pythia, A7 Mamba. A family with no mapped member in a
+  species is listed as missing, and the verdict there is marked incomplete.
+- **Candidate answer** = a measurement with the same separating side in every species where it is usable.
+  "General (two species)" if usable and separating in both; otherwise single-species.
+- Strict version (reported): every standard AI's whole 90% interval beyond the envelope.
+- Augmented AIs (slow drives, OU latent, lab network) are reported against the same envelope: whether a
+  cheap change moves an AI inside it.
