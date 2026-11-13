@@ -939,3 +939,51 @@ only), R7 and R8 (exploratory).
 
 *Next:* step 2 (calibration at each spike preparation's own numbers) and review 13's items 4 to 10, both
 before any brain measurement; then an independent review of steps 1 and 2.
+
+## Amendment 10 (13 Nov 2026, review 13's items 4 to 10, before any brain measurement)
+
+Code: `nematica/map/{measures,recording,instrument,analysis,pipeline}.py`, `scripts/map_step2.py`,
+`scripts/map_controls.py`; 28 unit tests.
+- **Instrument-transfer gate (item 4).** Each AI is already recorded at every preparation's instrument; a
+  measurement is now used in a group only if every AI's range of values across the group's instruments is
+  below 0.5 BVU (`analysis.transfer_range`). If instruments alone move an AI by more, real-to-real distances
+  would partly measure instruments, so the measurement is dropped.
+- **Spike recordings (item 5).**
+  - *Sparsity is undefined for spike counts* (amendment 4's factorial-moment estimate was unusable at real
+    count levels). It remains for calcium.
+  - AI spike recordings now give units the brain's spread of rates: a fixed, seeded log-normal set of
+    multipliers with median 1 and the preparation's SD of log unit rates, a new instrument number. Step 1
+    was rerun for the spike preparations to add it (0.6 to 1.3).
+  - The matched count per bin is now the median over units, as in the instrument numbers.
+  - **The spike nonlinearity is now exponential (log-normal rates) instead of softplus.** With softplus the
+    largest possible rate CV is 1.46, so the white-noise share at m spikes per bin cannot fall below
+    1/(1 + 2.13 m). That floor is 0.91 to 0.97 for R4, R9, R10b, R10c and R10d, whose measured shares are
+    0.49 to 0.83, so **no real spike preparation could have been matched**. With the exponential, all six
+    real spike profiles (R4, R6, R9, R10b, R10c, R10d) are reached on a synthetic network. Calcium keeps
+    softplus.
+  - Spike matching may take up to 14 rounds.
+- **Budget (item 6)** is now the largest change over AIs and preparations (not the median). Each AI's
+  change is computed with common random numbers, and the seed floor is subtracted: half the absolute
+  difference between two base recordings with different seeds (`pipeline.ai_at_prep`). CRN remains
+  inexact for the frame and bin knobs, whose changes realign the samples; the floor subtraction is the
+  registered allowance for that.
+- **Bootstrap (item 7)** is hierarchical: replicates carry their instance (network seed, checkpoint or
+  text segment set). Instances are resampled, then recordings within them. Paired tests need at least
+  20 recordings from at least 3 instances at every instrument.
+- **Robustness variants (item 8)** are re-matched, not reused: `match(..., hold_mult=2)` for the 2k hold
+  and `match(..., interp=True)` for linear interpolation. Timescale floors 4 and 8 apply only to systems
+  flagged resolution-limited (below 2 samples per timescale), so they never rescale a brain or a matched
+  AI's windows. The measurement set and gates are fixed at the primary variant; only verdicts are
+  recomputed under each variant.
+- **C3 for short preparations (item 9).** When neither unit halves (at least 100 units) nor time halves
+  (at least 1.2 windows each) are possible, two unit halves of h = n/2 units (at least 20) are measured with
+  h-unit draws, and the SE is scaled by sqrt(h/50).
+- **Graded controls (item 10)**, `scripts/map_controls.py`, set up as follows:
+  - the spike group at realistic numbers (each fake preparation takes one real step-1 instrument: R4, R9,
+    R10b, R10c);
+  - the minimum powered size, 4 types x 3 individuals;
+  - separations of 0, 1, 2 and 3 between-preparation spreads, 2 seeds each, with every gate on;
+  - the paired test uses 5 instances x 4 recordings;
+  - reported: the H1 decision rate and, at separation 0, the false-positive rate.
+
+  Fake brains and fake AIs still share one generator and recording model; that limit is stated, not removed.
