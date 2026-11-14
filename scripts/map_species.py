@@ -39,7 +39,13 @@ CONFIRM = ("timescale_spread", "below")
 CONFIRM_FAMILIES = {"A1", "A2"}
 
 
+KEEP_INDIVIDUALS = False       # sensitivity (amendment 23): keep every individual, drop measures with a nan
+
+
 def reals(pid, cal):
+    if KEEP_INDIVIDUALS and pid != "R2":
+        b = json.loads((ROOT / "docs/figures/map_brains.json").read_text())["preparations"][pid]["individuals"]
+        return [r for r in b if not r.get("error")]
     if pid == "R2":                                    # review 15, item 8d: the worm map's own nan rule
         W = map_worm.worms(cal)
         b = json.loads((ROOT / "docs/figures/map_brains.json").read_text())["preparations"]["R2"]["individuals"]
@@ -96,6 +102,8 @@ def ruler(vals):
 
 def species(pid, cal, budget_gate):
     R = reals(pid, cal)
+    if KEEP_INDIVIDUALS and pid != "R2":
+        cal = [m for m in cal if all(np.isfinite(r["values"].get(m, np.nan)) for r in R)]
     A = ais(pid)
     rng = np.random.default_rng(0)
     n = len(R)
@@ -152,6 +160,7 @@ def new_mouse_quantile(n, k, q=0.95, sims=40000, seed=7):
 
 
 def distance_test(pid, S, cal, cap=10.0, min_measures=2, min_families=5):
+    cal = [m for m in cal if m in S["measures"]]
     """Amendments 20 and 21: every counted standard AI farther from the mice than a new mouse would be.
     Threshold: the 95% quantile of a new individual's distance for the AI's number of measurements (the
     leave-one-out envelope is reported only descriptively). AI value: the mean over all its crops (all
@@ -238,6 +247,12 @@ def main():
            "exploratory": {k: {"worm": W["measures"].get(k, {}).get("separating_side"),
                                "mouse": M["measures"].get(k, {}).get("separating_side")}
                            for k in sorted(set(W["measures"]) | set(M["measures"]))}}
+    global KEEP_INDIVIDUALS
+    KEEP_INDIVIDUALS = True
+    M2 = species("R4g", mouse_cal, budget_gate=True)
+    out["sensitivity_keep_all_mice"] = {"mouse": M2, "distance_test": distance_test("R4g", M2, mouse_cal),
+                                        "sides": {k: v["separating_side"] for k, v in M2["measures"].items()}}
+    KEEP_INDIVIDUALS = False
     (ROOT / "docs/figures/map_species.json").write_text(json.dumps(out, indent=1, default=float))
     print("confirmatory:", conf)
     print("exploratory sides:", out["exploratory"])

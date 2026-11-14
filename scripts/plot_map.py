@@ -170,6 +170,55 @@ def worm_measures():
     save(fig, "worm_measures")
 
 
+LABEL = {"A1": "Random RNN", "A1-slow": "Random RNN + slow drives", "A2": "Task-trained RNN", "A3": "GRU (characters)",
+         "A4": "Spiking network", "A5": "CfC (characters)", "A6-14m": "Pythia 14M", "A6-160m": "Pythia 160M",
+         "A6-410m": "Pythia 410M", "A6-410m-ou": "Pythia 410M + slow latent", "A6-1b": "Pythia 1B",
+         "A7-130m": "Mamba 130M", "A7-370m": "Mamba 370M", "A10": "Lab network (fitted to worms)"}
+
+
+def species():
+    """Where every AI sits relative to the real individuals, per measurement, in the worms (discovery) and
+    the pooled mouse (confirmation), from map_species.json. Filled marker: counted for that measurement;
+    hollow: outside calibrated speed (temporal measures) or augmented."""
+    d = json.loads((ROOT / "docs/figures/map_species.json").read_text())
+    panels = [("Worms, calcium imaging (14 worms, discovery)", d["discovery_worm"]),
+              ("Mice, Neuropixels, units pooled in 8s (3 mice)", d["confirmatory_mouse"])]
+    order = [a for a in LABEL if any(a in S["measures"][m]["ai"] for _, S in panels for m in S["measures"])]
+    ms = ["shared_fraction", "slow_fraction", "timescale_spread", "coupling_spread"]
+    fig, axes = plt.subplots(2, len(ms), figsize=(15, 11), gridspec_kw={"hspace": 0.32, "wspace": 0.08})
+    for r, (title, S) in enumerate(panels):
+        for c, m in enumerate(ms):
+            ax = axes[r, c]
+            ax.set_yticks(range(len(order) + 1))
+            ax.set_yticklabels(["Real individuals"] + [LABEL[a] for a in order] if c == 0 else [], fontsize=9)
+            ax.invert_yaxis()
+            ax.tick_params(length=0)
+            for sp in ("top", "right", "left"):
+                ax.spines[sp].set_visible(False)
+            row = S["measures"].get(m)
+            if row is None:
+                ax.text(0.5, 0.5, "not calibrated here", transform=ax.transAxes, ha="center", color=MUTED, fontsize=9)
+                ax.set_xticks([])
+                continue
+            lo, hi = row["envelope"]
+            ax.axvspan(lo, hi, color=CAT["pink"], alpha=0.13, lw=0)
+            ax.scatter(row["real"], [0] * len(row["real"]), s=36, color=CAT["pink"], zorder=3)
+            for i, a in enumerate(order, start=1):
+                y = row["ai"].get(a)
+                if not y or not np.isfinite(y["value"]):
+                    continue
+                col = CAT["blue"] if y["role"] == "standard" else CAT["amber"]
+                ax.plot(y["ci90"], [i, i], color=col, lw=1.6, alpha=0.7)
+                ax.scatter([y["value"]], [i], s=40, zorder=3, color=col if y["counted"] else BG, edgecolors=col, lw=1.4)
+            gate = "" if row["usable"] else "  (fails a gate)"
+            ax.set_title(NAMES[m] + gate, fontsize=11, color=INK if row["usable"] else MUTED, loc="left")
+            ax.grid(axis="x", color=FAINT, lw=0.6)
+            ax.set_axisbelow(True)
+        axes[r, 0].annotate(title, xy=(0, 1.1), xycoords="axes fraction", fontsize=13, color=INK,
+                            fontfamily="Newsreader 16pt")
+    save(fig, "species")
+
+
 if __name__ == "__main__":
     fonts()
     for name in sys.argv[1:] or ["instrument"]:
