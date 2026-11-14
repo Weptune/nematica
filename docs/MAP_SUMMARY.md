@@ -1,7 +1,7 @@
-# The map study, start to finish (12 to 14 Nov 2026)
+# The map study, start to finish (12 to 15 Nov 2026)
 
 This is the readable account of the "map of brains and AIs" study. The full, dated record is
-`docs/MAP.md`: every rule written before the data it governs, 23 amendments, 6 independent reviews and
+`docs/MAP.md`: every rule written before the data it governs, 26 amendments, 7 independent reviews and
 every gate result. This file summarises it, lists every deviation in one place, and says where each result
 and script lives. Where the two disagree, `docs/MAP.md` is the record.
 
@@ -61,15 +61,30 @@ animal?
 | 14 Nov | Amendment 22 | 512-unit task RNN retrained (it stayed at chance) |
 | 14 Nov | Mice measured; 14 AIs recorded at both instruments | see results |
 | 14 Nov | Amendment 23 (post hoc) | sensitivity keeping all 3 mice after one had a missing value |
+| 14 Nov | Amendment 24 | a powered confirmatory test in 58 Allen Neuropixels mice, five tests fixed before any Allen spike was read |
+| 14 Nov | Allen step 1 and step 2 | 58 mice read, 51 hold a crop; only shared fraction and slow memory survive calibration (tests A and C not testable) |
+| 14 Nov | Review 16, amendment 25 | per-measurement SE rule, Allen QC and excluded-mice checks required for B, an instrument-transfer check, stamp and logic fixes |
+| 14 to 15 Nov | Amendment 26, Allen mice measured | two workers after machine restarts; only calibrated measurements (identical values) |
+| 15 Nov | Allen verdicts | B and D not testable (instrument transfer); their primary rules are refuted; E not testable |
 
 ## Results
 
-**Confirmatory: none.** Every registered test ended "not testable":
-- the worm map: too few measurements pass at worm recording length;
-- timescale spread in the mouse: it failed calibration at crop length;
-- the distance test in the mouse: only one mouse measurement is usable.
+**Confirmatory: none confirmed, and the powered test went against the exploratory pattern.**
+- The worm map, the Stringer-mouse timescale-spread test and the Stringer-mouse distance test: not
+  testable.
+- **Allen mice (35 usable on slow memory):**
+  - A plain random RNN's slow memory (0.107) lies inside the mice's range (0.031 to 0.228), near their
+    25th percentile. The primary rule of test B is refuted.
+  - Recording the same RNN at five single mice's instruments moves it by 1.8 times the between-mouse SD,
+    so by the registered transfer rule B is "not testable".
+  - The slow-drive RNN overshoots the mice (0.291), so D's primary rule is refuted.
+  - The distance test E is not testable.
+  - Figure: `docs/figures/map/allen.png`.
 
-No result below is a confirmed finding.
+**The main lesson of the whole study:** with recordings like these, the recording instrument moves an
+artificial network's measurements more than real individuals differ from each other. A difference between
+"AIs" and "brains" is only readable if every AI is recorded at each animal's own instrument, and with many
+animals. Matching to a median instrument and a few individuals produced patterns that did not survive.
 
 **Exploratory** (figure: `docs/figures/map/species.png`; tables: the "Results (14 Nov 2026)" section of
 `docs/MAP.md`):
@@ -80,16 +95,16 @@ No result below is a confirmed finding.
      them.
    - In the mouse, it is the only AI whose slow memory falls inside the mouse range.
    - Adding a slow latent to a language model barely helps (1%).
-3. **In the mouse, nearly every AI sits below the mice on slow memory, timescale spread and coupling
-   spread.** Fast networks (language models, GRU, CfC, spiking) cannot be counted on the temporal
+   - In the Allen mice the slow-drive RNN overshoots (above every mouse).
+3. **In the 3 Stringer mice, nearly every AI sits below the mice on slow memory, timescale spread and
+   coupling spread.** (Not confirmed in 35 Allen mice: the random RNN falls inside their range.) Fast networks (language models, GRU, CfC, spiking) cannot be counted on the temporal
    measurements, because holding them to reach the instrument compresses those measurements.
 4. **Scale does not buy brain-likeness.** Pythia-1B is farther from the worms than Pythia-14M.
 5. **Architecture matters somewhat.** Mamba is closer than Pythia on the slow measurements, and the CfC
    "liquid" network is closer than a GRU.
 
-**Hypothesis for a properly powered test** (not a finding): real neurons carry more slow, heterogeneous
-structure than the artificial networks tested, and slow external drive is the cheapest change that moves an
-artificial network toward them.
+The exploratory hypothesis drawn from these patterns ("real neurons carry more slow structure, and slow
+drive fixes it") was then put to the powered Allen test, and **it did not hold** (see above).
 
 ## Every deviation and forking path
 
@@ -122,6 +137,13 @@ Things a reader should weigh, all also in `docs/MAP.md`:
     re-recorded instead of carried over.
 14. Several runs were killed for memory and restarted. No partial result was kept; each rerun is complete
     under one code hash.
+15. Amendment 24 planned 13 AIs at the Allen instrument, but only the random RNN, the slow-drive RNN and
+    the transfer recordings were made. Test E was already not testable on the random RNN's budget alone,
+    and no registered verdict depends on the others.
+16. Amendment 26 measured the Allen mice only on the calibrated measurements, in the registered order, which
+    gives identical values.
+17. Of 51 Allen mice with a crop, 16 were dropped from slow memory by the 80%-finite crop rule: their pooled
+    timescale estimate fails in many crops.
 
 ## Data
 
@@ -132,6 +154,7 @@ Things a reader should weigh, all also in `docs/MAP.md`:
 | mouse two-photon (deconvolved) | Stringer et al. 2019, figshare 6163622 | 7 | step 1 only; arm closed at step 2 |
 | mouse Neuropixels, single units | Stringer et al. 2019, figshare 7739750 | 3 | step 1; spike arm closed |
 | mouse Neuropixels, pooled units | same | 3 (2 in the registered set) | measured; exploratory |
+| mouse Neuropixels, Allen Visual Coding | DANDI 000021 and 000022 | 58 read, 51 with a crop, 35 usable | confirmatory arm; B and D not testable (primary rules refuted), E not testable |
 | rat cultures, organoids, slices, mouse ALM | DANDI 001603, 002020, 000060 | 3 to 14 each | step 1 and step 2 only; spike arm closed |
 
 **AIs** (3 instances each):
@@ -160,6 +183,7 @@ Things a reader should weigh, all also in `docs/MAP.md`:
 | step 1 (instrument numbers) | `scripts/map_step1.py` -> `docs/figures/map_step1.json` |
 | step 2 (calibration) | `scripts/map_calibrate.py`, `map_step2*.py` -> `docs/figures/map_step2*.json` |
 | brain measurements | `scripts/map_brains.py` -> `docs/figures/map_brains.json` |
+| Allen loader and AI wrapper | `nematica/map/data.py` (`allen_vcn`, `allen_qc`), `scripts/map_ais_r4a.py`, `scripts/map_step2_r4a.py` |
 | worm map | `scripts/map_worm.py` -> `docs/figures/map_worm.json` |
 | cross-species rule | `scripts/map_species.py` -> `docs/figures/map_species.json` |
 | figures | `scripts/plot_map.py` -> `docs/figures/map/` |
@@ -175,10 +199,11 @@ Things a reader should weigh, all also in `docs/MAP.md`:
 6. `map_species.py`
 7. `plot_map.py species`
 
-## What would make it confirmatory
+## What would make it confirmatory now
 
-- More individuals per species. The Allen Brain Observatory Neuropixels sessions have dozens of mice with
-  spontaneous blocks.
+- Record every AI at each animal's own instrument, and compare per animal. The transfer check shows that the
+  instrument matters more than the animal.
+- More individuals per species. Dozens of mice turned an apparent difference into none.
 - Worm recordings several windows long.
 - An instrument that resolves timescales without pooling.
 - For fast AIs, a definition of temporal measurements that does not need holding.

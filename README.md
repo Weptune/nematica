@@ -5122,7 +5122,7 @@ networks, an RL agent, the lab networks, the worm emulator). Every artificial ne
 way the brain it is compared with was recorded; time is measured in each system's own timescale.
 
 **Full registration:** `docs/MAP.md` (systems, recording models, measurements, the ruler in biological
-variation units, calibration gates, phases, and 23 dated amendments, most made before any brain activity was
+variation units, calibration gates, phases, and 26 dated amendments, most made before any brain activity was
 measured). The hypotheses as they stand after amendment 4 (13 Nov 2026), all tested per recording group
 (calcium, spikes) and counted only in a powered group (at least 4 preparation types, 3 measurements):
 
@@ -5137,25 +5137,17 @@ measured). The hypotheses as they stand after amendment 4 (13 Nov 2026), all tes
 | H7 | watching fails beyond the worm | exploratory (no field-potential recording model) |
 | H8 | no body needed | cultures and organoids have a real nearest neighbour |
 
-**Outcome (14 Nov 2026).** Readable account: `docs/MAP_SUMMARY.md`. Full record: `docs/MAP.md` (23
-amendments, 6 independent reviews). Figure: `docs/figures/map/species.png`.
+**Outcome (15 Nov 2026).** Readable account: `docs/MAP_SUMMARY.md`. Full record: `docs/MAP.md` (26
+amendments, 7 independent reviews). Figures: `docs/figures/map/species.png`, `docs/figures/map/allen.png`.
 
-- *No confirmatory result.* Real instruments hide most measurements:
-  - the spike arm closed at calibration;
-  - the mouse two-photon arm closed at calibration;
-  - the registered worm map could not be drawn, because worm recordings are barely one measurement
-    window long;
-  - the pooled-mouse confirmatory tests were not testable (timescale spread failed calibration at 0.89
-    against 0.9, and only one mouse measurement passed its gates).
-- *Exploratory:*
-  - none of 14 AIs is worm-like (1.97 to 6.33 ruler units against a worm envelope of 1.67);
-  - in the mouse, nearly every AI sits below the mice on slow memory, timescale spread and coupling
-    spread;
-  - a random RNN with slow external drives is the one AI that moves into the real range (37% closer to
-    the worms, inside the mouse range on slow memory);
-  - scale does not help (Pythia-1B is farther than 14M).
-- *Hypothesis for a powered test:* real neurons carry more slow, heterogeneous structure than the
-  artificial networks tested, and slow drive is the cheapest change toward them.
+- *No confirmed difference.* Real instruments hide most measurements, so most registered tests were not
+  testable. The one powered test, in 58 Allen Neuropixels mice (35 usable), went against the pattern seen
+  in 3 mice: a random RNN's slow memory lies inside the mouse range.
+- *The main lesson:* the same network recorded at five different mice's instrument settings moves by 1.8
+  times the spread between mice. AI-vs-brain comparisons of this kind need every AI recorded at each
+  animal's own instrument, and many animals.
+- *Exploratory, worms:* none of 14 AIs is worm-like. Slow drive brings a random RNN closest, but in the
+  Allen mice it overshoots. Scale does not help.
 
 ## Replay lab
 

@@ -220,6 +220,40 @@ def species():
     save(fig, "species")
 
 
+def allen():
+    """Test B in the Allen mice: slow memory of every usable mouse against the random RNN, the slow-drive RNN,
+    and the random RNN recorded at five single mice's instruments (the transfer check)."""
+    d = json.loads((ROOT / "docs/figures/map_species.json").read_text())["confirmatory_allen"]
+    row = d["mice"]["measures"]["slow_fraction"]
+    tr = d["transfer"]["values"]
+    fig, ax = plt.subplots(figsize=(10, 4.6))
+    v = np.sort(np.array(row["real"]))
+    ax.scatter(v, np.zeros_like(v) + np.random.default_rng(0).uniform(-0.12, 0.12, len(v)), s=26, color=CAT["pink"],
+               zorder=3, label=f"{len(v)} Allen mice")
+    lo, hi = row["envelope"]
+    ax.axvspan(lo, hi, color=CAT["pink"], alpha=0.10, lw=0)
+    for i, (a, lab, col) in enumerate([("A1", "Random RNN (median instrument)", CAT["blue"]),
+                                       ("A1-slow", "Random RNN + slow drives", CAT["amber"])], start=1):
+        y = row["ai"][a]
+        ax.plot(y["ci90"], [i, i], color=col, lw=2)
+        ax.scatter([y["value"]], [i], s=60, color=col, zorder=3)
+        ax.text(y["ci90"][1] + 0.006, i, lab, va="center", fontsize=10, color=INK)
+    xs = [x for k, x in tr.items() if k != "median instrument"]
+    ax.scatter(xs, [3] * len(xs), s=40, facecolors=BG, edgecolors=CAT["blue"], lw=1.5, zorder=3)
+    ax.text(max(xs) + 0.006, 3, "Random RNN at five single mice's instruments", va="center", fontsize=10, color=INK)
+    ax.set_yticks([])
+    ax.set_ylim(-0.6, 3.6)
+    ax.invert_yaxis()
+    for sp in ("top", "right", "left"):
+        ax.spines[sp].set_visible(False)
+    ax.set_xlabel("Slow memory", fontsize=11)
+    ax.grid(axis="x", color=FAINT, lw=0.6)
+    ax.set_axisbelow(True)
+    ax.set_title("Test B in 35 Allen mice: the random RNN sits inside the mouse range, and the instrument moves it more "
+                 "than mice differ", fontsize=11.5, loc="left", color=INK, fontfamily="Newsreader 16pt")
+    save(fig, "allen")
+
+
 if __name__ == "__main__":
     fonts()
     for name in sys.argv[1:] or ["instrument"]:

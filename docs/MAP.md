@@ -1996,3 +1996,59 @@ Keeping the registered order gives values identical to the full measurement (che
 system). The whole-recording sensitivity of amendment 19 is not computed for R4a; it belongs to the
 Stringer arm. Timescale spread and coupling spread, which failed calibration at R4a, are therefore not
 reported for the Allen mice.
+
+## Allen results (15 Nov 2026): the exploratory pattern does not survive a powered test
+
+`docs/figures/map_species.json` (`confirmatory_allen`), `docs/figures/map_brains.json` (R4a), figure
+`docs/figures/map/allen.png`.
+
+**Mice.** All 58 were measured. Seven have no 5,000-timescale crop (amendment 24, item 1), which leaves 51.
+- *Slow memory:* 35 mice are usable. In the other 16, the pooled timescale estimate fails in more than 20%
+  of crops (the 80% rule). Within a mouse, the crop timescale often jumps between 2 and 9 samples, so the
+  activity is far from stationary.
+- *Shared fraction:* also 35 mice usable.
+
+| measurement | mice | range | median (IQR) | C3 vs lower ruler bound | budget (A1) / ruler | usable |
+|---|---|---|---|---|---|---|
+| shared fraction | 35 | 0.006 to 0.103 | 0.038 (0.028 to 0.043) | 0.31 | 1.38 | no (budget) |
+| slow memory | 35 | 0.031 to 0.228 | 0.134 (0.108 to 0.161) | 0.46 | 0.80 | yes |
+
+**Registered verdicts (amendments 24 and 25):**
+
+| test | verdict | why |
+|---|---|---|
+| A coupling spread | not testable | failed calibration at R4a (C1 0.55) |
+| B slow memory | **not testable (instrument transfer)**; the primary rule alone is **refuted** | the random RNN (0.107, 90% interval 0.060 to 0.137) lies *inside* the 35 mice (near their 25th percentile); and its slow memory moves from 0.038 to 0.112 across the instruments of five single mice, 1.76 mouse ruler units against a limit of 0.5 |
+| C timescale spread | not testable | failed calibration at R4a (C1 0.69) |
+| D slow drives | not testable (inherits B); the primary rule alone is **refuted** | the slow-drive RNN overshoots: 0.291, above every mouse |
+| E distance | not testable | only one usable measurement |
+
+**Sensitivities for B** (each reports the primary rule):
+- Allen QC units: not testable (fails C3 or budget, 32 mice);
+- mice within x1.5 of the median instrument: not testable (22 mice);
+- no resolution-limited crop: refuted (13 mice);
+- excluded slow mice added to the range: refuted;
+- brain_observatory mice only: refuted (18);
+- functional_connectivity mice only: not testable (17).
+
+**No version of B confirms.**
+
+**What this means.**
+1. The pattern found in the 3 Stringer mice ("AIs have less slow memory than mice") was a small-sample
+   effect. With 35 mice the mouse range is wide (0.03 to 0.23), and a plain random RNN falls inside it.
+2. **The instrument moves an AI's value more than mice differ from each other.** The same network,
+   recorded at the settings of five different Allen mice, spans 1.8 times the between-mouse SD. So with
+   recordings like these, a difference between an AI and a set of animals can only be read if the AI is
+   recorded at each animal's own instrument. Matching to a median instrument is not enough.
+3. Slow drives move a random RNN past the mice, not into them. The "slow drive is the fix" idea from the
+   worm map does not transfer at this setting.
+
+**AIs not recorded at R4a.** Only the random RNN, the slow-drive RNN and the transfer recordings were made
+before the mice were measured. The other 11 AIs were planned for test E, which became not testable when
+shared fraction failed its budget on the random RNN alone (adding AIs can only raise that budget). So the
+chain was stopped, and no registered verdict depends on them. This is stated as a deviation from
+amendment 24, item 4.
+
+**Run notes.** The machine restarted twice. Any job left running between turns is stopped, so the mice
+were measured by two workers while the session stayed active (amendment 26). No result was lost: every
+mouse and AI result is cached on completion.
