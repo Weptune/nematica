@@ -1864,3 +1864,24 @@ measurement is usable at R4a):
 
 **The 3 Stringer mice (R4g) are not pooled with these:** their instrument and recording protocol differ.
 They stay exploratory.
+
+## Step 1 for the Allen mice (14 Nov 2026; instrument numbers only, no measure)
+
+`docs/figures/map_step1.json`, preparation R4a.
+- **Data:** all 58 sessions were read, one per mouse (58 distinct mice), and none was excluded. Spontaneous
+  time per mouse runs from 616 to 2,334 s (median 951 s). Good units per mouse run from 1,079 to 2,400,
+  after the cap (median 1,729).
+- **Instrument numbers** (medians over mice, 500 seeded units each):
+  - samples per timescale: 2.60 (range 1.43 to 23.9);
+  - spikes per bin: 0.066;
+  - white share: 0.90;
+  - rate spread (log SD): 1.22;
+  - timescale: 52 ms (29 to 478 ms).
+
+  These are close to the Stringer mice (2.34, 0.069, 0.83, 1.28).
+- **Crops:** by amendment 24's rule a mouse needs at least one crop of 5,000 of its own timescales. **Seven
+  mice have none** (their timescale is too long for their spontaneous time), so **51 mice** enter the
+  measurement. The excluded mice: sub-707296975, sub-732548371, sub-733457986, sub-734865729,
+  sub-735109599, sub-738651046 and sub-769360771.
+- **Download:** about 40 MB per mouse is kept locally in `data/cache/allen` (third-party data, not
+  committed): the spontaneous spikes of the selected good units, read once with parallel range requests.
