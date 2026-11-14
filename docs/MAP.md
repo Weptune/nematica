@@ -1885,3 +1885,16 @@ They stay exploratory.
   sub-735109599, sub-738651046 and sub-769360771.
 - **Download:** about 40 MB per mouse is kept locally in `data/cache/allen` (third-party data, not
   committed): the spontaneous spikes of the selected good units, read once with parallel range requests.
+
+## Step 2 for the Allen mice (14 Nov 2026): two measurements survive
+
+`docs/figures/map_step2_r4a.json`. The settings are R4a's median single-unit numbers, groups of 8,
+480-unit synthetic systems and 5,000-timescale crops; 0 matches unreached. C1 / largest C4 ratio:
+- **pass:** shared fraction 0.96 / 0.09; slow memory 0.98 / 0.10;
+- **fail:** timescale spread 0.69; coupling spread 0.55; drift 0.69 (the Allen white share is higher than
+  the Stringer mice's: 0.90 against 0.83).
+
+So, by amendment 24:
+- **tests A (coupling spread) and C (timescale spread) are not testable**;
+- tests B and D (slow memory) and E (distance over the usable measurements) remain;
+- no Allen mouse has been measured.

@@ -29,6 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 import map_ais as AIS  # noqa: E402
+import map_ais_r4a as R4A  # noqa: E402
 import map_worm  # noqa: E402
 from nematica.map import analysis as An  # noqa: E402
 
@@ -43,7 +44,7 @@ KEEP_INDIVIDUALS = False       # sensitivity (amendment 23): keep every individu
 
 
 def reals(pid, cal):
-    if KEEP_INDIVIDUALS and pid != "R2":
+    if (KEEP_INDIVIDUALS and pid != "R2") or pid == "R4a":   # R4a: amendment 24, item 6 (per measurement)
         b = json.loads((ROOT / "docs/figures/map_brains.json").read_text())["preparations"][pid]["individuals"]
         return [r for r in b if not r.get("error")]
     if pid == "R2":                                    # review 15, item 8d: the worm map's own nan rule
@@ -61,7 +62,8 @@ def ais(pid):
         if not f.exists():
             continue
         r = pickle.loads(f.read_bytes())
-        if r.get("code_sha256_16") != AIS.code_hash() or r.get("crop_len") != AIS.CROP_LEN[pid]:
+        if (r.get("code_sha256_16") != AIS.code_hash() or r.get("crop_len") != AIS.CROP_LEN.get(pid)
+                or (pid == "R4a" and r.get("r4a_wrapper_sha256_16") != R4A.WRAPPER)):
             out[aid] = {"family": fam, "role": role, "mapped": False, "why": "stale or other crop length"}
             continue
         ok = bool(r.get("reached")) and len(r.get("replicates", [])) > 0 and not r.get("error")
@@ -102,7 +104,7 @@ def ruler(vals):
 
 def species(pid, cal, budget_gate):
     R = reals(pid, cal)
-    if KEEP_INDIVIDUALS and pid != "R2":
+    if KEEP_INDIVIDUALS and pid not in ("R2", "R4a"):
         cal = [m for m in cal if all(np.isfinite(r["values"].get(m, np.nan)) for r in R)]
     A = ais(pid)
     rng = np.random.default_rng(0)
@@ -140,7 +142,9 @@ def species(pid, cal, budget_gate):
             strict = ("undefined" if not np.isfinite(v) else "below" if ci[1] < pi[0]
                       else "above" if ci[0] > pi[1] else "overlap")
             counted = x["role"] == "standard" and (m not in TEMPORAL or x["within_calibrated_speed"])
+            raw = "undefined" if not np.isfinite(v) else "below" if v < lo else "above" if v > hi else "inside"
             row["ai"][a] = {"value": v, "ci90": ci, "family": x["family"], "role": x["role"], "margin": margin,
+                            "raw_side": raw,
                             "side": side, "strict_side": strict, "counted": counted,
                             "within_calibrated_speed": x["within_calibrated_speed"]}
         cnt = {a: y for a, y in row["ai"].items() if y["counted"]}
@@ -196,7 +200,7 @@ def distance_test(pid, S, cal, cap=10.0, min_measures=2, min_families=5):
         if len(ok) < 0.8 * len(reps):
             res[a] = {"counted": x["role"] == "standard", "median": np.nan, "why": "undefined values"}
             continue
-        c = {m: float(np.mean([r["values"][m] for r in R])) for m in ms}
+        c = {m: float(np.nanmean([r["values"][m] for r in R])) for m in ms}
         g = {}
         for r in ok:
             g.setdefault(r["instance"], []).append(r)
@@ -226,6 +230,46 @@ def distance_test(pid, S, cal, cap=10.0, min_measures=2, min_families=5):
     else:
         verdict = "unclear"
     return {"result": verdict, "measures": use, "families_counted": fams, "ais": res}
+
+
+def allen_tests(pid="R4a"):
+    """Amendment 24's five registered tests in the Allen mice."""
+    cal = json.loads((ROOT / "docs/figures/map_step2_r4a.json").read_text())["r4a_set"]
+    S = species(pid, cal, budget_gate=True)
+    def directional(m, required=()):
+        row = S["measures"].get(m)
+        if row is None or not row.get("calibrated", True):
+            return {"result": "not testable", "why": "not calibrated at R4a"}
+        if not row["usable"]:
+            return {"result": "not testable", "why": "fails C3 or budget", "gates": row["gates"]}
+        cnt = {a: y for a, y in row["ai"].items() if y["counted"]}
+        miss = [f for f in required if f not in {y["family"] for y in cnt.values()}]
+        if miss:
+            return {"result": "not testable", "why": f"required family not counted: {miss}"}
+        sides = {a: y["side"] for a, y in cnt.items()}
+        raws = {a: y["raw_side"] for a, y in cnt.items()}
+        if all(v == "below" for v in sides.values()):
+            res = "confirmed"
+        elif any(v in ("inside", "above") for v in raws.values()):
+            res = "refuted"
+        else:
+            res = "unclear"
+        return {"result": res, "sides": sides, "raw_sides": raws, "strict_side": row["strict_separating_side"],
+                "families_counted": row["families_counted"]}
+    T = {"A coupling spread": directional("coupling_spread"),
+         "B slow memory": directional("slow_fraction", ("A1",)),
+         "C timescale spread": directional("timescale_spread", ("A1",))}
+    row = S["measures"].get("slow_fraction")
+    y = (row or {}).get("ai", {}).get("A1-slow")
+    if T["B slow memory"]["result"] == "not testable" or y is None:
+        T["D slow drives"] = {"result": "not testable", "why": "test B not testable or A1-slow missing"}
+    elif y["side"] in ("below", "above"):
+        T["D slow drives"] = {"result": "refuted", "side": y["side"], "value": y["value"]}
+    else:
+        T["D slow drives"] = {"result": "confirmed" if T["B slow memory"]["result"] == "confirmed" else "unclear",
+                              "side": y["side"], "value": y["value"], "envelope": row["envelope"]}
+    T["E distance"] = distance_test(pid, S, cal)
+    return S, T
 
 
 def main():
@@ -258,6 +302,12 @@ def main():
     out["sensitivity_keep_all_mice"] = {"mouse": M2, "distance_test": distance_test("R4g", M2, mouse_cal),
                                         "sides": {k: v["separating_side"] for k, v in M2["measures"].items()}}
     KEEP_INDIVIDUALS = False
+    if (ROOT / "docs/figures/map_step2_r4a.json").exists() and any(AIS.CACHE.glob("*_R4a.pkl")):
+        AIS.CROP_LEN["R4a"] = R4A.r4a_profile(True)["crop_len"]
+        S4, T4 = allen_tests()
+        out["confirmatory_allen"] = {"mice": S4, "tests": T4}
+        for k, v in T4.items():
+            print("ALLEN", k, v["result"], v.get("why", ""))
     (ROOT / "docs/figures/map_species.json").write_text(json.dumps(out, indent=1, default=float))
     print("confirmatory:", conf)
     print("exploratory sides:", out["exploratory"])
