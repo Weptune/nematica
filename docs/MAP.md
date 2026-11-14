@@ -1985,3 +1985,14 @@ fixes below. Fixed before any analysis:
 
 Carry-over note: the float32 path in `prepare_r4g` also applies to the Stringer mice (R4g), whose stored
 results were made by the float64 path. The two paths were checked identical on synthetic counts.
+
+## Amendment 26 (14 Nov 2026, time only; no value changes)
+
+The machine restarted twice during the mouse measurement, and any job left running between turns is
+stopped, so the remaining mice are measured by two workers (`SHARD`) while the session stays active.
+To save time, each Allen mouse crop is measured only for the measurements calibrated at R4a (shared fraction,
+slow memory), plus spectrum steepness, which comes first and shares a random stream with shared fraction.
+Keeping the registered order gives values identical to the full measurement (checked on a synthetic
+system). The whole-recording sensitivity of amendment 19 is not computed for R4a; it belongs to the
+Stringer arm. Timescale spread and coupling spread, which failed calibration at R4a, are therefore not
+reported for the Allen mice.

@@ -80,12 +80,17 @@ def measure_r4g(ind, step1_pid="R4", cols=None):
     else:                                                # amendment 24: crops may span blocks (as AI crops)
         from nematica.map.pipeline import crops_across
         cs = crops_across(X, seg, L, 10 ** 6)
+    only = None
+    if step1_pid == "R4a":                               # amendment 26 (time): only the measurements calibrated
+        cal = json.loads((ROOT / "docs/figures/map_step2_r4a.json").read_text())["r4a_set"]   # at R4a; in the
+        only = [m for m in measures.MEASURES[:measures.MEASURES.index(cal[-1]) + 1]           # registered order
+                if m in cal or m == "spectrum_steepness"]   # (it shares a random stream): identical values
     vals, ses = [], []
     for j, (c, sc) in enumerate(cs):
-        v = measures.measure_matched(c, seed=j, segments=sc)
+        v = measures.measure_matched(c, seed=j, segments=sc, only=only)
         vals.append({m: v.get(m, np.nan) for m in measures.MEASURES} | {     # review 16, item 3
             "tau_used": v.get("tau_used", np.nan), "resolution_limited": v.get("resolution_limited")})
-        ses.append(measures.split_half_se(c, seed=j, n_splits=5, segments=sc) if "error" not in v else {})
+        ses.append(measures.split_half_se(c, seed=j, n_splits=5, segments=sc, only=only) if "error" not in v else {})
     k = len(cs)
     def fin(v):                                          # amendment 21: the AIs' 80%-finite rule
         v = np.array(v, float)
@@ -93,7 +98,7 @@ def measure_r4g(ind, step1_pid="R4", cols=None):
     mean = {m: fin([x[m] for x in vals]) for m in measures.MEASURES}
     se = {m: float(np.sqrt(np.nanmean([x.get(m, np.nan) ** 2 for x in ses]))) if k else np.nan
           for m in measures.MEASURES}                   # amendment 21: no division by sqrt(k) (groups shared)
-    w = measures.measure_matched(X, seed=0, segments=seg)
+    w = measures.measure_matched(X, seed=0, segments=seg) if step1_pid == "R4" else {}
     if not k and step1_pid == "R4a":                     # amendment 25 (review 16, item 6): no crop: slow memory
         ws = measures.measure_matched(X, seed=0, segments=seg, only=["slow_fraction"], window_tau=1.0)
         w = {**w, "slow_fraction_whole": ws.get("slow_fraction", np.nan)}       # over the whole recording
