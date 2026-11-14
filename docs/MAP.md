@@ -1594,3 +1594,7 @@ A1 is recorded again under the new code hash, and its numbers are unchanged in m
 across trials), which differs from how the task is trained and from the original accuracy (independent
 trials, fresh state). It refused seed 1 (0.65 in the continuous session); on independent trials seed 1
 reaches 0.79. Accuracy is now computed on independent trials, as originally. The job was restarted again.
+*Second addendum:* A2's third instance ran out of memory (6.2 GB) when generating 6,000-trial chunks of
+the long session in one call; chunks are now 1,000 trials (60,000 steps, a multiple of the 100-step
+blocks). A1 and A2 are re-recorded at the end of the job under the new code hash; A3 and later AIs do not
+touch this code path.

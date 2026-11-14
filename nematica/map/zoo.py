@@ -81,10 +81,10 @@ def decision_task(batch, T=60, rng=None, coh=(0.0, 0.05, 0.1, 0.2, 0.4)):
 
 
 def task_rnn(seed=0, n=128, train_steps=1500, trials=6000, every=1, lr=1e-3):
-    """`every` > 1 (amendments 16 and 19): a session `trials` long is generated in chunks of 6,000 trials and
+    """`every` > 1 (amendments 16 and 19): a session `trials` long is generated in chunks of 1,000 trials and
     kept as means over consecutive blocks of `every` steps (review 15, item 7: block means, not decimation,
     which aliased the 60-step trial structure), so very long sessions fit in memory; task accuracy is
-    reported on the first chunk. every=1 is the original recording, unchanged."""
+    reported on the first chunk (1,000 trials). every=1 is the original recording, unchanged."""
     import torch
     torch.set_num_threads(2)
 
@@ -128,7 +128,7 @@ def task_rnn(seed=0, n=128, train_steps=1500, trials=6000, every=1, lr=1e-3):
                                                           "accuracy": acc}
 
 
-def _long_session(net, n, trials, every, seed, chunk=6000):
+def _long_session(net, n, trials, every, seed, chunk=1000):     # chunk: memory (amendment 22)
     """Block means over `every` steps; chunk * 60 steps must be a multiple of `every` (blocks never straddle
     chunks); a final partial block is dropped. Returns (activity, accuracy on the first chunk)."""
     import torch
