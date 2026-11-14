@@ -47,6 +47,14 @@ def prepare_r4g(ind, cols=None):
     from nematica.map import recording
     if cols is not None:
         ind = {**ind, "activity": np.asarray(ind["activity"])[:, cols]}
+    if not ind.get("rest"):                              # memory only: the same selection on float32 counts
+        X, seg = np.asarray(ind["activity"], np.float32), list(ind.get("segments") or [])
+        n, dt = X.sum(0, dtype=np.float64), float(ind["dt"])
+        keep = (X.std(0) > 1e-9) & (n >= instrument.MIN_SPIKES) & (n / (len(X) * dt) >= instrument.MIN_RATE_HZ)
+        X = X[:, keep]
+        if X.shape[1] > G_UNITS:
+            X = X[:, np.sort(np.random.default_rng(0).choice(X.shape[1], G_UNITS, replace=False))]
+        return recording.pool(X, GROUP, seed=0).astype(float), seg
     X, seg = instrument._rest(ind)
     X = instrument.include_units(X, "spikes", float(ind["dt"]))
     if X.shape[1] > G_UNITS:
