@@ -405,6 +405,7 @@ def _fetch_range(url, a, n, workers=8, piece=16 << 20):
             except Exception:  # noqa: BLE001
                 if k == 5:
                     raise
+        raise IOError(f"range {a + off}-{a + b}: wrong length after 6 tries")   # review 16, item 9
     with cf.ThreadPoolExecutor(workers) as ex:
         list(ex.map(get, range(0, n, piece)))
     return bytes(buf)
@@ -455,6 +456,7 @@ def _allen_cache(a, max_units):
     s3 = requests.head(url, allow_redirects=True, timeout=60).url
     T = np.frombuffer(_fetch_range(s3, off, n * 8), np.float64)
     starts = np.concatenate([[0], idx[:-1]])
+    assert len(blocks) <= 255                            # uint8 block ids
     times, bids, ptr = [], [], [0]
     for u in good:
         tt = T[starts[u]:idx[u]]
@@ -497,3 +499,27 @@ def allen_vcn(skip=(), max_units=ALLEN_MAX_UNITS):
                                f"{int(z['n_good'])} good units", "blocks_s": blocks.tolist()}
             except Exception as e:  # noqa: BLE001
                 yield {"id": uid, "error": f"unreadable: {type(e).__name__}: {e}"}
+
+
+def allen_qc(max_units=ALLEN_MAX_UNITS):
+    """Amendment 25 (review 16, item 2): Allen's default unit QC (isi_violations < 0.5, amplitude_cutoff < 0.1,
+    presence_ratio > 0.9) for the cached units of every session, as a boolean mask in cache order. Metadata
+    only (unit-table quality columns)."""
+    import h5py
+    out = {}
+    for ds in ALLEN_DANDISETS:
+        for a in sorted((x for x in dandi_assets(ds) if "probe" not in x["path"]), key=lambda x: x["path"]):
+            uid = a["path"].split("/")[0]
+            f = ALLEN_CACHE / f"{uid}_qc.npy"
+            if not f.exists():
+                with h5py.File(open_url(f"{DANDI}/assets/{a['asset_id']}/download/"), "r") as h:
+                    q = h["units/quality"][:]
+                    isi = h["units/isi_violations"][:]
+                    amp = h["units/amplitude_cutoff"][:]
+                    pres = h["units/presence_ratio"][:]
+                good = np.flatnonzero(np.asarray([x in (b"good", "good") for x in q]))
+                if len(good) > max_units:
+                    good = np.sort(np.random.default_rng(0).choice(good, max_units, replace=False))
+                np.save(f, (isi[good] < 0.5) & (amp[good] < 0.1) & (pres[good] > 0.9))
+            out[uid] = np.load(f)
+    return out

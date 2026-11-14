@@ -41,9 +41,12 @@ def prepare(ind, rtype):
 G_UNITS, GROUP = 2400, 8                # amendment 17: R4 pooled ("R4g")
 
 
-def prepare_r4g(ind):
-    """Amendment 17: every included unit (at most 2,400, seeded subset), pooled in seeded groups of 8."""
+def prepare_r4g(ind, cols=None):
+    """Amendment 17: every included unit (at most 2,400, seeded subset), pooled in seeded groups of 8.
+    `cols` (amendment 25): a boolean unit mask applied first (Allen QC sensitivity)."""
     from nematica.map import recording
+    if cols is not None:
+        ind = {**ind, "activity": np.asarray(ind["activity"])[:, cols]}
     X, seg = instrument._rest(ind)
     X = instrument.include_units(X, "spikes", float(ind["dt"]))
     if X.shape[1] > G_UNITS:
@@ -54,12 +57,12 @@ def prepare_r4g(ind):
 CROP_TAU = 5000
 
 
-def measure_r4g(ind, step1_pid="R4"):
+def measure_r4g(ind, step1_pid="R4", cols=None):
     """Amendment 19 (review 15, item 3), primary: each mouse's pooled recording is cut into non-overlapping
     crops of 5,000 of its own timescales (timescale from the whole 20 minutes), each crop measured exactly as
     an AI crop is; the mouse's value is the mean over crops and its SE the RMS crop split-half SE over the
     square root of the number of crops. Sensitivity: the whole 20 minutes as one recording."""
-    X, seg = prepare_r4g(ind)
+    X, seg = prepare_r4g(ind, cols)
     t = measures.tau_med(X, segments=seg)
     s1r = [r for r in json.loads((ROOT / "docs/figures/map_step1.json").read_text())["preparations"][step1_pid]
            ["individuals"] if r["id"] == ind["id"]][0]
@@ -72,7 +75,8 @@ def measure_r4g(ind, step1_pid="R4"):
     vals, ses = [], []
     for j, (c, sc) in enumerate(cs):
         v = measures.measure_matched(c, seed=j, segments=sc)
-        vals.append({m: v.get(m, np.nan) for m in measures.MEASURES})
+        vals.append({m: v.get(m, np.nan) for m in measures.MEASURES} | {     # review 16, item 3
+            "tau_used": v.get("tau_used", np.nan), "resolution_limited": v.get("resolution_limited")})
         ses.append(measures.split_half_se(c, seed=j, n_splits=5, segments=sc) if "error" not in v else {})
     k = len(cs)
     def fin(v):                                          # amendment 21: the AIs' 80%-finite rule
@@ -82,9 +86,14 @@ def measure_r4g(ind, step1_pid="R4"):
     se = {m: float(np.sqrt(np.nanmean([x.get(m, np.nan) ** 2 for x in ses]))) if k else np.nan
           for m in measures.MEASURES}                   # amendment 21: no division by sqrt(k) (groups shared)
     w = measures.measure_matched(X, seed=0, segments=seg)
+    if not k and step1_pid == "R4a":                     # amendment 25 (review 16, item 6): no crop: slow memory
+        ws = measures.measure_matched(X, seed=0, segments=seg, only=["slow_fraction"], window_tau=1.0)
+        w = {**w, "slow_fraction_whole": ws.get("slow_fraction", np.nan)}       # over the whole recording
     return {"id": ind["id"], "values": mean, "se": se, "crops": vals, "crop_se": ses, "n_crops": k,
             "crop_len_bins": L, "tau_med_pooled": float(t), "n_groups": int(X.shape[1]),
-            "whole": {m: w.get(m, np.nan) for m in measures.MEASURES}, "error": None if k else "no crop"}
+            "whole": {m: w.get(m, np.nan) for m in measures.MEASURES} | {
+                "slow_fraction_whole": w.get("slow_fraction_whole", np.nan)},
+            "error": None if k else "no crop"}
 
 
 def run_prep(pid):
@@ -107,6 +116,10 @@ def run_prep(pid):
             r = measure_r4g(ind)
         elif pid == "R4a":                               # amendment 24
             r = measure_r4g(ind, "R4a")
+            qc = data.allen_qc()[ind["id"]]               # amendment 25: Allen's default QC, sensitivity
+            assert len(qc) == np.asarray(ind["activity"]).shape[1]
+            q = measure_r4g(ind, "R4a", qc)
+            r["qc"] = {"values": q["values"], "se": q["se"], "n_crops": q["n_crops"], "n_qc_units": int(qc.sum())}
         else:
             X, seg = prepare(ind, spec["rtype"])
             v = measures.measure_matched(X, seed=0, segments=seg)

@@ -1898,3 +1898,74 @@ So, by amendment 24:
 - **tests A (coupling spread) and C (timescale spread) are not testable**;
 - tests B and D (slow memory) and E (distance over the usable measurements) remain;
 - no Allen mouse has been measured.
+
+## Review 16 (14 Nov 2026, independent, before any Allen mouse measure): not ready
+
+A reviewer who had not written the code read amendments 19 to 24, the Allen code and the step-1 and
+step-2 files. They read no spike content and ran only small checks. The AI job was stopped while the fixes
+went in. Findings, and what was done:
+
+1. *BLOCKING. The per-measurement missing-value rule did not reach the SE.* One mouse with an undefined SE
+   would make the pooled SE undefined and every test "not testable". **Fixed:** per measurement, only mice
+   with a finite value **and** a finite SE count (for the range, ruler, SE, n and prediction interval). A mouse
+   with a finite value and an undefined SE is dropped from that measurement.
+2. *BLOCKING. Allen's `good` label is not Allen's unit QC.* Unstable units add slow drift inside blocks,
+   which raises the mice's slow memory, the predicted direction. **Registered:** a sensitivity with Allen's
+   default QC (ISI violations below 0.5, amplitude cutoff below 0.1, presence ratio above 0.9; read from the
+   unit table's metadata). **Test B counts as confirmed only if it is also confirmed under QC units.**
+3. *BLOCKING. The spread of instruments across mice is uncalibrated.* Samples per timescale run from 1.43 to
+   23.9 (bimodal), and A1's slow memory moved by +0.045 between the Stringer and Allen instruments.
+   **Registered:**
+   - A1 (the only AI counted in B) is recorded without budget at the instruments of the included mice with
+     the lowest, 5th-percentile, 95th-percentile and highest samples per timescale, and the lowest and
+     highest white share.
+   - The range of its slow memory over these and the median instrument is taken in mouse ruler units. If it
+     is 0.5 or more (amendment 10's limit), **test B is "not testable (instrument transfer)"**, and a per-mouse
+     comparison is reported only as exploratory.
+   - Reported sensitivities: B among mice within x1.5 of the median instrument, and B among mice with no
+     resolution-limited crop (the per-crop flag is now kept).
+4. *Stale results could be certified by the wrapper stamp.* **Fixed:**
+   - The stamp covers every file that shapes an R4a result.
+   - Only results written in the current run are stamped, and each carries the profile it was matched to.
+   - The wrapper records directly and skips only results that carry its own exact stamp.
+5. *Test D logic.* **Fixed:**
+   - An undefined value gives "unclear".
+   - The slow-drive RNN must be within calibrated speed, otherwise D is "not testable".
+   - The strict side is reported.
+6. *The 7 excluded slow mice probably sit at the low end of slow memory.* Excluding them could favour B.
+   **Registered:** each excluded mouse's slow memory is measured over its whole spontaneous time (with the
+   same 40 draws of 50 groups) and added to the mouse range only. **B counts as confirmed only if it also holds
+   with these mice added.**
+7. *Test E's threshold assumes independent normal measurements.* **Fixed:** the threshold is the larger of
+   the model's 95% quantile and the empirical 95% quantile of the mice's own leave-one-out distances.
+8. *A1's two recordings per instance overlapped (up to 78%).* **Fixed:** A1 is regenerated at R4a with
+   260,000 steps. The slow-drive RNN keeps its length because of memory; it is slower (native timescales 29
+   to 92 steps), and its overlap flag is reported.
+9. *Downloads could lose data silently.* **Fixed:** a piece that still has the wrong length after six tries
+   now raises an error. An integrity check of all 58 caches (runs of consecutive units with no spontaneous
+   spike) found nothing.
+10. *Notes, adopted:*
+    - test A needs at least one counted AI;
+    - the analysis is guarded until the mice are measured;
+    - the mice are measured alone (memory);
+    - B is reported by dataset as exploratory;
+    - **test B in practice tests one network, a 480-unit random RNN, and is reported as such**;
+    - with 51 mice, test D's "inside" is a weak criterion.
+11. *Deviation stated:* step 1 for R4a used the full spontaneous time, not the 20-minute cap of
+    amendment 8, as amendment 24 item 2 implies.
+
+## Amendment 25 (14 Nov 2026): the changes above, registered before any Allen mouse measure
+
+Code: `nematica/map/data.py` (`_fetch_range` raises; `allen_qc`), `scripts/map_brains.py` (QC
+sensitivity, per-crop resolution flags, whole-time slow memory for crop-less mice), `scripts/map_ais_r4a.py`
+(stamp, A1 length, `--transfer`), `scripts/map_species.py` (`allen_tests`, `transfer_check`,
+`transfer_mice`, `allen_sensitivities`, the empirical threshold for E).
+
+**Test B's final rule.** "Confirmed" needs all of the following:
+- the primary rule;
+- the transfer check passed;
+- the same verdict under Allen QC units;
+- the same verdict with the excluded mice added to the range.
+
+If the primary is confirmed but a required check fails, B is "unclear". If the transfer check fails, B is
+"not testable". Test D inherits B's final verdict.
