@@ -118,10 +118,12 @@ def species(pid, cal, budget_gate):
     extra = [m for m in ("shared_fraction", "slow_fraction", "timescale_spread", "coupling_spread") if m not in cal]
     for m in cal + extra:                                 # extra: not calibrated here; descriptive only
         Rm = [r for r in R if not r.get("range_only")]
+        no_se = []
         if pid == "R4a":                                  # amendment 25 (review 16, item 1): per measurement,
-            Rm = [r for r in Rm if np.isfinite(r["values"].get(m, np.nan))   # mice with a finite value AND a
-                  and np.isfinite(r["se"].get(m, np.nan))]                    # finite SE
-            if len(Rm) < 3:
+            fin = [r for r in Rm if np.isfinite(r["values"].get(m, np.nan))]  # mice with a finite value AND a
+            Rm = [r for r in fin if np.isfinite(r["se"].get(m, np.nan))]       # finite SE; a value without an
+            no_se = [r["values"][m] for r in fin if not np.isfinite(r["se"].get(m, np.nan))]   # SE: range only
+            if len(Rm) < 3:                                                    # (follow-up, item 2)
                 continue
         vals = np.array([r["values"].get(m, np.nan) for r in Rm], float)
         if not np.isfinite(vals).all():
@@ -132,7 +134,7 @@ def species(pid, cal, budget_gate):
         sd, sd_lo = ruler(vals)
         se = float(np.sqrt(np.mean(np.square([r["se"].get(m, np.nan) for r in Rm]))))
         extra_vals = [r["values"].get(m, np.nan) for r in R if r.get("range_only")]      # amendment 25: mice
-        extra_vals = [v for v in extra_vals if np.isfinite(v)]                           # added to the range only
+        extra_vals = [v for v in extra_vals if np.isfinite(v)] + list(no_se)            # added to the range only
         lo, hi = float(min(list(vals) + extra_vals)), float(max(list(vals) + extra_vals))
         tq = stats.t.ppf(0.95, n - 1) * np.sqrt(1 + 1 / n)
         pi = [float(vals.mean() - tq * sd), float(vals.mean() + tq * sd)]
@@ -143,7 +145,8 @@ def species(pid, cal, budget_gate):
                  "budget_over_ruler": budget / sd if np.isfinite(budget) else np.nan}
         usable = m in cal and gates["c3_se_over_ruler_lower90"] < 0.5 and (
             not budget_gate or (np.isfinite(gates["budget_over_ruler"]) and gates["budget_over_ruler"] <= 1))
-        row = {"calibrated": m in cal, "n": n, "range_only_added": len(extra_vals), "real": vals.tolist(),
+        row = {"calibrated": m in cal, "n": n, "range_only_added": len(extra_vals), "no_se_range_only": len(no_se),
+               "dropped_undefined": len(R) - n - len(extra_vals), "real": vals.tolist(),
                "envelope": [lo, hi], "prediction_interval90": pi, "ruler_sd": sd,
                "ruler_sd_lower90": sd_lo, "pooled_se": se, "gates": gates, "usable": bool(usable), "ai": {}}
         for a, x in mapped.items():
@@ -230,7 +233,7 @@ def distance_test(pid, S, cal, cap=10.0, min_measures=2, min_families=5, empiric
                 v = g[keys[kk]]
                 rs += [v[j] for j in rng.integers(len(v), size=len(v))]
             boot.append(dist(mean_of(rs), c, ms))
-        thr = new_mouse_quantile(len(R), len(ms))
+        thr = new_mouse_quantile(sum(all(np.isfinite(r["values"].get(m, np.nan)) for m in ms) for r in R), len(ms))
         if empirical:                                     # amendment 25 (review 16, item 7)
             thr = max(thr, float(np.quantile(loo_all(ms), 0.95)))
         res[a] = {"counted": x["role"] == "standard", "family": x["family"], "role": x["role"], "measures": ms,
@@ -308,22 +311,28 @@ def allen_tests(pid="R4a", with_distance=True):
 
 def transfer_check():
     """Amendment 25 (review 16, item 3): A1's slow memory at single mice's own instruments against its value at
-    the median instrument, in units of the mouse ruler (registered limit 0.5)."""
-    vals = {}
-    f0 = AIS.CACHE / "A1_R4a.pkl"
-    if f0.exists():
-        vals["median instrument"] = pickle.loads(f0.read_bytes())["values"].get("slow_fraction", np.nan)
-    for f in sorted(AIS.CACHE.glob("A1_R4a_at_*.pkl")):
+    the median instrument, in units of the mouse ruler (registered limit 0.5). Fails if any registered row is
+    missing, unreached, undefined or not made by the current code (review 16 follow-up, item 4)."""
+    vals, problems = {}, []
+    def load(f, label):
+        if not f.exists():
+            problems.append(f"{label}: missing"); return
         r = pickle.loads(f.read_bytes())
-        if r.get("r4a_wrapper_sha256_16") == R4A.WRAPPER:
-            vals[r["mouse"]] = r.get("values", {}).get("slow_fraction", np.nan)
+        if r.get("code_sha256_16") != AIS.code_hash() or r.get("r4a_wrapper_sha256_16") != R4A.WRAPPER:
+            problems.append(f"{label}: stale"); return
+        v = r.get("values", {}).get("slow_fraction", np.nan)
+        if not r.get("reached") or not np.isfinite(v):
+            problems.append(f"{label}: unreached or undefined"); return
+        vals[label] = float(v)
+    load(AIS.CACHE / "A1_R4a.pkl", "median instrument")
+    for mid in transfer_mice():
+        load(AIS.CACHE / f"A1_R4a_at_{mid}.pkl", mid)
     b = json.loads((ROOT / "docs/figures/map_brains.json").read_text())["preparations"]["R4a"]["individuals"]
     v = [r["values"]["slow_fraction"] for r in b if not r.get("error") and np.isfinite(r["values"].get("slow_fraction", np.nan))]
     sd = float(np.std(v, ddof=1))
-    fin = [x for x in vals.values() if np.isfinite(x)]
-    rng_ = float(max(fin) - min(fin)) if len(fin) > 1 else np.nan
-    return {"values": vals, "range": rng_, "ruler_sd": sd, "range_over_ruler": rng_ / sd,
-            "passes": bool(np.isfinite(rng_) and rng_ / sd < 0.5)}
+    rng_ = float(max(vals.values()) - min(vals.values())) if len(vals) > 1 else np.nan
+    return {"values": vals, "problems": problems, "range": rng_, "ruler_sd": sd, "range_over_ruler": rng_ / sd,
+            "passes": bool(not problems and np.isfinite(rng_) and rng_ / sd < 0.5)}
 
 
 def transfer_mice():
@@ -366,8 +375,9 @@ def allen_sensitivities():
                     "brain_observatory mice only (exploratory)": ds("000021"),
                     "functional_connectivity mice only (exploratory)": ds("000022")}.items():
         MOUSE_FILTER = f
-        _, T = allen_tests(with_distance=False)
+        S_, T = allen_tests(with_distance=False)
         out[name] = {k: T[k] for k in ("B slow memory", "D slow drives")}
+        out[name]["n_mice_slow_memory"] = S_["measures"].get("slow_fraction", {}).get("n")
     MOUSE_FILTER = None
     return out
 
@@ -387,6 +397,8 @@ def final_verdicts(T, tr, sens):
     else:
         fb = b
     d = T["D slow drives"]["result"]
+    if fb.startswith("not testable"):                    # follow-up, item 6
+        d = "not testable"
     fd = d if d in ("not testable", "refuted", "unclear") else ("confirmed" if fb == "confirmed" else
                                                                  "not testable" if fb.startswith("not") else "unclear")
     return {"A coupling spread": T["A coupling spread"]["result"], "B slow memory": fb,

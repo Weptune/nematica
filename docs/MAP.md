@@ -1969,3 +1969,19 @@ sensitivity, per-crop resolution flags, whole-time slow memory for crop-less mic
 
 If the primary is confirmed but a required check fails, B is "unclear". If the transfer check fails, B is
 "not testable". Test D inherits B's final verdict.
+
+## Review 16 follow-up (14 Nov 2026)
+
+The reviewer confirmed that items 1 to 9 are fixed and that the mice could be measured. The measurement
+had already started, after amendment 25 was committed; no mouse value was looked at before the analysis
+fixes below. Fixed before any analysis:
+- A mouse with a value but no SE now stays in the range as range-only, instead of being dropped (dropping
+  it could only help B). Counts of dropped and range-only mice are reported per measurement.
+- `transfer_check` fails if any registered transfer row is missing, unreached, undefined or not made by the
+  current code.
+- Test D is "not testable" whenever B is.
+- Test E's new-mouse quantile uses the number of mice with all the measures defined.
+- The QC check's number of mice is reported next to the verdict.
+
+Carry-over note: the float32 path in `prepare_r4g` also applies to the Stringer mice (R4g), whose stored
+results were made by the float64 path. The two paths were checked identical on synthetic counts.
