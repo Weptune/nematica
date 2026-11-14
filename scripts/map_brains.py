@@ -112,6 +112,12 @@ def run_prep(pid):
         r = pickle.loads(f.read_bytes())
         return not r.get("error") and not any(np.isfinite(v) for v in r.get("se", {}).values())
     done = {d for d in done if not stale_se(CACHE / f"{pid}_{d}.pkl")}
+    import os
+    if pid == "R4a" and os.environ.get("SHARD"):          # run time only: two workers split the mice
+        k, n = map(int, os.environ["SHARD"].split("/"))
+        ids = [r["id"] for r in json.loads((ROOT / "docs/figures/map_step1.json").read_text())
+               ["preparations"]["R4a"]["individuals"]]
+        done |= {x for i, x in enumerate(ids) if i % n != k}
     for ind in spec["load"](done):
         f = CACHE / f"{pid}_{ind['id']}.pkl"
         if ind.get("cached") or (f.exists() and not stale_se(f)):
