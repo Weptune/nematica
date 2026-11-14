@@ -330,8 +330,8 @@ def transfer_mice():
     """The included mice at the extremes of the instrument: lowest, 5th and 95th percentile and highest samples per
     timescale, and lowest and highest white share."""
     rows, _ = _step1_r4a()
-    b = json.loads((ROOT / "docs/figures/map_brains.json").read_text())["preparations"]["R4a"]["individuals"] \
-        if (ROOT / "docs/figures/map_brains.json").exists() else []
+    b = json.loads((ROOT / "docs/figures/map_brains.json").read_text())["preparations"].get("R4a", {}) \
+        .get("individuals", [])
     inc = [r["id"] for r in b if not r.get("error")] or [k for k, r in rows.items()
                                                           if r["duration_s"] >= 5000 * r["tau_med_s"]]
     bt = sorted(inc, key=lambda i: rows[i]["bins_per_tau"])
