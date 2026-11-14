@@ -1498,7 +1498,7 @@ the AI job that was running was stopped and its results will be redone):
     truncated, and the script is now part of the code hash.
 12. *A second hand edit of the hash carry-over should be avoided.* **Adopted:** every AI is now recorded
     once, with the same activity used at both instruments (480 or more units; 40,000 tokens per language-model
-    instance), and the worm AIs are re-recorded too. The 6 Nov worm AI numbers are superseded. The lab
+    instance), and the worm AIs are re-recorded too. The 13 Nov worm AI numbers are superseded. The lab
     network (A10) keeps its own size and is recorded for the worms only.
 13. *Note: coupling spread is likely to fail the mouse budget* (A1's budget there was already undefined).
     Reported, not changed.
@@ -1598,3 +1598,208 @@ reaches 0.79. Accuracy is now computed on independent trials, as originally. The
 the long session in one call; chunks are now 1,000 trials (60,000 steps, a multiple of the 100-step
 blocks). A1 and A2 are re-recorded at the end of the job under the new code hash; A3 and later AIs do not
 touch this code path.
+
+## Execution log, 14 Nov 2026 (after amendment 22): everything that happened while recording, in order
+
+Nothing here changed a registered rule unless it says so. Each item names the file that holds it.
+
+1. **Mice measured** (`scripts/map_brains.py R4g`, `docs/figures/map_brains.json`), after review 15's
+   follow-up was answered. The first attempt stopped after Krebs: it was killed for memory while A2 was
+   generating at the same time. The two remaining mice were measured alone. Per mouse (pooled groups of 8;
+   crops of 5,000 of the mouse's own timescales: Krebs 5, Robbins 2, Waksman 6 crops):
+
+   | mouse | shared fraction | slow memory | timescale spread | coupling spread |
+   |---|---|---|---|---|
+   | Krebs | 0.072 | 0.139 | 0.508 | undefined (fewer than 80% of crops finite) |
+   | Robbins | 0.068 | 0.283 | 0.797 | 0.379 |
+   | Waksman | 0.022 | 0.146 | 0.518 | 0.332 |
+
+2. **The registered nan rule dropped Krebs.** `map_species.reals` (committed in cb30186, before any mouse
+   value existed) leaves out an individual with an undefined value in any calibrated measurement, as for the
+   worms. This leaves 2 mice in the registered analysis. Seeing this, I added **amendment 23 (post hoc,
+   written after the mouse values were known):** a sensitivity that keeps all three mice and drops the
+   measurement instead (coupling spread). It is reported next to the registered result and never replaces
+   it. Both give the same verdicts (below).
+3. **The A2 accuracy guard** first refused seed 1 because it measured accuracy in the continuous session.
+   It was fixed to use independent trials, as originally (amendment 22, addendum).
+4. **A2 ran out of memory** when generating 6,000-trial chunks. Chunks are now 1,000 trials (amendment 22,
+   second addendum).
+5. **The disk filled up** (1.9 GB free): Pythia-410M's three seeds (5.4 GB) were kept for the OU variant
+   while Pythia-1B was about to download. The remaining AIs were reordered so that the OU variant ran
+   first, after which the 410M weights are freed by the script's own cache rule (`data/cache/run_ais2.sh`).
+   Nothing else was deleted. Old Pythia-14M/70M weights from earlier parts of the project (about 1.4 GB)
+   were left alone.
+6. **Pythia-1B ran out of memory twice.** The first time, the recording buffer kept all 8,192 MLP units of
+   every segment. The second time, loading in float32 needed two copies of the weights. `scripts/map_ais_big.py`
+   keeps only the sampled units in the hook (the same seeded units `ai.record` chooses) and loads in float16,
+   then converts to float32 (the checkpoint is float16, so the weights are identical). Memory only: the
+   activity is the same.
+7. **The spiking network (A4) ran out of memory** at the 25,000-step truncation with the x16 hold.
+   `scripts/map_ais_fast_lowmem.py` truncates to 8,000 native steps for A4 and 12,000 for A5 (its 7 paired
+   recordings then overlap; the result carries the overlap flag). Memory only.
+8. **Overlap flags:** A1 at R4g (200,000 steps), A1-slow at R4g, A5 at R4g and A10 at R2 have overlapping
+   recording stretches. Their recordings share activity, so their between-recording spread is understated.
+   No verdict depends on it.
+9. **The task RNN (A2) is fast at 512 units**, which was found only after recording. With the 100-step
+   block means of amendment 19 (sized for the 128-unit network, whose timescale was about 1,500 steps), its
+   native timescale is 0.6 to 2 samples, so it is outside calibrated speed and not counted on temporal
+   measurements. Two attempts to bring it within speed failed:
+   - 10-step blocks: native timescale 0.7, and matching failed;
+   - every step (4,000 trials): native timescales 1.2, undefined and 2.5, and the mouse recording failed on
+     the undefined instance.
+
+   Its worm values from the every-step attempt are kept in `data/cache/A2_R2_everystep.pkl` (local):
+   shared fraction 0.44, slow memory 0.00, timescale spread 0.24, coupling spread 0.71. The registered
+   100-step-block recording was then regenerated for both instruments (`AIS._record`, the same code and
+   seeds), and it is the one analysed. Its units mostly follow the white evidence input, so its population
+   timescale is short at any resolution.
+10. **Code-hash discipline.** Each fix to a hashed file marked earlier results stale, and they were
+    re-recorded rather than carried over: A1 three times, A2 four times. The wrappers in items 6, 7 and 9 are
+    separate scripts. They change no hashed file, and each says in its docstring what it changes.
+11. **Worm AI numbers superseded.** Every worm AI was re-recorded with the shared activity of amendment 19
+    (480 or more units, 40,000 tokens per language-model instance). The exploratory worm map
+    (`docs/figures/map_worm.json`) was rerun on them, and the 13 Nov numbers are superseded.
+
+## Results (14 Nov 2026)
+
+`docs/figures/map_species.json`, `docs/figures/map_worm.json`, figure `docs/figures/map/species.png`.
+
+**Registered (confirmatory) results.**
+- *Timescale spread in the pooled mouse (amendment 19): not testable.* It failed the synthetic C1 gate at
+  crop length (0.89 against 0.9) before any mouse was measured.
+- *Distance test (amendments 20 and 21): not testable.* Only one mouse measurement is usable (slow memory).
+  Shared fraction fails the budget: AIs move by 7.6 mouse ruler units when a knob changes by a factor of
+  1.5. Coupling spread fails C3 and its budget is undefined. Timescale spread is not calibrated. The keep-all-mice
+  sensitivity (amendment 23) gives the same answer.
+- *Registered worm map: not drawn* (14 Nov, unchanged). The budget is undefined at worm crop length.
+
+So **no confirmatory claim** about what differentiates real from artificial networks comes out of this
+study. Every pattern below is exploratory.
+
+**Exploratory patterns** (the worms are discovery data; the mouse rows have 2 registered or 3 sensitivity
+mice; "below" uses amendment 21's margin; "not counted" marks a temporal measurement of an AI outside
+calibrated speed, or an augmented AI):
+
+**Worms (14, discovery)**
+
+| | Shared fraction | Slow memory | Timescale spread | Coupling spread |
+|---|---|---|---|---|
+| real range | 0.225 to 0.341 | -0.090 to 0.130 | 0.267 to 0.652 | 0.246 to 0.431 |
+| gates | fails (C3 1.32, budget nan) | usable (C3 0.40, budget nan) | fails (C3 0.62, budget nan) | fails (C3 0.92, budget nan) |
+| Random RNN | 0.394 (inside) | 0.079 (inside) | 0.224 (inside) | 0.388 (inside) |
+| Random RNN + slow drives (aug.) | 0.277 (inside, not counted) | 0.136 (inside, not counted) | 0.349 (inside, not counted) | 0.332 (inside, not counted) |
+| Task-trained RNN | 0.928 (above) | 0.011 (inside, not counted) | 0.054 (below, not counted) | 0.667 (above) |
+| GRU, characters | 0.062 (below) | -0.013 (inside, not counted) | 0.165 (below, not counted) | 0.208 (inside) |
+| Spiking network | -0.003 (below) | -0.067 (inside, not counted) | 0.029 (below, not counted) | 0.186 (inside) |
+| CfC, characters | 0.154 (below) | -0.023 (inside, not counted) | 0.077 (below, not counted) | 0.269 (inside) |
+| Pythia 14M | 0.109 (below) | -0.024 (inside, not counted) | 0.101 (below, not counted) | 0.295 (inside) |
+| Pythia 160M | 0.018 (below) | -0.021 (inside, not counted) | 0.112 (below, not counted) | 0.175 (inside) |
+| Pythia 410M | 0.014 (below) | -0.021 (inside, not counted) | 0.105 (below, not counted) | 0.169 (inside) |
+| Pythia 410M + slow latent (aug.) | 0.015 (below, not counted) | 0.013 (inside, not counted) | 0.125 (below, not counted) | 0.175 (inside, not counted) |
+| Pythia 1B | 0.009 (below) | -0.018 (inside, not counted) | 0.123 (below, not counted) | 0.159 (below) |
+| Mamba 130M | 0.015 (below) | -0.016 (inside, not counted) | 0.133 (below, not counted) | 0.177 (inside) |
+| Mamba 370M | 0.008 (below) | -0.011 (inside, not counted) | 0.155 (below, not counted) | 0.172 (inside) |
+| Lab network (aug., fitted to worms) | 0.572 (above, not counted) | -0.046 (inside, not counted) | 0.309 (inside, not counted) | 0.388 (inside, not counted) |
+
+**Mice, pooled units (registered set: 2 mice, Krebs dropped by the nan rule)**
+
+| | Shared fraction | Slow memory | Timescale spread | Coupling spread |
+|---|---|---|---|---|
+| real range | 0.022 to 0.068 | 0.146 to 0.283 | 0.518 to 0.797 | 0.332 to 0.379 |
+| gates | fails (C3 0.25, budget 7.55) | usable (C3 0.34, budget 0.39) | not calibrated (C3 0.37, budget 0.66) | fails (C3 1.62, budget nan) |
+| Random RNN | 0.055 (inside) | 0.061 (below) | 0.397 (inside) | 0.173 (below) |
+| Random RNN + slow drives (aug.) | 0.032 (inside, not counted) | 0.261 (inside, not counted) | 0.487 (inside, not counted) | 0.135 (below, not counted) |
+| Task-trained RNN | 0.309 (inside) | 0.013 (below, not counted) | 0.310 (inside, not counted) | 0.262 (below) |
+| GRU, characters | 0.010 (below) | 0.028 (below, not counted) | 0.186 (below, not counted) | 0.141 (below) |
+| Spiking network | 0.005 (below) | -0.055 (below, not counted) | 0.208 (below, not counted) | 0.098 (below) |
+| CfC, characters | 0.013 (below) | -0.001 (below, not counted) | 0.176 (below, not counted) | 0.155 (below) |
+| Pythia 14M | 0.006 (below) | 0.001 (below, not counted) | 0.179 (below, not counted) | 0.168 (below) |
+| Pythia 160M | 0.000 (below) | 0.003 (below, not counted) | 0.170 (below, not counted) | 0.080 (below) |
+| Pythia 410M | 0.000 (below) | 0.000 (below, not counted) | 0.162 (inside, not counted) | 0.074 (below) |
+| Pythia 410M + slow latent (aug.) | 0.001 (below, not counted) | 0.056 (below, not counted) | 0.194 (below, not counted) | 0.101 (below, not counted) |
+| Pythia 1B | -0.000 (below) | 0.002 (below, not counted) | 0.180 (inside, not counted) | 0.075 (below) |
+| Mamba 130M | -0.000 (below) | -0.000 (below, not counted) | 0.184 (inside, not counted) | 0.089 (below) |
+| Mamba 370M | -0.000 (below) | -0.001 (below, not counted) | 0.157 (below, not counted) | 0.084 (below) |
+
+**Mice, pooled units, all 3 (post-hoc sensitivity, amendment 23)**
+
+| | Shared fraction | Slow memory | Timescale spread | Coupling spread |
+|---|---|---|---|---|
+| real range | 0.022 to 0.072 | 0.139 to 0.283 | 0.508 to 0.797 |  |
+| gates | fails (C3 0.36, budget 8.87) | usable (C3 0.31, budget 0.47) | not calibrated (C3 0.35, budget 0.80) |  |
+| Random RNN | 0.055 (inside) | 0.061 (below) | 0.397 (inside) |  |
+| Random RNN + slow drives (aug.) | 0.032 (inside, not counted) | 0.261 (inside, not counted) | 0.487 (inside, not counted) |  |
+| Task-trained RNN | 0.309 (inside) | 0.013 (below, not counted) | 0.310 (inside, not counted) |  |
+| GRU, characters | 0.010 (below) | 0.028 (below, not counted) | 0.186 (below, not counted) |  |
+| Spiking network | 0.005 (below) | -0.055 (below, not counted) | 0.208 (below, not counted) |  |
+| CfC, characters | 0.013 (inside) | -0.001 (below, not counted) | 0.176 (below, not counted) |  |
+| Pythia 14M | 0.006 (below) | 0.001 (below, not counted) | 0.179 (below, not counted) |  |
+| Pythia 160M | 0.000 (below) | 0.003 (below, not counted) | 0.170 (below, not counted) |  |
+| Pythia 410M | 0.000 (below) | 0.000 (below, not counted) | 0.162 (inside, not counted) |  |
+| Pythia 410M + slow latent (aug.) | 0.001 (below, not counted) | 0.056 (below, not counted) | 0.194 (below, not counted) |  |
+| Pythia 1B | -0.000 (below) | 0.002 (below, not counted) | 0.180 (inside, not counted) |  |
+| Mamba 130M | -0.000 (below) | -0.000 (below, not counted) | 0.184 (inside, not counted) |  |
+| Mamba 370M | -0.000 (below) | -0.001 (below, not counted) | 0.157 (below, not counted) |  |
+
+**Worm map, exploratory (amendment 14), all AIs**: envelope 1.67 [1.47, 1.86]
+
+| AI | median crop distance (ruler units) | 90% interval |
+|---|---|---|
+| Random RNN + slow drives (aug.) | 1.97 | 1.72 to 2.13 |
+| CfC, characters | 2.87 | 2.61 to 3.00 |
+| Random RNN | 3.13 | 2.99 to 3.22 |
+| GRU, characters | 3.99 | 3.92 to 4.03 |
+| Lab network (aug., fitted to worms) | 4.66 | 4.61 to 4.81 |
+| Pythia 14M | 5.25 | 5.15 to 5.28 |
+| Pythia 410M + slow latent (aug.) | 6.02 | 5.95 to 6.10 |
+| Mamba 130M | 6.04 | 6.00 to 6.06 |
+| Pythia 160M | 6.05 | 5.97 to 6.06 |
+| Mamba 370M | 6.08 | 6.07 to 6.09 |
+| Pythia 410M | 6.08 | 6.06 to 6.14 |
+| Task-trained RNN | 6.10 | 5.61 to 7.06 |
+| Pythia 1B | 6.12 | 6.11 to 6.13 |
+| Spiking network | 6.33 | 6.30 to 6.35 |
+
+| pair | first | second | 90% interval of difference | rule |
+|---|---|---|---|---|
+| H3b slow drives (A1-slow vs A1) | 1.97 | 3.13 | -1.40 to -0.91 | holds |
+| H3b OU latent (Pythia-410M + OU vs Pythia-410M) | 6.02 | 6.08 | -0.14 to 0.02 | does not hold |
+| H4 Pythia-1B vs Pythia-14M | 6.12 | 5.25 | 0.84 to 0.96 | holds |
+| H5 Mamba-370M vs Pythia-410M (slow set) | 2.06 | 2.46 | -0.62 to -0.26 | holds |
+| H6 CfC vs GRU | 2.87 | 3.99 | -1.37 to -0.96 | does not hold |
+
+Registered worm map: fewer than 3 usable measurements: no map {'shared_fraction': 'C3', 'slow_fraction': 'budget', 'timescale_spread': 'budget', 'coupling_spread': 'C3', 'sparsity': 'C3'}
+
+**What the exploratory results say, in plain words.**
+1. *Every AI recorded is far from every real worm* (exploratory worm map). AI distances run from 1.97 to
+   6.33 ruler units against a worm envelope of 1.67 (90% interval 1.47 to 1.86). No AI, of 14, is
+   worm-like.
+2. *What brings an AI closest is slow internal drive.* A random RNN with slow drives is the closest system
+   to the worms (37% closer than the same RNN without them). In the mouse it is also the only AI whose slow
+   memory falls inside the mouse range (0.26 against 0.14 to 0.28) and whose timescale spread comes near
+   the mice (0.49 against 0.51 to 0.80). Adding a slow latent to a language model does almost nothing (1%
+   closer to the worms).
+3. *In the mouse, nearly every AI sits numerically below the mice on the temporal and coupling measurements* (not all of them by amendment 21's margin):
+   - slow memory: all 13 AIs below except the slow-drive RNN;
+   - coupling spread: all 13 below;
+   - timescale spread: all 13 below, though this measurement is not calibrated for the mouse.
+
+   Only the random RNN and the slow-drive RNN are slow enough to count on the temporal measurements. The
+   rest are reported, not counted, because holding fast networks compresses these measurements (review
+   15, item 2).
+4. *Scale does not help* (worms, H4 rule): Pythia-1B is farther from the worms than Pythia-14M (6.12 against
+   5.25). Mamba is closer than Pythia on the slow measurements (H5 rule holds), and the "liquid" CfC is
+   closer than the GRU by more than 1 unit (H6's no-difference rule does not hold).
+5. *Language models and the spiking network are extreme in sparsity* (worms: 5.7 to 11.3, against 0.5 to
+   2.0 in worms), while the random RNN, GRU and CfC are below the worms (the task RNN is inside).
+
+**What limits all of this.**
+- The worm recordings are barely one measurement window long.
+- There are only three mice, and one has a missing value.
+- Single units and deconvolved two-photon data hide most measurements.
+- Fast AIs cannot be compared on temporal measurements without holding them, which distorts those
+  measurements.
+
+The most defensible single statement is a hypothesis for a properly powered test, not a finding: *real
+neurons carry more slow, heterogeneous structure than the artificial networks tested, and slow external
+drive is the cheapest change that moves an artificial network toward them.*

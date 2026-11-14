@@ -110,8 +110,13 @@ def species(pid, cal, budget_gate):
     out = {"individuals": n, "ids": [r["id"] for r in R], "calibrated": cal, "measures": {},
            "ais": {a: {k: v for k, v in x.items() if k != "r"} for a, x in A.items()}}
     mapped = {a: x for a, x in A.items() if x["mapped"]}
-    for m in cal:
-        vals = np.array([r["values"][m] for r in R], float)
+    extra = [m for m in ("shared_fraction", "slow_fraction", "timescale_spread", "coupling_spread") if m not in cal]
+    for m in cal + extra:                                 # extra: not calibrated here; descriptive only
+        vals = np.array([r["values"].get(m, np.nan) for r in R], float)
+        if not np.isfinite(vals).all():
+            if m in extra:
+                continue
+            vals = vals[np.isfinite(vals)]
         sd, sd_lo = ruler(vals)
         se = float(np.sqrt(np.mean(np.square([r["se"].get(m, np.nan) for r in R]))))
         lo, hi = float(vals.min()), float(vals.max())
@@ -122,9 +127,9 @@ def species(pid, cal, budget_gate):
         budget = An.group_budget([{"id": pid}], [{"at": {pid: x["r"]}} for x in cnt_ai], m)
         gates = {"c3_se_over_ruler": se / sd, "c3_se_over_ruler_lower90": se / sd_lo,
                  "budget_over_ruler": budget / sd if np.isfinite(budget) else np.nan}
-        usable = gates["c3_se_over_ruler_lower90"] < 0.5 and (
+        usable = m in cal and gates["c3_se_over_ruler_lower90"] < 0.5 and (
             not budget_gate or (np.isfinite(gates["budget_over_ruler"]) and gates["budget_over_ruler"] <= 1))
-        row = {"real": vals.tolist(), "envelope": [lo, hi], "prediction_interval90": pi, "ruler_sd": sd,
+        row = {"calibrated": m in cal, "real": vals.tolist(), "envelope": [lo, hi], "prediction_interval90": pi, "ruler_sd": sd,
                "ruler_sd_lower90": sd_lo, "pooled_se": se, "gates": gates, "usable": bool(usable), "ai": {}}
         for a, x in mapped.items():
             v, ci = ai_value(x["r"], m, rng)
@@ -232,7 +237,7 @@ def main():
     M = species("R4g", mouse_cal, budget_gate=True)
     m, side = CONFIRM
     row = M["measures"].get(m)
-    if row is None:
+    if row is None or not row.get("calibrated", True):
         conf = {"result": "not testable", "why": f"{m} did not pass step 2 under amendment 17"}
     else:
         fams = set(row["families_counted"])

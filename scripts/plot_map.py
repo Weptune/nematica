@@ -210,7 +210,8 @@ def species():
                 col = CAT["blue"] if y["role"] == "standard" else CAT["amber"]
                 ax.plot(y["ci90"], [i, i], color=col, lw=1.6, alpha=0.7)
                 ax.scatter([y["value"]], [i], s=40, zorder=3, color=col if y["counted"] else BG, edgecolors=col, lw=1.4)
-            gate = "" if row["usable"] else "  (fails a gate)"
+            gate = ("" if row["usable"] else "  (fails a gate)" if row.get("calibrated", True)
+                    else "  (not calibrated)")
             ax.set_title(NAMES[m] + gate, fontsize=11, color=INK if row["usable"] else MUTED, loc="left")
             ax.grid(axis="x", color=FAINT, lw=0.6)
             ax.set_axisbelow(True)

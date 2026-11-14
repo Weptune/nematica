@@ -1,0 +1,5428 @@
+{
+ "worms": 14,
+ "calibrated": [
+  "shared_fraction",
+  "slow_fraction",
+  "timescale_spread",
+  "coupling_spread",
+  "sparsity"
+ ],
+ "registered": {
+  "variant": "primary",
+  "exploratory": false,
+  "gates": {
+   "shared_fraction": {
+    "c3_se_over_bvu": 1.0079420662822487,
+    "budget_over_bvu": NaN
+   },
+   "slow_fraction": {
+    "c3_se_over_bvu": 0.30515467151532233,
+    "budget_over_bvu": NaN
+   },
+   "timescale_spread": {
+    "c3_se_over_bvu": 0.4700694536585279,
+    "budget_over_bvu": NaN
+   },
+   "coupling_spread": {
+    "c3_se_over_bvu": 0.7023075771055743,
+    "budget_over_bvu": NaN
+   },
+   "sparsity": {
+    "c3_se_over_bvu": 0.556485657088218,
+    "budget_over_bvu": NaN
+   }
+  },
+  "measures": [],
+  "dropped": {
+   "shared_fraction": "C3",
+   "slow_fraction": "budget",
+   "timescale_spread": "budget",
+   "coupling_spread": "C3",
+   "sparsity": "C3"
+  },
+  "bvu": {
+   "shared_fraction": {
+    "sd": 0.030805445515009834,
+    "df": 13,
+    "lo": 0.023487864513627565,
+    "hi": 0.045758607621859286
+   },
+   "slow_fraction": {
+    "sd": 0.05667308013007726,
+    "df": 13,
+    "lo": 0.043210854620382794,
+    "hi": 0.08418255905861932
+   },
+   "timescale_spread": {
+    "sd": 0.09433785460978958,
+    "df": 13,
+    "lo": 0.07192867074431356,
+    "hi": 0.14013005820266553
+   },
+   "coupling_spread": {
+    "sd": 0.05781163201582923,
+    "df": 13,
+    "lo": 0.04407895284091485,
+    "hi": 0.0858737713792419
+   },
+   "sparsity": {
+    "sd": 0.42526086416062625,
+    "df": 13,
+    "lo": 0.3242436326878026,
+    "hi": 0.6316852327481324
+   }
+  },
+  "mapped_ais": [
+   "A1",
+   "A1-slow",
+   "A2",
+   "A3",
+   "A4",
+   "A5",
+   "A6-14m",
+   "A6-160m",
+   "A6-410m",
+   "A6-1b",
+   "A6-410m-ou",
+   "A7-130m",
+   "A7-370m",
+   "A10"
+  ],
+  "unmapped_ais": {},
+  "crops_dropped": {
+   "A1": 0,
+   "A1-slow": 0,
+   "A2": 0,
+   "A3": 0,
+   "A4": 0,
+   "A5": 0,
+   "A6-14m": 0,
+   "A6-160m": 0,
+   "A6-410m": 0,
+   "A6-1b": 0,
+   "A6-410m-ou": 0,
+   "A7-130m": 0,
+   "A7-370m": 0,
+   "A10": 0
+  },
+  "note": "fewer than 3 usable measurements: no map"
+ },
+ "primary": {
+  "variant": "primary",
+  "exploratory": true,
+  "gates": {
+   "shared_fraction": {
+    "c3_se_over_bvu": 1.0079420662822487,
+    "budget_over_bvu": NaN
+   },
+   "slow_fraction": {
+    "c3_se_over_bvu": 0.30515467151532233,
+    "budget_over_bvu": NaN
+   },
+   "timescale_spread": {
+    "c3_se_over_bvu": 0.4700694536585279,
+    "budget_over_bvu": NaN
+   },
+   "coupling_spread": {
+    "c3_se_over_bvu": 0.7023075771055743,
+    "budget_over_bvu": NaN
+   },
+   "sparsity": {
+    "c3_se_over_bvu": 0.556485657088218,
+    "budget_over_bvu": NaN
+   }
+  },
+  "measures": [
+   "shared_fraction",
+   "slow_fraction",
+   "timescale_spread",
+   "coupling_spread",
+   "sparsity"
+  ],
+  "dropped": {},
+  "bvu": {
+   "shared_fraction": {
+    "sd": 0.030805445515009834,
+    "df": 13,
+    "lo": 0.023487864513627565,
+    "hi": 0.045758607621859286
+   },
+   "slow_fraction": {
+    "sd": 0.05667308013007726,
+    "df": 13,
+    "lo": 0.043210854620382794,
+    "hi": 0.08418255905861932
+   },
+   "timescale_spread": {
+    "sd": 0.09433785460978958,
+    "df": 13,
+    "lo": 0.07192867074431356,
+    "hi": 0.14013005820266553
+   },
+   "coupling_spread": {
+    "sd": 0.05781163201582923,
+    "df": 13,
+    "lo": 0.04407895284091485,
+    "hi": 0.0858737713792419
+   },
+   "sparsity": {
+    "sd": 0.42526086416062625,
+    "df": 13,
+    "lo": 0.3242436326878026,
+    "hi": 0.6316852327481324
+   }
+  },
+  "mapped_ais": [
+   "A1",
+   "A1-slow",
+   "A2",
+   "A3",
+   "A4",
+   "A5",
+   "A6-14m",
+   "A6-160m",
+   "A6-410m",
+   "A6-1b",
+   "A6-410m-ou",
+   "A7-130m",
+   "A7-370m",
+   "A10"
+  ],
+  "unmapped_ais": {},
+  "crops_dropped": {
+   "A1": 0,
+   "A1-slow": 0,
+   "A2": 0,
+   "A3": 0,
+   "A4": 0,
+   "A5": 0,
+   "A6-14m": 0,
+   "A6-160m": 0,
+   "A6-410m": 0,
+   "A6-1b": 0,
+   "A6-410m-ou": 0,
+   "A7-130m": 0,
+   "A7-370m": 0,
+   "A10": 0
+  },
+  "envelope": 1.6650801119564664,
+  "envelope_ci90": [
+   1.4725661354944222,
+   1.8647398623052245
+  ],
+  "worm_loo": {
+   "2022-06-14-07": 1.4569365029778358,
+   "2022-06-14-13": 0.704765187888289,
+   "2022-06-28-01": 1.4514136324324167,
+   "2022-06-28-07": 0.6777204666609741,
+   "2022-07-20-01": 0.7048845604541469,
+   "2022-08-02-01": 0.8313533469878168,
+   "2023-01-09-28": 1.6650801119564664,
+   "2023-01-19-01": 1.5716649439883004,
+   "2023-01-19-08": 0.7885451599596495,
+   "2023-01-19-15": 0.4811413218783501,
+   "2023-01-19-22": 0.5812321027559957,
+   "2023-01-23-15": 0.6391256403420854,
+   "2023-01-23-21": 0.8802817362963483,
+   "2023-03-07-01": 1.0423611397760244
+  },
+  "ais": {
+   "A1": {
+    "median_crop_distance": 3.13380208303088,
+    "ci90": [
+     2.9910475371302594,
+     3.220625500648949
+    ],
+    "crops": 24,
+    "worm_like": false,
+    "percentile_among_worms": 100.0,
+    "role": "standard",
+    "family": "A1",
+    "fitted_on_worms": false,
+    "native_tau": 27.446025540735338,
+    "below_calibrated_speed": false,
+    "noise_reached": 0.014141171713730749
+   },
+   "A1-slow": {
+    "median_crop_distance": 1.9749446059738929,
+    "ci90": [
+     1.7157618638716297,
+     2.132358742185758
+    ],
+    "crops": 24,
+    "worm_like": false,
+    "percentile_among_worms": 100.0,
+    "role": "augmented",
+    "family": "A1",
+    "fitted_on_worms": false,
+    "native_tau": 52.25460690488662,
+    "below_calibrated_speed": false,
+    "noise_reached": 0.014137592625531492
+   },
+   "A2": {
+    "median_crop_distance": 6.101084195700116,
+    "ci90": [
+     5.606474618650507,
+     7.063858230274149
+    ],
+    "crops": 24,
+    "worm_like": false,
+    "percentile_among_worms": 100.0,
+    "role": "standard",
+    "family": "A2",
+    "fitted_on_worms": false,
+    "native_tau": 0.640100573063416,
+    "below_calibrated_speed": true,
+    "noise_reached": 0.01413285537760317
+   },
+   "A3": {
+    "median_crop_distance": 3.9863926473728304,
+    "ci90": [
+     3.9247896346434987,
+     4.034516192214114
+    ],
+    "crops": 84,
+    "worm_like": false,
+    "percentile_among_worms": 100.0,
+    "role": "standard",
+    "family": "A3",
+    "fitted_on_worms": false,
+    "native_tau": 1.6413565407616528,
+    "below_calibrated_speed": false,
+    "noise_reached": 0.014138556008525927
+   },
+   "A4": {
+    "median_crop_distance": 6.3296916922535,
+    "ci90": [
+     6.295895887792689,
+     6.354279066413515
+    ],
+    "crops": 24,
+    "worm_like": false,
+    "percentile_among_worms": 100.0,
+    "role": "standard",
+    "family": "A4",
+    "fitted_on_worms": false,
+    "native_tau": 7.287058871743007,
+    "below_calibrated_speed": false,
+    "noise_reached": 0.014133397432364858
+   },
+   "A5": {
+    "median_crop_distance": 2.8708612870381742,
+    "ci90": [
+     2.6142898099111433,
+     3.0046873870697417
+    ],
+    "crops": 84,
+    "worm_like": false,
+    "percentile_among_worms": 100.0,
+    "role": "standard",
+    "family": "A5",
+    "fitted_on_worms": false,
+    "native_tau": 7.822365437972631,
+    "below_calibrated_speed": false,
+    "noise_reached": 0.014130230303776414
+   },
+   "A6-14m": {
+    "median_crop_distance": 5.248633614079484,
+    "ci90": [
+     5.149127592614855,
+     5.283497541183838
+    ],
+    "crops": 84,
+    "worm_like": false,
+    "percentile_among_worms": 100.0,
+    "role": "standard",
+    "family": "A6",
+    "fitted_on_worms": false,
+    "native_tau": 0.8263139262862839,
+    "below_calibrated_speed": true,
+    "noise_reached": 0.014134079303619818
+   },
+   "A6-160m": {
+    "median_crop_distance": 6.048368242962628,
+    "ci90": [
+     5.9737603301376945,
+     6.061541049578237
+    ],
+    "crops": 24,
+    "worm_like": false,
+    "percentile_among_worms": 100.0,
+    "role": "standard",
+    "family": "A6",
+    "fitted_on_worms": false,
+    "native_tau": 0.95238278954458,
+    "below_calibrated_speed": true,
+    "noise_reached": 0.014128444243771632
+   },
+   "A6-410m": {
+    "median_crop_distance": 6.082212517357867,
+    "ci90": [
+     6.059697155132983,
+     6.14171400329894
+    ],
+    "crops": 84,
+    "worm_like": false,
+    "percentile_among_worms": 100.0,
+    "role": "standard",
+    "family": "A6",
+    "fitted_on_worms": false,
+    "native_tau": 0.8920139403304164,
+    "below_calibrated_speed": true,
+    "noise_reached": 0.014135424178607692
+   },
+   "A6-1b": {
+    "median_crop_distance": 6.123815056011013,
+    "ci90": [
+     6.11379379026308,
+     6.126345213149283
+    ],
+    "crops": 84,
+    "worm_like": false,
+    "percentile_among_worms": 100.0,
+    "role": "standard",
+    "family": "A6",
+    "fitted_on_worms": false,
+    "native_tau": 0.9694471906151843,
+    "below_calibrated_speed": true,
+    "noise_reached": 0.014132247024196853
+   },
+   "A6-410m-ou": {
+    "median_crop_distance": 6.019966821363775,
+    "ci90": [
+     5.947227185686258,
+     6.098565813226105
+    ],
+    "crops": 24,
+    "worm_like": false,
+    "percentile_among_worms": 100.0,
+    "role": "augmented",
+    "family": "A6",
+    "fitted_on_worms": false,
+    "native_tau": 2.0115417961525157,
+    "below_calibrated_speed": false,
+    "noise_reached": 0.014127641642379951
+   },
+   "A7-130m": {
+    "median_crop_distance": 6.037179151187089,
+    "ci90": [
+     6.002190014702108,
+     6.061342010748133
+    ],
+    "crops": 24,
+    "worm_like": false,
+    "percentile_among_worms": 100.0,
+    "role": "standard",
+    "family": "A7",
+    "fitted_on_worms": false,
+    "native_tau": 0.8788314200842168,
+    "below_calibrated_speed": true,
+    "noise_reached": 0.014126167516126442
+   },
+   "A7-370m": {
+    "median_crop_distance": 6.080223898531775,
+    "ci90": [
+     6.068818959523841,
+     6.08921518144916
+    ],
+    "crops": 84,
+    "worm_like": false,
+    "percentile_among_worms": 100.0,
+    "role": "standard",
+    "family": "A7",
+    "fitted_on_worms": false,
+    "native_tau": 0.9659234120753671,
+    "below_calibrated_speed": true,
+    "noise_reached": 0.01412789217519722
+   },
+   "A10": {
+    "median_crop_distance": 4.664889197687688,
+    "ci90": [
+     4.608641220802385,
+     4.808016646831896
+    ],
+    "crops": 12,
+    "worm_like": false,
+    "percentile_among_worms": 100.0,
+    "role": "augmented",
+    "family": "A10",
+    "fitted_on_worms": true,
+    "native_tau": 31.07374924998559,
+    "below_calibrated_speed": false,
+    "noise_reached": 0.01413305181681418
+   }
+  },
+  "pairs": {
+   "H3b slow drives (A1-slow vs A1)": {
+    "first": 1.9749446059738929,
+    "second": 3.13380208303088,
+    "diff_ci90": [
+     -1.4020018076423837,
+     -0.9081785080946482
+    ],
+    "rule_holds": true,
+    "reduction": 0.3697928096136146
+   },
+   "H3b OU latent (Pythia-410M + OU vs Pythia-410M)": {
+    "first": 6.019966821363775,
+    "second": 6.082212517357867,
+    "diff_ci90": [
+     -0.14016419059884194,
+     0.019213705392169628
+    ],
+    "rule_holds": false,
+    "reduction": 0.010234054764849176
+   },
+   "H4 Pythia-1B vs Pythia-14M": {
+    "first": 6.123815056011013,
+    "second": 5.248633614079484,
+    "diff_ci90": [
+     0.840741636302544,
+     0.9641318413789626
+    ],
+    "rule_holds": true,
+    "reduction": -0.1667446246550437
+   },
+   "H5 Mamba-370M vs Pythia-410M (slow set)": {
+    "first": 2.0626990703151256,
+    "second": 2.4632908925258192,
+    "diff_ci90": [
+     -0.6180445617137518,
+     -0.26216655785639487
+    ],
+    "rule_holds": true,
+    "reduction": 0.16262465120387515
+   },
+   "H6 CfC vs GRU": {
+    "first": 2.8708612870381742,
+    "second": 3.9863926473728304,
+    "diff_ci90": [
+     -1.3675858026895937,
+     -0.9568097157611225
+    ],
+    "rule_holds": false,
+    "reduction": 0.2798347927592706
+   }
+  },
+  "positions": {
+   "worms": {
+    "2022-06-14-07": {
+     "shared_fraction": 0.24785493431256067,
+     "slow_fraction": 0.07213992964403461,
+     "timescale_spread": 0.43042918358737925,
+     "coupling_spread": 0.43080480299930296,
+     "sparsity": 2.0175866618923965
+    },
+    "2022-06-14-13": {
+     "shared_fraction": 0.24720632938023474,
+     "slow_fraction": -0.020784673862775417,
+     "timescale_spread": 0.4146644436191499,
+     "coupling_spread": 0.25538311323042434,
+     "sparsity": 0.9886692729158657
+    },
+    "2022-06-28-01": {
+     "shared_fraction": 0.3414719532433095,
+     "slow_fraction": 0.0009525105782460904,
+     "timescale_spread": 0.5733231087032777,
+     "coupling_spread": 0.338978243848134,
+     "sparsity": 1.4357578272985563
+    },
+    "2022-06-28-07": {
+     "shared_fraction": 0.26041767586054754,
+     "slow_fraction": 0.07860624694040105,
+     "timescale_spread": 0.47011718371726363,
+     "coupling_spread": 0.28289933752287433,
+     "sparsity": 1.489242100524992
+    },
+    "2022-07-20-01": {
+     "shared_fraction": 0.2427628020061717,
+     "slow_fraction": -0.023846563887924187,
+     "timescale_spread": 0.43920740064822894,
+     "coupling_spread": 0.2925881258665129,
+     "sparsity": 1.5689884217822545
+    },
+    "2022-08-02-01": {
+     "shared_fraction": 0.24396088429611956,
+     "slow_fraction": 0.03020807478524281,
+     "timescale_spread": 0.36921072775190644,
+     "coupling_spread": 0.248576600456592,
+     "sparsity": 1.5907069286723114
+    },
+    "2023-01-09-28": {
+     "shared_fraction": 0.3020543637717373,
+     "slow_fraction": -0.09039959891839922,
+     "timescale_spread": 0.6520111492187219,
+     "coupling_spread": 0.36556735120339634,
+     "sparsity": 1.066665162877911
+    },
+    "2023-01-19-01": {
+     "shared_fraction": 0.30062453862498406,
+     "slow_fraction": 0.1300444286550933,
+     "timescale_spread": 0.26697163662245504,
+     "coupling_spread": 0.2917502007675618,
+     "sparsity": 0.4834799025514915
+    },
+    "2023-01-19-08": {
+     "shared_fraction": 0.2578225602594422,
+     "slow_fraction": 0.018141859808406317,
+     "timescale_spread": 0.3781063588124985,
+     "coupling_spread": 0.36909330030762444,
+     "sparsity": 0.6980229735944457
+    },
+    "2023-01-19-15": {
+     "shared_fraction": 0.24564985363096556,
+     "slow_fraction": 0.01709063418463633,
+     "timescale_spread": 0.40570656140372996,
+     "coupling_spread": 0.27108316519156367,
+     "sparsity": 1.1617596304039934
+    },
+    "2023-01-19-22": {
+     "shared_fraction": 0.2802286395357061,
+     "slow_fraction": 0.039196883423818885,
+     "timescale_spread": 0.3503823476224845,
+     "coupling_spread": 0.33745190455632135,
+     "sparsity": 0.9582481475764192
+    },
+    "2023-01-23-15": {
+     "shared_fraction": 0.2650955641814369,
+     "slow_fraction": 0.05789784941007914,
+     "timescale_spread": 0.4485021734471175,
+     "coupling_spread": 0.24603703340204422,
+     "sparsity": 1.2463853212847276
+    },
+    "2023-01-23-21": {
+     "shared_fraction": 0.22454700853435675,
+     "slow_fraction": 0.04738283270350991,
+     "timescale_spread": 0.37711003296612766,
+     "coupling_spread": 0.25777285007451384,
+     "sparsity": 1.367734246962461
+    },
+    "2023-03-07-01": {
+     "shared_fraction": 0.2665849010578745,
+     "slow_fraction": -0.04883699818867862,
+     "timescale_spread": 0.3975039802136955,
+     "coupling_spread": 0.37526997823491537,
+     "sparsity": 0.6192021762220842
+    }
+   },
+   "ai_crops": {
+    "A1": [
+     {
+      "shared_fraction": 0.45803393584971375,
+      "slow_fraction": 0.13901659747026884,
+      "timescale_spread": 0.30589510462288316,
+      "coupling_spread": 0.4355311159141354,
+      "sparsity": -0.6586795389117682
+     },
+     {
+      "shared_fraction": 0.4138116011532529,
+      "slow_fraction": 0.10231627822250981,
+      "timescale_spread": 0.259424576653051,
+      "coupling_spread": 0.4522897734508321,
+      "sparsity": -0.6583914133320047
+     },
+     {
+      "shared_fraction": 0.37913968519618796,
+      "slow_fraction": 0.13762151015942714,
+      "timescale_spread": 0.42728255496212475,
+      "coupling_spread": 0.5247519493994681,
+      "sparsity": -0.5925841125435245
+     },
+     {
+      "shared_fraction": 0.4327267791701404,
+      "slow_fraction": 0.08576761072060417,
+      "timescale_spread": 0.21065629258946456,
+      "coupling_spread": 0.41807011414402095,
+      "sparsity": -0.6434965831412589
+     },
+     {
+      "shared_fraction": 0.39537013807897203,
+      "slow_fraction": 0.06815085571803847,
+      "timescale_spread": 0.19472378666338402,
+      "coupling_spread": 0.4091702722868811,
+      "sparsity": -0.726891188879826
+     },
+     {
+      "shared_fraction": 0.4127121778396446,
+      "slow_fraction": 0.0713682707511276,
+      "timescale_spread": 0.1574738951869155,
+      "coupling_spread": 0.4026911367691447,
+      "sparsity": -0.5463747835010504
+     },
+     {
+      "shared_fraction": 0.38248832642870995,
+      "slow_fraction": 0.06586789883513372,
+      "timescale_spread": 0.2503017996528062,
+      "coupling_spread": 0.4564317316987099,
+      "sparsity": -0.6949690171279345
+     },
+     {
+      "shared_fraction": 0.45435692019455487,
+      "slow_fraction": 0.09004359292644534,
+      "timescale_spread": 0.2811281832707638,
+      "coupling_spread": 0.4871855238971519,
+      "sparsity": -0.6628058093528542
+     },
+     {
+      "shared_fraction": 0.35173521828705073,
+      "slow_fraction": 0.19696842660605177,
+      "timescale_spread": 0.1366726889420518,
+      "coupling_spread": 0.33966397513923097,
+      "sparsity": -0.6244737319331255
+     },
+     {
+      "shared_fraction": 0.3407038644809261,
+      "slow_fraction": 0.15569359443277728,
+      "timescale_spread": 0.12736972893247567,
+      "coupling_spread": 0.3530622311420232,
+      "sparsity": -0.6771117596391393
+     },
+     {
+      "shared_fraction": 0.29487247177355036,
+      "slow_fraction": 0.23051713844357896,
+      "timescale_spread": 0.1319854600884247,
+      "coupling_spread": 0.34569608133180846,
+      "sparsity": -0.5454593276434391
+     },
+     {
+      "shared_fraction": 0.30815802080216514,
+      "slow_fraction": 0.03465696969948913,
+      "timescale_spread": 0.10258346524542372,
+      "coupling_spread": 0.3159694357083649,
+      "sparsity": -0.5163562591244863
+     },
+     {
+      "shared_fraction": 0.3416738441015406,
+      "slow_fraction": 0.22635710632292544,
+      "timescale_spread": 0.12193437775358033,
+      "coupling_spread": 0.38842418006511925,
+      "sparsity": -0.7127554823014318
+     },
+     {
+      "shared_fraction": 0.3801000876378866,
+      "slow_fraction": 0.17383275065309664,
+      "timescale_spread": 0.12644965501366032,
+      "coupling_spread": 0.3206618748031703,
+      "sparsity": -0.6803988427239094
+     },
+     {
+      "shared_fraction": 0.36571004536702206,
+      "slow_fraction": 0.12877993244208108,
+      "timescale_spread": 0.11610799988297807,
+      "coupling_spread": 0.3735082919705371,
+      "sparsity": -0.7258736514959363
+     },
+     {
+      "shared_fraction": 0.29635315736746964,
+      "slow_fraction": 0.16564313240549464,
+      "timescale_spread": 0.13257509546723872,
+      "coupling_spread": 0.35939236557480636,
+      "sparsity": -0.6982925807308502
+     },
+     {
+      "shared_fraction": 0.4328719217365373,
+      "slow_fraction": -0.01603881061485125,
+      "timescale_spread": 0.2060765179541429,
+      "coupling_spread": 0.37645448943155285,
+      "sparsity": -0.759872216656608
+     },
+     {
+      "shared_fraction": 0.4203240813475529,
+      "slow_fraction": -0.021283663781708203,
+      "timescale_spread": 0.2844666844425904,
+      "coupling_spread": 0.38862766650026326,
+      "sparsity": -0.7087312236097932
+     },
+     {
+      "shared_fraction": 0.4333058629392445,
+      "slow_fraction": -0.047620295114828126,
+      "timescale_spread": 0.34186973560791684,
+      "coupling_spread": 0.38859244275554755,
+      "sparsity": -0.7406798686571945
+     },
+     {
+      "shared_fraction": 0.42288375674070544,
+      "slow_fraction": 0.0029181964350231807,
+      "timescale_spread": 0.24198747638412485,
+      "coupling_spread": 0.3694085127547714,
+      "sparsity": -0.7460365930025843
+     },
+     {
+      "shared_fraction": 0.39244823025017006,
+      "slow_fraction": 0.0646198456699533,
+      "timescale_spread": 0.2582760113566724,
+      "coupling_spread": 0.3867512561197538,
+      "sparsity": -0.6505672243338871
+     },
+     {
+      "shared_fraction": 0.38227320651805907,
+      "slow_fraction": 0.003138880220017584,
+      "timescale_spread": 0.23819433382538674,
+      "coupling_spread": 0.375937773975746,
+      "sparsity": -0.7118531778428048
+     },
+     {
+      "shared_fraction": 0.4251260612396088,
+      "slow_fraction": -0.00027231197550548305,
+      "timescale_spread": 0.32277472272046,
+      "coupling_spread": 0.3699746519325912,
+      "sparsity": -0.7274768563815933
+     },
+     {
+      "shared_fraction": 0.4040548730728464,
+      "slow_fraction": -0.039796626083649804,
+      "timescale_spread": 0.2739271510645124,
+      "coupling_spread": 0.42246450035917854,
+      "sparsity": -0.6743243427158472
+     }
+    ],
+    "A1-slow": [
+     {
+      "shared_fraction": 0.294150888069317,
+      "slow_fraction": 0.20047773512675854,
+      "timescale_spread": 0.5712583541922557,
+      "coupling_spread": 0.37864777771947333,
+      "sparsity": -0.15481864754475003
+     },
+     {
+      "shared_fraction": 0.26987929012034356,
+      "slow_fraction": 0.21212131059124575,
+      "timescale_spread": 0.6070462501742174,
+      "coupling_spread": 0.40407293481309436,
+      "sparsity": -0.21670898943432956
+     },
+     {
+      "shared_fraction": 0.29653785515359,
+      "slow_fraction": 0.17526464757762908,
+      "timescale_spread": 0.3752270234047435,
+      "coupling_spread": 0.3910535390248657,
+      "sparsity": -0.17830872508749782
+     },
+     {
+      "shared_fraction": 0.2839965515751505,
+      "slow_fraction": 0.171489554856991,
+      "timescale_spread": 0.23113519670021326,
+      "coupling_spread": 0.3571825147299512,
+      "sparsity": -0.18731209785356961
+     },
+     {
+      "shared_fraction": 0.27077478519270504,
+      "slow_fraction": 0.16972224081862355,
+      "timescale_spread": 0.333637103125178,
+      "coupling_spread": 0.36889546532867784,
+      "sparsity": -0.15795166727420393
+     },
+     {
+      "shared_fraction": 0.2703891005945089,
+      "slow_fraction": 0.18281639434234281,
+      "timescale_spread": 0.3265069169425091,
+      "coupling_spread": 0.36123989925898475,
+      "sparsity": 0.03881182119441258
+     },
+     {
+      "shared_fraction": 0.28742225333978755,
+      "slow_fraction": 0.18637862437959568,
+      "timescale_spread": 0.3134966925967606,
+      "coupling_spread": 0.4091052439242847,
+      "sparsity": -0.23029238863177967
+     },
+     {
+      "shared_fraction": 0.2637355762284448,
+      "slow_fraction": 0.21963932770600922,
+      "timescale_spread": 0.43536029899337025,
+      "coupling_spread": 0.38347011620538196,
+      "sparsity": -0.15063992035904622
+     },
+     {
+      "shared_fraction": 0.23635019897586593,
+      "slow_fraction": 0.04235332217875463,
+      "timescale_spread": 0.17393779162584516,
+      "coupling_spread": 0.31446180985334704,
+      "sparsity": -0.20521291273190526
+     },
+     {
+      "shared_fraction": 0.25523388422615445,
+      "slow_fraction": 0.034929437618996986,
+      "timescale_spread": 0.14350549972141374,
+      "coupling_spread": 0.30346512580762186,
+      "sparsity": -0.20251177202999235
+     },
+     {
+      "shared_fraction": 0.2036654798916869,
+      "slow_fraction": 0.04988452285755339,
+      "timescale_spread": 0.1381665882825037,
+      "coupling_spread": 0.27212704767247253,
+      "sparsity": -0.1642637317250939
+     },
+     {
+      "shared_fraction": 0.26803217072963637,
+      "slow_fraction": 0.06491024591058522,
+      "timescale_spread": 0.13366738336803669,
+      "coupling_spread": 0.33183594365078567,
+      "sparsity": -0.25266107973847374
+     },
+     {
+      "shared_fraction": 0.27615035322802983,
+      "slow_fraction": 0.0762454639892561,
+      "timescale_spread": 0.13267898554816634,
+      "coupling_spread": 0.3206489695391771,
+      "sparsity": -0.22898943470667993
+     },
+     {
+      "shared_fraction": 0.28177209239745055,
+      "slow_fraction": 0.04967803343805852,
+      "timescale_spread": 0.16890744480584896,
+      "coupling_spread": 0.2906486280034719,
+      "sparsity": -0.1891659890022142
+     },
+     {
+      "shared_fraction": 0.28775117685003027,
+      "slow_fraction": -0.006345451563854546,
+      "timescale_spread": 0.13393044751749822,
+      "coupling_spread": 0.33277095114265504,
+      "sparsity": -0.23937825586111722
+     },
+     {
+      "shared_fraction": 0.2134019075855414,
+      "slow_fraction": 0.06726821858338247,
+      "timescale_spread": 0.16883309342661476,
+      "coupling_spread": 0.29470764642239006,
+      "sparsity": -0.12964335577469904
+     },
+     {
+      "shared_fraction": 0.296589363823044,
+      "slow_fraction": 0.12759990445653763,
+      "timescale_spread": 0.41421058507697134,
+      "coupling_spread": 0.32873502593893666,
+      "sparsity": -0.10636023746236374
+     },
+     {
+      "shared_fraction": 0.30425516401550284,
+      "slow_fraction": 0.1445498733811467,
+      "timescale_spread": 0.3639179861760927,
+      "coupling_spread": 0.34651704788104365,
+      "sparsity": -0.15179026306793855
+     },
+     {
+      "shared_fraction": 0.2769879419471746,
+      "slow_fraction": 0.12749473947167628,
+      "timescale_spread": 0.43525303540878985,
+      "coupling_spread": 0.30975595124737726,
+      "sparsity": 0.013163960972882305
+     },
+     {
+      "shared_fraction": 0.23689663365341448,
+      "slow_fraction": 0.08481760674623408,
+      "timescale_spread": 0.5018872679224415,
+      "coupling_spread": 0.3070741828442416,
+      "sparsity": 0.16794062364416948
+     },
+     {
+      "shared_fraction": 0.29468656502280366,
+      "slow_fraction": 0.1273819070524927,
+      "timescale_spread": 0.5035274901894767,
+      "coupling_spread": 0.3260623174735591,
+      "sparsity": -0.08320601885989536
+     },
+     {
+      "shared_fraction": 0.2599427067898567,
+      "slow_fraction": 0.15069632115003448,
+      "timescale_spread": 0.5058919999222746,
+      "coupling_spread": 0.32068543175812503,
+      "sparsity": -0.068543755554718
+     },
+     {
+      "shared_fraction": 0.28514356198505675,
+      "slow_fraction": 0.16194400270500894,
+      "timescale_spread": 0.5033119946645501,
+      "coupling_spread": 0.3467217764236604,
+      "sparsity": -0.09717296240839199
+     },
+     {
+      "shared_fraction": 0.2921899465493635,
+      "slow_fraction": 0.18341178653709886,
+      "timescale_spread": 0.42818922984123786,
+      "coupling_spread": 0.37680355884357264,
+      "sparsity": -0.07298026977081458
+     }
+    ],
+    "A2": [
+     {
+      "shared_fraction": 0.9319257023705092,
+      "slow_fraction": 0.02060735075702621,
+      "timescale_spread": 0.046215015002948445,
+      "coupling_spread": 0.6975467200753366,
+      "sparsity": 0.6468718386736191
+     },
+     {
+      "shared_fraction": 0.9254021423183543,
+      "slow_fraction": 0.02006908762880987,
+      "timescale_spread": 0.03277041390963252,
+      "coupling_spread": 0.8324243735580769,
+      "sparsity": 0.9967352550116317
+     },
+     {
+      "shared_fraction": 0.9296009713870161,
+      "slow_fraction": 0.048264147134951314,
+      "timescale_spread": 0.05503770631513584,
+      "coupling_spread": 0.5963276013120256,
+      "sparsity": 2.9551652090464513
+     },
+     {
+      "shared_fraction": 0.9458820352902453,
+      "slow_fraction": 0.0296487945885049,
+      "timescale_spread": 0.03416165812494717,
+      "coupling_spread": 0.6180910125737425,
+      "sparsity": 0.7797466501624342
+     },
+     {
+      "shared_fraction": 0.8890487467025141,
+      "slow_fraction": 0.1267355281692016,
+      "timescale_spread": 0.044751058633382766,
+      "coupling_spread": 0.7247948608581212,
+      "sparsity": 0.34688803705945304
+     },
+     {
+      "shared_fraction": 0.9154398840204674,
+      "slow_fraction": 0.07279799605490167,
+      "timescale_spread": 0.034784475303378484,
+      "coupling_spread": 0.684964716592583,
+      "sparsity": 0.5806207093141479
+     },
+     {
+      "shared_fraction": 0.9423947734053637,
+      "slow_fraction": -0.055345385775729186,
+      "timescale_spread": 0.03175586038956234,
+      "coupling_spread": 0.6482832184934212,
+      "sparsity": 1.9416588861005635
+     },
+     {
+      "shared_fraction": 0.8666805680050998,
+      "slow_fraction": 0.030124870057257967,
+      "timescale_spread": 0.039986497108105166,
+      "coupling_spread": 0.6465857360399164,
+      "sparsity": 1.1061456835893202
+     },
+     {
+      "shared_fraction": 0.9822447400561589,
+      "slow_fraction": 0.006090827046744973,
+      "timescale_spread": 0.041360407960286845,
+      "coupling_spread": 1.0051095291030232,
+      "sparsity": -1.3111444087585482
+     },
+     {
+      "shared_fraction": 0.9314668987027652,
+      "slow_fraction": -0.0008770421224198575,
+      "timescale_spread": 0.06084382830332782,
+      "coupling_spread": 1.0168183533333717,
+      "sparsity": -0.8766703036949828
+     },
+     {
+      "shared_fraction": 0.9607073039841596,
+      "slow_fraction": -0.15701273151321646,
+      "timescale_spread": 0.042856816453189825,
+      "coupling_spread": 0.9775986444829166,
+      "sparsity": -1.4209916802052325
+     },
+     {
+      "shared_fraction": 0.7870941368944724,
+      "slow_fraction": 0.07743184406951722,
+      "timescale_spread": 0.06843587166386969,
+      "coupling_spread": 1.0063269940860988,
+      "sparsity": -1.2688127589027243
+     },
+     {
+      "shared_fraction": 0.9925379662674759,
+      "slow_fraction": -0.13073219551231702,
+      "timescale_spread": 0.0663244496109795,
+      "coupling_spread": 1.1720563193158633,
+      "sparsity": -1.357507240078553
+     },
+     {
+      "shared_fraction": 0.9554527705893532,
+      "slow_fraction": -0.01559179630069046,
+      "timescale_spread": 0.04817727092853835,
+      "coupling_spread": 1.0493624240988475,
+      "sparsity": -1.1860543195440916
+     },
+     {
+      "shared_fraction": 0.9495374490592164,
+      "slow_fraction": -0.009544668821000666,
+      "timescale_spread": 0.05190814408085176,
+      "coupling_spread": 0.9722552253956673,
+      "sparsity": -1.265402813676603
+     },
+     {
+      "shared_fraction": 0.9631203460188681,
+      "slow_fraction": 0.04487649293409732,
+      "timescale_spread": 0.053759211981600476,
+      "coupling_spread": 1.161555850309061,
+      "sparsity": -1.4493243030977205
+     },
+     {
+      "shared_fraction": 0.9323785658350658,
+      "slow_fraction": -0.14404390158745944,
+      "timescale_spread": 0.294780389691616,
+      "coupling_spread": 0.41303185822477173,
+      "sparsity": 5.238753660617283
+     },
+     {
+      "shared_fraction": 0.9111126376914221,
+      "slow_fraction": 0.0336615589837584,
+      "timescale_spread": 0.21509129096757124,
+      "coupling_spread": 0.507275206404902,
+      "sparsity": 4.271740490853643
+     },
+     {
+      "shared_fraction": 0.887217035252827,
+      "slow_fraction": -0.2064799501471108,
+      "timescale_spread": 0.24494330464000794,
+      "coupling_spread": 0.3996196789505193,
+      "sparsity": 4.887034615035992
+     },
+     {
+      "shared_fraction": 0.8491897882833314,
+      "slow_fraction": -0.0027089517774145215,
+      "timescale_spread": 0.11703208972146886,
+      "coupling_spread": 0.4597721205007536,
+      "sparsity": 5.133776694672208
+     },
+     {
+      "shared_fraction": 0.817330655930238,
+      "slow_fraction": 0.011171060296985946,
+      "timescale_spread": 0.08110819967747149,
+      "coupling_spread": 0.6426231313903006,
+      "sparsity": 0.7110667657040644
+     },
+     {
+      "shared_fraction": 0.8828772772549168,
+      "slow_fraction": 0.01536896964521963,
+      "timescale_spread": 0.1836884509234523,
+      "coupling_spread": 0.4993213260626613,
+      "sparsity": 2.165977936370594
+     },
+     {
+      "shared_fraction": 0.9121842277822566,
+      "slow_fraction": 0.011791872569779092,
+      "timescale_spread": 0.12635279560061224,
+      "coupling_spread": 0.46297532575894423,
+      "sparsity": 4.0528482132755155
+     },
+     {
+      "shared_fraction": 0.913259297782198,
+      "slow_fraction": -0.09588573084271852,
+      "timescale_spread": 0.40300686572419686,
+      "coupling_spread": 0.5264224338771101,
+      "sparsity": 2.135118661370685
+     }
+    ],
+    "A3": [
+     {
+      "shared_fraction": 0.05677011073229978,
+      "slow_fraction": -0.0004152764368861502,
+      "timescale_spread": 0.18696866846919272,
+      "coupling_spread": 0.21048911908928458,
+      "sparsity": -0.8828369367774298
+     },
+     {
+      "shared_fraction": 0.05431712947070584,
+      "slow_fraction": -0.005333891046600552,
+      "timescale_spread": 0.15640289106366537,
+      "coupling_spread": 0.20553606220991524,
+      "sparsity": -0.9055135127558934
+     },
+     {
+      "shared_fraction": 0.045870292929251155,
+      "slow_fraction": -0.01133560803194811,
+      "timescale_spread": 0.1372422082795033,
+      "coupling_spread": 0.21292089574828904,
+      "sparsity": -0.7520215833109899
+     },
+     {
+      "shared_fraction": 0.06414472319879393,
+      "slow_fraction": 0.01983867141157683,
+      "timescale_spread": 0.17317872813172946,
+      "coupling_spread": 0.21153489028215774,
+      "sparsity": -0.8022408792835568
+     },
+     {
+      "shared_fraction": 0.0708257776930785,
+      "slow_fraction": -0.0039551155444199435,
+      "timescale_spread": 0.13440565156558254,
+      "coupling_spread": 0.21767691080001783,
+      "sparsity": -0.7851336078854927
+     },
+     {
+      "shared_fraction": 0.0767538734653408,
+      "slow_fraction": 0.0005969889290213486,
+      "timescale_spread": 0.12663458421205304,
+      "coupling_spread": 0.2124201305451534,
+      "sparsity": -0.7711286935904782
+     },
+     {
+      "shared_fraction": 0.1275946391258985,
+      "slow_fraction": 0.0005489234206953002,
+      "timescale_spread": 0.595159911878423,
+      "coupling_spread": 0.2511481515428248,
+      "sparsity": -1.0889304586921633
+     },
+     {
+      "shared_fraction": 0.05667093327483823,
+      "slow_fraction": 0.005621677306078826,
+      "timescale_spread": 0.13065747753636808,
+      "coupling_spread": 0.207482181867572,
+      "sparsity": -0.8345137239015171
+     },
+     {
+      "shared_fraction": 0.05471968108331728,
+      "slow_fraction": -0.03497409125629079,
+      "timescale_spread": 0.1702583383442214,
+      "coupling_spread": 0.2038505314969979,
+      "sparsity": -0.8366244047617162
+     },
+     {
+      "shared_fraction": 0.08221351322798383,
+      "slow_fraction": -0.003133294029452596,
+      "timescale_spread": 0.14513681856962365,
+      "coupling_spread": 0.22054620072434233,
+      "sparsity": -0.7793998704047388
+     },
+     {
+      "shared_fraction": 0.06371227576739229,
+      "slow_fraction": -0.01473030215174689,
+      "timescale_spread": 0.12987385053893852,
+      "coupling_spread": 0.22326503082216148,
+      "sparsity": -0.9167303028349352
+     },
+     {
+      "shared_fraction": 0.061878753960495345,
+      "slow_fraction": 0.011888796830809548,
+      "timescale_spread": 0.16251124397127664,
+      "coupling_spread": 0.19915938822630197,
+      "sparsity": -0.8010567207559056
+     },
+     {
+      "shared_fraction": 0.07824542058316317,
+      "slow_fraction": -0.03673456988085633,
+      "timescale_spread": 0.18641045360855674,
+      "coupling_spread": 0.20193042815088105,
+      "sparsity": -0.8770529114587653
+     },
+     {
+      "shared_fraction": 0.05196940813600054,
+      "slow_fraction": -0.003846944164775984,
+      "timescale_spread": 0.1610223210649886,
+      "coupling_spread": 0.21117592882406805,
+      "sparsity": -0.8680281083990566
+     },
+     {
+      "shared_fraction": 0.0565124836554237,
+      "slow_fraction": -0.03324329692741359,
+      "timescale_spread": 0.1509290132676886,
+      "coupling_spread": 0.19952682628581644,
+      "sparsity": -0.9102665095203409
+     },
+     {
+      "shared_fraction": 0.057075338215384776,
+      "slow_fraction": -0.04036942235604708,
+      "timescale_spread": 0.1594731546519405,
+      "coupling_spread": 0.21544730915942475,
+      "sparsity": -0.7849803686531808
+     },
+     {
+      "shared_fraction": 0.05689365628002265,
+      "slow_fraction": 0.02327174776526609,
+      "timescale_spread": 0.14779699763218274,
+      "coupling_spread": 0.20851893099096613,
+      "sparsity": -0.8524171149819869
+     },
+     {
+      "shared_fraction": 0.06919167968313203,
+      "slow_fraction": -0.0437814180130619,
+      "timescale_spread": 0.19451843966534285,
+      "coupling_spread": 0.22969531607337026,
+      "sparsity": -0.9086994562055164
+     },
+     {
+      "shared_fraction": 0.07514845430809462,
+      "slow_fraction": -0.033914568979024555,
+      "timescale_spread": 0.1750962758190389,
+      "coupling_spread": 0.22294029254446132,
+      "sparsity": -0.8415446967365904
+     },
+     {
+      "shared_fraction": 0.061313935379813,
+      "slow_fraction": 0.007759339281177238,
+      "timescale_spread": 0.14893246572489743,
+      "coupling_spread": 0.2116931962665916,
+      "sparsity": -0.9195678359696757
+     },
+     {
+      "shared_fraction": 0.0652717455846658,
+      "slow_fraction": -0.02825829246517867,
+      "timescale_spread": 0.15799451338255074,
+      "coupling_spread": 0.2354789162807885,
+      "sparsity": -0.8239309214944264
+     },
+     {
+      "shared_fraction": 0.055839244227063635,
+      "slow_fraction": 0.009313863710809476,
+      "timescale_spread": 0.1343030642642605,
+      "coupling_spread": 0.20038998798133792,
+      "sparsity": -0.9110309918309396
+     },
+     {
+      "shared_fraction": 0.07311645682598829,
+      "slow_fraction": -0.02521593000374378,
+      "timescale_spread": 0.17864853902798455,
+      "coupling_spread": 0.22621269297303961,
+      "sparsity": -0.9191430201902049
+     },
+     {
+      "shared_fraction": 0.06357306981558733,
+      "slow_fraction": -0.013819968868099363,
+      "timescale_spread": 0.18537582002362418,
+      "coupling_spread": 0.2048436068955537,
+      "sparsity": -0.8950640007188422
+     },
+     {
+      "shared_fraction": 0.07735252066318833,
+      "slow_fraction": 0.02179567910015685,
+      "timescale_spread": 0.2094522134433241,
+      "coupling_spread": 0.21056056333975945,
+      "sparsity": -1.0094999015154245
+     },
+     {
+      "shared_fraction": 0.07399090852785312,
+      "slow_fraction": -0.02129344292555905,
+      "timescale_spread": 0.14423692001769764,
+      "coupling_spread": 0.20629563598570771,
+      "sparsity": -0.7274085917780793
+     },
+     {
+      "shared_fraction": 0.07189718894428222,
+      "slow_fraction": -0.04673151878526114,
+      "timescale_spread": 0.17095547964469,
+      "coupling_spread": 0.20230270114002186,
+      "sparsity": -0.8873764173350832
+     },
+     {
+      "shared_fraction": 0.05486091258121806,
+      "slow_fraction": -0.02692234894121339,
+      "timescale_spread": 0.1292463315198093,
+      "coupling_spread": 0.21666742191219224,
+      "sparsity": -0.7692136197680731
+     },
+     {
+      "shared_fraction": 0.05904745110658932,
+      "slow_fraction": -0.012704007112762867,
+      "timescale_spread": 0.20015535430691647,
+      "coupling_spread": 0.21483406119394938,
+      "sparsity": -1.0472885105685426
+     },
+     {
+      "shared_fraction": 0.060689457665699054,
+      "slow_fraction": -0.007622202626499359,
+      "timescale_spread": 0.1623696329896977,
+      "coupling_spread": 0.1915680170789928,
+      "sparsity": -0.9504039539791327
+     },
+     {
+      "shared_fraction": 0.059424791583688984,
+      "slow_fraction": -0.013332609572592136,
+      "timescale_spread": 0.14367931834058295,
+      "coupling_spread": 0.2080459508800816,
+      "sparsity": -0.9678512198575456
+     },
+     {
+      "shared_fraction": 0.046986816053445304,
+      "slow_fraction": -0.020109789130057,
+      "timescale_spread": 0.18351349555916202,
+      "coupling_spread": 0.1963293333639399,
+      "sparsity": -0.943473365920448
+     },
+     {
+      "shared_fraction": 0.0767436113955658,
+      "slow_fraction": -0.036798409402857335,
+      "timescale_spread": 0.14604237387731828,
+      "coupling_spread": 0.22329150329776884,
+      "sparsity": -1.0088769671173243
+     },
+     {
+      "shared_fraction": 0.07870286446967725,
+      "slow_fraction": -0.01173514526180663,
+      "timescale_spread": 0.15002336142891726,
+      "coupling_spread": 0.22042884523328315,
+      "sparsity": -0.831805408864905
+     },
+     {
+      "shared_fraction": 0.05340400709951541,
+      "slow_fraction": -0.018369434625780136,
+      "timescale_spread": 0.1710878566057641,
+      "coupling_spread": 0.20132240544395064,
+      "sparsity": -0.9580407362204593
+     },
+     {
+      "shared_fraction": 0.06183352217860847,
+      "slow_fraction": 0.010747401140702778,
+      "timescale_spread": 0.22593015947172618,
+      "coupling_spread": 0.20579274255561053,
+      "sparsity": -0.8904048787775967
+     },
+     {
+      "shared_fraction": 0.05291351915704125,
+      "slow_fraction": -0.01371522933605665,
+      "timescale_spread": 0.16335260856017103,
+      "coupling_spread": 0.20530966139279508,
+      "sparsity": -0.9299604334594574
+     },
+     {
+      "shared_fraction": 0.07491434708110556,
+      "slow_fraction": -0.0306944360977233,
+      "timescale_spread": 0.14805312576945395,
+      "coupling_spread": 0.21362527406804627,
+      "sparsity": -0.8142899192560182
+     },
+     {
+      "shared_fraction": 0.07046049915588459,
+      "slow_fraction": -0.022647612259922463,
+      "timescale_spread": 0.17425548586487039,
+      "coupling_spread": 0.20103236628212112,
+      "sparsity": -0.9436386273531234
+     },
+     {
+      "shared_fraction": 0.07730265551728022,
+      "slow_fraction": -0.006304973873573242,
+      "timescale_spread": 0.15684104504680468,
+      "coupling_spread": 0.19672430690170137,
+      "sparsity": -0.981121446563926
+     },
+     {
+      "shared_fraction": 0.06740748918841309,
+      "slow_fraction": -0.022765439629451045,
+      "timescale_spread": 0.1978401034393113,
+      "coupling_spread": 0.20216623413852464,
+      "sparsity": -1.0441840239625857
+     },
+     {
+      "shared_fraction": 0.07626015052963989,
+      "slow_fraction": -0.022851519369244074,
+      "timescale_spread": 0.1438339441238083,
+      "coupling_spread": 0.20489966591076594,
+      "sparsity": -0.9309573090056371
+     },
+     {
+      "shared_fraction": 0.04850073483361998,
+      "slow_fraction": -0.0003121862855893148,
+      "timescale_spread": 0.15399148530420653,
+      "coupling_spread": 0.20353088567867825,
+      "sparsity": -0.9864581067673907
+     },
+     {
+      "shared_fraction": 0.05266504857611456,
+      "slow_fraction": -0.04229657543650897,
+      "timescale_spread": 0.18637355608288153,
+      "coupling_spread": 0.2016413414271921,
+      "sparsity": -0.995260189989224
+     },
+     {
+      "shared_fraction": 0.04831611512043634,
+      "slow_fraction": -0.030464960716518885,
+      "timescale_spread": 0.16544222683342785,
+      "coupling_spread": 0.22176233236953036,
+      "sparsity": -0.9267445580059771
+     },
+     {
+      "shared_fraction": 0.05484483435844319,
+      "slow_fraction": 0.002294946332220655,
+      "timescale_spread": 0.16512579432535754,
+      "coupling_spread": 0.20321373517823949,
+      "sparsity": -0.9940519511901986
+     },
+     {
+      "shared_fraction": 0.06512687156078316,
+      "slow_fraction": -0.039990805611173366,
+      "timescale_spread": 0.20260305795591474,
+      "coupling_spread": 0.209506608725828,
+      "sparsity": -0.9943685400832223
+     },
+     {
+      "shared_fraction": 0.0808683932505663,
+      "slow_fraction": -0.04013360838493344,
+      "timescale_spread": 0.14142073700084787,
+      "coupling_spread": 0.21775628737298303,
+      "sparsity": -0.961529128637985
+     },
+     {
+      "shared_fraction": 0.058358439822567734,
+      "slow_fraction": -0.00250279921067392,
+      "timescale_spread": 0.17146672187140524,
+      "coupling_spread": 0.20136925487005336,
+      "sparsity": -0.9228196696069986
+     },
+     {
+      "shared_fraction": 0.07020980603416885,
+      "slow_fraction": -0.017090775428099343,
+      "timescale_spread": 0.20492311477736563,
+      "coupling_spread": 0.20954815865069856,
+      "sparsity": -0.9924652401602913
+     },
+     {
+      "shared_fraction": 0.0411943508716541,
+      "slow_fraction": -0.028109496786126544,
+      "timescale_spread": 0.1635932371841637,
+      "coupling_spread": 0.2062426075837685,
+      "sparsity": -0.9984033304859773
+     },
+     {
+      "shared_fraction": 0.06423120018161946,
+      "slow_fraction": 0.03250158025782619,
+      "timescale_spread": 0.19067960142574494,
+      "coupling_spread": 0.21139920119869654,
+      "sparsity": -0.9394841055464449
+     },
+     {
+      "shared_fraction": 0.074413987365863,
+      "slow_fraction": -0.012390038306144536,
+      "timescale_spread": 0.17021445907895932,
+      "coupling_spread": 0.2389161448673196,
+      "sparsity": -0.9982524500145178
+     },
+     {
+      "shared_fraction": 0.05783360622181157,
+      "slow_fraction": 0.04134660211013428,
+      "timescale_spread": 0.17855301694432088,
+      "coupling_spread": 0.20257833373828724,
+      "sparsity": -0.9928311078980517
+     },
+     {
+      "shared_fraction": 0.06740174244359201,
+      "slow_fraction": 0.0031814521097634505,
+      "timescale_spread": 0.15242086537468622,
+      "coupling_spread": 0.21399441130923358,
+      "sparsity": -0.9964367740012477
+     },
+     {
+      "shared_fraction": 0.049325605873117864,
+      "slow_fraction": -0.031535490944069815,
+      "timescale_spread": 0.18730022787750056,
+      "coupling_spread": 0.20717563558079527,
+      "sparsity": -1.01250774304799
+     },
+     {
+      "shared_fraction": 0.05223070204106646,
+      "slow_fraction": -0.008439319087845724,
+      "timescale_spread": 0.17759227338079397,
+      "coupling_spread": 0.2069224380874341,
+      "sparsity": -0.9822180361609393
+     },
+     {
+      "shared_fraction": 0.05990940260856424,
+      "slow_fraction": -0.012295638067604387,
+      "timescale_spread": 0.15907907767402255,
+      "coupling_spread": 0.2094535345291509,
+      "sparsity": -0.8072280306863924
+     },
+     {
+      "shared_fraction": 0.06155633652790299,
+      "slow_fraction": -0.01535367086667715,
+      "timescale_spread": 0.14700210972826225,
+      "coupling_spread": 0.20878796502314692,
+      "sparsity": -0.9337465669951628
+     },
+     {
+      "shared_fraction": 0.06086019160369997,
+      "slow_fraction": -0.006999905191812613,
+      "timescale_spread": 0.17387772959718814,
+      "coupling_spread": 0.20453487656864172,
+      "sparsity": -0.9015177276160035
+     },
+     {
+      "shared_fraction": 0.0813154656342622,
+      "slow_fraction": -0.031985181492148115,
+      "timescale_spread": 0.14636043880486863,
+      "coupling_spread": 0.2283065398931008,
+      "sparsity": -0.8030290101285
+     },
+     {
+      "shared_fraction": 0.06632322687508307,
+      "slow_fraction": 0.004642200307704127,
+      "timescale_spread": 0.1604465654258646,
+      "coupling_spread": 0.20593287938806365,
+      "sparsity": -0.8571314277081251
+     },
+     {
+      "shared_fraction": 0.10206616168072195,
+      "slow_fraction": 0.025861857068308465,
+      "timescale_spread": 0.4182874320047637,
+      "coupling_spread": 0.23040558149649604,
+      "sparsity": -1.0305336726837115
+     },
+     {
+      "shared_fraction": 0.055775653634275835,
+      "slow_fraction": 0.0014522344462683946,
+      "timescale_spread": 0.13858428607258436,
+      "coupling_spread": 0.21183323835388196,
+      "sparsity": -0.8021643141639199
+     },
+     {
+      "shared_fraction": 0.05389402604622919,
+      "slow_fraction": -0.011677679019870293,
+      "timescale_spread": 0.1937096160293352,
+      "coupling_spread": 0.20346832321658442,
+      "sparsity": -0.9431923847009116
+     },
+     {
+      "shared_fraction": 0.061780716646972586,
+      "slow_fraction": -0.0049888427638784235,
+      "timescale_spread": 0.1637204370178588,
+      "coupling_spread": 0.20752429839949538,
+      "sparsity": -0.7483424941030163
+     },
+     {
+      "shared_fraction": 0.03604221945274128,
+      "slow_fraction": -0.024338838795599553,
+      "timescale_spread": 0.1585984503391807,
+      "coupling_spread": 0.19484753519607464,
+      "sparsity": -0.7742776446603801
+     },
+     {
+      "shared_fraction": 0.071181138390267,
+      "slow_fraction": 0.03180759168655657,
+      "timescale_spread": 0.1729346544018249,
+      "coupling_spread": 0.2069151749264277,
+      "sparsity": -0.7775421438183756
+     },
+     {
+      "shared_fraction": 0.0632575430210297,
+      "slow_fraction": -0.023842161434919074,
+      "timescale_spread": 0.1804848116666779,
+      "coupling_spread": 0.2130011984998287,
+      "sparsity": -0.7760291144503004
+     },
+     {
+      "shared_fraction": 0.042913326914819826,
+      "slow_fraction": -0.0042696654154266035,
+      "timescale_spread": 0.1702444069735192,
+      "coupling_spread": 0.19587650280922184,
+      "sparsity": -0.9262089005379579
+     },
+     {
+      "shared_fraction": 0.0537829883312025,
+      "slow_fraction": -0.02049417409165117,
+      "timescale_spread": 0.19878330642051417,
+      "coupling_spread": 0.20486166934288658,
+      "sparsity": -0.8669259862802245
+     },
+     {
+      "shared_fraction": 0.05599585287712374,
+      "slow_fraction": -0.04608998618904028,
+      "timescale_spread": 0.179596663349542,
+      "coupling_spread": 0.19432895765395555,
+      "sparsity": -0.9440327283154648
+     },
+     {
+      "shared_fraction": 0.06308818426046281,
+      "slow_fraction": 0.02196725408916282,
+      "timescale_spread": 0.15439382089787027,
+      "coupling_spread": 0.2019177692216921,
+      "sparsity": -0.8804124335072775
+     },
+     {
+      "shared_fraction": 0.050324037243148836,
+      "slow_fraction": -0.04377219847022718,
+      "timescale_spread": 0.1772648126891409,
+      "coupling_spread": 0.21454489005573932,
+      "sparsity": -0.9706985217805514
+     },
+     {
+      "shared_fraction": 0.07561880112407375,
+      "slow_fraction": -0.02622690301058006,
+      "timescale_spread": 0.16338030174533752,
+      "coupling_spread": 0.21011832578356238,
+      "sparsity": -0.7538569669982182
+     },
+     {
+      "shared_fraction": 0.05423830965119521,
+      "slow_fraction": -0.0004016691953195893,
+      "timescale_spread": 0.156021547078148,
+      "coupling_spread": 0.20812761665562762,
+      "sparsity": -0.7445330327172082
+     },
+     {
+      "shared_fraction": 0.05007177545716231,
+      "slow_fraction": -0.026380653771820507,
+      "timescale_spread": 0.17066611306163737,
+      "coupling_spread": 0.2113716927525652,
+      "sparsity": -0.8387585688069757
+     },
+     {
+      "shared_fraction": 0.04645104296129456,
+      "slow_fraction": 0.010472205396603918,
+      "timescale_spread": 0.1644219471769285,
+      "coupling_spread": 0.20671127670183448,
+      "sparsity": -0.7191893710540413
+     },
+     {
+      "shared_fraction": 0.06977653025372707,
+      "slow_fraction": -0.02575460538557897,
+      "timescale_spread": 0.15823082858204232,
+      "coupling_spread": 0.1931199512152454,
+      "sparsity": -0.8019287969117054
+     },
+     {
+      "shared_fraction": 0.08055264401573788,
+      "slow_fraction": 0.014919941164792125,
+      "timescale_spread": 0.20284333611204347,
+      "coupling_spread": 0.20853949279061737,
+      "sparsity": -0.9086597065467552
+     },
+     {
+      "shared_fraction": 0.051332716575833215,
+      "slow_fraction": 0.00482078840297796,
+      "timescale_spread": 0.20808830039015405,
+      "coupling_spread": 0.18028333071840885,
+      "sparsity": -1.029883529986975
+     },
+     {
+      "shared_fraction": 0.07708404877618105,
+      "slow_fraction": -0.03403987380445396,
+      "timescale_spread": 0.1822853192056788,
+      "coupling_spread": 0.20778085329387216,
+      "sparsity": -0.8983152163538012
+     },
+     {
+      "shared_fraction": 0.07481846805221508,
+      "slow_fraction": -0.04546544198838466,
+      "timescale_spread": 0.20767169289449475,
+      "coupling_spread": 0.2137087281813177,
+      "sparsity": -0.7900880282268851
+     },
+     {
+      "shared_fraction": 0.0730805428986254,
+      "slow_fraction": -0.0037202342615286488,
+      "timescale_spread": 0.14143659475699347,
+      "coupling_spread": 0.22235137349190276,
+      "sparsity": -0.828061574550599
+     }
+    ],
+    "A4": [
+     {
+      "shared_fraction": -0.0018757608674804306,
+      "slow_fraction": -0.0656411175021057,
+      "timescale_spread": 0.029208595462118035,
+      "coupling_spread": 0.20948433220779256,
+      "sparsity": 5.9901333263189205
+     },
+     {
+      "shared_fraction": 0.00047266812039855195,
+      "slow_fraction": -0.06378549087601096,
+      "timescale_spread": 0.029750620926664258,
+      "coupling_spread": 0.17438190672550508,
+      "sparsity": 5.999935467678344
+     },
+     {
+      "shared_fraction": -0.0018806223653524592,
+      "slow_fraction": -0.06887016766168866,
+      "timescale_spread": 0.027373783783773455,
+      "coupling_spread": 0.1699021569559247,
+      "sparsity": 5.817424169117691
+     },
+     {
+      "shared_fraction": -0.0032302515479579476,
+      "slow_fraction": -0.06978681782247091,
+      "timescale_spread": 0.028676493165584776,
+      "coupling_spread": 0.17962228340503103,
+      "sparsity": 6.10190381511471
+     },
+     {
+      "shared_fraction": -0.0016626965016328348,
+      "slow_fraction": -0.06591415795358013,
+      "timescale_spread": 0.02837772741816221,
+      "coupling_spread": 0.19167805743091199,
+      "sparsity": 6.211437904198832
+     },
+     {
+      "shared_fraction": -0.004865794939843819,
+      "slow_fraction": -0.06445401984341591,
+      "timescale_spread": 0.02990851692704009,
+      "coupling_spread": 0.17272146792700138,
+      "sparsity": 5.873151179742717
+     },
+     {
+      "shared_fraction": -0.0025023125670676147,
+      "slow_fraction": -0.06858901671162836,
+      "timescale_spread": 0.028336361802514077,
+      "coupling_spread": 0.1942941842259052,
+      "sparsity": 5.715198249090103
+     },
+     {
+      "shared_fraction": -0.004197051319459808,
+      "slow_fraction": -0.06619135688336326,
+      "timescale_spread": 0.02929084666994004,
+      "coupling_spread": 0.1892322139568527,
+      "sparsity": 6.330305329405735
+     },
+     {
+      "shared_fraction": -0.0025646913451996796,
+      "slow_fraction": -0.06363134233928083,
+      "timescale_spread": 0.028819892070286894,
+      "coupling_spread": 0.1760817520551301,
+      "sparsity": 5.661736805348831
+     },
+     {
+      "shared_fraction": 0.002780424165646403,
+      "slow_fraction": -0.06540177757681716,
+      "timescale_spread": 0.029647781348007197,
+      "coupling_spread": 0.2002389659432327,
+      "sparsity": 5.83609756732531
+     },
+     {
+      "shared_fraction": -0.001833638067211807,
+      "slow_fraction": -0.07126902917982528,
+      "timescale_spread": 0.030962339459366117,
+      "coupling_spread": 0.18847597280759174,
+      "sparsity": 5.7660902381540025
+     },
+     {
+      "shared_fraction": -0.004584336691300437,
+      "slow_fraction": -0.06274519227925351,
+      "timescale_spread": 0.02984957347816895,
+      "coupling_spread": 0.18530080602051524,
+      "sparsity": 5.382038008267817
+     },
+     {
+      "shared_fraction": 0.00018541697993461754,
+      "slow_fraction": -0.06819994704594998,
+      "timescale_spread": 0.030214262170156093,
+      "coupling_spread": 0.20402032917825216,
+      "sparsity": 5.5692535605479225
+     },
+     {
+      "shared_fraction": -0.0038309616632835122,
+      "slow_fraction": -0.06591190640320288,
+      "timescale_spread": 0.02947644726593358,
+      "coupling_spread": 0.2245501813684098,
+      "sparsity": 5.417306855425826
+     },
+     {
+      "shared_fraction": -0.008129291865039379,
+      "slow_fraction": -0.07012312829283165,
+      "timescale_spread": 0.030835912793458976,
+      "coupling_spread": 0.17696955268060996,
+      "sparsity": 5.148767797609118
+     },
+     {
+      "shared_fraction": -0.0014814838639510748,
+      "slow_fraction": -0.06422644336695069,
+      "timescale_spread": 0.030410318423202902,
+      "coupling_spread": 0.1952584289082164,
+      "sparsity": 5.4829410723317
+     },
+     {
+      "shared_fraction": -0.005091159760098307,
+      "slow_fraction": -0.06708579358825666,
+      "timescale_spread": 0.02782871903738337,
+      "coupling_spread": 0.20407586922352355,
+      "sparsity": 5.532631322528137
+     },
+     {
+      "shared_fraction": -0.00026016708568003257,
+      "slow_fraction": -0.06881127997288775,
+      "timescale_spread": 0.028930549328817716,
+      "coupling_spread": 0.18714378878229937,
+      "sparsity": 5.225075037882475
+     },
+     {
+      "shared_fraction": -0.010390909163493755,
+      "slow_fraction": -0.06595608198340096,
+      "timescale_spread": 0.02934358735033584,
+      "coupling_spread": 0.18017730411459632,
+      "sparsity": 5.392699395302167
+     },
+     {
+      "shared_fraction": -0.006309116086646796,
+      "slow_fraction": -0.06945017560911688,
+      "timescale_spread": 0.029862361766755035,
+      "coupling_spread": 0.18983337252323076,
+      "sparsity": 5.002187103511603
+     },
+     {
+      "shared_fraction": -0.0055159737294569,
+      "slow_fraction": -0.07054471780139993,
+      "timescale_spread": 0.028251747997471627,
+      "coupling_spread": 0.1769031588902617,
+      "sparsity": 5.772678791236887
+     },
+     {
+      "shared_fraction": -0.0022327745755541277,
+      "slow_fraction": -0.06981640115977701,
+      "timescale_spread": 0.02753190447630771,
+      "coupling_spread": 0.17668802040831072,
+      "sparsity": 5.60496121177795
+     },
+     {
+      "shared_fraction": -0.005131069610964533,
+      "slow_fraction": -0.0690855745927332,
+      "timescale_spread": 0.028626779350090826,
+      "coupling_spread": 0.17595555422333925,
+      "sparsity": 5.26270916392873
+     },
+     {
+      "shared_fraction": -0.0017522454557605538,
+      "slow_fraction": -0.06555471415636857,
+      "timescale_spread": 0.030812525319065642,
+      "coupling_spread": 0.16691651235276428,
+      "sparsity": 5.670536784850377
+     }
+    ],
+    "A5": [
+     {
+      "shared_fraction": 0.13275664885406763,
+      "slow_fraction": -0.039771863363911614,
+      "timescale_spread": 0.07409389453239391,
+      "coupling_spread": 0.2662345451213833,
+      "sparsity": -0.5576998290011742
+     },
+     {
+      "shared_fraction": 0.10862222622151903,
+      "slow_fraction": -0.013012824980007531,
+      "timescale_spread": 0.07014442446692297,
+      "coupling_spread": 0.2675625108650955,
+      "sparsity": -0.27806848752923435
+     },
+     {
+      "shared_fraction": 0.1463174349772192,
+      "slow_fraction": -0.026081893882596748,
+      "timescale_spread": 0.06455272527606734,
+      "coupling_spread": 0.2729484925434719,
+      "sparsity": -0.46607378049290593
+     },
+     {
+      "shared_fraction": 0.16468704666940964,
+      "slow_fraction": 0.011355069056298317,
+      "timescale_spread": 0.07330532502112368,
+      "coupling_spread": 0.2742638037210254,
+      "sparsity": -0.6408690688802671
+     },
+     {
+      "shared_fraction": 0.1669241489541986,
+      "slow_fraction": -0.019372152725051352,
+      "timescale_spread": 0.08207583622914273,
+      "coupling_spread": 0.28838550647078687,
+      "sparsity": -0.5753337098066424
+     },
+     {
+      "shared_fraction": 0.17073335914193738,
+      "slow_fraction": -0.04113392361452216,
+      "timescale_spread": 0.07780561082570642,
+      "coupling_spread": 0.2939895382312757,
+      "sparsity": -0.3456207225567991
+     },
+     {
+      "shared_fraction": 0.208803099732593,
+      "slow_fraction": 0.012971246525731376,
+      "timescale_spread": 0.07501429460249386,
+      "coupling_spread": 0.3216705426196825,
+      "sparsity": -0.45235719784354894
+     },
+     {
+      "shared_fraction": 0.17315121251416277,
+      "slow_fraction": -0.01084087340470979,
+      "timescale_spread": 0.0731342003696612,
+      "coupling_spread": 0.30079254093685737,
+      "sparsity": -0.5876394604081774
+     },
+     {
+      "shared_fraction": 0.14173725927609523,
+      "slow_fraction": -0.011705280450961052,
+      "timescale_spread": 0.07272906461236107,
+      "coupling_spread": 0.26634938124734525,
+      "sparsity": -0.2227114323556056
+     },
+     {
+      "shared_fraction": 0.122340532922899,
+      "slow_fraction": 0.006552979776112022,
+      "timescale_spread": 0.08092730583927388,
+      "coupling_spread": 0.2680421328423278,
+      "sparsity": -0.5406574135676602
+     },
+     {
+      "shared_fraction": 0.16456472241280296,
+      "slow_fraction": -0.012116065024133437,
+      "timescale_spread": 0.07091290778872314,
+      "coupling_spread": 0.2945176439615127,
+      "sparsity": -0.3584558368816345
+     },
+     {
+      "shared_fraction": 0.13570600028036153,
+      "slow_fraction": -0.016854944217521296,
+      "timescale_spread": 0.07774315120473832,
+      "coupling_spread": 0.2775631220463131,
+      "sparsity": -0.32375177080426293
+     },
+     {
+      "shared_fraction": 0.13336523309452708,
+      "slow_fraction": -0.038784364887362456,
+      "timescale_spread": 0.0634040845341375,
+      "coupling_spread": 0.30468688732061505,
+      "sparsity": -0.22124531631522637
+     },
+     {
+      "shared_fraction": 0.1912405911400838,
+      "slow_fraction": 0.009783722574403486,
+      "timescale_spread": 0.07193968343584864,
+      "coupling_spread": 0.30549175596876255,
+      "sparsity": -0.5441332256059734
+     },
+     {
+      "shared_fraction": 0.1602359571914358,
+      "slow_fraction": -0.052356764580506976,
+      "timescale_spread": 0.06950874411340138,
+      "coupling_spread": 0.2833242917709978,
+      "sparsity": -0.4235444031379041
+     },
+     {
+      "shared_fraction": 0.13112032077498004,
+      "slow_fraction": -0.008455503871629641,
+      "timescale_spread": 0.0738320022404391,
+      "coupling_spread": 0.28854386118280956,
+      "sparsity": -0.5339535903017995
+     },
+     {
+      "shared_fraction": 0.10667638706520215,
+      "slow_fraction": -0.03614662107344133,
+      "timescale_spread": 0.0816916578184024,
+      "coupling_spread": 0.2588056790278362,
+      "sparsity": -0.3091164219352719
+     },
+     {
+      "shared_fraction": 0.15211728320331375,
+      "slow_fraction": -0.0598781929878355,
+      "timescale_spread": 0.0676076945033655,
+      "coupling_spread": 0.272340623470989,
+      "sparsity": -0.39992126497388514
+     },
+     {
+      "shared_fraction": 0.1858316091872481,
+      "slow_fraction": -0.0312909917706924,
+      "timescale_spread": 0.07052175497224042,
+      "coupling_spread": 0.29618160312010083,
+      "sparsity": -0.5338065440675047
+     },
+     {
+      "shared_fraction": 0.1313635544505308,
+      "slow_fraction": 0.009427003126988048,
+      "timescale_spread": 0.07581417159883366,
+      "coupling_spread": 0.2715868580563764,
+      "sparsity": -0.45645058834925434
+     },
+     {
+      "shared_fraction": 0.1739437934267406,
+      "slow_fraction": -0.005049380888598691,
+      "timescale_spread": 0.07217550790795939,
+      "coupling_spread": 0.2992999724699835,
+      "sparsity": -0.4355950085598904
+     },
+     {
+      "shared_fraction": 0.14946332490723277,
+      "slow_fraction": -0.04904108421068012,
+      "timescale_spread": 0.07245689801117407,
+      "coupling_spread": 0.2980128318921773,
+      "sparsity": -0.3306271733930096
+     },
+     {
+      "shared_fraction": 0.11212993153175743,
+      "slow_fraction": -0.04483902458503175,
+      "timescale_spread": 0.06767815710365088,
+      "coupling_spread": 0.27328291975937147,
+      "sparsity": -0.32785970459754654
+     },
+     {
+      "shared_fraction": 0.12382082740819045,
+      "slow_fraction": -0.032904323782929235,
+      "timescale_spread": 0.07353112372131052,
+      "coupling_spread": 0.2617132919065812,
+      "sparsity": -0.2785315898400174
+     },
+     {
+      "shared_fraction": 0.12818043907597074,
+      "slow_fraction": -0.07437128542158367,
+      "timescale_spread": 0.07496243210713034,
+      "coupling_spread": 0.25502812792424767,
+      "sparsity": -0.2324454763199962
+     },
+     {
+      "shared_fraction": 0.1563495851560862,
+      "slow_fraction": -0.0061290141846147336,
+      "timescale_spread": 0.07230500364953263,
+      "coupling_spread": 0.28709290902888873,
+      "sparsity": -0.47495289377161126
+     },
+     {
+      "shared_fraction": 0.12999819548521696,
+      "slow_fraction": -0.04890248710556571,
+      "timescale_spread": 0.0734209023312836,
+      "coupling_spread": 0.27855130486712343,
+      "sparsity": -0.47375928643378484
+     },
+     {
+      "shared_fraction": 0.1288926503523476,
+      "slow_fraction": 0.018626033130361035,
+      "timescale_spread": 0.08086181375326369,
+      "coupling_spread": 0.2691996528068836,
+      "sparsity": -0.4492200834008635
+     },
+     {
+      "shared_fraction": 0.1546726213291934,
+      "slow_fraction": -0.035970779874881155,
+      "timescale_spread": 0.08775044763632822,
+      "coupling_spread": 0.2670325690639321,
+      "sparsity": -0.024228119492171248
+     },
+     {
+      "shared_fraction": 0.11497768105313835,
+      "slow_fraction": -0.02111387721198468,
+      "timescale_spread": 0.07766800211011213,
+      "coupling_spread": 0.2461035828607777,
+      "sparsity": 0.35463914778807004
+     },
+     {
+      "shared_fraction": 0.1505805641504519,
+      "slow_fraction": -0.05247562600792446,
+      "timescale_spread": 0.07476766536891495,
+      "coupling_spread": 0.2692471419802328,
+      "sparsity": 0.20014201659250275
+     },
+     {
+      "shared_fraction": 0.20323402399616564,
+      "slow_fraction": 0.011725172619005254,
+      "timescale_spread": 0.06956485429307199,
+      "coupling_spread": 0.2677257783256072,
+      "sparsity": 0.18888943776599748
+     },
+     {
+      "shared_fraction": 0.15945930542452372,
+      "slow_fraction": -0.04274457965772295,
+      "timescale_spread": 0.08217001682057501,
+      "coupling_spread": 0.2601298168521514,
+      "sparsity": 0.15365305990587785
+     },
+     {
+      "shared_fraction": 0.17163048820852547,
+      "slow_fraction": -0.04160338431287227,
+      "timescale_spread": 0.07064761750121498,
+      "coupling_spread": 0.27897012779088587,
+      "sparsity": 0.35019583326397524
+     },
+     {
+      "shared_fraction": 0.2208314902243294,
+      "slow_fraction": 0.016181985980606238,
+      "timescale_spread": 0.073488233376837,
+      "coupling_spread": 0.2813852577702277,
+      "sparsity": -0.007810895007764146
+     },
+     {
+      "shared_fraction": 0.19491765305819148,
+      "slow_fraction": -0.024374767219463633,
+      "timescale_spread": 0.07060134428877973,
+      "coupling_spread": 0.29983196384416066,
+      "sparsity": 0.3217742550397664
+     },
+     {
+      "shared_fraction": 0.14433232406465174,
+      "slow_fraction": -0.03239779685023504,
+      "timescale_spread": 0.08664630543836252,
+      "coupling_spread": 0.2596278534697607,
+      "sparsity": 0.3807025850697431
+     },
+     {
+      "shared_fraction": 0.15413814131860454,
+      "slow_fraction": -0.009738518517162759,
+      "timescale_spread": 0.10494607047106322,
+      "coupling_spread": 0.2590577787399758,
+      "sparsity": -0.21730677699065248
+     },
+     {
+      "shared_fraction": 0.19836372106720007,
+      "slow_fraction": -0.022974341808552595,
+      "timescale_spread": 0.06920074008573017,
+      "coupling_spread": 0.26890046318701105,
+      "sparsity": 0.43001924784059076
+     },
+     {
+      "shared_fraction": 0.1481050382645416,
+      "slow_fraction": -0.02850461109347218,
+      "timescale_spread": 0.07330853277414467,
+      "coupling_spread": 0.25352621620171156,
+      "sparsity": 0.44124539949136193
+     },
+     {
+      "shared_fraction": 0.13661900867892404,
+      "slow_fraction": -0.02738854338895132,
+      "timescale_spread": 0.07693458117443927,
+      "coupling_spread": 0.28873961307602874,
+      "sparsity": 0.6157492965336155
+     },
+     {
+      "shared_fraction": 0.20823683301529874,
+      "slow_fraction": 0.019954695404460425,
+      "timescale_spread": 0.05888758812407722,
+      "coupling_spread": 0.2840128235860907,
+      "sparsity": 0.42885712495492995
+     },
+     {
+      "shared_fraction": 0.16973537528816154,
+      "slow_fraction": -0.04681977039982623,
+      "timescale_spread": 0.06553297089328848,
+      "coupling_spread": 0.28994239964289215,
+      "sparsity": 0.16222179158173594
+     },
+     {
+      "shared_fraction": 0.11057833909639611,
+      "slow_fraction": 0.002994082323756632,
+      "timescale_spread": 0.08064377142208798,
+      "coupling_spread": 0.25619063430705274,
+      "sparsity": 0.14760108689282886
+     },
+     {
+      "shared_fraction": 0.11736203278803892,
+      "slow_fraction": -0.02771657187178264,
+      "timescale_spread": 0.09059927790892607,
+      "coupling_spread": 0.26123688772447284,
+      "sparsity": 0.9209355315290191
+     },
+     {
+      "shared_fraction": 0.16720237109033886,
+      "slow_fraction": -0.04502989137839704,
+      "timescale_spread": 0.08109688647860605,
+      "coupling_spread": 0.2802316673063112,
+      "sparsity": 0.4785228921730444
+     },
+     {
+      "shared_fraction": 0.19615842842659217,
+      "slow_fraction": -0.03309120663261762,
+      "timescale_spread": 0.07813886488368942,
+      "coupling_spread": 0.28917010745622546,
+      "sparsity": 0.3765035762957641
+     },
+     {
+      "shared_fraction": 0.1508156275314183,
+      "slow_fraction": 0.031647422658250615,
+      "timescale_spread": 0.07649638748209722,
+      "coupling_spread": 0.261201745880587,
+      "sparsity": 0.13923286783240885
+     },
+     {
+      "shared_fraction": 0.18881613387046525,
+      "slow_fraction": -0.014453129007895938,
+      "timescale_spread": 0.0765467362871082,
+      "coupling_spread": 0.2659871047004604,
+      "sparsity": 0.2713783509606004
+     },
+     {
+      "shared_fraction": 0.15256254328932295,
+      "slow_fraction": -0.04808120901968427,
+      "timescale_spread": 0.07625168702190696,
+      "coupling_spread": 0.28963522008925163,
+      "sparsity": 0.30678408988359845
+     },
+     {
+      "shared_fraction": 0.1301390794947977,
+      "slow_fraction": -0.022965559433643885,
+      "timescale_spread": 0.084515228586552,
+      "coupling_spread": 0.2790206991169029,
+      "sparsity": 1.0239735048451404
+     },
+     {
+      "shared_fraction": 0.1331917072097189,
+      "slow_fraction": -0.02383717094816717,
+      "timescale_spread": 0.08357500250995613,
+      "coupling_spread": 0.2582034749891505,
+      "sparsity": 0.6412070788954447
+     },
+     {
+      "shared_fraction": 0.14428621886102438,
+      "slow_fraction": -0.08163344974379434,
+      "timescale_spread": 0.09504054437575353,
+      "coupling_spread": 0.27624614550568466,
+      "sparsity": 0.17271584305719484
+     },
+     {
+      "shared_fraction": 0.24614099241738846,
+      "slow_fraction": -0.006971021297084044,
+      "timescale_spread": 0.07073377074149027,
+      "coupling_spread": 0.30012166663305334,
+      "sparsity": 0.23212554864720092
+     },
+     {
+      "shared_fraction": 0.12545509872029856,
+      "slow_fraction": -0.01825317179802427,
+      "timescale_spread": 0.08232266700663791,
+      "coupling_spread": 0.25384636631654883,
+      "sparsity": 0.004690262965951708
+     },
+     {
+      "shared_fraction": 0.15211558704052475,
+      "slow_fraction": 0.01419939169277872,
+      "timescale_spread": 0.07805133363048977,
+      "coupling_spread": 0.27346845601340913,
+      "sparsity": 0.7268534592591219
+     },
+     {
+      "shared_fraction": 0.16281423109896292,
+      "slow_fraction": -0.03751521281503194,
+      "timescale_spread": 0.07797110046843297,
+      "coupling_spread": 0.2636082609464804,
+      "sparsity": -0.6409642915061866
+     },
+     {
+      "shared_fraction": 0.14515161229682091,
+      "slow_fraction": -0.01986979178065789,
+      "timescale_spread": 0.07093671430252914,
+      "coupling_spread": 0.2548419984572865,
+      "sparsity": -0.5668248906219207
+     },
+     {
+      "shared_fraction": 0.18289454375570446,
+      "slow_fraction": -0.05625683025131647,
+      "timescale_spread": 0.07820279184252692,
+      "coupling_spread": 0.25754505426116464,
+      "sparsity": -0.6910545069474583
+     },
+     {
+      "shared_fraction": 0.18538947949476003,
+      "slow_fraction": 0.0005661208450139681,
+      "timescale_spread": 0.07550114356946827,
+      "coupling_spread": 0.2697082484734012,
+      "sparsity": -0.46703952816348976
+     },
+     {
+      "shared_fraction": 0.16366678434308493,
+      "slow_fraction": -0.00960992093632036,
+      "timescale_spread": 0.08694708480530691,
+      "coupling_spread": 0.25969220022045264,
+      "sparsity": -0.7378308792028818
+     },
+     {
+      "shared_fraction": 0.17469549404866977,
+      "slow_fraction": -0.031323254682327266,
+      "timescale_spread": 0.07364342443262333,
+      "coupling_spread": 0.2569791254399532,
+      "sparsity": -0.5975784413937988
+     },
+     {
+      "shared_fraction": 0.1912923369487788,
+      "slow_fraction": 0.03090012687626591,
+      "timescale_spread": 0.07979019467859404,
+      "coupling_spread": 0.2588463625696976,
+      "sparsity": -0.4713291166987269
+     },
+     {
+      "shared_fraction": 0.22927010226543967,
+      "slow_fraction": -0.007210945782063949,
+      "timescale_spread": 0.07664489403219679,
+      "coupling_spread": 0.2901401276447889,
+      "sparsity": -0.522343373972961
+     },
+     {
+      "shared_fraction": 0.15313149264606038,
+      "slow_fraction": 0.0019918785306348085,
+      "timescale_spread": 0.08136535324573492,
+      "coupling_spread": 0.23625626032320413,
+      "sparsity": -0.6493630075112016
+     },
+     {
+      "shared_fraction": 0.18081589588648064,
+      "slow_fraction": -0.011862955093980516,
+      "timescale_spread": 0.10199925836626704,
+      "coupling_spread": 0.26407919449244466,
+      "sparsity": -0.9775835753677115
+     },
+     {
+      "shared_fraction": 0.18955764379205808,
+      "slow_fraction": -0.022222300208384015,
+      "timescale_spread": 0.07446154896088776,
+      "coupling_spread": 0.27080466528091784,
+      "sparsity": -0.5070906958311394
+     },
+     {
+      "shared_fraction": 0.16482393514689625,
+      "slow_fraction": -0.008645788364981654,
+      "timescale_spread": 0.08520026492462757,
+      "coupling_spread": 0.26080219555623846,
+      "sparsity": -0.6177931638136368
+     },
+     {
+      "shared_fraction": 0.17544501155224101,
+      "slow_fraction": -0.0317970038839384,
+      "timescale_spread": 0.06752324224978255,
+      "coupling_spread": 0.27899929158584713,
+      "sparsity": -0.5602795786829174
+     },
+     {
+      "shared_fraction": 0.23297979839222505,
+      "slow_fraction": -0.002125836293282904,
+      "timescale_spread": 0.07805864814197394,
+      "coupling_spread": 0.2591904279949003,
+      "sparsity": -0.5674685278474628
+     },
+     {
+      "shared_fraction": 0.17947737434983346,
+      "slow_fraction": -0.06211952709716193,
+      "timescale_spread": 0.07311308084373029,
+      "coupling_spread": 0.2692743536093164,
+      "sparsity": -0.42223080779394506
+     },
+     {
+      "shared_fraction": 0.18753434414692055,
+      "slow_fraction": -0.026503445158708304,
+      "timescale_spread": 0.08136693021136872,
+      "coupling_spread": 0.26631909703370693,
+      "sparsity": -0.6206015622250134
+     },
+     {
+      "shared_fraction": 0.1361890324339994,
+      "slow_fraction": -0.029356246672809682,
+      "timescale_spread": 0.08159332560073758,
+      "coupling_spread": 0.25169938209269754,
+      "sparsity": -0.5064589798969138
+     },
+     {
+      "shared_fraction": 0.15378726954283867,
+      "slow_fraction": -0.043205444890042285,
+      "timescale_spread": 0.08635781447187478,
+      "coupling_spread": 0.24446192989945156,
+      "sparsity": -0.7811223090502196
+     },
+     {
+      "shared_fraction": 0.1501774044683391,
+      "slow_fraction": -0.02228435661048509,
+      "timescale_spread": 0.08559326337867426,
+      "coupling_spread": 0.263781943898436,
+      "sparsity": -0.5056788316787808
+     },
+     {
+      "shared_fraction": 0.16363258930033608,
+      "slow_fraction": 0.04111691626922702,
+      "timescale_spread": 0.07939591266079463,
+      "coupling_spread": 0.23481286018007808,
+      "sparsity": -0.7877060348600015
+     },
+     {
+      "shared_fraction": 0.17170426013846127,
+      "slow_fraction": -0.03909737159787614,
+      "timescale_spread": 0.08538143357179094,
+      "coupling_spread": 0.26495890383471965,
+      "sparsity": -0.6536731481903514
+     },
+     {
+      "shared_fraction": 0.1786618651261131,
+      "slow_fraction": -0.053018771513516125,
+      "timescale_spread": 0.09032027355900571,
+      "coupling_spread": 0.29412125972382935,
+      "sparsity": -0.5444986629860902
+     },
+     {
+      "shared_fraction": 0.14067843731011004,
+      "slow_fraction": -0.02232523241721759,
+      "timescale_spread": 0.07667440070004974,
+      "coupling_spread": 0.2618623675260861,
+      "sparsity": -0.4893438944693919
+     },
+     {
+      "shared_fraction": 0.1526515076350176,
+      "slow_fraction": -0.04533106728710079,
+      "timescale_spread": 0.08276103943857807,
+      "coupling_spread": 0.2546010328483734,
+      "sparsity": -0.13670938153960155
+     },
+     {
+      "shared_fraction": 0.14243984569942122,
+      "slow_fraction": -0.056288622788563544,
+      "timescale_spread": 0.07957972822761983,
+      "coupling_spread": 0.24778645708467137,
+      "sparsity": -0.5430426750711371
+     },
+     {
+      "shared_fraction": 0.19103014185983253,
+      "slow_fraction": -0.03958166206518751,
+      "timescale_spread": 0.07534107222027808,
+      "coupling_spread": 0.2667822081732284,
+      "sparsity": -0.6551373589659818
+     },
+     {
+      "shared_fraction": 0.14772628965915283,
+      "slow_fraction": -0.02526803036608134,
+      "timescale_spread": 0.07552533405241821,
+      "coupling_spread": 0.28090911268969443,
+      "sparsity": -0.3336105930420098
+     },
+     {
+      "shared_fraction": 0.13432582657708067,
+      "slow_fraction": 0.006299081842632235,
+      "timescale_spread": 0.08383007928425189,
+      "coupling_spread": 0.2555561069736672,
+      "sparsity": -0.6217766997252662
+     }
+    ],
+    "A6-14m": [
+     {
+      "shared_fraction": 0.10410302685215514,
+      "slow_fraction": 0.04358836544823318,
+      "timescale_spread": 0.13645065512208657,
+      "coupling_spread": 0.2745824727819386,
+      "sparsity": 5.87976161701871
+     },
+     {
+      "shared_fraction": 0.08741025729590068,
+      "slow_fraction": -0.026232455273832417,
+      "timescale_spread": 0.12409405073829309,
+      "coupling_spread": 0.305811898394949,
+      "sparsity": 7.196587425728941
+     },
+     {
+      "shared_fraction": 0.13190703390153946,
+      "slow_fraction": -0.03523880149512967,
+      "timescale_spread": 0.11211995695004348,
+      "coupling_spread": 0.3739163021268733,
+      "sparsity": 6.67161897501659
+     },
+     {
+      "shared_fraction": 0.1341819434274381,
+      "slow_fraction": -0.04098084497321234,
+      "timescale_spread": 0.11996910327149697,
+      "coupling_spread": 0.4078758549264167,
+      "sparsity": 6.1799357180998085
+     },
+     {
+      "shared_fraction": 0.10658759112972771,
+      "slow_fraction": 0.00020388427020594097,
+      "timescale_spread": 0.10381983591241509,
+      "coupling_spread": 0.348023645249508,
+      "sparsity": 7.088742062285917
+     },
+     {
+      "shared_fraction": 0.07464568229341886,
+      "slow_fraction": -0.022708384298374018,
+      "timescale_spread": 0.11429974024114653,
+      "coupling_spread": 0.3973219638191895,
+      "sparsity": 7.2320737504283645
+     },
+     {
+      "shared_fraction": 0.09586838194025124,
+      "slow_fraction": -0.04096960947120848,
+      "timescale_spread": 0.12537699565715488,
+      "coupling_spread": 0.35325282048643525,
+      "sparsity": 6.5265823523599975
+     },
+     {
+      "shared_fraction": 0.12305948890506815,
+      "slow_fraction": -0.0241699926688624,
+      "timescale_spread": 0.10681768237720672,
+      "coupling_spread": 0.3417853980154567,
+      "sparsity": 7.2826772666137884
+     },
+     {
+      "shared_fraction": 0.12490491373980872,
+      "slow_fraction": 0.0019412963204828286,
+      "timescale_spread": 0.10632935394635543,
+      "coupling_spread": 0.41161467380817723,
+      "sparsity": 7.070744644446208
+     },
+     {
+      "shared_fraction": 0.10695621068246589,
+      "slow_fraction": -0.01565847988072272,
+      "timescale_spread": 0.12395162892702191,
+      "coupling_spread": 0.34530860725150836,
+      "sparsity": 6.868224579829845
+     },
+     {
+      "shared_fraction": 0.13471525708398588,
+      "slow_fraction": -0.030749761097228427,
+      "timescale_spread": 0.10050788799155068,
+      "coupling_spread": 0.3988026845770669,
+      "sparsity": 6.591834126930797
+     },
+     {
+      "shared_fraction": 0.09390508797844935,
+      "slow_fraction": -0.02162692193306977,
+      "timescale_spread": 0.11696396091431449,
+      "coupling_spread": 0.310556184902988,
+      "sparsity": 6.915182281831325
+     },
+     {
+      "shared_fraction": 0.10962179128359976,
+      "slow_fraction": 0.0004557802945284349,
+      "timescale_spread": 0.11832129746465525,
+      "coupling_spread": 0.3881592388311313,
+      "sparsity": 7.219842440328264
+     },
+     {
+      "shared_fraction": 0.09936923282698151,
+      "slow_fraction": -0.012031918754398241,
+      "timescale_spread": 0.11106713812309357,
+      "coupling_spread": 0.3388337595798586,
+      "sparsity": 7.300082210308017
+     },
+     {
+      "shared_fraction": 0.10571431949892993,
+      "slow_fraction": -0.0360608634027952,
+      "timescale_spread": 0.12724994220502245,
+      "coupling_spread": 0.3147863917345564,
+      "sparsity": 6.812381969087883
+     },
+     {
+      "shared_fraction": 0.11032105113168936,
+      "slow_fraction": -0.023776782182325873,
+      "timescale_spread": 0.12220683090829651,
+      "coupling_spread": 0.32974829703780195,
+      "sparsity": 6.792184143589637
+     },
+     {
+      "shared_fraction": 0.0884034300270663,
+      "slow_fraction": -0.05025933440736021,
+      "timescale_spread": 0.12399521502911863,
+      "coupling_spread": 0.3444183203254879,
+      "sparsity": 6.994014771978769
+     },
+     {
+      "shared_fraction": 0.10783438687537336,
+      "slow_fraction": -0.002863908627479046,
+      "timescale_spread": 0.10615656129282587,
+      "coupling_spread": 0.3668955009630056,
+      "sparsity": 7.035917918119583
+     },
+     {
+      "shared_fraction": 0.10352801520882378,
+      "slow_fraction": -0.04344597511807994,
+      "timescale_spread": 0.11325677367112832,
+      "coupling_spread": 0.39503730692686984,
+      "sparsity": 7.137108393680447
+     },
+     {
+      "shared_fraction": 0.12346629369640097,
+      "slow_fraction": -0.03758727383199849,
+      "timescale_spread": 0.12481137874311324,
+      "coupling_spread": 0.3925271202335422,
+      "sparsity": 7.319155516700098
+     },
+     {
+      "shared_fraction": 0.09125274330083569,
+      "slow_fraction": -0.02248348449287895,
+      "timescale_spread": 0.11072070242648362,
+      "coupling_spread": 0.3665633704240558,
+      "sparsity": 7.620724456471476
+     },
+     {
+      "shared_fraction": 0.10450213831508229,
+      "slow_fraction": -0.03823814453689763,
+      "timescale_spread": 0.10420815309678677,
+      "coupling_spread": 0.35356118817071713,
+      "sparsity": 6.669491044644317
+     },
+     {
+      "shared_fraction": 0.08060396355994497,
+      "slow_fraction": -0.0283159113783882,
+      "timescale_spread": 0.1108517654359249,
+      "coupling_spread": 0.3129672035664993,
+      "sparsity": 7.029625643902366
+     },
+     {
+      "shared_fraction": 0.11384080387717721,
+      "slow_fraction": -0.0024068557122541552,
+      "timescale_spread": 0.11138637670297094,
+      "coupling_spread": 0.3821889598408045,
+      "sparsity": 6.968118832089213
+     },
+     {
+      "shared_fraction": 0.10034332288541956,
+      "slow_fraction": -0.0351671451982362,
+      "timescale_spread": 0.12658575857168453,
+      "coupling_spread": 0.3075557542444393,
+      "sparsity": 7.217351712765004
+     },
+     {
+      "shared_fraction": 0.1167930715528129,
+      "slow_fraction": -0.013100476072337811,
+      "timescale_spread": 0.11899130775712803,
+      "coupling_spread": 0.39363051801599064,
+      "sparsity": 6.463746687818443
+     },
+     {
+      "shared_fraction": 0.08363896856628564,
+      "slow_fraction": -0.02709204556617243,
+      "timescale_spread": 0.09818118928421862,
+      "coupling_spread": 0.3129002424524378,
+      "sparsity": 7.2539007803998405
+     },
+     {
+      "shared_fraction": 0.10130725085600552,
+      "slow_fraction": -0.04456655165820661,
+      "timescale_spread": 0.11651257390251865,
+      "coupling_spread": 0.3426414414399478,
+      "sparsity": 6.71184376069245
+     },
+     {
+      "shared_fraction": 0.10945765620887297,
+      "slow_fraction": 0.037099851139938245,
+      "timescale_spread": 0.12062213789067519,
+      "coupling_spread": 0.25494293271275426,
+      "sparsity": 5.524905223986307
+     },
+     {
+      "shared_fraction": 0.08261433018576889,
+      "slow_fraction": -0.025630726282083814,
+      "timescale_spread": 0.09938533658110753,
+      "coupling_spread": 0.28078919941796177,
+      "sparsity": 6.0115447307233225
+     },
+     {
+      "shared_fraction": 0.12803319426507542,
+      "slow_fraction": -0.03882784515010547,
+      "timescale_spread": 0.10202208998149478,
+      "coupling_spread": 0.3272501980218938,
+      "sparsity": 6.368549129543737
+     },
+     {
+      "shared_fraction": 0.13311179849299187,
+      "slow_fraction": -0.030522752767797146,
+      "timescale_spread": 0.0967728917245867,
+      "coupling_spread": 0.3381289972576232,
+      "sparsity": 6.031550913607252
+     },
+     {
+      "shared_fraction": 0.1253342465652279,
+      "slow_fraction": 0.0007129288021748451,
+      "timescale_spread": 0.09404824638150519,
+      "coupling_spread": 0.3176148096182799,
+      "sparsity": 5.965129753910916
+     },
+     {
+      "shared_fraction": 0.10966010727704072,
+      "slow_fraction": -0.033756861743596475,
+      "timescale_spread": 0.10587277039696379,
+      "coupling_spread": 0.30432294519532166,
+      "sparsity": 6.025968088537498
+     },
+     {
+      "shared_fraction": 0.12061130797428783,
+      "slow_fraction": -0.03552842549999609,
+      "timescale_spread": 0.10774866787682695,
+      "coupling_spread": 0.3580156617374238,
+      "sparsity": 5.782165266854901
+     },
+     {
+      "shared_fraction": 0.12338939044807526,
+      "slow_fraction": -0.0394052724592717,
+      "timescale_spread": 0.10200856443536258,
+      "coupling_spread": 0.2919523554846848,
+      "sparsity": 6.312436262790829
+     },
+     {
+      "shared_fraction": 0.13839741684000054,
+      "slow_fraction": -0.009420287788236175,
+      "timescale_spread": 0.09423223897438615,
+      "coupling_spread": 0.36712437602945946,
+      "sparsity": 5.6116462527860875
+     },
+     {
+      "shared_fraction": 0.13131791553682387,
+      "slow_fraction": -0.011079245124861983,
+      "timescale_spread": 0.09386540329118039,
+      "coupling_spread": 0.3195658163082181,
+      "sparsity": 6.081033749731438
+     },
+     {
+      "shared_fraction": 0.1362907071714204,
+      "slow_fraction": -0.02167818637296575,
+      "timescale_spread": 0.09246566119733093,
+      "coupling_spread": 0.3310503301288285,
+      "sparsity": 5.467689609325842
+     },
+     {
+      "shared_fraction": 0.08412450106466424,
+      "slow_fraction": -0.02963870302373961,
+      "timescale_spread": 0.10806474212579853,
+      "coupling_spread": 0.27355512286460365,
+      "sparsity": 6.566231497437218
+     },
+     {
+      "shared_fraction": 0.11061176494136146,
+      "slow_fraction": 0.0028539000887735123,
+      "timescale_spread": 0.10525923449028793,
+      "coupling_spread": 0.2622021318394019,
+      "sparsity": 6.40427400151551
+     },
+     {
+      "shared_fraction": 0.08978743044360013,
+      "slow_fraction": -0.016661367059210966,
+      "timescale_spread": 0.09213707248964985,
+      "coupling_spread": 0.27102071347497614,
+      "sparsity": 6.4576017040871445
+     },
+     {
+      "shared_fraction": 0.08905813354482454,
+      "slow_fraction": -0.03169735922249689,
+      "timescale_spread": 0.11961997703171345,
+      "coupling_spread": 0.2852145445851796,
+      "sparsity": 6.595587282108116
+     },
+     {
+      "shared_fraction": 0.124286291460233,
+      "slow_fraction": -0.02177333276655416,
+      "timescale_spread": 0.10000547963409004,
+      "coupling_spread": 0.2911726880649645,
+      "sparsity": 5.233990758239665
+     },
+     {
+      "shared_fraction": 0.08637492655806164,
+      "slow_fraction": -0.03536265345907104,
+      "timescale_spread": 0.11439720443989576,
+      "coupling_spread": 0.3065242843775865,
+      "sparsity": 6.490937673640516
+     },
+     {
+      "shared_fraction": 0.10218905233754365,
+      "slow_fraction": -0.02451704910154592,
+      "timescale_spread": 0.09425694479607058,
+      "coupling_spread": 0.2950192554198072,
+      "sparsity": 6.041816547068481
+     },
+     {
+      "shared_fraction": 0.11048353891480005,
+      "slow_fraction": -0.006191655975698829,
+      "timescale_spread": 0.1105976580313501,
+      "coupling_spread": 0.35449636788906347,
+      "sparsity": 5.765966818710664
+     },
+     {
+      "shared_fraction": 0.12701478602244073,
+      "slow_fraction": -0.024274579326213526,
+      "timescale_spread": 0.09662328165897086,
+      "coupling_spread": 0.3130007174659914,
+      "sparsity": 6.364802006090682
+     },
+     {
+      "shared_fraction": 0.11160166644311809,
+      "slow_fraction": -0.0010181547918879648,
+      "timescale_spread": 0.08962193878756249,
+      "coupling_spread": 0.31382740285621574,
+      "sparsity": 5.921073644546877
+     },
+     {
+      "shared_fraction": 0.0884986419844677,
+      "slow_fraction": -0.03337403803214704,
+      "timescale_spread": 0.10670304779452996,
+      "coupling_spread": 0.2958247821216031,
+      "sparsity": 6.762368263612771
+     },
+     {
+      "shared_fraction": 0.07017222125611214,
+      "slow_fraction": -0.026549878506328773,
+      "timescale_spread": 0.10030962921299943,
+      "coupling_spread": 0.28129119749359943,
+      "sparsity": 6.867633320303798
+     },
+     {
+      "shared_fraction": 0.09493316490823409,
+      "slow_fraction": 0.0008098584769934931,
+      "timescale_spread": 0.09789814624404491,
+      "coupling_spread": 0.26377300266289094,
+      "sparsity": 6.686467054035518
+     },
+     {
+      "shared_fraction": 0.11154310232622733,
+      "slow_fraction": -0.015033333041712815,
+      "timescale_spread": 0.10215310193035414,
+      "coupling_spread": 0.29007960904001495,
+      "sparsity": 6.589029864027665
+     },
+     {
+      "shared_fraction": 0.11172490871198626,
+      "slow_fraction": -0.050131549759275605,
+      "timescale_spread": 0.11060925673374049,
+      "coupling_spread": 0.28276709214247653,
+      "sparsity": 6.533848313300789
+     },
+     {
+      "shared_fraction": 0.13159482978117892,
+      "slow_fraction": -0.0016671314335706302,
+      "timescale_spread": 0.10140986136636268,
+      "coupling_spread": 0.3287676088752757,
+      "sparsity": 6.014430491600551
+     },
+     {
+      "shared_fraction": 0.08693704088608196,
+      "slow_fraction": -0.02427627917807699,
+      "timescale_spread": 0.09701388049544032,
+      "coupling_spread": 0.2973621282704551,
+      "sparsity": 6.22768945318632
+     },
+     {
+      "shared_fraction": 0.12516289828357494,
+      "slow_fraction": 0.06673056699901483,
+      "timescale_spread": 0.10223976623984476,
+      "coupling_spread": 0.2501670756068683,
+      "sparsity": 4.811316356453331
+     },
+     {
+      "shared_fraction": 0.09865863786979949,
+      "slow_fraction": -0.025775266305043686,
+      "timescale_spread": 0.09312274284733743,
+      "coupling_spread": 0.23558039480019016,
+      "sparsity": 5.605850674786467
+     },
+     {
+      "shared_fraction": 0.10851969142507686,
+      "slow_fraction": -0.01825163785240914,
+      "timescale_spread": 0.09222541467815967,
+      "coupling_spread": 0.2136251648477961,
+      "sparsity": 5.67176414900802
+     },
+     {
+      "shared_fraction": 0.11301459516833681,
+      "slow_fraction": -0.03816869398824643,
+      "timescale_spread": 0.0885204358934262,
+      "coupling_spread": 0.21414564348305895,
+      "sparsity": 4.94188639856371
+     },
+     {
+      "shared_fraction": 0.10925658804645155,
+      "slow_fraction": 0.016355064146719604,
+      "timescale_spread": 0.0897932349252206,
+      "coupling_spread": 0.22344305135892953,
+      "sparsity": 4.975685734396133
+     },
+     {
+      "shared_fraction": 0.10959705971924176,
+      "slow_fraction": -0.019210069328422254,
+      "timescale_spread": 0.08961144592526689,
+      "coupling_spread": 0.24075090545165195,
+      "sparsity": 5.2212995540402485
+     },
+     {
+      "shared_fraction": 0.09713686321899204,
+      "slow_fraction": -0.03589314676388024,
+      "timescale_spread": 0.09661145370477345,
+      "coupling_spread": 0.2139282825636312,
+      "sparsity": 5.441789264624058
+     },
+     {
+      "shared_fraction": 0.13071958669373035,
+      "slow_fraction": -0.025100266519468256,
+      "timescale_spread": 0.0890328713047189,
+      "coupling_spread": 0.23617670727004048,
+      "sparsity": 4.984855480157579
+     },
+     {
+      "shared_fraction": 0.13833485603623863,
+      "slow_fraction": -0.010543449972691998,
+      "timescale_spread": 0.08512173175538625,
+      "coupling_spread": 0.22682134065061826,
+      "sparsity": 4.869535384301483
+     },
+     {
+      "shared_fraction": 0.13361165554440108,
+      "slow_fraction": -0.022812572415844876,
+      "timescale_spread": 0.09177645142638999,
+      "coupling_spread": 0.2302109308647707,
+      "sparsity": 5.171167536467836
+     },
+     {
+      "shared_fraction": 0.16229023263657102,
+      "slow_fraction": -0.024656537266642204,
+      "timescale_spread": 0.07921998164160005,
+      "coupling_spread": 0.26140584891275864,
+      "sparsity": 4.601598538920827
+     },
+     {
+      "shared_fraction": 0.09890624393480354,
+      "slow_fraction": -0.02648654638785055,
+      "timescale_spread": 0.09953796368748427,
+      "coupling_spread": 0.20047667355883753,
+      "sparsity": 5.5724072831365055
+     },
+     {
+      "shared_fraction": 0.12125264907604996,
+      "slow_fraction": 0.018459273015704096,
+      "timescale_spread": 0.09054317976842567,
+      "coupling_spread": 0.23046033818873868,
+      "sparsity": 4.945058655158327
+     },
+     {
+      "shared_fraction": 0.108142710155234,
+      "slow_fraction": -0.002591343331014481,
+      "timescale_spread": 0.08716112543165948,
+      "coupling_spread": 0.21760160517960783,
+      "sparsity": 5.188317050524469
+     },
+     {
+      "shared_fraction": 0.10457858558963622,
+      "slow_fraction": -0.04154197419766611,
+      "timescale_spread": 0.10180094087678104,
+      "coupling_spread": 0.22932416480424894,
+      "sparsity": 5.59122860822002
+     },
+     {
+      "shared_fraction": 0.1083587921537816,
+      "slow_fraction": -0.012956165240211934,
+      "timescale_spread": 0.08400679048062294,
+      "coupling_spread": 0.22051755855163754,
+      "sparsity": 4.963333390576249
+     },
+     {
+      "shared_fraction": 0.0872384276997368,
+      "slow_fraction": -0.03747089188318721,
+      "timescale_spread": 0.09803654387113067,
+      "coupling_spread": 0.21016290676750132,
+      "sparsity": 5.605890500749696
+     },
+     {
+      "shared_fraction": 0.09795099637667684,
+      "slow_fraction": -0.04006030860101435,
+      "timescale_spread": 0.09577177666885284,
+      "coupling_spread": 0.20618226362984435,
+      "sparsity": 5.3534782527013505
+     },
+     {
+      "shared_fraction": 0.08495894708775167,
+      "slow_fraction": -0.010417029667481842,
+      "timescale_spread": 0.09296748037161592,
+      "coupling_spread": 0.22124937423755675,
+      "sparsity": 5.084143616538646
+     },
+     {
+      "shared_fraction": 0.13565564830025773,
+      "slow_fraction": -0.02436964938252518,
+      "timescale_spread": 0.0951414801311307,
+      "coupling_spread": 0.23753232552462428,
+      "sparsity": 4.651181119275009
+     },
+     {
+      "shared_fraction": 0.09011784751720124,
+      "slow_fraction": 0.00531327596000966,
+      "timescale_spread": 0.09247885239510234,
+      "coupling_spread": 0.20932516878190954,
+      "sparsity": 5.285413031522096
+     },
+     {
+      "shared_fraction": 0.10590574562997901,
+      "slow_fraction": -0.038202045664969694,
+      "timescale_spread": 0.09850536858974637,
+      "coupling_spread": 0.21467054408735492,
+      "sparsity": 4.693488142073751
+     },
+     {
+      "shared_fraction": 0.08970605630980326,
+      "slow_fraction": -0.017980288602387356,
+      "timescale_spread": 0.09585551584139092,
+      "coupling_spread": 0.21828103342714417,
+      "sparsity": 5.397783219149963
+     },
+     {
+      "shared_fraction": 0.11643176939163938,
+      "slow_fraction": -0.01231379314240301,
+      "timescale_spread": 0.0878307145615366,
+      "coupling_spread": 0.20866876628435263,
+      "sparsity": 5.50085729133522
+     },
+     {
+      "shared_fraction": 0.15125023288457345,
+      "slow_fraction": -0.008725837750868872,
+      "timescale_spread": 0.08859990062518207,
+      "coupling_spread": 0.246285084744346,
+      "sparsity": 5.149885359202365
+     },
+     {
+      "shared_fraction": 0.12805154011095227,
+      "slow_fraction": -0.030594173195035712,
+      "timescale_spread": 0.09369082966927962,
+      "coupling_spread": 0.23022797047354276,
+      "sparsity": 5.133690604673069
+     },
+     {
+      "shared_fraction": 0.12272067105834003,
+      "slow_fraction": 0.014707503396822174,
+      "timescale_spread": 0.09738530892078687,
+      "coupling_spread": 0.21822293009715743,
+      "sparsity": 5.087173970964484
+     },
+     {
+      "shared_fraction": 0.10718836969784928,
+      "slow_fraction": -0.02370320531935134,
+      "timescale_spread": 0.07795052293367927,
+      "coupling_spread": 0.23698652288713556,
+      "sparsity": 5.314088714618143
+     }
+    ],
+    "A6-160m": [
+     {
+      "shared_fraction": 0.035352809225197075,
+      "slow_fraction": 0.016362445816721197,
+      "timescale_spread": 0.09951534626204837,
+      "coupling_spread": 0.19045730921218654,
+      "sparsity": 8.863655266262583
+     },
+     {
+      "shared_fraction": 0.022309350782901156,
+      "slow_fraction": -0.015376479911392363,
+      "timescale_spread": 0.1186717382787569,
+      "coupling_spread": 0.19369430198606874,
+      "sparsity": 9.290652311353089
+     },
+     {
+      "shared_fraction": 0.02394380302580363,
+      "slow_fraction": -0.025434316674236214,
+      "timescale_spread": 0.09728181061957826,
+      "coupling_spread": 0.16784234939347725,
+      "sparsity": 8.290587823334159
+     },
+     {
+      "shared_fraction": 0.0252048425464997,
+      "slow_fraction": -0.019839278919218772,
+      "timescale_spread": 0.11512708694592137,
+      "coupling_spread": 0.18721077126563826,
+      "sparsity": 9.339359897018502
+     },
+     {
+      "shared_fraction": 0.011144499318288176,
+      "slow_fraction": -0.016793652775494945,
+      "timescale_spread": 0.1093632591774032,
+      "coupling_spread": 0.19409037651121938,
+      "sparsity": 10.22393580286861
+     },
+     {
+      "shared_fraction": 0.014467586327297366,
+      "slow_fraction": -0.03237278433706431,
+      "timescale_spread": 0.12123698918292716,
+      "coupling_spread": 0.17841266820596385,
+      "sparsity": 9.890677101145199
+     },
+     {
+      "shared_fraction": 0.019308176382548847,
+      "slow_fraction": -0.02864968545679585,
+      "timescale_spread": 0.11311230351581152,
+      "coupling_spread": 0.17682234455960422,
+      "sparsity": 9.082890838227838
+     },
+     {
+      "shared_fraction": 0.0308709295592756,
+      "slow_fraction": -0.007800140960133202,
+      "timescale_spread": 0.11110980323924516,
+      "coupling_spread": 0.19112420394721305,
+      "sparsity": 9.443474640267976
+     },
+     {
+      "shared_fraction": 0.018524717297265795,
+      "slow_fraction": 0.008048295933899354,
+      "timescale_spread": 0.09254035095486177,
+      "coupling_spread": 0.17245648111753087,
+      "sparsity": 10.015477165743212
+     },
+     {
+      "shared_fraction": 0.016856510827655276,
+      "slow_fraction": -0.015753971592902656,
+      "timescale_spread": 0.11239089458914502,
+      "coupling_spread": 0.17301170173799024,
+      "sparsity": 9.959295409995338
+     },
+     {
+      "shared_fraction": 0.014662205114076034,
+      "slow_fraction": -0.02105192182559679,
+      "timescale_spread": 0.11455626646655141,
+      "coupling_spread": 0.18729725253974258,
+      "sparsity": 10.29408721329467
+     },
+     {
+      "shared_fraction": 0.016480296605872715,
+      "slow_fraction": -0.023574010959963077,
+      "timescale_spread": 0.10637100567826488,
+      "coupling_spread": 0.1690478375297142,
+      "sparsity": 10.679968402037154
+     },
+     {
+      "shared_fraction": 0.009581595928221517,
+      "slow_fraction": -0.014652134796666012,
+      "timescale_spread": 0.10433560925454732,
+      "coupling_spread": 0.167260554416666,
+      "sparsity": 11.134904758168865
+     },
+     {
+      "shared_fraction": 0.012326620131763283,
+      "slow_fraction": -0.04080051358890655,
+      "timescale_spread": 0.11836384113435072,
+      "coupling_spread": 0.16275466148526746,
+      "sparsity": 10.305974574337345
+     },
+     {
+      "shared_fraction": 0.010453401781813944,
+      "slow_fraction": -0.029501881426385056,
+      "timescale_spread": 0.10933890147654361,
+      "coupling_spread": 0.1803903486986982,
+      "sparsity": 11.123775603097268
+     },
+     {
+      "shared_fraction": 0.024292308208375163,
+      "slow_fraction": -0.015318538777040425,
+      "timescale_spread": 0.10486965383827225,
+      "coupling_spread": 0.17884020278795348,
+      "sparsity": 10.935766223871305
+     },
+     {
+      "shared_fraction": 0.030867447152795824,
+      "slow_fraction": 0.00458745013664347,
+      "timescale_spread": 0.10907744580203298,
+      "coupling_spread": 0.17406574132388633,
+      "sparsity": 9.333201840785097
+     },
+     {
+      "shared_fraction": 0.018718467392472207,
+      "slow_fraction": -0.02528692573817748,
+      "timescale_spread": 0.11682786306097714,
+      "coupling_spread": 0.15798013001467287,
+      "sparsity": 10.325553227992382
+     },
+     {
+      "shared_fraction": 0.017212561951574307,
+      "slow_fraction": -0.02625450584589294,
+      "timescale_spread": 0.10807004453229878,
+      "coupling_spread": 0.1683875354113981,
+      "sparsity": 9.452936139833643
+     },
+     {
+      "shared_fraction": 0.016990484810404584,
+      "slow_fraction": -0.02058735805882677,
+      "timescale_spread": 0.11223549083754636,
+      "coupling_spread": 0.1640919590258529,
+      "sparsity": 10.739789725762908
+     },
+     {
+      "shared_fraction": 0.015213940106187273,
+      "slow_fraction": -0.02086477193837654,
+      "timescale_spread": 0.10302292256881022,
+      "coupling_spread": 0.16353111260594252,
+      "sparsity": 11.573391666719337
+     },
+     {
+      "shared_fraction": 0.013574219292043454,
+      "slow_fraction": -0.02137963936544674,
+      "timescale_spread": 0.12674677410574872,
+      "coupling_spread": 0.16133867811059094,
+      "sparsity": 9.737596969516442
+     },
+     {
+      "shared_fraction": 0.01977237098767847,
+      "slow_fraction": -0.03120636707567413,
+      "timescale_spread": 0.13052504456986963,
+      "coupling_spread": 0.1779466233552655,
+      "sparsity": 10.316181282602198
+     },
+     {
+      "shared_fraction": 0.029057893449046097,
+      "slow_fraction": -0.017170684883926285,
+      "timescale_spread": 0.12249914364558696,
+      "coupling_spread": 0.17536255084558933,
+      "sparsity": 9.847572327611275
+     }
+    ],
+    "A6-410m": [
+     {
+      "shared_fraction": 0.031163873910310124,
+      "slow_fraction": 0.0009858275536825387,
+      "timescale_spread": 0.10455976434824059,
+      "coupling_spread": 0.178776422751932,
+      "sparsity": 10.09175685553382
+     },
+     {
+      "shared_fraction": 0.02078666932068437,
+      "slow_fraction": -0.02005263439873986,
+      "timescale_spread": 0.11110076826985878,
+      "coupling_spread": 0.1687367570563759,
+      "sparsity": 9.081777077179105
+     },
+     {
+      "shared_fraction": 0.01564441076756492,
+      "slow_fraction": -0.023410366647139896,
+      "timescale_spread": 0.10449478810221688,
+      "coupling_spread": 0.16532418120937864,
+      "sparsity": 9.306408197039511
+     },
+     {
+      "shared_fraction": 0.015819418414944525,
+      "slow_fraction": -0.014374525453001271,
+      "timescale_spread": 0.10001935106229162,
+      "coupling_spread": 0.16399811640830625,
+      "sparsity": 9.621795976269045
+     },
+     {
+      "shared_fraction": 0.015248573025804651,
+      "slow_fraction": -0.002885939911972097,
+      "timescale_spread": 0.10380216628083419,
+      "coupling_spread": 0.17827223609710596,
+      "sparsity": 10.05445335620431
+     },
+     {
+      "shared_fraction": 0.010394237302036724,
+      "slow_fraction": -0.025209943024000387,
+      "timescale_spread": 0.10481838492754303,
+      "coupling_spread": 0.15344581199891877,
+      "sparsity": 9.678600902504801
+     },
+     {
+      "shared_fraction": 0.016056763335362663,
+      "slow_fraction": -0.03123501306214878,
+      "timescale_spread": 0.1022317026542934,
+      "coupling_spread": 0.1674458716320418,
+      "sparsity": 9.687964834132817
+     },
+     {
+      "shared_fraction": 0.025727850021959753,
+      "slow_fraction": -0.0035148914529726295,
+      "timescale_spread": 0.1222698106513019,
+      "coupling_spread": 0.16927855995704671,
+      "sparsity": 10.151825346417825
+     },
+     {
+      "shared_fraction": 0.016631496360805853,
+      "slow_fraction": -0.02218195569954068,
+      "timescale_spread": 0.10919127522961129,
+      "coupling_spread": 0.16661627597325673,
+      "sparsity": 9.513389631537638
+     },
+     {
+      "shared_fraction": 0.016660283648864842,
+      "slow_fraction": -0.023324983699411696,
+      "timescale_spread": 0.1023416020118358,
+      "coupling_spread": 0.16403800336895744,
+      "sparsity": 9.62737314551074
+     },
+     {
+      "shared_fraction": 0.024855655552393406,
+      "slow_fraction": -0.022765025618300967,
+      "timescale_spread": 0.10855665761576035,
+      "coupling_spread": 0.16950389254372497,
+      "sparsity": 9.694919412359473
+     },
+     {
+      "shared_fraction": 0.018082126128003924,
+      "slow_fraction": -0.006089330038554559,
+      "timescale_spread": 0.09885165601317351,
+      "coupling_spread": 0.16644015544934793,
+      "sparsity": 9.249939945979014
+     },
+     {
+      "shared_fraction": 0.015549839057919495,
+      "slow_fraction": -0.020851396114105598,
+      "timescale_spread": 0.10727229988099263,
+      "coupling_spread": 0.16963495210831359,
+      "sparsity": 10.026600150522112
+     },
+     {
+      "shared_fraction": 0.01301407615006829,
+      "slow_fraction": -0.029548846175996436,
+      "timescale_spread": 0.10368308587185213,
+      "coupling_spread": 0.17242636357888474,
+      "sparsity": 9.824404431958868
+     },
+     {
+      "shared_fraction": 0.016888663006350772,
+      "slow_fraction": -0.020587186368363274,
+      "timescale_spread": 0.11446001873579152,
+      "coupling_spread": 0.16040103013256365,
+      "sparsity": 9.869206475825134
+     },
+     {
+      "shared_fraction": 0.008479487325478572,
+      "slow_fraction": -0.031522693876842506,
+      "timescale_spread": 0.11836136537085026,
+      "coupling_spread": 0.16789050997758895,
+      "sparsity": 10.062408494051528
+     },
+     {
+      "shared_fraction": 0.014157717326453212,
+      "slow_fraction": -0.02238526241383145,
+      "timescale_spread": 0.11376033213904187,
+      "coupling_spread": 0.17873324301104554,
+      "sparsity": 9.553659970106931
+     },
+     {
+      "shared_fraction": 0.017068213039492304,
+      "slow_fraction": -0.020711351772497288,
+      "timescale_spread": 0.1072914505348975,
+      "coupling_spread": 0.17459948318782653,
+      "sparsity": 10.193753097155492
+     },
+     {
+      "shared_fraction": 0.013340384000283045,
+      "slow_fraction": -0.020336836619866513,
+      "timescale_spread": 0.10546006404443176,
+      "coupling_spread": 0.16140304837049962,
+      "sparsity": 9.923302675614897
+     },
+     {
+      "shared_fraction": 0.013366588362559707,
+      "slow_fraction": -0.012235556447340288,
+      "timescale_spread": 0.114496843931442,
+      "coupling_spread": 0.1664283025670968,
+      "sparsity": 9.444155327983443
+     },
+     {
+      "shared_fraction": 0.011100165017621386,
+      "slow_fraction": -0.02043587575154715,
+      "timescale_spread": 0.10198678317863659,
+      "coupling_spread": 0.1530409762184583,
+      "sparsity": 9.815937100168416
+     },
+     {
+      "shared_fraction": 0.013327973323844177,
+      "slow_fraction": -0.02686358769023095,
+      "timescale_spread": 0.10629766032938903,
+      "coupling_spread": 0.16402485239972137,
+      "sparsity": 9.905733323005755
+     },
+     {
+      "shared_fraction": 0.014683861755178973,
+      "slow_fraction": -0.02075802222018976,
+      "timescale_spread": 0.10460152203039122,
+      "coupling_spread": 0.1646602486011462,
+      "sparsity": 9.896680842517112
+     },
+     {
+      "shared_fraction": 0.023312176211528462,
+      "slow_fraction": -0.026728418050447178,
+      "timescale_spread": 0.10638938927339034,
+      "coupling_spread": 0.18358873798287872,
+      "sparsity": 10.261889068562734
+     },
+     {
+      "shared_fraction": 0.021122519614186146,
+      "slow_fraction": 0.0019684963632832786,
+      "timescale_spread": 0.10372227948156894,
+      "coupling_spread": 0.17595737665192943,
+      "sparsity": 10.307590458959467
+     },
+     {
+      "shared_fraction": 0.01276218891936201,
+      "slow_fraction": -0.03261763026809285,
+      "timescale_spread": 0.10508584989285838,
+      "coupling_spread": 0.1557934671552056,
+      "sparsity": 9.680118076625687
+     },
+     {
+      "shared_fraction": 0.012592228604362482,
+      "slow_fraction": -0.02404714870423163,
+      "timescale_spread": 0.12300361896658711,
+      "coupling_spread": 0.1889222411490335,
+      "sparsity": 10.041130783659039
+     },
+     {
+      "shared_fraction": 0.01930119669518579,
+      "slow_fraction": -0.015417652189005315,
+      "timescale_spread": 0.0974173508381754,
+      "coupling_spread": 0.17700656023343075,
+      "sparsity": 9.503762571275022
+     },
+     {
+      "shared_fraction": 0.0215176303864495,
+      "slow_fraction": 0.013127410697599151,
+      "timescale_spread": 0.11400864224148537,
+      "coupling_spread": 0.17193725327953197,
+      "sparsity": 9.687873760837993
+     },
+     {
+      "shared_fraction": 0.018213645993099787,
+      "slow_fraction": -0.01684641426152623,
+      "timescale_spread": 0.1308340063422086,
+      "coupling_spread": 0.16876027530793122,
+      "sparsity": 9.34095561027102
+     },
+     {
+      "shared_fraction": 0.014456152962322439,
+      "slow_fraction": -0.022124480153837438,
+      "timescale_spread": 0.10663421849123145,
+      "coupling_spread": 0.16847876903658987,
+      "sparsity": 10.063916485199897
+     },
+     {
+      "shared_fraction": 0.014864884230949709,
+      "slow_fraction": -0.02666718827562233,
+      "timescale_spread": 0.10836303565271202,
+      "coupling_spread": 0.16059630657565419,
+      "sparsity": 10.63663768296772
+     },
+     {
+      "shared_fraction": 0.0157108614367688,
+      "slow_fraction": -0.006094087630109516,
+      "timescale_spread": 0.12796828482482597,
+      "coupling_spread": 0.16155927140272636,
+      "sparsity": 11.279525204182269
+     },
+     {
+      "shared_fraction": 0.013311048013058924,
+      "slow_fraction": -0.024968365594796933,
+      "timescale_spread": 0.14062523670881935,
+      "coupling_spread": 0.15964322209708923,
+      "sparsity": 9.814418682626926
+     },
+     {
+      "shared_fraction": 0.01817881858563254,
+      "slow_fraction": -0.021644585108240293,
+      "timescale_spread": 0.13415598284432115,
+      "coupling_spread": 0.1784638799115033,
+      "sparsity": 10.730340075820687
+     },
+     {
+      "shared_fraction": 0.019660259297404486,
+      "slow_fraction": -0.01309085264036548,
+      "timescale_spread": 0.12680978817464433,
+      "coupling_spread": 0.1630666540695627,
+      "sparsity": 10.008657124112219
+     },
+     {
+      "shared_fraction": 0.014918723177747872,
+      "slow_fraction": -0.016268201646275293,
+      "timescale_spread": 0.1312624424493741,
+      "coupling_spread": 0.1606695695417389,
+      "sparsity": 10.057678632546375
+     },
+     {
+      "shared_fraction": 0.010432169138013751,
+      "slow_fraction": -0.027327854611292425,
+      "timescale_spread": 0.11927248669194532,
+      "coupling_spread": 0.15986470326977695,
+      "sparsity": 9.991076444472952
+     },
+     {
+      "shared_fraction": 0.01831514277257827,
+      "slow_fraction": -0.020446818104132174,
+      "timescale_spread": 0.11042932896480365,
+      "coupling_spread": 0.16783131364675524,
+      "sparsity": 9.169255592382402
+     },
+     {
+      "shared_fraction": 0.022010758426355404,
+      "slow_fraction": 0.008807249204085484,
+      "timescale_spread": 0.11853259739812994,
+      "coupling_spread": 0.18691037260716734,
+      "sparsity": 10.167618996098957
+     },
+     {
+      "shared_fraction": 0.015624887621416422,
+      "slow_fraction": -0.008736035464542663,
+      "timescale_spread": 0.12164718333161943,
+      "coupling_spread": 0.17613334819090912,
+      "sparsity": 10.953946690405619
+     },
+     {
+      "shared_fraction": 0.01316392493667197,
+      "slow_fraction": -0.02305105178966148,
+      "timescale_spread": 0.11467237842760247,
+      "coupling_spread": 0.16053289280288358,
+      "sparsity": 10.117672305437571
+     },
+     {
+      "shared_fraction": 0.006781682964928096,
+      "slow_fraction": -0.014282016318393913,
+      "timescale_spread": 0.13391474560379563,
+      "coupling_spread": 0.17051402440654506,
+      "sparsity": 9.914603388634186
+     },
+     {
+      "shared_fraction": 0.01334545231237454,
+      "slow_fraction": -0.02670802667067209,
+      "timescale_spread": 0.130568557789306,
+      "coupling_spread": 0.16469018314032263,
+      "sparsity": 9.885216278881503
+     },
+     {
+      "shared_fraction": 0.012713189881859844,
+      "slow_fraction": -0.018543691050874028,
+      "timescale_spread": 0.12369951959698491,
+      "coupling_spread": 0.16238937674847134,
+      "sparsity": 9.982299095869367
+     },
+     {
+      "shared_fraction": 0.011013568402835057,
+      "slow_fraction": -0.019000363206309503,
+      "timescale_spread": 0.1318267914883701,
+      "coupling_spread": 0.16348468820612788,
+      "sparsity": 10.851652878349407
+     },
+     {
+      "shared_fraction": 0.013263990583566082,
+      "slow_fraction": -0.02891764162822199,
+      "timescale_spread": 0.1272159938063159,
+      "coupling_spread": 0.16196961588864414,
+      "sparsity": 9.83249598121237
+     },
+     {
+      "shared_fraction": 0.01589350280843544,
+      "slow_fraction": -0.02076763859540303,
+      "timescale_spread": 0.11589391723362227,
+      "coupling_spread": 0.16996712084241933,
+      "sparsity": 10.511333867090128
+     },
+     {
+      "shared_fraction": 0.01813755728424988,
+      "slow_fraction": -0.012941912859668937,
+      "timescale_spread": 0.1306427189894415,
+      "coupling_spread": 0.1828229089159355,
+      "sparsity": 10.41249907280383
+     },
+     {
+      "shared_fraction": 0.01304824014147173,
+      "slow_fraction": -0.00484363261362774,
+      "timescale_spread": 0.1157555408329967,
+      "coupling_spread": 0.16731130121441512,
+      "sparsity": 9.867236174001977
+     },
+     {
+      "shared_fraction": 0.017199292280804794,
+      "slow_fraction": -0.01654109495298563,
+      "timescale_spread": 0.1308112667897438,
+      "coupling_spread": 0.17411624177924712,
+      "sparsity": 9.75833164788717
+     },
+     {
+      "shared_fraction": 0.016284986080054457,
+      "slow_fraction": 0.008112063589387182,
+      "timescale_spread": 0.11787383451493216,
+      "coupling_spread": 0.16991822027032524,
+      "sparsity": 10.092860878247436
+     },
+     {
+      "shared_fraction": 0.011616962979735085,
+      "slow_fraction": -0.009556219770055847,
+      "timescale_spread": 0.12689775793173846,
+      "coupling_spread": 0.17188122584728688,
+      "sparsity": 10.784277292589945
+     },
+     {
+      "shared_fraction": 0.019132629814193235,
+      "slow_fraction": -0.007823226643209755,
+      "timescale_spread": 0.1188071585324191,
+      "coupling_spread": 0.18168088188562215,
+      "sparsity": 10.310960718220846
+     },
+     {
+      "shared_fraction": 0.01285360056248951,
+      "slow_fraction": 0.005720583023309049,
+      "timescale_spread": 0.11859262939501022,
+      "coupling_spread": 0.1715780397006643,
+      "sparsity": 9.875606087139662
+     },
+     {
+      "shared_fraction": 0.014039744091712342,
+      "slow_fraction": -0.011748499221769043,
+      "timescale_spread": 0.11911774301666486,
+      "coupling_spread": 0.16821435439589003,
+      "sparsity": 10.12930319766352
+     },
+     {
+      "shared_fraction": 0.013245962240211207,
+      "slow_fraction": -0.025001086713129218,
+      "timescale_spread": 0.0751475210370165,
+      "coupling_spread": 0.18150972547832805,
+      "sparsity": 11.485783043907976
+     },
+     {
+      "shared_fraction": 0.0098210564012132,
+      "slow_fraction": -0.011757469661216189,
+      "timescale_spread": 0.08450611359322016,
+      "coupling_spread": 0.17167298606352005,
+      "sparsity": 10.060962754216735
+     },
+     {
+      "shared_fraction": 0.011970561604372865,
+      "slow_fraction": -0.024038525850363087,
+      "timescale_spread": 0.08088438800706745,
+      "coupling_spread": 0.15987047932767023,
+      "sparsity": 9.418025011158033
+     },
+     {
+      "shared_fraction": 0.006527429343026645,
+      "slow_fraction": -0.034175255765732285,
+      "timescale_spread": 0.07509625695040238,
+      "coupling_spread": 0.17391291046627746,
+      "sparsity": 9.133306897296574
+     },
+     {
+      "shared_fraction": 0.010156929165982036,
+      "slow_fraction": -0.018043140574833787,
+      "timescale_spread": 0.0729735987612349,
+      "coupling_spread": 0.16271841267759646,
+      "sparsity": 10.538274664882525
+     },
+     {
+      "shared_fraction": 0.010197530549103499,
+      "slow_fraction": -0.02839044925185561,
+      "timescale_spread": 0.07050671704039803,
+      "coupling_spread": 0.1592797756148256,
+      "sparsity": 10.239007808956945
+     },
+     {
+      "shared_fraction": 0.020365836984789235,
+      "slow_fraction": -0.030878429162951488,
+      "timescale_spread": 0.07380866346684103,
+      "coupling_spread": 0.1779579740855139,
+      "sparsity": 10.286096468259872
+     },
+     {
+      "shared_fraction": 0.014108844476628597,
+      "slow_fraction": -0.0287748407604622,
+      "timescale_spread": 0.08775378845492351,
+      "coupling_spread": 0.1594760692637794,
+      "sparsity": 9.544536453040909
+     },
+     {
+      "shared_fraction": 0.011928895231155671,
+      "slow_fraction": -0.013976785887781878,
+      "timescale_spread": 0.08054679845321354,
+      "coupling_spread": 0.16581952432448377,
+      "sparsity": 9.429086898680726
+     },
+     {
+      "shared_fraction": 0.007001387331444656,
+      "slow_fraction": -0.018001660319610775,
+      "timescale_spread": 0.08339103518623718,
+      "coupling_spread": 0.16873172503757905,
+      "sparsity": 9.610591547407228
+     },
+     {
+      "shared_fraction": 0.009570444178221756,
+      "slow_fraction": -0.017678616449114143,
+      "timescale_spread": 0.0761294748618538,
+      "coupling_spread": 0.17083748933715745,
+      "sparsity": 10.57603173680128
+     },
+     {
+      "shared_fraction": 0.010330078880361093,
+      "slow_fraction": -0.023998186869656907,
+      "timescale_spread": 0.07381477838984699,
+      "coupling_spread": 0.169311534937711,
+      "sparsity": 9.906107936293754
+     },
+     {
+      "shared_fraction": 0.012887478245117828,
+      "slow_fraction": -0.024324605532692556,
+      "timescale_spread": 0.07545260645763177,
+      "coupling_spread": 0.16451802814534616,
+      "sparsity": 9.341811372634922
+     },
+     {
+      "shared_fraction": 0.01812867492255821,
+      "slow_fraction": -0.02144087106855411,
+      "timescale_spread": 0.07075488225883535,
+      "coupling_spread": 0.16548982468615853,
+      "sparsity": 10.06817530099865
+     },
+     {
+      "shared_fraction": 0.00886217477531557,
+      "slow_fraction": -0.017343472298274164,
+      "timescale_spread": 0.0747661199452934,
+      "coupling_spread": 0.17675307576666,
+      "sparsity": 10.151324329834624
+     },
+     {
+      "shared_fraction": 0.008582979911375898,
+      "slow_fraction": -0.02663256527582051,
+      "timescale_spread": 0.07863967325614965,
+      "coupling_spread": 0.17150123268193018,
+      "sparsity": 9.832684568973258
+     },
+     {
+      "shared_fraction": 0.014074615185645262,
+      "slow_fraction": -0.03317359263803626,
+      "timescale_spread": 0.07826782974633936,
+      "coupling_spread": 0.17168397804719282,
+      "sparsity": 9.28813585234827
+     },
+     {
+      "shared_fraction": 0.011272910990493979,
+      "slow_fraction": -0.029001458759200915,
+      "timescale_spread": 0.0759178842317964,
+      "coupling_spread": 0.16846829239594396,
+      "sparsity": 10.224878912831722
+     },
+     {
+      "shared_fraction": 0.011686985569240109,
+      "slow_fraction": -0.032032860197494364,
+      "timescale_spread": 0.07300401652852744,
+      "coupling_spread": 0.1600061804583222,
+      "sparsity": 9.60141353010973
+     },
+     {
+      "shared_fraction": 0.009618763291050953,
+      "slow_fraction": -0.017734198117759933,
+      "timescale_spread": 0.08199854519683451,
+      "coupling_spread": 0.17632810061119414,
+      "sparsity": 9.366987283631023
+     },
+     {
+      "shared_fraction": 0.012778364078260347,
+      "slow_fraction": -0.024033496131376644,
+      "timescale_spread": 0.07151425149847726,
+      "coupling_spread": 0.16925531764541007,
+      "sparsity": 9.73227921005887
+     },
+     {
+      "shared_fraction": 0.009039254561274662,
+      "slow_fraction": -0.018500833024186758,
+      "timescale_spread": 0.079058835279983,
+      "coupling_spread": 0.1692258791902995,
+      "sparsity": 10.19798693015639
+     },
+     {
+      "shared_fraction": 0.008894363674135052,
+      "slow_fraction": -0.017854374786178306,
+      "timescale_spread": 0.08007111414438518,
+      "coupling_spread": 0.16389284420124983,
+      "sparsity": 10.47937708481685
+     },
+     {
+      "shared_fraction": 0.012523534554378846,
+      "slow_fraction": -0.01926947330774308,
+      "timescale_spread": 0.07401033490843613,
+      "coupling_spread": 0.16505787455433252,
+      "sparsity": 10.307355652210681
+     },
+     {
+      "shared_fraction": 0.015719819130462616,
+      "slow_fraction": -0.023060274515146938,
+      "timescale_spread": 0.07121761153469278,
+      "coupling_spread": 0.1723213972203954,
+      "sparsity": 10.710416622287363
+     },
+     {
+      "shared_fraction": 0.010632188904865872,
+      "slow_fraction": -0.02498635592221945,
+      "timescale_spread": 0.07622470597220041,
+      "coupling_spread": 0.1755465468672061,
+      "sparsity": 10.817727987878744
+     },
+     {
+      "shared_fraction": 0.02937152334702604,
+      "slow_fraction": -0.015164272091624414,
+      "timescale_spread": 0.06856917390176528,
+      "coupling_spread": 0.1688165060181796,
+      "sparsity": 9.107448973262137
+     },
+     {
+      "shared_fraction": 0.020600854178554347,
+      "slow_fraction": -0.029909913277448696,
+      "timescale_spread": 0.0729934973357907,
+      "coupling_spread": 0.17350551077220006,
+      "sparsity": 9.966993079327967
+     }
+    ],
+    "A6-1b": [
+     {
+      "shared_fraction": 0.00838415654999438,
+      "slow_fraction": -0.0053067284493577005,
+      "timescale_spread": 0.10453985859516313,
+      "coupling_spread": 0.16549943412845985,
+      "sparsity": 10.964396156267082
+     },
+     {
+      "shared_fraction": 0.00946435709572952,
+      "slow_fraction": -0.01630984548505443,
+      "timescale_spread": 0.12348354500809355,
+      "coupling_spread": 0.1621327969064536,
+      "sparsity": 10.59323966700336
+     },
+     {
+      "shared_fraction": 0.012371753678857931,
+      "slow_fraction": -0.016257705981172904,
+      "timescale_spread": 0.10482017215589493,
+      "coupling_spread": 0.15952746279994864,
+      "sparsity": 11.291263988056674
+     },
+     {
+      "shared_fraction": 0.009571385982615113,
+      "slow_fraction": -0.021862383653229893,
+      "timescale_spread": 0.11231664608121597,
+      "coupling_spread": 0.17501765427861765,
+      "sparsity": 11.307529440428778
+     },
+     {
+      "shared_fraction": 0.007199708853529904,
+      "slow_fraction": -0.010285807476395358,
+      "timescale_spread": 0.10671262192090727,
+      "coupling_spread": 0.15945579162780432,
+      "sparsity": 12.726984682765657
+     },
+     {
+      "shared_fraction": 0.00682172364691568,
+      "slow_fraction": -0.01778946694239688,
+      "timescale_spread": 0.1303367772845657,
+      "coupling_spread": 0.1662177138343138,
+      "sparsity": 12.313191452383416
+     },
+     {
+      "shared_fraction": 0.007366519061846539,
+      "slow_fraction": -0.03169435617315131,
+      "timescale_spread": 0.11172007349374562,
+      "coupling_spread": 0.1638422275478771,
+      "sparsity": 12.50561294102091
+     },
+     {
+      "shared_fraction": 0.015048695836288298,
+      "slow_fraction": -0.008241705694941636,
+      "timescale_spread": 0.12865244915166224,
+      "coupling_spread": 0.1618475119753858,
+      "sparsity": 11.269504323020621
+     },
+     {
+      "shared_fraction": 0.007743353526348642,
+      "slow_fraction": -0.01775957524570661,
+      "timescale_spread": 0.11793247064744765,
+      "coupling_spread": 0.1578087864035232,
+      "sparsity": 10.57018047026377
+     },
+     {
+      "shared_fraction": 0.009999946623748184,
+      "slow_fraction": -0.01692296736747372,
+      "timescale_spread": 0.11258603152445468,
+      "coupling_spread": 0.1592081190359607,
+      "sparsity": 11.71339835496049
+     },
+     {
+      "shared_fraction": 0.009729107332594411,
+      "slow_fraction": -0.020805986363978103,
+      "timescale_spread": 0.12059755384972921,
+      "coupling_spread": 0.15707106535422752,
+      "sparsity": 10.590460976844458
+     },
+     {
+      "shared_fraction": 0.012059410109698687,
+      "slow_fraction": -0.00952991024043979,
+      "timescale_spread": 0.12295816549159662,
+      "coupling_spread": 0.1607341115334398,
+      "sparsity": 9.919515652505774
+     },
+     {
+      "shared_fraction": 0.00904527576126552,
+      "slow_fraction": -0.01836993460051282,
+      "timescale_spread": 0.12235874638847984,
+      "coupling_spread": 0.1602759515101579,
+      "sparsity": 12.326965625129061
+     },
+     {
+      "shared_fraction": 0.01258545311989814,
+      "slow_fraction": -0.0276585484418791,
+      "timescale_spread": 0.11657705773778326,
+      "coupling_spread": 0.1605125860767972,
+      "sparsity": 10.043795543422842
+     },
+     {
+      "shared_fraction": 0.008789766796534381,
+      "slow_fraction": -0.011964293022926679,
+      "timescale_spread": 0.12899672729263315,
+      "coupling_spread": 0.15991491230286428,
+      "sparsity": 12.036904189053509
+     },
+     {
+      "shared_fraction": 0.008928999985579953,
+      "slow_fraction": -0.032527112740388116,
+      "timescale_spread": 0.13096452164900935,
+      "coupling_spread": 0.1566804835931767,
+      "sparsity": 11.184459868396141
+     },
+     {
+      "shared_fraction": 0.01320308985543488,
+      "slow_fraction": -0.0182455930413083,
+      "timescale_spread": 0.15233555890957154,
+      "coupling_spread": 0.16786233991190275,
+      "sparsity": 11.165268256677063
+     },
+     {
+      "shared_fraction": 0.004844421728265459,
+      "slow_fraction": -0.01498611483685382,
+      "timescale_spread": 0.13259348021527992,
+      "coupling_spread": 0.15715272396726088,
+      "sparsity": 10.678330048039323
+     },
+     {
+      "shared_fraction": 0.006935018342662534,
+      "slow_fraction": -0.012707113240975237,
+      "timescale_spread": 0.11876166775401124,
+      "coupling_spread": 0.16769603133462593,
+      "sparsity": 11.036890956411412
+     },
+     {
+      "shared_fraction": 0.009660768199221743,
+      "slow_fraction": -0.01823329133942535,
+      "timescale_spread": 0.13057664278338899,
+      "coupling_spread": 0.15925772486675016,
+      "sparsity": 11.136889116412451
+     },
+     {
+      "shared_fraction": 0.01047236532493827,
+      "slow_fraction": -0.018840410225222447,
+      "timescale_spread": 0.11772806988149723,
+      "coupling_spread": 0.16236883036172647,
+      "sparsity": 10.981472340474284
+     },
+     {
+      "shared_fraction": 0.006397924521060053,
+      "slow_fraction": -0.009070608663551333,
+      "timescale_spread": 0.11166047284933074,
+      "coupling_spread": 0.16271911600441438,
+      "sparsity": 10.934749566600072
+     },
+     {
+      "shared_fraction": 0.017800104656573945,
+      "slow_fraction": -0.013576058099369914,
+      "timescale_spread": 0.11504813099530972,
+      "coupling_spread": 0.15469933894251325,
+      "sparsity": 11.047151058639212
+     },
+     {
+      "shared_fraction": 0.007703048204618148,
+      "slow_fraction": -0.009997474598103509,
+      "timescale_spread": 0.12854353021623707,
+      "coupling_spread": 0.15527677303151505,
+      "sparsity": 11.270501649165391
+     },
+     {
+      "shared_fraction": 0.006360441775586594,
+      "slow_fraction": -0.014216585006262966,
+      "timescale_spread": 0.11935384708194449,
+      "coupling_spread": 0.15088347052571857,
+      "sparsity": 11.839711003616992
+     },
+     {
+      "shared_fraction": 0.005908487372120815,
+      "slow_fraction": -0.025544895329223292,
+      "timescale_spread": 0.13046877507861537,
+      "coupling_spread": 0.1497182322092021,
+      "sparsity": 11.789645573492711
+     },
+     {
+      "shared_fraction": 0.013298107341091919,
+      "slow_fraction": -0.00875921819926281,
+      "timescale_spread": 0.11411020896768787,
+      "coupling_spread": 0.1626539858263345,
+      "sparsity": 10.347089497321956
+     },
+     {
+      "shared_fraction": 0.004722789540174613,
+      "slow_fraction": -0.016177954579519958,
+      "timescale_spread": 0.11449785835667729,
+      "coupling_spread": 0.16037059121669253,
+      "sparsity": 11.23566489785044
+     },
+     {
+      "shared_fraction": 0.011225211240001216,
+      "slow_fraction": -0.019545971390667875,
+      "timescale_spread": 0.13106186534346215,
+      "coupling_spread": 0.1558729968897718,
+      "sparsity": 12.684618681236163
+     },
+     {
+      "shared_fraction": 0.0035649331540544933,
+      "slow_fraction": -0.02764331361603529,
+      "timescale_spread": 0.11074884102500167,
+      "coupling_spread": 0.1524749093140021,
+      "sparsity": 12.758909975710086
+     },
+     {
+      "shared_fraction": 0.009892074667888447,
+      "slow_fraction": -0.008398017093403688,
+      "timescale_spread": 0.1296526458716906,
+      "coupling_spread": 0.15623842069550326,
+      "sparsity": 12.681204646843764
+     },
+     {
+      "shared_fraction": 0.002447050359807035,
+      "slow_fraction": -0.01922110974908093,
+      "timescale_spread": 0.13593226498728686,
+      "coupling_spread": 0.15547659329335478,
+      "sparsity": 13.272890394504993
+     },
+     {
+      "shared_fraction": 0.0064629425585342,
+      "slow_fraction": -0.022831876819739676,
+      "timescale_spread": 0.12046841179896557,
+      "coupling_spread": 0.14847357919063478,
+      "sparsity": 11.73592152429431
+     },
+     {
+      "shared_fraction": 0.010515969004095469,
+      "slow_fraction": -0.017940429643495643,
+      "timescale_spread": 0.12809484977177013,
+      "coupling_spread": 0.15584821821286896,
+      "sparsity": 10.54538161899278
+     },
+     {
+      "shared_fraction": 0.00903778362339603,
+      "slow_fraction": -0.017707173029754573,
+      "timescale_spread": 0.1337432184719009,
+      "coupling_spread": 0.1608845756878215,
+      "sparsity": 11.269065823842809
+     },
+     {
+      "shared_fraction": 0.00990475651180742,
+      "slow_fraction": -0.01640634750731069,
+      "timescale_spread": 0.1301958972872907,
+      "coupling_spread": 0.14691676407983995,
+      "sparsity": 11.269504680485207
+     },
+     {
+      "shared_fraction": 0.008299080596157459,
+      "slow_fraction": -0.02415277374085873,
+      "timescale_spread": 0.126219951441253,
+      "coupling_spread": 0.14609378446430318,
+      "sparsity": 11.066815568962326
+     },
+     {
+      "shared_fraction": 0.009212387376135684,
+      "slow_fraction": -0.019280801527300336,
+      "timescale_spread": 0.1232276430185566,
+      "coupling_spread": 0.1650107929202574,
+      "sparsity": 11.164557854069702
+     },
+     {
+      "shared_fraction": 0.012085683319984098,
+      "slow_fraction": -0.0048791580999434005,
+      "timescale_spread": 0.13790088298891762,
+      "coupling_spread": 0.15583776113412307,
+      "sparsity": 11.089636739966613
+     },
+     {
+      "shared_fraction": 0.008959808270980623,
+      "slow_fraction": -0.007235937127614811,
+      "timescale_spread": 0.12382139207374962,
+      "coupling_spread": 0.1524676830785038,
+      "sparsity": 11.647860473672527
+     },
+     {
+      "shared_fraction": 0.0068806831569663785,
+      "slow_fraction": -0.009841080554467991,
+      "timescale_spread": 0.12299246986596524,
+      "coupling_spread": 0.1492070571445106,
+      "sparsity": 10.849899996442087
+     },
+     {
+      "shared_fraction": 0.009069853884045234,
+      "slow_fraction": -0.012360162771641193,
+      "timescale_spread": 0.1271716101027353,
+      "coupling_spread": 0.16775162780198621,
+      "sparsity": 11.816804093717753
+     },
+     {
+      "shared_fraction": 0.005662653858667328,
+      "slow_fraction": -0.010448846364226865,
+      "timescale_spread": 0.12773413125867444,
+      "coupling_spread": 0.16024969909115788,
+      "sparsity": 10.681137959563637
+     },
+     {
+      "shared_fraction": 0.010921666359675104,
+      "slow_fraction": -0.02274134417364814,
+      "timescale_spread": 0.10942123738702562,
+      "coupling_spread": 0.15369712688931947,
+      "sparsity": 10.909746916756731
+     },
+     {
+      "shared_fraction": 0.008345321529569691,
+      "slow_fraction": -0.024832149983020337,
+      "timescale_spread": 0.12052759662675427,
+      "coupling_spread": 0.16545081812057277,
+      "sparsity": 11.647684144622351
+     },
+     {
+      "shared_fraction": 0.013031446189972585,
+      "slow_fraction": -0.024102840178870155,
+      "timescale_spread": 0.11966706084723681,
+      "coupling_spread": 0.16582612998173846,
+      "sparsity": 10.620059635601459
+     },
+     {
+      "shared_fraction": 0.0074037855672977795,
+      "slow_fraction": -0.010682096229609217,
+      "timescale_spread": 0.12142530871568817,
+      "coupling_spread": 0.15854298931854985,
+      "sparsity": 12.607238168221853
+     },
+     {
+      "shared_fraction": 0.013711836301592562,
+      "slow_fraction": -0.04283303659834028,
+      "timescale_spread": 0.12098074836789674,
+      "coupling_spread": 0.16987475200210125,
+      "sparsity": 10.590740034392601
+     },
+     {
+      "shared_fraction": 0.013427321777654443,
+      "slow_fraction": -0.01699378767282681,
+      "timescale_spread": 0.12585146412135312,
+      "coupling_spread": 0.16370050928839253,
+      "sparsity": 11.644793867916047
+     },
+     {
+      "shared_fraction": 0.009390658566680272,
+      "slow_fraction": 0.002191497768493521,
+      "timescale_spread": 0.12321238328840464,
+      "coupling_spread": 0.1519369813730464,
+      "sparsity": 11.311137148696606
+     },
+     {
+      "shared_fraction": 0.00760661870074539,
+      "slow_fraction": -0.019426967393463297,
+      "timescale_spread": 0.11790443844933755,
+      "coupling_spread": 0.15488514181982338,
+      "sparsity": 11.860644541387234
+     },
+     {
+      "shared_fraction": 0.011047174153302985,
+      "slow_fraction": -0.016823701884460075,
+      "timescale_spread": 0.12897068673244672,
+      "coupling_spread": 0.15612914572820044,
+      "sparsity": 11.066550207231856
+     },
+     {
+      "shared_fraction": 0.009868294633962934,
+      "slow_fraction": -0.00867967271547741,
+      "timescale_spread": 0.1308998207824538,
+      "coupling_spread": 0.15961081530532223,
+      "sparsity": 10.851089670902462
+     },
+     {
+      "shared_fraction": 0.012239999899877799,
+      "slow_fraction": -0.03521980341078283,
+      "timescale_spread": 0.12130048911729903,
+      "coupling_spread": 0.16110990452580598,
+      "sparsity": 10.515286302240753
+     },
+     {
+      "shared_fraction": 0.00882406081232437,
+      "slow_fraction": -0.01704361207266974,
+      "timescale_spread": 0.12129488488655393,
+      "coupling_spread": 0.16110965418620385,
+      "sparsity": 12.963012651725956
+     },
+     {
+      "shared_fraction": 0.015861559403917407,
+      "slow_fraction": -0.016549648425595427,
+      "timescale_spread": 0.11305913793483087,
+      "coupling_spread": 0.1587858809253805,
+      "sparsity": 10.753181865107905
+     },
+     {
+      "shared_fraction": 0.018845636567233197,
+      "slow_fraction": -0.0065247730490600635,
+      "timescale_spread": 0.12329634093393234,
+      "coupling_spread": 0.17064972248202886,
+      "sparsity": 10.227492813191285
+     },
+     {
+      "shared_fraction": 0.017878215287268896,
+      "slow_fraction": -0.029656725165568897,
+      "timescale_spread": 0.12176592285903394,
+      "coupling_spread": 0.17301418981338765,
+      "sparsity": 11.601881169748028
+     },
+     {
+      "shared_fraction": 0.008887450971010171,
+      "slow_fraction": -0.013886152808190694,
+      "timescale_spread": 0.121122089985781,
+      "coupling_spread": 0.15481848719242786,
+      "sparsity": 11.075389684455372
+     },
+     {
+      "shared_fraction": 0.008958305811009969,
+      "slow_fraction": -0.030636556375675868,
+      "timescale_spread": 0.13026257646965833,
+      "coupling_spread": 0.1740133407765278,
+      "sparsity": 11.70760935584195
+     },
+     {
+      "shared_fraction": 0.010751041486677984,
+      "slow_fraction": -0.019827574200761183,
+      "timescale_spread": 0.12253411886239234,
+      "coupling_spread": 0.15020063793432067,
+      "sparsity": 10.92566077126952
+     },
+     {
+      "shared_fraction": 0.007128848050320111,
+      "slow_fraction": -0.019308238785223725,
+      "timescale_spread": 0.11697615003774205,
+      "coupling_spread": 0.15861139041739897,
+      "sparsity": 11.507339879465922
+     },
+     {
+      "shared_fraction": 0.015251117122050701,
+      "slow_fraction": -0.01793415352859113,
+      "timescale_spread": 0.11708603373329533,
+      "coupling_spread": 0.1586094209615314,
+      "sparsity": 11.521940138825837
+     },
+     {
+      "shared_fraction": 0.0039642551655375505,
+      "slow_fraction": -0.014054355178425024,
+      "timescale_spread": 0.12488317096976168,
+      "coupling_spread": 0.16355617327704833,
+      "sparsity": 11.976634266507514
+     },
+     {
+      "shared_fraction": 0.009272146601329908,
+      "slow_fraction": -0.006510138307510996,
+      "timescale_spread": 0.12224725586336613,
+      "coupling_spread": 0.15148232002984402,
+      "sparsity": 11.343496159044923
+     },
+     {
+      "shared_fraction": 0.008038360467565956,
+      "slow_fraction": -0.01374962268955513,
+      "timescale_spread": 0.1275377834957053,
+      "coupling_spread": 0.15341764514613718,
+      "sparsity": 12.042245689090123
+     },
+     {
+      "shared_fraction": 0.010283528531566524,
+      "slow_fraction": -0.02200512273041152,
+      "timescale_spread": 0.11617284580996712,
+      "coupling_spread": 0.16796485730397567,
+      "sparsity": 11.514401287146097
+     },
+     {
+      "shared_fraction": 0.008580724250349846,
+      "slow_fraction": -0.016501602685537582,
+      "timescale_spread": 0.12773379329314696,
+      "coupling_spread": 0.1515822384834229,
+      "sparsity": 10.897089673557682
+     },
+     {
+      "shared_fraction": 0.007728074023516639,
+      "slow_fraction": -0.008196219888528086,
+      "timescale_spread": 0.13070364050298294,
+      "coupling_spread": 0.16520767008810563,
+      "sparsity": 10.91660782154932
+     },
+     {
+      "shared_fraction": 0.004661376577035326,
+      "slow_fraction": -0.021951196644637166,
+      "timescale_spread": 0.13508398952020345,
+      "coupling_spread": 0.153615377656918,
+      "sparsity": 11.86107335818252
+     },
+     {
+      "shared_fraction": 0.009627247015810633,
+      "slow_fraction": -0.020420729957348997,
+      "timescale_spread": 0.12978076226409513,
+      "coupling_spread": 0.15143987853879062,
+      "sparsity": 12.023958062934852
+     },
+     {
+      "shared_fraction": 0.008016092173721238,
+      "slow_fraction": -0.028362077359458775,
+      "timescale_spread": 0.1218863218419968,
+      "coupling_spread": 0.15494014834441727,
+      "sparsity": 12.137803673879379
+     },
+     {
+      "shared_fraction": 0.008961933806450969,
+      "slow_fraction": -0.026653087033182275,
+      "timescale_spread": 0.11422614280745216,
+      "coupling_spread": 0.1531506207202192,
+      "sparsity": 11.617733883598547
+     },
+     {
+      "shared_fraction": 0.008470889307410707,
+      "slow_fraction": -0.0277709545182994,
+      "timescale_spread": 0.15728161248611858,
+      "coupling_spread": 0.15606462588830164,
+      "sparsity": 12.229329755398563
+     },
+     {
+      "shared_fraction": 0.009712578656975062,
+      "slow_fraction": -0.015326211254170613,
+      "timescale_spread": 0.11767849763565921,
+      "coupling_spread": 0.1575045258074973,
+      "sparsity": 12.120700010521002
+     },
+     {
+      "shared_fraction": 0.008957702315234142,
+      "slow_fraction": -0.017921624302611044,
+      "timescale_spread": 0.11517053047929941,
+      "coupling_spread": 0.1478858344620051,
+      "sparsity": 11.049663955232642
+     },
+     {
+      "shared_fraction": 0.009047917347443968,
+      "slow_fraction": -0.023088547118884473,
+      "timescale_spread": 0.11638343399642784,
+      "coupling_spread": 0.15444367475284376,
+      "sparsity": 11.473328746153513
+     },
+     {
+      "shared_fraction": 0.00849451714519576,
+      "slow_fraction": -0.02040278493892045,
+      "timescale_spread": 0.12988992009449096,
+      "coupling_spread": 0.15800120928282732,
+      "sparsity": 12.097570157894031
+     },
+     {
+      "shared_fraction": 0.011941804983057469,
+      "slow_fraction": -0.021033890323944513,
+      "timescale_spread": 0.1254132071842276,
+      "coupling_spread": 0.15810537294937727,
+      "sparsity": 10.572143185218142
+     },
+     {
+      "shared_fraction": 0.008418318195524811,
+      "slow_fraction": -0.014140005089497257,
+      "timescale_spread": 0.13638288644531205,
+      "coupling_spread": 0.16506787073071008,
+      "sparsity": 11.215009330919269
+     },
+     {
+      "shared_fraction": 0.005481656918085125,
+      "slow_fraction": -0.024348323034369058,
+      "timescale_spread": 0.12563954478615594,
+      "coupling_spread": 0.1599324372548918,
+      "sparsity": 11.852759444713366
+     },
+     {
+      "shared_fraction": 0.009714780274570341,
+      "slow_fraction": -0.029670235137047706,
+      "timescale_spread": 0.1305204735120446,
+      "coupling_spread": 0.1554515941350686,
+      "sparsity": 11.900348028851848
+     },
+     {
+      "shared_fraction": 0.01283251040248439,
+      "slow_fraction": -0.033592671083427776,
+      "timescale_spread": 0.12818226230837565,
+      "coupling_spread": 0.16151759953383574,
+      "sparsity": 12.266152548302383
+     },
+     {
+      "shared_fraction": 0.017327100372063663,
+      "slow_fraction": -0.014984168969615056,
+      "timescale_spread": 0.1364384726799849,
+      "coupling_spread": 0.15621970694849874,
+      "sparsity": 10.9990069797013
+     }
+    ],
+    "A6-410m-ou": [
+     {
+      "shared_fraction": 0.029919690959219016,
+      "slow_fraction": 0.02239045803450921,
+      "timescale_spread": 0.1340901731381003,
+      "coupling_spread": 0.1953633436343675,
+      "sparsity": 7.773570604424238
+     },
+     {
+      "shared_fraction": 0.015276848949290623,
+      "slow_fraction": 0.010838413662641735,
+      "timescale_spread": 0.12178571903586204,
+      "coupling_spread": 0.1722712373316743,
+      "sparsity": 7.048706060546647
+     },
+     {
+      "shared_fraction": 0.023707557228448722,
+      "slow_fraction": 0.024868915974235586,
+      "timescale_spread": 0.12429384013639848,
+      "coupling_spread": 0.19307705743104978,
+      "sparsity": 7.636877613533015
+     },
+     {
+      "shared_fraction": 0.02283942900893731,
+      "slow_fraction": 0.03701332904812338,
+      "timescale_spread": 0.12567360905023833,
+      "coupling_spread": 0.21268186583581955,
+      "sparsity": 6.4588344234483275
+     },
+     {
+      "shared_fraction": 0.018103314073364213,
+      "slow_fraction": 0.012733195986840602,
+      "timescale_spread": 0.12411570239124366,
+      "coupling_spread": 0.15305103910706555,
+      "sparsity": 8.866454821724902
+     },
+     {
+      "shared_fraction": 0.01678108410860038,
+      "slow_fraction": 0.03053427982873109,
+      "timescale_spread": 0.13518197771524584,
+      "coupling_spread": 0.1701666294041991,
+      "sparsity": 9.262284295308485
+     },
+     {
+      "shared_fraction": 0.015415227367953649,
+      "slow_fraction": 0.010334043115679686,
+      "timescale_spread": 0.12230721982009785,
+      "coupling_spread": 0.18899408236645027,
+      "sparsity": 6.032658288406088
+     },
+     {
+      "shared_fraction": 0.026169914938816163,
+      "slow_fraction": 0.031467740128414176,
+      "timescale_spread": 0.12610206687967548,
+      "coupling_spread": 0.19574723533660002,
+      "sparsity": 5.494763689463802
+     },
+     {
+      "shared_fraction": 0.028095607650338493,
+      "slow_fraction": 0.038581139920334365,
+      "timescale_spread": 0.13599964998409853,
+      "coupling_spread": 0.1662848255004234,
+      "sparsity": 8.246070712262819
+     },
+     {
+      "shared_fraction": 0.013932666584300295,
+      "slow_fraction": 0.0029018840596125232,
+      "timescale_spread": 0.16693933951631604,
+      "coupling_spread": 0.16779626667652744,
+      "sparsity": 7.259515750678446
+     },
+     {
+      "shared_fraction": 0.01595864000438318,
+      "slow_fraction": -0.0029870990622514965,
+      "timescale_spread": 0.1272809534739388,
+      "coupling_spread": 0.17497846734444145,
+      "sparsity": 7.558453706780066
+     },
+     {
+      "shared_fraction": 0.01893966492951003,
+      "slow_fraction": 0.01729251670934017,
+      "timescale_spread": 0.13537418465571616,
+      "coupling_spread": 0.15604461172856982,
+      "sparsity": 7.989075198993764
+     },
+     {
+      "shared_fraction": 0.02110159252308652,
+      "slow_fraction": 0.015353152288941,
+      "timescale_spread": 0.147645739165507,
+      "coupling_spread": 0.1795529771848079,
+      "sparsity": 8.00165753446776
+     },
+     {
+      "shared_fraction": 0.027498000433886293,
+      "slow_fraction": 0.018907073639555426,
+      "timescale_spread": 0.13612129066416628,
+      "coupling_spread": 0.17631999582651628,
+      "sparsity": 8.709130542792497
+     },
+     {
+      "shared_fraction": 0.01323999728309084,
+      "slow_fraction": 0.010063570544217276,
+      "timescale_spread": 0.1557189539437341,
+      "coupling_spread": 0.2123466834625536,
+      "sparsity": 6.920011508254237
+     },
+     {
+      "shared_fraction": 0.015443957005939308,
+      "slow_fraction": -0.0018942564131049617,
+      "timescale_spread": 0.12811691600163028,
+      "coupling_spread": 0.1871835021389887,
+      "sparsity": 7.306262815936141
+     },
+     {
+      "shared_fraction": 0.014187441729170618,
+      "slow_fraction": 0.018606342000184094,
+      "timescale_spread": 0.09881542161352548,
+      "coupling_spread": 0.17927520059585883,
+      "sparsity": 8.581942994213872
+     },
+     {
+      "shared_fraction": 0.012887292073049023,
+      "slow_fraction": 0.0034783236830664664,
+      "timescale_spread": 0.09896310226500152,
+      "coupling_spread": 0.17096444526199944,
+      "sparsity": 7.393144797700326
+     },
+     {
+      "shared_fraction": 0.014679429247174186,
+      "slow_fraction": 0.006295178224948607,
+      "timescale_spread": 0.09846301884813535,
+      "coupling_spread": 0.17842344508628763,
+      "sparsity": 6.507038144536354
+     },
+     {
+      "shared_fraction": 0.013232950883340417,
+      "slow_fraction": 0.001229626531755475,
+      "timescale_spread": 0.09638793310202502,
+      "coupling_spread": 0.16181523282772364,
+      "sparsity": 7.994982533785856
+     },
+     {
+      "shared_fraction": 0.010933263919780695,
+      "slow_fraction": -0.003309762620501933,
+      "timescale_spread": 0.1003773489214728,
+      "coupling_spread": 0.17534942240196744,
+      "sparsity": 7.876676156401788
+     },
+     {
+      "shared_fraction": 0.013508213989607132,
+      "slow_fraction": -0.005919769471550091,
+      "timescale_spread": 0.09349554157540074,
+      "coupling_spread": 0.16237341231947133,
+      "sparsity": 7.662233624990646
+     },
+     {
+      "shared_fraction": 0.012745137012769478,
+      "slow_fraction": 0.01269437553707774,
+      "timescale_spread": 0.10265547420796635,
+      "coupling_spread": 0.16249485235329256,
+      "sparsity": 7.869290439352213
+     },
+     {
+      "shared_fraction": 0.013055607751135179,
+      "slow_fraction": 0.03779044161546981,
+      "timescale_spread": 0.0967845772021542,
+      "coupling_spread": 0.16829787454509607,
+      "sparsity": 6.433302931305825
+     }
+    ],
+    "A7-130m": [
+     {
+      "shared_fraction": 0.01759333034744585,
+      "slow_fraction": 0.012370257283992386,
+      "timescale_spread": 0.12106547034151342,
+      "coupling_spread": 0.1775795674929716,
+      "sparsity": 6.803878245430764
+     },
+     {
+      "shared_fraction": 0.011078039513888891,
+      "slow_fraction": -0.01188927715256161,
+      "timescale_spread": 0.13489544789030472,
+      "coupling_spread": 0.17396490871771722,
+      "sparsity": 6.622409576432789
+     },
+     {
+      "shared_fraction": 0.008778613454476638,
+      "slow_fraction": -0.02343174376604401,
+      "timescale_spread": 0.1281309836817967,
+      "coupling_spread": 0.1700385871203735,
+      "sparsity": 7.682338608261581
+     },
+     {
+      "shared_fraction": 0.013715191456853187,
+      "slow_fraction": -0.01492056239673252,
+      "timescale_spread": 0.12825372629797638,
+      "coupling_spread": 0.17525910508117915,
+      "sparsity": 7.34749364080124
+     },
+     {
+      "shared_fraction": 0.008351647078309772,
+      "slow_fraction": -0.0056800682111136005,
+      "timescale_spread": 0.123173321482872,
+      "coupling_spread": 0.18064267968827113,
+      "sparsity": 8.497233654003077
+     },
+     {
+      "shared_fraction": 0.011987757235012584,
+      "slow_fraction": -0.015561383320649547,
+      "timescale_spread": 0.14357204807230667,
+      "coupling_spread": 0.17346339595565213,
+      "sparsity": 8.141749828513165
+     },
+     {
+      "shared_fraction": 0.009027902825631987,
+      "slow_fraction": -0.022298252849697147,
+      "timescale_spread": 0.13534608984648222,
+      "coupling_spread": 0.17345167553619695,
+      "sparsity": 8.989296292820558
+     },
+     {
+      "shared_fraction": 0.019474364375175312,
+      "slow_fraction": -0.014127192484944508,
+      "timescale_spread": 0.13318734413814165,
+      "coupling_spread": 0.17743676717908985,
+      "sparsity": 8.11612627955878
+     },
+     {
+      "shared_fraction": 0.021903168586235804,
+      "slow_fraction": -0.01968045425200709,
+      "timescale_spread": 0.12937005940062396,
+      "coupling_spread": 0.18738615163141564,
+      "sparsity": 8.43988837288614
+     },
+     {
+      "shared_fraction": 0.014817971541112418,
+      "slow_fraction": -0.029916483057912092,
+      "timescale_spread": 0.13252137320796029,
+      "coupling_spread": 0.1774180511341136,
+      "sparsity": 8.105024841383514
+     },
+     {
+      "shared_fraction": 0.015550691221278052,
+      "slow_fraction": 0.006514377210156066,
+      "timescale_spread": 0.13725791961620082,
+      "coupling_spread": 0.17826732839008871,
+      "sparsity": 9.310736892077475
+     },
+     {
+      "shared_fraction": 0.012083230138725124,
+      "slow_fraction": -0.00845350539232881,
+      "timescale_spread": 0.13167259040357998,
+      "coupling_spread": 0.18330575860053813,
+      "sparsity": 8.855172272152242
+     },
+     {
+      "shared_fraction": 0.011784086081530275,
+      "slow_fraction": -0.01641200163911243,
+      "timescale_spread": 0.14124269843814602,
+      "coupling_spread": 0.1629667732439258,
+      "sparsity": 8.55528355845813
+     },
+     {
+      "shared_fraction": 0.023277241445454788,
+      "slow_fraction": -0.010054206078209268,
+      "timescale_spread": 0.14275195466313767,
+      "coupling_spread": 0.17998977177614273,
+      "sparsity": 8.371575370278563
+     },
+     {
+      "shared_fraction": 0.018748151287642283,
+      "slow_fraction": -0.025729178407083657,
+      "timescale_spread": 0.1330515612544662,
+      "coupling_spread": 0.19087135819317624,
+      "sparsity": 8.43202156440167
+     },
+     {
+      "shared_fraction": 0.011195806720643343,
+      "slow_fraction": -0.025497600877880177,
+      "timescale_spread": 0.14114564702409604,
+      "coupling_spread": 0.165680178823902,
+      "sparsity": 9.17151554230533
+     },
+     {
+      "shared_fraction": 0.03642007295669815,
+      "slow_fraction": -0.008224403456480114,
+      "timescale_spread": 0.13939578228810823,
+      "coupling_spread": 0.1915109969046787,
+      "sparsity": 6.596219317175011
+     },
+     {
+      "shared_fraction": 0.041940254300913256,
+      "slow_fraction": -0.03619757301229821,
+      "timescale_spread": 0.12227582222056887,
+      "coupling_spread": 0.178535615532836,
+      "sparsity": 6.992003428808955
+     },
+     {
+      "shared_fraction": 0.017935201654154326,
+      "slow_fraction": -0.03041957777003058,
+      "timescale_spread": 0.1459524651349529,
+      "coupling_spread": 0.1655275193746194,
+      "sparsity": 7.662165299053244
+     },
+     {
+      "shared_fraction": 0.016110854146518964,
+      "slow_fraction": -0.024707065640847365,
+      "timescale_spread": 0.1253398736745063,
+      "coupling_spread": 0.16706412081554295,
+      "sparsity": 7.924764374311479
+     },
+     {
+      "shared_fraction": 0.01747644444965982,
+      "slow_fraction": -0.019774364619860815,
+      "timescale_spread": 0.13345804827354307,
+      "coupling_spread": 0.163373616530368,
+      "sparsity": 8.093143050219178
+     },
+     {
+      "shared_fraction": 0.014571389676442652,
+      "slow_fraction": -0.017238901153879778,
+      "timescale_spread": 0.14220962986729446,
+      "coupling_spread": 0.18597898164881607,
+      "sparsity": 7.144136677961761
+     },
+     {
+      "shared_fraction": 0.023036495775096623,
+      "slow_fraction": -0.012754295031753678,
+      "timescale_spread": 0.12769424295088816,
+      "coupling_spread": 0.18971308858796165,
+      "sparsity": 8.099972919203989
+     },
+     {
+      "shared_fraction": 0.014749683922162419,
+      "slow_fraction": -0.016221474420133036,
+      "timescale_spread": 0.13307471339613774,
+      "coupling_spread": 0.16145582849984402,
+      "sparsity": 7.484863818331421
+     }
+    ],
+    "A7-370m": [
+     {
+      "shared_fraction": 0.02033426713738374,
+      "slow_fraction": 0.020313427695828955,
+      "timescale_spread": 0.14643883770212157,
+      "coupling_spread": 0.21886400765546027,
+      "sparsity": 7.151564223717623
+     },
+     {
+      "shared_fraction": 0.009891602973984589,
+      "slow_fraction": -0.011554669560423928,
+      "timescale_spread": 0.15940181070876885,
+      "coupling_spread": 0.16469556749448222,
+      "sparsity": 7.327238196681813
+     },
+     {
+      "shared_fraction": 0.011007965584434815,
+      "slow_fraction": -0.015854818227625484,
+      "timescale_spread": 0.13873132272159022,
+      "coupling_spread": 0.18506185141471695,
+      "sparsity": 8.82980809001836
+     },
+     {
+      "shared_fraction": 0.009024333838091834,
+      "slow_fraction": -0.0009652741031097402,
+      "timescale_spread": 0.1589561896386551,
+      "coupling_spread": 0.17765598427035126,
+      "sparsity": 9.448908407541257
+     },
+     {
+      "shared_fraction": 0.009425433815032157,
+      "slow_fraction": -0.008194261818439604,
+      "timescale_spread": 0.15630742599069541,
+      "coupling_spread": 0.1786862058300659,
+      "sparsity": 7.847337058008966
+     },
+     {
+      "shared_fraction": 0.006892723279709368,
+      "slow_fraction": -0.012627801609970828,
+      "timescale_spread": 0.16670308033913667,
+      "coupling_spread": 0.1724089838269337,
+      "sparsity": 9.951524846512044
+     },
+     {
+      "shared_fraction": 0.01752863344643254,
+      "slow_fraction": 0.008204052958522778,
+      "timescale_spread": 0.1431104993266134,
+      "coupling_spread": 0.18789699428907247,
+      "sparsity": 9.801337679591873
+     },
+     {
+      "shared_fraction": 0.0006659831925307904,
+      "slow_fraction": -0.016560247051502594,
+      "timescale_spread": 0.16230405035906736,
+      "coupling_spread": 0.17512746195564372,
+      "sparsity": 10.847311403170755
+     },
+     {
+      "shared_fraction": 0.01212472750295486,
+      "slow_fraction": -0.013816788100392736,
+      "timescale_spread": 0.14008112055494448,
+      "coupling_spread": 0.18029203419997633,
+      "sparsity": 10.251368147849302
+     },
+     {
+      "shared_fraction": 0.009072679698671903,
+      "slow_fraction": -0.010570940370103574,
+      "timescale_spread": 0.16075080246234993,
+      "coupling_spread": 0.1748295033382534,
+      "sparsity": 8.150758657417237
+     },
+     {
+      "shared_fraction": 0.011797920475223772,
+      "slow_fraction": 0.01316820190458647,
+      "timescale_spread": 0.15331192799850646,
+      "coupling_spread": 0.1680101465350854,
+      "sparsity": 8.8085549714345
+     },
+     {
+      "shared_fraction": 0.008058114357018684,
+      "slow_fraction": -0.005281574349113005,
+      "timescale_spread": 0.15607760565262851,
+      "coupling_spread": 0.17064646850215365,
+      "sparsity": 12.650628043707455
+     },
+     {
+      "shared_fraction": 0.010275953263197838,
+      "slow_fraction": -0.011937770985728857,
+      "timescale_spread": 0.1485447161553369,
+      "coupling_spread": 0.18159430086810144,
+      "sparsity": 9.904588365813549
+     },
+     {
+      "shared_fraction": 0.007025952468394903,
+      "slow_fraction": -0.0031123827887420733,
+      "timescale_spread": 0.16474252427209168,
+      "coupling_spread": 0.16130124074992327,
+      "sparsity": 7.7427355910532025
+     },
+     {
+      "shared_fraction": 0.006566977903303964,
+      "slow_fraction": -0.009737093700063051,
+      "timescale_spread": 0.1513624313071627,
+      "coupling_spread": 0.18473780105497828,
+      "sparsity": 8.672685358038763
+     },
+     {
+      "shared_fraction": 0.00906906953676081,
+      "slow_fraction": -0.01770812184592649,
+      "timescale_spread": 0.16645566095954206,
+      "coupling_spread": 0.1714805919349996,
+      "sparsity": 9.302059256838238
+     },
+     {
+      "shared_fraction": 0.006007784972313418,
+      "slow_fraction": -0.012473726183499236,
+      "timescale_spread": 0.14753371096463963,
+      "coupling_spread": 0.16372285483767685,
+      "sparsity": 9.274167106920476
+     },
+     {
+      "shared_fraction": 0.0048884258504663354,
+      "slow_fraction": -0.013934516121825596,
+      "timescale_spread": 0.16653548956744246,
+      "coupling_spread": 0.1565661409574448,
+      "sparsity": 9.945508379337602
+     },
+     {
+      "shared_fraction": -0.00020508779780986365,
+      "slow_fraction": -0.01194340785180292,
+      "timescale_spread": 0.15944734100876615,
+      "coupling_spread": 0.16065104457831927,
+      "sparsity": 9.370342427237054
+     },
+     {
+      "shared_fraction": 0.006566687779230286,
+      "slow_fraction": -0.009504912276062401,
+      "timescale_spread": 0.15730186755015416,
+      "coupling_spread": 0.16642137435892052,
+      "sparsity": 9.47634495792766
+     },
+     {
+      "shared_fraction": 0.0053415236005045375,
+      "slow_fraction": -0.005623842668457108,
+      "timescale_spread": 0.14774090629655548,
+      "coupling_spread": 0.171229968928475,
+      "sparsity": 9.086982463391703
+     },
+     {
+      "shared_fraction": 0.01870077576720196,
+      "slow_fraction": 0.013524623620691189,
+      "timescale_spread": 0.15582964596055635,
+      "coupling_spread": 0.19954273098872805,
+      "sparsity": 8.256527218844516
+     },
+     {
+      "shared_fraction": 0.006412830322158379,
+      "slow_fraction": 0.004089613917696158,
+      "timescale_spread": 0.15819294767724523,
+      "coupling_spread": 0.1716704893400042,
+      "sparsity": 10.676928540134716
+     },
+     {
+      "shared_fraction": 0.0036589209657461722,
+      "slow_fraction": -0.015690565936944435,
+      "timescale_spread": 0.17244764696639825,
+      "coupling_spread": 0.18874104192578214,
+      "sparsity": 10.219879109833917
+     },
+     {
+      "shared_fraction": 0.008019928766262775,
+      "slow_fraction": -0.005177844310996093,
+      "timescale_spread": 0.14462461495259818,
+      "coupling_spread": 0.17402092756508752,
+      "sparsity": 10.888260006824982
+     },
+     {
+      "shared_fraction": 0.008632366213570802,
+      "slow_fraction": -0.004152240026513305,
+      "timescale_spread": 0.15059586300337977,
+      "coupling_spread": 0.18437525540704697,
+      "sparsity": 9.221801311715424
+     },
+     {
+      "shared_fraction": 0.006186366057905958,
+      "slow_fraction": -0.01158533074882644,
+      "timescale_spread": 0.13938929326879324,
+      "coupling_spread": 0.17283331173106017,
+      "sparsity": 9.02591994016844
+     },
+     {
+      "shared_fraction": 0.0042149231437031,
+      "slow_fraction": -0.007974184429598973,
+      "timescale_spread": 0.15610429051407007,
+      "coupling_spread": 0.15711663113808277,
+      "sparsity": 9.491699081447532
+     },
+     {
+      "shared_fraction": 0.011032409253616472,
+      "slow_fraction": -0.012132116681025134,
+      "timescale_spread": 0.14701667796523776,
+      "coupling_spread": 0.18436346848394805,
+      "sparsity": 9.431360921005409
+     },
+     {
+      "shared_fraction": 0.009659282769247619,
+      "slow_fraction": -0.019318913107111032,
+      "timescale_spread": 0.17722948424461352,
+      "coupling_spread": 0.17851703567870086,
+      "sparsity": 9.879681728818586
+     },
+     {
+      "shared_fraction": 0.003924399288331497,
+      "slow_fraction": -0.0025749247281988143,
+      "timescale_spread": 0.15830636076619106,
+      "coupling_spread": 0.16166083743126694,
+      "sparsity": 8.344090016416846
+     },
+     {
+      "shared_fraction": 0.005724104914887655,
+      "slow_fraction": -0.016438605102206898,
+      "timescale_spread": 0.16592285478642785,
+      "coupling_spread": 0.16640749968907756,
+      "sparsity": 10.755957149236071
+     },
+     {
+      "shared_fraction": 0.0025796161464153923,
+      "slow_fraction": -0.010464340530333535,
+      "timescale_spread": 0.1545446652163836,
+      "coupling_spread": 0.17123828915969014,
+      "sparsity": 9.29846603456393
+     },
+     {
+      "shared_fraction": 0.006804430408142685,
+      "slow_fraction": -0.01905507521675687,
+      "timescale_spread": 0.15552207534502832,
+      "coupling_spread": 0.184756600974751,
+      "sparsity": 8.489258197506057
+     },
+     {
+      "shared_fraction": 0.006395056306806618,
+      "slow_fraction": -0.021007316586670332,
+      "timescale_spread": 0.164020305001246,
+      "coupling_spread": 0.1685783915909947,
+      "sparsity": 8.86776946808379
+     },
+     {
+      "shared_fraction": 0.00839593438770825,
+      "slow_fraction": -0.012776897514099082,
+      "timescale_spread": 0.14185450747225437,
+      "coupling_spread": 0.1734139692072654,
+      "sparsity": 7.475697424993132
+     },
+     {
+      "shared_fraction": 0.006552297407620751,
+      "slow_fraction": -0.018958352278394028,
+      "timescale_spread": 0.16055178770305778,
+      "coupling_spread": 0.17325235173918183,
+      "sparsity": 10.494052246288504
+     },
+     {
+      "shared_fraction": 0.015121343937926723,
+      "slow_fraction": -0.0038947897438749877,
+      "timescale_spread": 0.15212133167073824,
+      "coupling_spread": 0.18350791668529146,
+      "sparsity": 8.450842669357424
+     },
+     {
+      "shared_fraction": 0.007483296183567532,
+      "slow_fraction": -0.0007656370568569398,
+      "timescale_spread": 0.15774269230621024,
+      "coupling_spread": 0.17075141855806852,
+      "sparsity": 8.6712499515192
+     },
+     {
+      "shared_fraction": 0.008089427173406969,
+      "slow_fraction": -0.0010862404476820124,
+      "timescale_spread": 0.1547938468969107,
+      "coupling_spread": 0.17618157607123913,
+      "sparsity": 8.752760144934431
+     },
+     {
+      "shared_fraction": 0.009644550710244084,
+      "slow_fraction": -0.011277594745324398,
+      "timescale_spread": 0.16861627179914035,
+      "coupling_spread": 0.16001517542462493,
+      "sparsity": 7.189922304093146
+     },
+     {
+      "shared_fraction": 0.0018139153634455507,
+      "slow_fraction": -0.01436832738908797,
+      "timescale_spread": 0.13740873526844527,
+      "coupling_spread": 0.1644683954866023,
+      "sparsity": 7.718769571742311
+     },
+     {
+      "shared_fraction": 0.00684144785631937,
+      "slow_fraction": -0.006061812779437783,
+      "timescale_spread": 0.17544203228503097,
+      "coupling_spread": 0.17476906105766443,
+      "sparsity": 8.37952155772687
+     },
+     {
+      "shared_fraction": 0.007866657496723871,
+      "slow_fraction": -0.019013231934749096,
+      "timescale_spread": 0.17522908687702507,
+      "coupling_spread": 0.16736555984830964,
+      "sparsity": 9.854335962394483
+     },
+     {
+      "shared_fraction": 0.008321081136859646,
+      "slow_fraction": -0.008310781835568081,
+      "timescale_spread": 0.14973989576892738,
+      "coupling_spread": 0.1712141471609557,
+      "sparsity": 7.993427317321948
+     },
+     {
+      "shared_fraction": 0.00819229271275387,
+      "slow_fraction": -0.017238883922073303,
+      "timescale_spread": 0.15083068117579843,
+      "coupling_spread": 0.17586169187414794,
+      "sparsity": 8.802725754692771
+     },
+     {
+      "shared_fraction": 0.009547413917271994,
+      "slow_fraction": -0.016190414161182116,
+      "timescale_spread": 0.17355425191317791,
+      "coupling_spread": 0.15930820113393857,
+      "sparsity": 8.341777034160122
+     },
+     {
+      "shared_fraction": 0.011695504977556238,
+      "slow_fraction": 0.011599124689586389,
+      "timescale_spread": 0.15435211012374675,
+      "coupling_spread": 0.17422984672067243,
+      "sparsity": 9.388936333797187
+     },
+     {
+      "shared_fraction": 0.010212376674331548,
+      "slow_fraction": -0.007976259109464517,
+      "timescale_spread": 0.1484711410921623,
+      "coupling_spread": 0.1765564815258854,
+      "sparsity": 10.298599241169196
+     },
+     {
+      "shared_fraction": 0.005897509725433738,
+      "slow_fraction": -0.014015165069827551,
+      "timescale_spread": 0.1742500214471296,
+      "coupling_spread": 0.15852145467085407,
+      "sparsity": 9.607335753544945
+     },
+     {
+      "shared_fraction": 0.0068912833622785915,
+      "slow_fraction": -0.0038322884444695867,
+      "timescale_spread": 0.1478954448596052,
+      "coupling_spread": 0.16827119318248182,
+      "sparsity": 8.151092895224192
+     },
+     {
+      "shared_fraction": 0.009748093727005152,
+      "slow_fraction": -0.008356299560106629,
+      "timescale_spread": 0.14947931112283327,
+      "coupling_spread": 0.17236230703067915,
+      "sparsity": 10.122978290607444
+     },
+     {
+      "shared_fraction": 0.00809020831529379,
+      "slow_fraction": -0.007981786168865567,
+      "timescale_spread": 0.14945312716830966,
+      "coupling_spread": 0.1708551182192201,
+      "sparsity": 9.031770302606157
+     },
+     {
+      "shared_fraction": 0.00022730594070834859,
+      "slow_fraction": -0.01268422988922947,
+      "timescale_spread": 0.15008286389014405,
+      "coupling_spread": 0.1758885036565719,
+      "sparsity": 9.111755432184411
+     },
+     {
+      "shared_fraction": 0.009895935763237813,
+      "slow_fraction": 0.001157951617225745,
+      "timescale_spread": 0.1523061016859117,
+      "coupling_spread": 0.16898575359857465,
+      "sparsity": 8.927424230390487
+     },
+     {
+      "shared_fraction": 0.004052088639850265,
+      "slow_fraction": -0.005636941179985529,
+      "timescale_spread": 0.17133958968895296,
+      "coupling_spread": 0.1640758186758488,
+      "sparsity": 7.742819347330848
+     },
+     {
+      "shared_fraction": 0.017324684910410993,
+      "slow_fraction": 0.004316290115999527,
+      "timescale_spread": 0.15101703054060073,
+      "coupling_spread": 0.16945106735400686,
+      "sparsity": 6.40213108897787
+     },
+     {
+      "shared_fraction": 0.011564026679017906,
+      "slow_fraction": -0.021777605565625996,
+      "timescale_spread": 0.14760789522294435,
+      "coupling_spread": 0.17776206206663675,
+      "sparsity": 8.652488061241485
+     },
+     {
+      "shared_fraction": 0.00593053173265524,
+      "slow_fraction": -0.013882878099116794,
+      "timescale_spread": 0.16001694654712423,
+      "coupling_spread": 0.17688641760612828,
+      "sparsity": 9.082852856356656
+     },
+     {
+      "shared_fraction": 0.0056143474521120505,
+      "slow_fraction": -0.013724022192682612,
+      "timescale_spread": 0.14037864819474213,
+      "coupling_spread": 0.1586406105779198,
+      "sparsity": 8.66715154987402
+     },
+     {
+      "shared_fraction": 0.009101163151389386,
+      "slow_fraction": -0.008528931393024446,
+      "timescale_spread": 0.14947954603980407,
+      "coupling_spread": 0.20137642153566712,
+      "sparsity": 8.32498523291949
+     },
+     {
+      "shared_fraction": 0.008687804396206901,
+      "slow_fraction": 0.002732066362150555,
+      "timescale_spread": 0.16566451868985393,
+      "coupling_spread": 0.18934414084467435,
+      "sparsity": 8.475893216263275
+     },
+     {
+      "shared_fraction": 0.007914641047586202,
+      "slow_fraction": -0.016830827745907516,
+      "timescale_spread": 0.15314177372432772,
+      "coupling_spread": 0.1589203283250728,
+      "sparsity": 9.042504535959173
+     },
+     {
+      "shared_fraction": 0.00792877925880661,
+      "slow_fraction": -0.02118538970937133,
+      "timescale_spread": 0.1540576279936734,
+      "coupling_spread": 0.1678045244068649,
+      "sparsity": 8.473318673644952
+     },
+     {
+      "shared_fraction": 0.0014957114274848095,
+      "slow_fraction": -0.005694651589048956,
+      "timescale_spread": 0.15032807170942633,
+      "coupling_spread": 0.15954877521380312,
+      "sparsity": 8.57264700507758
+     },
+     {
+      "shared_fraction": 0.005596154182126613,
+      "slow_fraction": -0.014859236305484136,
+      "timescale_spread": 0.1583084083044617,
+      "coupling_spread": 0.16552722234682468,
+      "sparsity": 7.094019729947827
+     },
+     {
+      "shared_fraction": 0.006925509233207368,
+      "slow_fraction": -0.013217289024601486,
+      "timescale_spread": 0.16210585508779637,
+      "coupling_spread": 0.17260081715425593,
+      "sparsity": 7.5279863820589785
+     },
+     {
+      "shared_fraction": 0.007433558129339192,
+      "slow_fraction": -0.009711025264774197,
+      "timescale_spread": 0.15445119437998156,
+      "coupling_spread": 0.17245785237165107,
+      "sparsity": 8.494816720044168
+     },
+     {
+      "shared_fraction": 0.003929595648666259,
+      "slow_fraction": -0.017311741983102286,
+      "timescale_spread": 0.1705431045425155,
+      "coupling_spread": 0.15874357065812889,
+      "sparsity": 7.589757215209557
+     },
+     {
+      "shared_fraction": 0.007765251754879408,
+      "slow_fraction": -0.0018080415128543738,
+      "timescale_spread": 0.1796311745370766,
+      "coupling_spread": 0.15937552919136028,
+      "sparsity": 8.233544139260218
+     },
+     {
+      "shared_fraction": 0.00393586191478779,
+      "slow_fraction": -0.006130866118353092,
+      "timescale_spread": 0.15731314473843233,
+      "coupling_spread": 0.1726761804065815,
+      "sparsity": 9.165263820908015
+     },
+     {
+      "shared_fraction": 0.008566613841782898,
+      "slow_fraction": -0.011368695699412502,
+      "timescale_spread": 0.15490658650311717,
+      "coupling_spread": 0.1772328471345867,
+      "sparsity": 8.79581757511048
+     },
+     {
+      "shared_fraction": 0.004182118634414443,
+      "slow_fraction": -0.020775855172664122,
+      "timescale_spread": 0.16357586196434898,
+      "coupling_spread": 0.17506318132861554,
+      "sparsity": 8.897376856410151
+     },
+     {
+      "shared_fraction": 0.008109836321397624,
+      "slow_fraction": -0.011746187996020034,
+      "timescale_spread": 0.140421300160468,
+      "coupling_spread": 0.1731726064176373,
+      "sparsity": 8.579340316195916
+     },
+     {
+      "shared_fraction": 0.006695658498637493,
+      "slow_fraction": 0.000638960468610511,
+      "timescale_spread": 0.14749250519178564,
+      "coupling_spread": 0.16440015675196745,
+      "sparsity": 6.89914079932543
+     },
+     {
+      "shared_fraction": 0.010879572501445429,
+      "slow_fraction": -0.0034791977185735677,
+      "timescale_spread": 0.15665520222105545,
+      "coupling_spread": 0.17014920249118676,
+      "sparsity": 7.673855654134826
+     },
+     {
+      "shared_fraction": 0.010438519489873833,
+      "slow_fraction": -0.018012084319774874,
+      "timescale_spread": 0.15051370311457818,
+      "coupling_spread": 0.16694767459638715,
+      "sparsity": 6.489347454908829
+     },
+     {
+      "shared_fraction": 0.010478578386192747,
+      "slow_fraction": -0.024114618331237188,
+      "timescale_spread": 0.15322093389337596,
+      "coupling_spread": 0.17394030064715812,
+      "sparsity": 10.432103342779806
+     },
+     {
+      "shared_fraction": 0.007869349381395899,
+      "slow_fraction": -0.016464484468585356,
+      "timescale_spread": 0.1720013966544878,
+      "coupling_spread": 0.16035924907202367,
+      "sparsity": 9.11692744113947
+     },
+     {
+      "shared_fraction": 0.0049839292112160314,
+      "slow_fraction": -0.0216017446210952,
+      "timescale_spread": 0.14702532829994877,
+      "coupling_spread": 0.15725943039298035,
+      "sparsity": 7.976089167269443
+     },
+     {
+      "shared_fraction": 0.004728843329108247,
+      "slow_fraction": -0.01891928738965757,
+      "timescale_spread": 0.13593447929408828,
+      "coupling_spread": 0.16640326641593123,
+      "sparsity": 8.93064710138327
+     },
+     {
+      "shared_fraction": 0.015602511800100707,
+      "slow_fraction": -0.01677415129558043,
+      "timescale_spread": 0.15035898955528282,
+      "coupling_spread": 0.17944966603035387,
+      "sparsity": 9.608653143018786
+     },
+     {
+      "shared_fraction": 0.006967503419853964,
+      "slow_fraction": -0.007016937358280524,
+      "timescale_spread": 0.16702910656204864,
+      "coupling_spread": 0.15571716439930428,
+      "sparsity": 7.244100806647509
+     },
+     {
+      "shared_fraction": 0.004541170550652394,
+      "slow_fraction": -0.007719327949212438,
+      "timescale_spread": 0.15658560129105864,
+      "coupling_spread": 0.15300104092834368,
+      "sparsity": 8.875922468079077
+     }
+    ],
+    "A10": [
+     {
+      "shared_fraction": 0.6000772285198451,
+      "slow_fraction": -0.001785381099632044,
+      "timescale_spread": 0.30555769255003573,
+      "coupling_spread": 0.41279007874942214,
+      "sparsity": 2.3639167306622517
+     },
+     {
+      "shared_fraction": 0.5504715595668636,
+      "slow_fraction": -0.1366533975054042,
+      "timescale_spread": 0.3261775204021548,
+      "coupling_spread": 0.44314330115372175,
+      "sparsity": 2.3336494312077485
+     },
+     {
+      "shared_fraction": 0.5752685734777694,
+      "slow_fraction": -0.004498009766214538,
+      "timescale_spread": 0.3122811846873762,
+      "coupling_spread": 0.42465827177776216,
+      "sparsity": 2.5288113601602134
+     },
+     {
+      "shared_fraction": 0.5390365383509564,
+      "slow_fraction": -0.1340953048729313,
+      "timescale_spread": 0.3067163439706786,
+      "coupling_spread": 0.4369978712887669,
+      "sparsity": 2.7739621138115824
+     },
+     {
+      "shared_fraction": 0.587312079614231,
+      "slow_fraction": -0.012495688070726948,
+      "timescale_spread": 0.2676741111570206,
+      "coupling_spread": 0.3572833346631879,
+      "sparsity": 2.108621270449608
+     },
+     {
+      "shared_fraction": 0.5917999921369066,
+      "slow_fraction": -0.07773874005052658,
+      "timescale_spread": 0.3309103936221902,
+      "coupling_spread": 0.3507081625621729,
+      "sparsity": 1.6289922143840876
+     },
+     {
+      "shared_fraction": 0.5925574996568163,
+      "slow_fraction": -0.01484639471794189,
+      "timescale_spread": 0.2752580026967978,
+      "coupling_spread": 0.37135238841259444,
+      "sparsity": 1.9482557197556527
+     },
+     {
+      "shared_fraction": 0.5763429235495202,
+      "slow_fraction": -0.07805448665120396,
+      "timescale_spread": 0.33602619220538005,
+      "coupling_spread": 0.36701463031487186,
+      "sparsity": 1.6601393122514991
+     },
+     {
+      "shared_fraction": 0.5618382534878252,
+      "slow_fraction": -0.05935603187750553,
+      "timescale_spread": 0.38852856230887217,
+      "coupling_spread": 0.3403669759858806,
+      "sparsity": 3.0621155349320417
+     },
+     {
+      "shared_fraction": 0.5604817989692017,
+      "slow_fraction": -0.032455057477569896,
+      "timescale_spread": 0.24753933688622412,
+      "coupling_spread": 0.4055454564501636,
+      "sparsity": 3.911367856711472
+     },
+     {
+      "shared_fraction": 0.5695482769124414,
+      "slow_fraction": -0.0639734811877373,
+      "timescale_spread": 0.37856983662500737,
+      "coupling_spread": 0.35965489171230647,
+      "sparsity": 2.4606696713477825
+     },
+     {
+      "shared_fraction": 0.5544446740213649,
+      "slow_fraction": -0.03207702432327279,
+      "timescale_spread": 0.2592448858380316,
+      "coupling_spread": 0.4096259981859636,
+      "sparsity": 3.541296464119958
+     }
+    ]
+   }
+  }
+ }
+}

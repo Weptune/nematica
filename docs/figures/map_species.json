@@ -1,0 +1,3290 @@
+{
+ "discovery_worm": {
+  "individuals": 14,
+  "ids": [
+   "2022-06-14-07",
+   "2022-06-14-13",
+   "2022-06-28-01",
+   "2022-06-28-07",
+   "2022-07-20-01",
+   "2022-08-02-01",
+   "2023-01-09-28",
+   "2023-01-19-01",
+   "2023-01-19-08",
+   "2023-01-19-15",
+   "2023-01-19-22",
+   "2023-01-23-15",
+   "2023-01-23-21",
+   "2023-03-07-01"
+  ],
+  "calibrated": [
+   "shared_fraction",
+   "slow_fraction",
+   "timescale_spread",
+   "coupling_spread",
+   "sparsity"
+  ],
+  "measures": {
+   "shared_fraction": {
+    "calibrated": true,
+    "real": [
+     0.24785493431256067,
+     0.24720632938023474,
+     0.3414719532433095,
+     0.26041767586054754,
+     0.2427628020061717,
+     0.24396088429611956,
+     0.3020543637717373,
+     0.30062453862498406,
+     0.2578225602594422,
+     0.24564985363096556,
+     0.2802286395357061,
+     0.2650955641814369,
+     0.22454700853435675,
+     0.2665849010578745
+    ],
+    "envelope": [
+     0.22454700853435675,
+     0.3414719532433095
+    ],
+    "prediction_interval90": [
+     0.2096938398267742,
+     0.32263216141543255
+    ],
+    "ruler_sd": 0.030805445515009834,
+    "ruler_sd_lower90": 0.02348786451362756,
+    "pooled_se": 0.031050104405144243,
+    "gates": {
+     "c3_se_over_ruler": 1.0079420662822487,
+     "c3_se_over_ruler_lower90": 1.3219637054330375,
+     "budget_over_ruler": NaN
+    },
+    "usable": false,
+    "ai": {
+     "A1": {
+      "value": 0.39390918416457105,
+      "ci90": [
+       0.3467045311942957,
+       0.42288375674070544
+      ],
+      "family": "A1",
+      "role": "standard",
+      "margin": 0.062100208810288486,
+      "side": "inside",
+      "strict_side": "above",
+      "counted": true,
+      "within_calibrated_speed": true
+     },
+     "A1-slow": {
+      "value": 0.2765691475876022,
+      "ci90": [
+       0.2639874387597465,
+       0.2886667542672101
+      ],
+      "family": "A1",
+      "role": "augmented",
+      "margin": 0.062100208810288486,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A2": {
+      "value": 0.9275015568526852,
+      "ci90": [
+       0.8991648364721245,
+       0.9551223765216881
+      ],
+      "family": "A2",
+      "role": "standard",
+      "margin": 0.062100208810288486,
+      "side": "above",
+      "strict_side": "above",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A3": {
+      "value": 0.06180711941279053,
+      "ci90": [
+       0.05904745110658932,
+       0.0646790358712013
+      ],
+      "family": "A3",
+      "role": "standard",
+      "margin": 0.062100208810288486,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A4": {
+      "value": -0.002533501956133647,
+      "ci90": [
+       -0.005091159760098307,
+       -0.001833638067211807
+      ],
+      "family": "A4",
+      "role": "standard",
+      "margin": 0.062100208810288486,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A5": {
+      "value": 0.15440538132389897,
+      "ci90": [
+       0.1463174349772192,
+       0.16720237109033886
+      ],
+      "family": "A5",
+      "role": "standard",
+      "margin": 0.062100208810288486,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-14m": {
+      "value": 0.10888813973576421,
+      "ci90": [
+       0.10450213831508229,
+       0.11160166644311809
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.062100208810288486,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-160m": {
+      "value": 0.01786863962442005,
+      "ci90": [
+       0.014662205114076034,
+       0.023126576904352394
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.062100208810288486,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-410m": {
+      "value": 0.014057179638678802,
+      "ci90": [
+       0.011928895231155671,
+       0.015819418414944525
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.062100208810288486,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-1b": {
+      "value": 0.009046596554354743,
+      "ci90": [
+       0.008789766796534381,
+       0.009642083584181142
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.062100208810288486,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-410m-ou": {
+      "value": 0.015429592186946478,
+      "ci90": [
+       0.013232950883340417,
+       0.02110159252308652
+      ],
+      "family": "A6",
+      "role": "augmented",
+      "margin": 0.062100208810288486,
+      "side": "below",
+      "strict_side": "below",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A7-130m": {
+      "value": 0.015184331381195234,
+      "ci90": [
+       0.01188592165827143,
+       0.017935201654154326
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 0.062100208810288486,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A7-370m": {
+      "value": 0.007868003439059884,
+      "ci90": [
+       0.006892723279709368,
+       0.008256686924806758
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 0.062100208810288486,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A10": {
+      "value": 0.5724084251951054,
+      "ci90": [
+       0.5554766792680326,
+       0.5895560358755688
+      ],
+      "family": "A10",
+      "role": "augmented",
+      "margin": 0.062100208810288486,
+      "side": "above",
+      "strict_side": "above",
+      "counted": false,
+      "within_calibrated_speed": true
+     }
+    },
+    "separating_side": null,
+    "strict_separating_side": null,
+    "families_counted": [
+     "A1",
+     "A2",
+     "A3",
+     "A4",
+     "A5",
+     "A6",
+     "A7"
+    ],
+    "families_not_counted": []
+   },
+   "slow_fraction": {
+    "calibrated": true,
+    "real": [
+     0.07213992964403461,
+     -0.020784673862775417,
+     0.0009525105782460904,
+     0.07860624694040105,
+     -0.023846563887924187,
+     0.03020807478524281,
+     -0.09039959891839922,
+     0.1300444286550933,
+     0.018141859808406317,
+     0.01709063418463633,
+     0.039196883423818885,
+     0.05789784941007914,
+     0.04738283270350991,
+     -0.04883699818867862
+    ],
+    "envelope": [
+     -0.09039959891839922,
+     0.1300444286550933
+    ],
+    "prediction_interval90": [
+     -0.08190162478784697,
+     0.12587211268437426
+    ],
+    "ruler_sd": 0.05667308013007726,
+    "ruler_sd_lower90": 0.043210854620382794,
+    "pooled_se": 0.01729405515085527,
+    "gates": {
+     "c3_se_over_ruler": 0.30515467151532233,
+     "c3_se_over_ruler_lower90": 0.4002247884886213,
+     "budget_over_ruler": NaN
+    },
+    "usable": true,
+    "ai": {
+     "A1": {
+      "value": 0.07856794073586588,
+      "ci90": [
+       -0.00027231197550548305,
+       0.16564313240549464
+      ],
+      "family": "A1",
+      "role": "standard",
+      "margin": 0.03458811030171054,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": true
+     },
+     "A1-slow": {
+      "value": 0.13607488891884217,
+      "ci90": [
+       0.05739222214858194,
+       0.18281639434234281
+      ],
+      "family": "A1",
+      "role": "augmented",
+      "margin": 0.07737741460014065,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A2": {
+      "value": 0.01148146643338252,
+      "ci90": [
+       -0.012568232560845563,
+       0.029886832322881432
+      ],
+      "family": "A2",
+      "role": "standard",
+      "margin": 0.03458811030171054,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A3": {
+      "value": -0.012547022709453702,
+      "ci90": [
+       -0.018369434625780136,
+       -0.00497948953723519
+      ],
+      "family": "A3",
+      "role": "standard",
+      "margin": 0.03458811030171054,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A4": {
+      "value": -0.06663857523580996,
+      "ci90": [
+       -0.06894842728281048,
+       -0.0656411175021057
+      ],
+      "family": "A4",
+      "role": "standard",
+      "margin": 0.03458811030171054,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A5": {
+      "value": -0.023405756378359885,
+      "ci90": [
+       -0.028698642129469393,
+       -0.016854944217521296
+      ],
+      "family": "A5",
+      "role": "standard",
+      "margin": 0.03458811030171054,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-14m": {
+      "value": -0.023973387425594135,
+      "ci90": [
+       -0.026232455273832417,
+       -0.019206773086808165
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.03458811030171054,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-160m": {
+      "value": -0.020726064998601655,
+      "ci90": [
+       -0.023574010959963077,
+       -0.015753971592902656
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.03458811030171054,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-410m": {
+      "value": -0.02064926907043028,
+      "ci90": [
+       -0.023998186869656907,
+       -0.01669375460725593
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.03458811030171054,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-1b": {
+      "value": -0.017774521094051747,
+      "ci90": [
+       -0.019827574200761183,
+       -0.016283775733113667
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.03458811030171054,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-410m-ou": {
+      "value": 0.012713785761959171,
+      "ci90": [
+       0.0034783236830664664,
+       0.023629687004372398
+      ],
+      "family": "A6",
+      "role": "augmented",
+      "margin": 0.03458811030171054,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A7-130m": {
+      "value": -0.016316738029622732,
+      "ci90": [
+       -0.02219375994642723,
+       -0.013008234818753059
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 0.03458811030171054,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A7-370m": {
+      "value": -0.01132314522236845,
+      "ci90": [
+       -0.013261469641153406,
+       -0.008252521827003843
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 0.03458811030171054,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A10": {
+      "value": -0.04590554467753771,
+      "ci90": [
+       -0.07805448665120396,
+       -0.01367104139433442
+      ],
+      "family": "A10",
+      "role": "augmented",
+      "margin": 0.03458811030171054,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": true
+     }
+    },
+    "separating_side": null,
+    "strict_separating_side": null,
+    "families_counted": [
+     "A1"
+    ],
+    "families_not_counted": [
+     "A2",
+     "A3",
+     "A4",
+     "A5",
+     "A6",
+     "A7"
+    ]
+   },
+   "timescale_spread": {
+    "calibrated": true,
+    "real": [
+     0.43042918358737925,
+     0.4146644436191499,
+     0.5733231087032777,
+     0.47011718371726363,
+     0.43920740064822894,
+     0.36921072775190644,
+     0.6520111492187219,
+     0.26697163662245504,
+     0.3781063588124985,
+     0.40570656140372996,
+     0.3503823476224845,
+     0.4485021734471175,
+     0.37711003296612766,
+     0.3975039802136955
+    ],
+    "envelope": [
+     0.26697163662245504,
+     0.6520111492187219
+    ],
+    "prediction_interval90": [
+     0.2537306508180253,
+     0.5995902475154085
+    ],
+    "ruler_sd": 0.09433785460978958,
+    "ruler_sd_lower90": 0.07192867074431356,
+    "pooled_se": 0.044345343775741425,
+    "gates": {
+     "c3_se_over_ruler": 0.4700694536585279,
+     "c3_se_over_ruler_lower90": 0.6165183273492819,
+     "budget_over_ruler": NaN
+    },
+    "usable": false,
+    "ai": {
+     "A1": {
+      "value": 0.22442531320742565,
+      "ci90": [
+       0.12736972893247567,
+       0.2739271510645124
+      ],
+      "family": "A1",
+      "role": "standard",
+      "margin": 0.08869068755148285,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": true
+     },
+     "A1-slow": {
+      "value": 0.3487775446506354,
+      "ci90": [
+       0.14350549972141374,
+       0.46857015166561566
+      ],
+      "family": "A1",
+      "role": "augmented",
+      "margin": 0.13159104295319274,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A2": {
+      "value": 0.05439845914836816,
+      "ci90": [
+       0.039986497108105166,
+       0.1836884509234523
+      ],
+      "family": "A2",
+      "role": "standard",
+      "margin": 0.08869068755148285,
+      "side": "below",
+      "strict_side": "below",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A3": {
+      "value": 0.16477387075114303,
+      "ci90": [
+       0.15927611616298154,
+       0.17194506702325746
+      ],
+      "family": "A3",
+      "role": "standard",
+      "margin": 0.08869068755148285,
+      "side": "below",
+      "strict_side": "below",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A4": {
+      "value": 0.02931721701013794,
+      "ci90": [
+       0.028626779350090826,
+       0.02987904520260452
+      ],
+      "family": "A4",
+      "role": "standard",
+      "margin": 0.08869068755148285,
+      "side": "below",
+      "strict_side": "below",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A5": {
+      "value": 0.07652156188460271,
+      "ci90": [
+       0.0734208486271058,
+       0.07957972822761983
+      ],
+      "family": "A5",
+      "role": "standard",
+      "margin": 0.08869068755148285,
+      "side": "below",
+      "strict_side": "below",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-14m": {
+      "value": 0.10095887467895667,
+      "ci90": [
+       0.09369082966927962,
+       0.11232157518704963
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.08869068755148285,
+      "side": "below",
+      "strict_side": "below",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-160m": {
+      "value": 0.11167264703839576,
+      "ci90": [
+       0.10722052510528182,
+       0.11674546404013605
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.08869068755148285,
+      "side": "below",
+      "strict_side": "below",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-410m": {
+      "value": 0.10527295696864507,
+      "ci90": [
+       0.07724626785926988,
+       0.11896245077454198
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.08869068755148285,
+      "side": "below",
+      "strict_side": "below",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-1b": {
+      "value": 0.12310242657718494,
+      "ci90": [
+       0.12023268547459376,
+       0.12574550445375454
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.08869068755148285,
+      "side": "below",
+      "strict_side": "below",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-410m-ou": {
+      "value": 0.12498372459331841,
+      "ci90": [
+       0.09881542161352548,
+       0.13599964998409853
+      ],
+      "family": "A6",
+      "role": "augmented",
+      "margin": 0.08869068755148285,
+      "side": "below",
+      "strict_side": "below",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A7-130m": {
+      "value": 0.1331310287671397,
+      "ci90": [
+       0.12825372629797638,
+       0.13725791961620082
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 0.08869068755148285,
+      "side": "below",
+      "strict_side": "below",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A7-370m": {
+      "value": 0.15485021670001392,
+      "ci90": [
+       0.15314177372432772,
+       0.15680464677042477
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 0.08869068755148285,
+      "side": "below",
+      "strict_side": "below",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A10": {
+      "value": 0.3094987643290274,
+      "ci90": [
+       0.27146605692690917,
+       0.34542551065619176
+      ],
+      "family": "A10",
+      "role": "augmented",
+      "margin": 0.08869068755148285,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": true
+     }
+    },
+    "separating_side": null,
+    "strict_separating_side": null,
+    "families_counted": [
+     "A1"
+    ],
+    "families_not_counted": [
+     "A2",
+     "A3",
+     "A4",
+     "A5",
+     "A6",
+     "A7"
+    ]
+   },
+   "coupling_spread": {
+    "calibrated": true,
+    "real": [
+     0.43080480299930296,
+     0.25538311323042434,
+     0.338978243848134,
+     0.28289933752287433,
+     0.2925881258665129,
+     0.248576600456592,
+     0.36556735120339634,
+     0.2917502007675618,
+     0.36909330030762444,
+     0.27108316519156367,
+     0.33745190455632135,
+     0.24603703340204422,
+     0.25777285007451384,
+     0.37526997823491537
+    ],
+    "envelope": [
+     0.24603703340204422,
+     0.43080480299930296
+    ],
+    "prediction_interval90": [
+     0.205687206345337,
+     0.4176350804634891
+    ],
+    "ruler_sd": 0.05781163201582923,
+    "ruler_sd_lower90": 0.04407895284091485,
+    "pooled_se": 0.040601547209556076,
+    "gates": {
+     "c3_se_over_ruler": 0.7023075771055743,
+     "c3_se_over_ruler_lower90": 0.9211096133814916,
+     "budget_over_ruler": NaN
+    },
+    "usable": false,
+    "ai": {
+     "A1": {
+      "value": 0.38758771809243653,
+      "ci90": [
+       0.3530622311420232,
+       0.4355311159141354
+      ],
+      "family": "A1",
+      "role": "standard",
+      "margin": 0.08120309441911215,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": true
+     },
+     "A1-slow": {
+      "value": 0.33230344739672035,
+      "ci90": [
+       0.3121088805503621,
+       0.377725668281523
+      ],
+      "family": "A1",
+      "role": "augmented",
+      "margin": 0.08120309441911215,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A2": {
+      "value": 0.6666239675430021,
+      "ci90": [
+       0.4993213260626613,
+       1.0063269940860988
+      ],
+      "family": "A2",
+      "role": "standard",
+      "margin": 0.08120309441911215,
+      "side": "above",
+      "strict_side": "above",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A3": {
+      "value": 0.2080867837678546,
+      "ci90": [
+       0.20593287938806365,
+       0.21135540955311288
+      ],
+      "family": "A3",
+      "role": "standard",
+      "margin": 0.08120309441911215,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A4": {
+      "value": 0.1862222974014073,
+      "ci90": [
+       0.1769031588902617,
+       0.19254590071572358
+      ],
+      "family": "A4",
+      "role": "standard",
+      "margin": 0.08120309441911215,
+      "side": "inside",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A5": {
+      "value": 0.26905005799694737,
+      "ci90": [
+       0.26154962762527945,
+       0.27855130486712343
+      ],
+      "family": "A5",
+      "role": "standard",
+      "margin": 0.08120309441911215,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-14m": {
+      "value": 0.2954220187707052,
+      "ci90": [
+       0.23022797047354276,
+       0.34352988088271785
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.08120309441911215,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-160m": {
+      "value": 0.17471414608473784,
+      "ci90": [
+       0.16782404491403205,
+       0.18721077126563826
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.08120309441911215,
+      "side": "inside",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-410m": {
+      "value": 0.16873424104697748,
+      "ci90": [
+       0.16703107380264925,
+       0.1695694223260193
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.08120309441911215,
+      "side": "inside",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-1b": {
+      "value": 0.1586104056894652,
+      "ci90": [
+       0.15596881138903673,
+       0.1602759515101579
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.08120309441911215,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-410m-ou": {
+      "value": 0.17516394487320444,
+      "ci90": [
+       0.16829787454509607,
+       0.18899408236645027
+      ],
+      "family": "A6",
+      "role": "augmented",
+      "margin": 0.08120309441911215,
+      "side": "inside",
+      "strict_side": "below",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A7-130m": {
+      "value": 0.1774274091566017,
+      "ci90": [
+       0.17175099153801282,
+       0.18031622573220693
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 0.08120309441911215,
+      "side": "inside",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A7-370m": {
+      "value": 0.1715755406375019,
+      "ci90": [
+       0.16897952243205813,
+       0.17402092756508752
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 0.08120309441911215,
+      "side": "inside",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A10": {
+      "value": 0.388448922431379,
+      "ci90": [
+       0.3584691131877472,
+       0.4308280715332645
+      ],
+      "family": "A10",
+      "role": "augmented",
+      "margin": 0.08120309441911215,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": true
+     }
+    },
+    "separating_side": null,
+    "strict_separating_side": null,
+    "families_counted": [
+     "A1",
+     "A2",
+     "A3",
+     "A4",
+     "A5",
+     "A6",
+     "A7"
+    ],
+    "families_not_counted": []
+   },
+   "sparsity": {
+    "calibrated": true,
+    "real": [
+     2.0175866618923965,
+     0.9886692729158657,
+     1.4357578272985563,
+     1.489242100524992,
+     1.5689884217822545,
+     1.5907069286723114,
+     1.066665162877911,
+     0.4834799025514915,
+     0.6980229735944457,
+     1.1617596304039934,
+     0.9582481475764192,
+     1.2463853212847276,
+     1.367734246962461,
+     0.6192021762220842
+    ],
+    "envelope": [
+     0.4834799025514915,
+     2.0175866618923965
+    ],
+    "prediction_interval90": [
+     0.4127762399776115,
+     1.9718592992452328
+    ],
+    "ruler_sd": 0.42526086416062625,
+    "ruler_sd_lower90": 0.3242436326878026,
+    "pooled_se": 0.2366515714263295,
+    "gates": {
+     "c3_se_over_ruler": 0.556485657088218,
+     "c3_se_over_ruler_lower90": 0.7298572664777323,
+     "budget_over_ruler": NaN
+    },
+    "usable": false,
+    "ai": {
+     "A1": {
+      "value": -0.6787553011815244,
+      "ci90": [
+       -0.719314566898684,
+       -0.6583914133320047
+      ],
+      "family": "A1",
+      "role": "standard",
+      "margin": 0.473303142852659,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": true
+     },
+     "A1-slow": {
+      "value": -0.15638515740947698,
+      "ci90": [
+       -0.20521291273190526,
+       -0.08320601885989536
+      ],
+      "family": "A1",
+      "role": "augmented",
+      "margin": 0.473303142852659,
+      "side": "below",
+      "strict_side": "below",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A2": {
+      "value": 0.7454067079332493,
+      "ci90": [
+       -1.2688127589027243,
+       4.0528482132755155
+      ],
+      "family": "A2",
+      "role": "standard",
+      "margin": 0.473303142852659,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A3": {
+      "value": -0.9070866096513244,
+      "ci90": [
+       -0.9580407362204593,
+       -0.8376914867843459
+      ],
+      "family": "A3",
+      "role": "standard",
+      "margin": 0.473303142852659,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A4": {
+      "value": 5.666136795099604,
+      "ci90": [
+       5.417306855425826,
+       5.9901333263189205
+      ],
+      "family": "A4",
+      "role": "standard",
+      "margin": 0.473303142852659,
+      "side": "above",
+      "strict_side": "above",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A5": {
+      "value": -0.4110760363839151,
+      "ci90": [
+       -0.5437706690286137,
+       0.19451572717925011
+      ],
+      "family": "A5",
+      "role": "standard",
+      "margin": 0.473303142852659,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-14m": {
+      "value": 6.06142514839996,
+      "ci90": [
+       5.285413031522096,
+       6.867648101791949
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.473303142852659,
+      "side": "above",
+      "strict_side": "above",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-160m": {
+      "value": 9.987386287869274,
+      "ci90": [
+       9.339359897018502,
+       10.502760815014767
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.473303142852659,
+      "side": "above",
+      "strict_side": "above",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-410m": {
+      "value": 9.945147877471431,
+      "ci90": [
+       9.815937100168416,
+       10.080518089623043
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.473303142852659,
+      "side": "above",
+      "strict_side": "above",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-1b": {
+      "value": 11.280882818611033,
+      "ci90": [
+       11.127097297018157,
+       11.617733883598547
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.7540167841139427,
+      "side": "above",
+      "strict_side": "above",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-410m-ou": {
+      "value": 7.649555619261831,
+      "ci90": [
+       7.218753379579382,
+       7.989075198993764
+      ],
+      "family": "A6",
+      "role": "augmented",
+      "margin": 0.473303142852659,
+      "side": "above",
+      "strict_side": "above",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A7-130m": {
+      "value": 8.102498880293751,
+      "ci90": [
+       7.484863818331421,
+       8.468561013444608
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 0.6774951535293656,
+      "side": "above",
+      "strict_side": "above",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A7-370m": {
+      "value": 8.848788779051075,
+      "ci90": [
+       8.533731862560874,
+       9.302059256838238
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 1.2773636645131035,
+      "side": "above",
+      "strict_side": "above",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A10": {
+      "value": 2.412293201005017,
+      "ci90": [
+       1.804197516003576,
+       3.0621155349320417
+      ],
+      "family": "A10",
+      "role": "augmented",
+      "margin": 0.473303142852659,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": true
+     }
+    },
+    "separating_side": null,
+    "strict_separating_side": null,
+    "families_counted": [
+     "A1",
+     "A2",
+     "A3",
+     "A4",
+     "A5",
+     "A6",
+     "A7"
+    ],
+    "families_not_counted": []
+   }
+  },
+  "ais": {
+   "A1": {
+    "family": "A1",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 19.65441738363666,
+    "pre_hold": null,
+    "within_calibrated_speed": true,
+    "stretches_overlap": false
+   },
+   "A1-slow": {
+    "family": "A1",
+    "role": "augmented",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 28.960882716942315,
+    "pre_hold": null,
+    "within_calibrated_speed": true,
+    "stretches_overlap": false
+   },
+   "A2": {
+    "family": "A2",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 0.640100573063416,
+    "pre_hold": null,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A3": {
+    "family": "A3",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 0.9836629780853601,
+    "pre_hold": null,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A4": {
+    "family": "A4",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 7.27607854305585,
+    "pre_hold": 16,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A5": {
+    "family": "A5",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 7.753441078976975,
+    "pre_hold": 16,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A6-14m": {
+    "family": "A6",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 0.8050981157027264,
+    "pre_hold": null,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A6-160m": {
+    "family": "A6",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 0.9132019970012104,
+    "pre_hold": null,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A6-410m": {
+    "family": "A6",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 0.8589055449686263,
+    "pre_hold": null,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A6-1b": {
+    "family": "A6",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 0.9557618031704836,
+    "pre_hold": null,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A6-410m-ou": {
+    "family": "A6",
+    "role": "augmented",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 1.6196613672400921,
+    "pre_hold": null,
+    "within_calibrated_speed": true,
+    "stretches_overlap": false
+   },
+   "A7-130m": {
+    "family": "A7",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 0.8788314200842168,
+    "pre_hold": null,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A7-370m": {
+    "family": "A7",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 0.9496271717463367,
+    "pre_hold": null,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A10": {
+    "family": "A10",
+    "role": "augmented",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 31.07374924998559,
+    "pre_hold": null,
+    "within_calibrated_speed": true,
+    "stretches_overlap": true
+   }
+  }
+ },
+ "confirmatory_mouse": {
+  "individuals": 2,
+  "ids": [
+   "Robbins",
+   "Waksman"
+  ],
+  "calibrated": [
+   "shared_fraction",
+   "slow_fraction",
+   "coupling_spread"
+  ],
+  "measures": {
+   "shared_fraction": {
+    "calibrated": true,
+    "real": [
+     0.06829997637548466,
+     0.022252502576351457
+    ],
+    "envelope": [
+     0.022252502576351457,
+     0.06829997637548466
+    ],
+    "prediction_interval90": [
+     -0.2065053244733903,
+     0.2970578034252264
+    ],
+    "ruler_sd": 0.03256048097987696,
+    "ruler_sd_lower90": 0.01661279555987247,
+    "pooled_se": 0.004206497339496421,
+    "gates": {
+     "c3_se_over_ruler": 0.12919027031867625,
+     "c3_se_over_ruler_lower90": 0.2532082769775993,
+     "budget_over_ruler": 7.554504481202256
+    },
+    "usable": false,
+    "ai": {
+     "A1": {
+      "value": 0.055174878750928996,
+      "ci90": [
+       0.051146641239614564,
+       0.0661026423723595
+      ],
+      "family": "A1",
+      "role": "standard",
+      "margin": 0.027850900723471815,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": true
+     },
+     "A1-slow": {
+      "value": 0.03195687415409894,
+      "ci90": [
+       0.026369196427735636,
+       0.03482709838323077
+      ],
+      "family": "A1",
+      "role": "augmented",
+      "margin": 0.017972062471010238,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A2": {
+      "value": 0.3092821334303304,
+      "ci90": [
+       0.281826923966372,
+       0.33467718945583297
+      ],
+      "family": "A2",
+      "role": "standard",
+      "margin": 0.24597829947258132,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A3": {
+      "value": 0.009640105844316188,
+      "ci90": [
+       0.008788773260155845,
+       0.0107039093762766
+      ],
+      "family": "A3",
+      "role": "standard",
+      "margin": 0.008412994678992841,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A4": {
+      "value": 0.004662494492027387,
+      "ci90": [
+       0.004288996441344862,
+       0.005916609687730322
+      ],
+      "family": "A4",
+      "role": "standard",
+      "margin": 0.008412994678992841,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A5": {
+      "value": 0.012759940771467988,
+      "ci90": [
+       0.010177412888778478,
+       0.03021336617362057
+      ],
+      "family": "A5",
+      "role": "standard",
+      "margin": 0.008412994678992841,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-14m": {
+      "value": 0.00603301413580153,
+      "ci90": [
+       0.004912677929305132,
+       0.007840946583177875
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.008412994678992841,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-160m": {
+      "value": 6.708975658428762e-05,
+      "ci90": [
+       -7.577105706649644e-05,
+       0.00026973205142928337
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.008412994678992841,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-410m": {
+      "value": 0.0002030382938134956,
+      "ci90": [
+       8.209567469847633e-05,
+       0.00027571448990524884
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.008412994678992841,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-1b": {
+      "value": -3.445981711936164e-05,
+      "ci90": [
+       -9.239629613662926e-05,
+       7.28422498407849e-05
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.008412994678992841,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-410m-ou": {
+      "value": 0.0011275492050312516,
+      "ci90": [
+       0.0007744487083587173,
+       0.0017392966616786498
+      ],
+      "family": "A6",
+      "role": "augmented",
+      "margin": 0.008412994678992841,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A7-130m": {
+      "value": -9.374752518926389e-05,
+      "ci90": [
+       -0.0002213310822979958,
+       -7.101304360189048e-05
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 0.008412994678992841,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A7-370m": {
+      "value": -0.00013176325719145565,
+      "ci90": [
+       -0.00017670726631102696,
+       -0.00011710754985696334
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 0.008412994678992841,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     }
+    },
+    "separating_side": null,
+    "strict_separating_side": null,
+    "families_counted": [
+     "A1",
+     "A2",
+     "A3",
+     "A4",
+     "A5",
+     "A6",
+     "A7"
+    ],
+    "families_not_counted": []
+   },
+   "slow_fraction": {
+    "calibrated": true,
+    "real": [
+     0.28349922318959175,
+     0.14609845449590012
+    ],
+    "envelope": [
+     0.14609845449590012,
+     0.28349922318959175
+    ],
+    "prediction_interval90": [
+     -0.5364905930258501,
+     0.9660882707113418
+    ],
+    "ruler_sd": 0.09715701528355364,
+    "ruler_sd_lower90": 0.049570816632303345,
+    "pooled_se": 0.016648833886906446,
+    "gates": {
+     "c3_se_over_ruler": 0.1713600797463433,
+     "c3_se_over_ruler_lower90": 0.3358595846907444,
+     "budget_over_ruler": 0.3911452884230126
+    },
+    "usable": true,
+    "ai": {
+     "A1": {
+      "value": 0.06096164835454347,
+      "ci90": [
+       0.03996524159283464,
+       0.08240775454502258
+      ],
+      "family": "A1",
+      "role": "standard",
+      "margin": 0.03800250876540463,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": true
+     },
+     "A1-slow": {
+      "value": 0.2611755708377691,
+      "ci90": [
+       0.22467484555305034,
+       0.29746019586136246
+      ],
+      "family": "A1",
+      "role": "augmented",
+      "margin": 0.03329766777381289,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A2": {
+      "value": 0.013296842709740369,
+      "ci90": [
+       0.001169369202486345,
+       0.023738525121110486
+      ],
+      "family": "A2",
+      "role": "standard",
+      "margin": 0.03329766777381289,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A3": {
+      "value": 0.027815992674737382,
+      "ci90": [
+       0.019262602581068117,
+       0.0329229242585191
+      ],
+      "family": "A3",
+      "role": "standard",
+      "margin": 0.03329766777381289,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A4": {
+      "value": -0.05464798652975773,
+      "ci90": [
+       -0.055867653244642955,
+       -0.049496611423420184
+      ],
+      "family": "A4",
+      "role": "standard",
+      "margin": 0.03329766777381289,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A5": {
+      "value": -0.0014885356066847942,
+      "ci90": [
+       -0.0037404094583854105,
+       -9.352099932578656e-06
+      ],
+      "family": "A5",
+      "role": "standard",
+      "margin": 0.03329766777381289,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-14m": {
+      "value": 0.0005217812283725961,
+      "ci90": [
+       -0.0012007124694125837,
+       0.0032782580917053022
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.03329766777381289,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-160m": {
+      "value": 0.0028500711545504836,
+      "ci90": [
+       0.0008888049692735105,
+       0.0046386570548384186
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.03329766777381289,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-410m": {
+      "value": 0.0002629637468792206,
+      "ci90": [
+       -0.001640061100609723,
+       0.004713821759650423
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.03329766777381289,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-1b": {
+      "value": 0.0020754411134908837,
+      "ci90": [
+       0.000978071923132064,
+       0.004152207571675253
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.03329766777381289,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-410m-ou": {
+      "value": 0.05561670974279474,
+      "ci90": [
+       0.04428203056855942,
+       0.0765517808554734
+      ],
+      "family": "A6",
+      "role": "augmented",
+      "margin": 0.05919758836266474,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A7-130m": {
+      "value": -0.00023000147853952923,
+      "ci90": [
+       -0.0010683788654250372,
+       0.0009601833095638987
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 0.03329766777381289,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A7-370m": {
+      "value": -0.000506998521303415,
+      "ci90": [
+       -0.0008474717912970518,
+       -0.00031459340457823696
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 0.03329766777381289,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     }
+    },
+    "separating_side": "below",
+    "strict_separating_side": null,
+    "families_counted": [
+     "A1"
+    ],
+    "families_not_counted": [
+     "A2",
+     "A3",
+     "A4",
+     "A5",
+     "A6",
+     "A7"
+    ]
+   },
+   "coupling_spread": {
+    "calibrated": true,
+    "real": [
+     0.3791162447336497,
+     0.3320905708684049
+    ],
+    "envelope": [
+     0.3320905708684049,
+     0.3791162447336497
+    ],
+    "prediction_interval90": [
+     0.09847317383400483,
+     0.6127336417680498
+    ],
+    "ruler_sd": 0.03325217287998161,
+    "ruler_sd_lower90": 0.016965706075351646,
+    "pooled_se": 0.02756820094544645,
+    "gates": {
+     "c3_se_over_ruler": 0.8290646462397947,
+     "c3_se_over_ruler_lower90": 1.6249368474854384,
+     "budget_over_ruler": NaN
+    },
+    "usable": false,
+    "ai": {
+     "A1": {
+      "value": 0.17262218575717211,
+      "ci90": [
+       0.11586552945686837,
+       0.2454466494191589
+      ],
+      "family": "A1",
+      "role": "standard",
+      "margin": 0.0551364018908929,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": true
+     },
+     "A1-slow": {
+      "value": 0.13465898077804717,
+      "ci90": [
+       0.11374057401642772,
+       0.1532506685905886
+      ],
+      "family": "A1",
+      "role": "augmented",
+      "margin": 0.0551364018908929,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A2": {
+      "value": 0.2621235172936266,
+      "ci90": [
+       0.2447023736111943,
+       0.28584209562845597
+      ],
+      "family": "A2",
+      "role": "standard",
+      "margin": 0.0551364018908929,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A3": {
+      "value": 0.1405560842141757,
+      "ci90": [
+       0.1287738671731761,
+       0.1503262009695966
+      ],
+      "family": "A3",
+      "role": "standard",
+      "margin": 0.0551364018908929,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A4": {
+      "value": 0.09840022567750839,
+      "ci90": [
+       0.09307730296243993,
+       0.10481692805827084
+      ],
+      "family": "A4",
+      "role": "standard",
+      "margin": 0.0551364018908929,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A5": {
+      "value": 0.15486631407102233,
+      "ci90": [
+       0.1443328229407123,
+       0.1699754218719103
+      ],
+      "family": "A5",
+      "role": "standard",
+      "margin": 0.0551364018908929,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-14m": {
+      "value": 0.16799752567251672,
+      "ci90": [
+       0.1490731668231538,
+       0.20968389059383247
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.0551364018908929,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-160m": {
+      "value": 0.08011232838214165,
+      "ci90": [
+       0.07410170740721374,
+       0.09314057944750545
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.0551364018908929,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-410m": {
+      "value": 0.07442430547126705,
+      "ci90": [
+       0.06970236437684289,
+       0.0794518006711316
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.0551364018908929,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-1b": {
+      "value": 0.07507756332199961,
+      "ci90": [
+       0.07044504742545973,
+       0.08092037089311106
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.0551364018908929,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A6-410m-ou": {
+      "value": 0.10138336125243921,
+      "ci90": [
+       0.08193733030622401,
+       0.11622534340851133
+      ],
+      "family": "A6",
+      "role": "augmented",
+      "margin": 0.0551364018908929,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A7-130m": {
+      "value": 0.08919941481723348,
+      "ci90": [
+       0.08464359698839932,
+       0.0932904963040275
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 0.0551364018908929,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     },
+     "A7-370m": {
+      "value": 0.08442556192127314,
+      "ci90": [
+       0.07844671476994394,
+       0.09085202923882849
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 0.0551364018908929,
+      "side": "below",
+      "strict_side": "below",
+      "counted": true,
+      "within_calibrated_speed": false
+     }
+    },
+    "separating_side": "below",
+    "strict_separating_side": null,
+    "families_counted": [
+     "A1",
+     "A2",
+     "A3",
+     "A4",
+     "A5",
+     "A6",
+     "A7"
+    ],
+    "families_not_counted": []
+   },
+   "timescale_spread": {
+    "calibrated": false,
+    "real": [
+     0.7971509283581146,
+     0.5176347878108195
+    ],
+    "envelope": [
+     0.5176347878108195,
+     0.7971509283581146
+    ],
+    "prediction_interval90": [
+     -0.8709648390840892,
+     2.185750555253023
+    ],
+    "ruler_sd": 0.19764775843208449,
+    "ruler_sd_lower90": 0.10084254608304276,
+    "pooled_se": 0.03703696273105021,
+    "gates": {
+     "c3_se_over_ruler": 0.1873887314728986,
+     "c3_se_over_ruler_lower90": 0.3672751647955286,
+     "budget_over_ruler": 0.6604862176775058
+    },
+    "usable": false,
+    "ai": {
+     "A1": {
+      "value": 0.3971896867657728,
+      "ci90": [
+       0.3146496207130121,
+       0.4359525377557105
+      ],
+      "family": "A1",
+      "role": "standard",
+      "margin": 0.13054362039924483,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": true,
+      "within_calibrated_speed": true
+     },
+     "A1-slow": {
+      "value": 0.48682301303327075,
+      "ci90": [
+       0.326648780852184,
+       0.6437183776988962
+      ],
+      "family": "A1",
+      "role": "augmented",
+      "margin": 0.25797171273434366,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A2": {
+      "value": 0.3100155874256508,
+      "ci90": [
+       0.1500322754487513,
+       0.3784427369907061
+      ],
+      "family": "A2",
+      "role": "standard",
+      "margin": 0.279771383342662,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A3": {
+      "value": 0.1862622411690814,
+      "ci90": [
+       0.1772532625726448,
+       0.22077852125182673
+      ],
+      "family": "A3",
+      "role": "standard",
+      "margin": 0.07407392546210043,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A4": {
+      "value": 0.20750142772316596,
+      "ci90": [
+       0.1543979892807123,
+       0.25364369215119176
+      ],
+      "family": "A4",
+      "role": "standard",
+      "margin": 0.2483247398578191,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A5": {
+      "value": 0.17553508780021335,
+      "ci90": [
+       0.16363039082672765,
+       0.1799115070618969
+      ],
+      "family": "A5",
+      "role": "standard",
+      "margin": 0.07407392546210043,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-14m": {
+      "value": 0.1786960975313369,
+      "ci90": [
+       0.1483953458144373,
+       0.20061049388007768
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.3152212312613588,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-160m": {
+      "value": 0.16975430133479147,
+      "ci90": [
+       0.15653867691014056,
+       0.17750312436427296
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.3317527009588892,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-410m": {
+      "value": 0.16170240426486845,
+      "ci90": [
+       0.1453140187572386,
+       0.18275583834337222
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.36857897917405613,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-1b": {
+      "value": 0.18043223723460106,
+      "ci90": [
+       0.17123940727752923,
+       0.19743905616203422
+      ],
+      "family": "A6",
+      "role": "standard",
+      "margin": 0.39835163082302155,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A6-410m-ou": {
+      "value": 0.19432707995516138,
+      "ci90": [
+       0.16925783553268686,
+       0.21508528345473865
+      ],
+      "family": "A6",
+      "role": "augmented",
+      "margin": 0.2658917925419886,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": true
+     },
+     "A7-130m": {
+      "value": 0.18352316277749556,
+      "ci90": [
+       0.16613799400570356,
+       0.22788675412666878
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 0.35128742395872364,
+      "side": "inside",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     },
+     "A7-370m": {
+      "value": 0.1573523022466486,
+      "ci90": [
+       0.1438782067412409,
+       0.19391692173352798
+      ],
+      "family": "A7",
+      "role": "standard",
+      "margin": 0.33944126594943536,
+      "side": "below",
+      "strict_side": "overlap",
+      "counted": false,
+      "within_calibrated_speed": false
+     }
+    },
+    "separating_side": null,
+    "strict_separating_side": null,
+    "families_counted": [
+     "A1"
+    ],
+    "families_not_counted": [
+     "A2",
+     "A3",
+     "A4",
+     "A5",
+     "A6",
+     "A7"
+    ]
+   }
+  },
+  "ais": {
+   "A1": {
+    "family": "A1",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 19.65441738363666,
+    "pre_hold": null,
+    "within_calibrated_speed": true,
+    "stretches_overlap": true
+   },
+   "A1-slow": {
+    "family": "A1",
+    "role": "augmented",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 28.960882716942315,
+    "pre_hold": null,
+    "within_calibrated_speed": true,
+    "stretches_overlap": true
+   },
+   "A2": {
+    "family": "A2",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 0.640100573063416,
+    "pre_hold": null,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A3": {
+    "family": "A3",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 0.9836629780853601,
+    "pre_hold": null,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A4": {
+    "family": "A4",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 7.27607854305585,
+    "pre_hold": 16,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A5": {
+    "family": "A5",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 7.753441078976975,
+    "pre_hold": 16,
+    "within_calibrated_speed": false,
+    "stretches_overlap": true
+   },
+   "A6-14m": {
+    "family": "A6",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 0.8050981157027264,
+    "pre_hold": null,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A6-160m": {
+    "family": "A6",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 0.9132019970012104,
+    "pre_hold": null,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A6-410m": {
+    "family": "A6",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 0.8589055449686263,
+    "pre_hold": null,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A6-1b": {
+    "family": "A6",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 0.9557618031704836,
+    "pre_hold": null,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A6-410m-ou": {
+    "family": "A6",
+    "role": "augmented",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 1.6196613672400921,
+    "pre_hold": null,
+    "within_calibrated_speed": true,
+    "stretches_overlap": false
+   },
+   "A7-130m": {
+    "family": "A7",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 0.8788314200842168,
+    "pre_hold": null,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   },
+   "A7-370m": {
+    "family": "A7",
+    "role": "standard",
+    "mapped": true,
+    "why": null,
+    "native_tau_min": 0.9496271717463367,
+    "pre_hold": null,
+    "within_calibrated_speed": false,
+    "stretches_overlap": false
+   }
+  }
+ },
+ "confirmatory_test": {
+  "result": "not testable",
+  "why": "timescale_spread did not pass step 2 under amendment 17"
+ },
+ "confirmatory_distance_test": {
+  "result": "not testable",
+  "why": "1 usable measurements",
+  "measures": [
+   "slow_fraction"
+  ]
+ },
+ "exploratory": {
+  "coupling_spread": {
+   "worm": null,
+   "mouse": "below"
+  },
+  "shared_fraction": {
+   "worm": null,
+   "mouse": null
+  },
+  "slow_fraction": {
+   "worm": null,
+   "mouse": "below"
+  },
+  "sparsity": {
+   "worm": null,
+   "mouse": null
+  },
+  "timescale_spread": {
+   "worm": null,
+   "mouse": null
+  }
+ },
+ "sensitivity_keep_all_mice": {
+  "mouse": {
+   "individuals": 3,
+   "ids": [
+    "Krebs",
+    "Robbins",
+    "Waksman"
+   ],
+   "calibrated": [
+    "shared_fraction",
+    "slow_fraction"
+   ],
+   "measures": {
+    "shared_fraction": {
+     "calibrated": true,
+     "real": [
+      0.07207247057062866,
+      0.06829997637548466,
+      0.022252502576351457
+     ],
+     "envelope": [
+      0.022252502576351457,
+      0.07207247057062866
+     ],
+     "prediction_interval90": [
+      -0.03931868707989733,
+      0.14773532009487383
+     ],
+     "ruler_sd": 0.027738753777236932,
+     "ruler_sd_lower90": 0.016026380385174628,
+     "pooled_se": 0.005715492799175505,
+     "gates": {
+      "c3_se_over_ruler": 0.20604720908066793,
+      "c3_se_over_ruler_lower90": 0.3566302971607165,
+      "budget_over_ruler": 8.86767666089011
+     },
+     "usable": false,
+     "ai": {
+      "A1": {
+       "value": 0.055174878750928996,
+       "ci90": [
+        0.051146641239614564,
+        0.0661026423723595
+       ],
+       "family": "A1",
+       "role": "standard",
+       "margin": 0.027850900723471815,
+       "side": "inside",
+       "strict_side": "overlap",
+       "counted": true,
+       "within_calibrated_speed": true
+      },
+      "A1-slow": {
+       "value": 0.03195687415409894,
+       "ci90": [
+        0.026369196427735636,
+        0.03482709838323077
+       ],
+       "family": "A1",
+       "role": "augmented",
+       "margin": 0.017972062471010238,
+       "side": "inside",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": true
+      },
+      "A2": {
+       "value": 0.3092821334303304,
+       "ci90": [
+        0.281826923966372,
+        0.33467718945583297
+       ],
+       "family": "A2",
+       "role": "standard",
+       "margin": 0.24597829947258132,
+       "side": "inside",
+       "strict_side": "above",
+       "counted": true,
+       "within_calibrated_speed": false
+      },
+      "A3": {
+       "value": 0.009640105844316188,
+       "ci90": [
+        0.008788773260155845,
+        0.0107039093762766
+       ],
+       "family": "A3",
+       "role": "standard",
+       "margin": 0.01143098559835101,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": true,
+       "within_calibrated_speed": false
+      },
+      "A4": {
+       "value": 0.004662494492027387,
+       "ci90": [
+        0.004288996441344862,
+        0.005916609687730322
+       ],
+       "family": "A4",
+       "role": "standard",
+       "margin": 0.01143098559835101,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": true,
+       "within_calibrated_speed": false
+      },
+      "A5": {
+       "value": 0.012759940771467988,
+       "ci90": [
+        0.010177412888778478,
+        0.03021336617362057
+       ],
+       "family": "A5",
+       "role": "standard",
+       "margin": 0.01143098559835101,
+       "side": "inside",
+       "strict_side": "overlap",
+       "counted": true,
+       "within_calibrated_speed": false
+      },
+      "A6-14m": {
+       "value": 0.00603301413580153,
+       "ci90": [
+        0.004912677929305132,
+        0.007840946583177875
+       ],
+       "family": "A6",
+       "role": "standard",
+       "margin": 0.01143098559835101,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": true,
+       "within_calibrated_speed": false
+      },
+      "A6-160m": {
+       "value": 6.708975658428762e-05,
+       "ci90": [
+        -7.577105706649644e-05,
+        0.00026973205142928337
+       ],
+       "family": "A6",
+       "role": "standard",
+       "margin": 0.01143098559835101,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": true,
+       "within_calibrated_speed": false
+      },
+      "A6-410m": {
+       "value": 0.0002030382938134956,
+       "ci90": [
+        8.209567469847633e-05,
+        0.00027571448990524884
+       ],
+       "family": "A6",
+       "role": "standard",
+       "margin": 0.01143098559835101,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": true,
+       "within_calibrated_speed": false
+      },
+      "A6-1b": {
+       "value": -3.445981711936164e-05,
+       "ci90": [
+        -9.239629613662926e-05,
+        7.28422498407849e-05
+       ],
+       "family": "A6",
+       "role": "standard",
+       "margin": 0.01143098559835101,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": true,
+       "within_calibrated_speed": false
+      },
+      "A6-410m-ou": {
+       "value": 0.0011275492050312516,
+       "ci90": [
+        0.0007744487083587173,
+        0.0017392966616786498
+       ],
+       "family": "A6",
+       "role": "augmented",
+       "margin": 0.01143098559835101,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": true
+      },
+      "A7-130m": {
+       "value": -9.374752518926389e-05,
+       "ci90": [
+        -0.0002213310822979958,
+        -7.101304360189048e-05
+       ],
+       "family": "A7",
+       "role": "standard",
+       "margin": 0.01143098559835101,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": true,
+       "within_calibrated_speed": false
+      },
+      "A7-370m": {
+       "value": -0.00013176325719145565,
+       "ci90": [
+        -0.00017670726631102696,
+        -0.00011710754985696334
+       ],
+       "family": "A7",
+       "role": "standard",
+       "margin": 0.01143098559835101,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": true,
+       "within_calibrated_speed": false
+      }
+     },
+     "separating_side": null,
+     "strict_separating_side": null,
+     "families_counted": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "A6",
+      "A7"
+     ],
+     "families_not_counted": []
+    },
+    "slow_fraction": {
+     "calibrated": true,
+     "real": [
+      0.139012014485264,
+      0.28349922318959175,
+      0.14609845449590012
+     ],
+     "envelope": [
+      0.139012014485264,
+      0.28349922318959175
+     ],
+     "prediction_interval90": [
+      -0.0850930165705864,
+      0.46416614468442363
+     ],
+     "ruler_sd": 0.08145115340784485,
+     "ruler_sd_lower90": 0.0470593299831858,
+     "pooled_se": 0.014434367963187027,
+     "gates": {
+      "c3_se_over_ruler": 0.17721502224665614,
+      "c3_se_over_ruler_lower90": 0.30672701817778525,
+      "budget_over_ruler": 0.46656808621379786
+     },
+     "usable": true,
+     "ai": {
+      "A1": {
+       "value": 0.06096164835454347,
+       "ci90": [
+        0.03996524159283464,
+        0.08240775454502258
+       ],
+       "family": "A1",
+       "role": "standard",
+       "margin": 0.03800250876540463,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": true,
+       "within_calibrated_speed": true
+      },
+      "A1-slow": {
+       "value": 0.2611755708377691,
+       "ci90": [
+        0.22467484555305034,
+        0.29746019586136246
+       ],
+       "family": "A1",
+       "role": "augmented",
+       "margin": 0.033003849998743895,
+       "side": "inside",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": true
+      },
+      "A2": {
+       "value": 0.013296842709740369,
+       "ci90": [
+        0.001169369202486345,
+        0.023738525121110486
+       ],
+       "family": "A2",
+       "role": "standard",
+       "margin": 0.028868735926374053,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A3": {
+       "value": 0.027815992674737382,
+       "ci90": [
+        0.019262602581068117,
+        0.0329229242585191
+       ],
+       "family": "A3",
+       "role": "standard",
+       "margin": 0.028868735926374053,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A4": {
+       "value": -0.05464798652975773,
+       "ci90": [
+        -0.055867653244642955,
+        -0.049496611423420184
+       ],
+       "family": "A4",
+       "role": "standard",
+       "margin": 0.028868735926374053,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A5": {
+       "value": -0.0014885356066847942,
+       "ci90": [
+        -0.0037404094583854105,
+        -9.352099932578656e-06
+       ],
+       "family": "A5",
+       "role": "standard",
+       "margin": 0.028868735926374053,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A6-14m": {
+       "value": 0.0005217812283725961,
+       "ci90": [
+        -0.0012007124694125837,
+        0.0032782580917053022
+       ],
+       "family": "A6",
+       "role": "standard",
+       "margin": 0.028868735926374053,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A6-160m": {
+       "value": 0.0028500711545504836,
+       "ci90": [
+        0.0008888049692735105,
+        0.0046386570548384186
+       ],
+       "family": "A6",
+       "role": "standard",
+       "margin": 0.028868735926374053,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A6-410m": {
+       "value": 0.0002629637468792206,
+       "ci90": [
+        -0.001640061100609723,
+        0.004713821759650423
+       ],
+       "family": "A6",
+       "role": "standard",
+       "margin": 0.028868735926374053,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A6-1b": {
+       "value": 0.0020754411134908837,
+       "ci90": [
+        0.000978071923132064,
+        0.004152207571675253
+       ],
+       "family": "A6",
+       "role": "standard",
+       "margin": 0.028868735926374053,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A6-410m-ou": {
+       "value": 0.05561670974279474,
+       "ci90": [
+        0.04428203056855942,
+        0.0765517808554734
+       ],
+       "family": "A6",
+       "role": "augmented",
+       "margin": 0.05919758836266474,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": true
+      },
+      "A7-130m": {
+       "value": -0.00023000147853952923,
+       "ci90": [
+        -0.0010683788654250372,
+        0.0009601833095638987
+       ],
+       "family": "A7",
+       "role": "standard",
+       "margin": 0.028868735926374053,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A7-370m": {
+       "value": -0.000506998521303415,
+       "ci90": [
+        -0.0008474717912970518,
+        -0.00031459340457823696
+       ],
+       "family": "A7",
+       "role": "standard",
+       "margin": 0.028868735926374053,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      }
+     },
+     "separating_side": "below",
+     "strict_separating_side": null,
+     "families_counted": [
+      "A1"
+     ],
+     "families_not_counted": [
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "A6",
+      "A7"
+     ]
+    },
+    "timescale_spread": {
+     "calibrated": false,
+     "real": [
+      0.5081571209708291,
+      0.7971509283581146,
+      0.5176347878108195
+     ],
+     "envelope": [
+      0.5081571209708291,
+      0.7971509283581146
+     ],
+     "prediction_interval90": [
+      0.054070027396671994,
+      1.1612251973631702
+     ],
+     "ruler_sd": 0.16418308870657405,
+     "ruler_sd_lower90": 0.09485864626635455,
+     "pooled_se": 0.033623320832549,
+     "gates": {
+      "c3_se_over_ruler": 0.20479162072922247,
+      "c3_se_over_ruler_lower90": 0.35445710176105333,
+      "budget_over_ruler": 0.7951100288565697
+     },
+     "usable": false,
+     "ai": {
+      "A1": {
+       "value": 0.3971896867657728,
+       "ci90": [
+        0.3146496207130121,
+        0.4359525377557105
+       ],
+       "family": "A1",
+       "role": "standard",
+       "margin": 0.13054362039924483,
+       "side": "inside",
+       "strict_side": "overlap",
+       "counted": true,
+       "within_calibrated_speed": true
+      },
+      "A1-slow": {
+       "value": 0.48682301303327075,
+       "ci90": [
+        0.326648780852184,
+        0.6437183776988962
+       ],
+       "family": "A1",
+       "role": "augmented",
+       "margin": 0.25797171273434366,
+       "side": "inside",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": true
+      },
+      "A2": {
+       "value": 0.3100155874256508,
+       "ci90": [
+        0.1500322754487513,
+        0.3784427369907061
+       ],
+       "family": "A2",
+       "role": "standard",
+       "margin": 0.279771383342662,
+       "side": "inside",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A3": {
+       "value": 0.1862622411690814,
+       "ci90": [
+        0.17879340300075408,
+        0.22077852125182673
+       ],
+       "family": "A3",
+       "role": "standard",
+       "margin": 0.067246641665098,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A4": {
+       "value": 0.20750142772316596,
+       "ci90": [
+        0.1543979892807123,
+        0.25364369215119176
+       ],
+       "family": "A4",
+       "role": "standard",
+       "margin": 0.2483247398578191,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A5": {
+       "value": 0.17553508780021335,
+       "ci90": [
+        0.16363039082672765,
+        0.18010783512592016
+       ],
+       "family": "A5",
+       "role": "standard",
+       "margin": 0.067246641665098,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A6-14m": {
+       "value": 0.1786960975313369,
+       "ci90": [
+        0.14809506413017257,
+        0.20061049388007768
+       ],
+       "family": "A6",
+       "role": "standard",
+       "margin": 0.3152212312613588,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A6-160m": {
+       "value": 0.16975430133479147,
+       "ci90": [
+        0.15610428963490935,
+        0.17738652575759967
+       ],
+       "family": "A6",
+       "role": "standard",
+       "margin": 0.3317527009588892,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A6-410m": {
+       "value": 0.16170240426486845,
+       "ci90": [
+        0.1453140187572386,
+        0.18275583834337222
+       ],
+       "family": "A6",
+       "role": "standard",
+       "margin": 0.36857897917405613,
+       "side": "inside",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A6-1b": {
+       "value": 0.18043223723460106,
+       "ci90": [
+        0.15982923708264082,
+        0.19743905616203422
+       ],
+       "family": "A6",
+       "role": "standard",
+       "margin": 0.39835163082302155,
+       "side": "inside",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A6-410m-ou": {
+       "value": 0.19432707995516138,
+       "ci90": [
+        0.17120715056257008,
+        0.21471272152080584
+       ],
+       "family": "A6",
+       "role": "augmented",
+       "margin": 0.2658917925419886,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": true
+      },
+      "A7-130m": {
+       "value": 0.18352316277749556,
+       "ci90": [
+        0.1657810991850396,
+        0.22400022616633725
+       ],
+       "family": "A7",
+       "role": "standard",
+       "margin": 0.35128742395872364,
+       "side": "inside",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      },
+      "A7-370m": {
+       "value": 0.1573523022466486,
+       "ci90": [
+        0.1438782067412409,
+        0.19391692173352798
+       ],
+       "family": "A7",
+       "role": "standard",
+       "margin": 0.33944126594943536,
+       "side": "below",
+       "strict_side": "overlap",
+       "counted": false,
+       "within_calibrated_speed": false
+      }
+     },
+     "separating_side": null,
+     "strict_separating_side": null,
+     "families_counted": [
+      "A1"
+     ],
+     "families_not_counted": [
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "A6",
+      "A7"
+     ]
+    }
+   },
+   "ais": {
+    "A1": {
+     "family": "A1",
+     "role": "standard",
+     "mapped": true,
+     "why": null,
+     "native_tau_min": 19.65441738363666,
+     "pre_hold": null,
+     "within_calibrated_speed": true,
+     "stretches_overlap": true
+    },
+    "A1-slow": {
+     "family": "A1",
+     "role": "augmented",
+     "mapped": true,
+     "why": null,
+     "native_tau_min": 28.960882716942315,
+     "pre_hold": null,
+     "within_calibrated_speed": true,
+     "stretches_overlap": true
+    },
+    "A2": {
+     "family": "A2",
+     "role": "standard",
+     "mapped": true,
+     "why": null,
+     "native_tau_min": 0.640100573063416,
+     "pre_hold": null,
+     "within_calibrated_speed": false,
+     "stretches_overlap": false
+    },
+    "A3": {
+     "family": "A3",
+     "role": "standard",
+     "mapped": true,
+     "why": null,
+     "native_tau_min": 0.9836629780853601,
+     "pre_hold": null,
+     "within_calibrated_speed": false,
+     "stretches_overlap": false
+    },
+    "A4": {
+     "family": "A4",
+     "role": "standard",
+     "mapped": true,
+     "why": null,
+     "native_tau_min": 7.27607854305585,
+     "pre_hold": 16,
+     "within_calibrated_speed": false,
+     "stretches_overlap": false
+    },
+    "A5": {
+     "family": "A5",
+     "role": "standard",
+     "mapped": true,
+     "why": null,
+     "native_tau_min": 7.753441078976975,
+     "pre_hold": 16,
+     "within_calibrated_speed": false,
+     "stretches_overlap": true
+    },
+    "A6-14m": {
+     "family": "A6",
+     "role": "standard",
+     "mapped": true,
+     "why": null,
+     "native_tau_min": 0.8050981157027264,
+     "pre_hold": null,
+     "within_calibrated_speed": false,
+     "stretches_overlap": false
+    },
+    "A6-160m": {
+     "family": "A6",
+     "role": "standard",
+     "mapped": true,
+     "why": null,
+     "native_tau_min": 0.9132019970012104,
+     "pre_hold": null,
+     "within_calibrated_speed": false,
+     "stretches_overlap": false
+    },
+    "A6-410m": {
+     "family": "A6",
+     "role": "standard",
+     "mapped": true,
+     "why": null,
+     "native_tau_min": 0.8589055449686263,
+     "pre_hold": null,
+     "within_calibrated_speed": false,
+     "stretches_overlap": false
+    },
+    "A6-1b": {
+     "family": "A6",
+     "role": "standard",
+     "mapped": true,
+     "why": null,
+     "native_tau_min": 0.9557618031704836,
+     "pre_hold": null,
+     "within_calibrated_speed": false,
+     "stretches_overlap": false
+    },
+    "A6-410m-ou": {
+     "family": "A6",
+     "role": "augmented",
+     "mapped": true,
+     "why": null,
+     "native_tau_min": 1.6196613672400921,
+     "pre_hold": null,
+     "within_calibrated_speed": true,
+     "stretches_overlap": false
+    },
+    "A7-130m": {
+     "family": "A7",
+     "role": "standard",
+     "mapped": true,
+     "why": null,
+     "native_tau_min": 0.8788314200842168,
+     "pre_hold": null,
+     "within_calibrated_speed": false,
+     "stretches_overlap": false
+    },
+    "A7-370m": {
+     "family": "A7",
+     "role": "standard",
+     "mapped": true,
+     "why": null,
+     "native_tau_min": 0.9496271717463367,
+     "pre_hold": null,
+     "within_calibrated_speed": false,
+     "stretches_overlap": false
+    }
+   }
+  },
+  "distance_test": {
+   "result": "not testable",
+   "why": "1 usable measurements",
+   "measures": [
+    "slow_fraction"
+   ]
+  },
+  "sides": {
+   "shared_fraction": null,
+   "slow_fraction": "below",
+   "timescale_spread": null
+  }
+ }
+}
