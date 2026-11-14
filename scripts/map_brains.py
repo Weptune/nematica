@@ -54,22 +54,26 @@ def prepare_r4g(ind):
 CROP_TAU = 5000
 
 
-def measure_r4g(ind):
+def measure_r4g(ind, step1_pid="R4"):
     """Amendment 19 (review 15, item 3), primary: each mouse's pooled recording is cut into non-overlapping
     crops of 5,000 of its own timescales (timescale from the whole 20 minutes), each crop measured exactly as
     an AI crop is; the mouse's value is the mean over crops and its SE the RMS crop split-half SE over the
     square root of the number of crops. Sensitivity: the whole 20 minutes as one recording."""
     X, seg = prepare_r4g(ind)
     t = measures.tau_med(X, segments=seg)
-    s1r = [r for r in json.loads((ROOT / "docs/figures/map_step1.json").read_text())["preparations"]["R4"]
+    s1r = [r for r in json.loads((ROOT / "docs/figures/map_step1.json").read_text())["preparations"][step1_pid]
            ["individuals"] if r["id"] == ind["id"]][0]
     L = int(round(CROP_TAU * s1r["bins_per_tau"]))          # amendment 21: as the AIs, single-unit step-1 numbers
-    cs = [X[a:a + L] for a in range(0, len(X) - L + 1, L)]
+    if step1_pid == "R4":
+        cs = [(X[a:a + L], []) for a in range(0, len(X) - L + 1, L)]
+    else:                                                # amendment 24: crops may span blocks (as AI crops)
+        from nematica.map.pipeline import crops_across
+        cs = crops_across(X, seg, L, 10 ** 6)
     vals, ses = [], []
-    for j, c in enumerate(cs):
-        v = measures.measure_matched(c, seed=j)
+    for j, (c, sc) in enumerate(cs):
+        v = measures.measure_matched(c, seed=j, segments=sc)
         vals.append({m: v.get(m, np.nan) for m in measures.MEASURES})
-        ses.append(measures.split_half_se(c, seed=j, n_splits=5) if "error" not in v else {})
+        ses.append(measures.split_half_se(c, seed=j, n_splits=5, segments=sc) if "error" not in v else {})
     k = len(cs)
     def fin(v):                                          # amendment 21: the AIs' 80%-finite rule
         v = np.array(v, float)
@@ -101,6 +105,8 @@ def run_prep(pid):
             r = {"id": ind["id"], "error": ind["error"]}
         elif pid == "R4g":
             r = measure_r4g(ind)
+        elif pid == "R4a":                               # amendment 24
+            r = measure_r4g(ind, "R4a")
         else:
             X, seg = prepare(ind, spec["rtype"])
             v = measures.measure_matched(X, seed=0, segments=seg)
@@ -118,11 +124,11 @@ def main(ids):
     for pid in ids:
         run_prep(pid)
     res = {}
-    for pid in list(s1.PREPS) + ["R4g"]:
+    for pid in [p for p in s1.PREPS if p != "R4a"] + ["R4g", "R4a"]:
         rows = [pickle.loads(f.read_bytes()) for f in sorted(CACHE.glob(f"{pid}_*.pkl"))]
         if rows:
             sp = s1.PREPS["R4" if pid == "R4g" else pid]
-            res[pid] = {"type": sp["type"] + (" (units pooled in groups of 8)" if pid == "R4g" else ""),
+            res[pid] = {"type": sp["type"] + (" (units pooled in groups of 8)" if pid in ("R4g", "R4a") else ""),
                         "group": sp["group"], "individuals": rows}
     OUT.write_text(json.dumps({"preparations": res, "provenance": {
         "code_sha256_16": instrument.code_hash(["scripts/map_step1.py", "scripts/map_brains.py"]),

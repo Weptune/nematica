@@ -1803,3 +1803,64 @@ Registered worm map: fewer than 3 usable measurements: no map {'shared_fraction'
 The most defensible single statement is a hypothesis for a properly powered test, not a finding: *real
 neurons carry more slow, heterogeneous structure than the artificial networks tested, and slow external
 drive is the cheapest change that moves an artificial network toward them.*
+
+## Amendment 24 (14 Nov 2026): a powered confirmatory test in the Allen Neuropixels mice (registered before any Allen spike is read)
+
+The user asked to run the test that would settle the exploratory pattern. The study's limit has been the
+number of individuals (3 Neuropixels mice), not the analysis. The Allen Brain Observatory Visual Coding
+Neuropixels release (DANDI 000021, brain_observatory_1.1, 32 sessions; DANDI 000022,
+functional_connectivity, 26 sessions) has one session per mouse. Each session has 6 probes, about 1,200 to
+2,200 units of Allen's `good` quality, and spontaneous blocks: three of about 5 minutes in
+brain_observatory, and a 30-minute block plus shorter ones in functional_connectivity. Before writing this,
+only file metadata was read (block times, unit counts, quality labels, dataset layout) for 20 sessions,
+with a check of read speed. No spike time has been read. The per-mouse metadata (blocks, good units) is
+reported with step 1.
+
+**Design (preparation "R4a"; everything not stated here is as for the pooled mouse arm, amendments 17 to
+21):**
+1. *Individuals:* one per mouse. A session is excluded (and counted) if it cannot be read or holds fewer
+   than one 5,000-timescale crop.
+2. *Activity:* 20 ms spike counts of Allen `good` units (at most 2,400, seeded subset), in every
+   spontaneous block of at least 60 s after invalid intervals are removed. Blocks are concatenated with
+   segment boundaries. Then the registered unit-inclusion rule, then pooling in seeded groups of 8.
+3. *Step 1:* single-unit instrument numbers per mouse (500 seeded units), with medians over mice; these
+   set the AI matching. *Step 2:* C1 and C4 at those numbers with pooling, at crop length (5,000 recorded
+   timescales), on 480-unit synthetic systems, with the same gates.
+4. *AIs:* the 13 AIs of the pooled arm (not the worm-fitted lab network), regenerated with the same
+   builders, matched to R4a's numbers, and cut into 5,000-timescale crops (crops may span contexts).
+5. *Mice:* cut into non-overlapping crops of 5,000 of their own single-unit step-1 timescales. Crops may
+   span block boundaries, which are passed to the measures, as for the AIs. A mouse's value is the mean
+   over crops (80% finite); its SE is the RMS crop split-half SE.
+6. *Missing values:* a mouse with an undefined value is dropped **from that measurement only**
+   (amendment 23's rule, here registered before the data). With dozens of mice, the two rules differ by at
+   most a few individuals.
+7. *Gates and counting:*
+   - C3 is judged against the ruler's lower 90% bound;
+   - the budget must be at most 1 ruler unit, over the counted AIs;
+   - the native-speed rule for temporal measurements (an AI counts only with native timescale at least
+     1.5 steps and no pre-hold);
+   - amendment 21's margin (beyond the edge of the mouse range by more than the larger of the AI's budget
+     and 2 SE).
+   - With many mice, the range runs from the most extreme mouse at each end, so "below every mouse" is a
+     strict criterion.
+
+**The confirmatory tests** (fixed now, from the worm and 3-mouse exploration; each is decided only if its
+measurement is usable at R4a):
+
+| test | measurement | prediction | counted AIs | decided "confirmed" if |
+|---|---|---|---|---|
+| A | coupling spread | every standard AI below the mice | all 11 standard AIs | every counted AI is below by the margin |
+| B | slow memory | every counted standard AI below the mice | native speed at least 1.5 (A1 must be counted) | as A |
+| C | timescale spread | as B | as B | as A |
+| D | slow memory | slow drives move a random RNN into the real range | random RNN with slow drives vs plain random RNN | the slow-drive RNN is inside the range (not beyond it by the margin) **and** test B is confirmed |
+| E | distance over the usable measurements | every counted standard AI farther from the mice than a new mouse would be | as amendment 21 (at least 5 families) | every counted AI's lower 90% bound beyond the 95% quantile of a new mouse's distance (simulated for this number of mice) |
+
+- **"Refuted"** if any counted standard AI is inside the range or beyond the opposite edge (for test D:
+  if the slow-drive RNN is beyond either edge).
+- **"Unclear"** otherwise.
+- **"Not testable"** if the measurement fails a gate, or if a required AI is not counted.
+- The strict version (beyond the t 90% prediction interval for a new mouse) is reported for every test.
+- Five tests are run, and all five verdicts are reported whatever they are.
+
+**The 3 Stringer mice (R4g) are not pooled with these:** their instrument and recording protocol differ.
+They stay exploratory.

@@ -379,3 +379,121 @@ def stringer_2p(skip=(), cap_s=None):
             X = X[: int(cap_s * fs)]
         yield {"id": uid, "activity": X, "dt": 1.0 / fs, "fs": fs, "indicator_s": INDICATOR_S, "kernel_s": KERNEL_S,
                "kind": f"{x.mouse_type}, {x.date}, {np.atleast_1d(x.expt_name)[0]}"}
+
+
+# ---------------------------------------------------------------- amendment 24: Allen Visual Coding Neuropixels
+ALLEN_DANDISETS = ("000021", "000022")    # brain_observatory_1.1 and functional_connectivity sessions
+ALLEN_MIN_BLOCK_S = 60.0
+ALLEN_MAX_UNITS = 2400
+
+
+def _fetch_range(url, a, n, workers=8, piece=16 << 20):
+    """Bytes [a, a + n) of a URL by parallel HTTP range requests (retries per piece)."""
+    import concurrent.futures as cf
+
+    import requests
+    buf = bytearray(n)
+    def get(off):
+        b = min(off + piece, n) - 1
+        for k in range(6):
+            try:
+                r = requests.get(url, headers={"Range": f"bytes={a + off}-{a + b}"}, timeout=300)
+                r.raise_for_status()
+                if len(r.content) == b - off + 1:
+                    buf[off:b + 1] = r.content
+                    return
+            except Exception:  # noqa: BLE001
+                if k == 5:
+                    raise
+    with cf.ThreadPoolExecutor(workers) as ex:
+        list(ex.map(get, range(0, n, piece)))
+    return bytes(buf)
+
+
+def _allen_blocks(h):
+    """Spontaneous blocks of at least ALLEN_MIN_BLOCK_S, with invalid intervals cut out (s)."""
+    sp = h["intervals/spontaneous_presentations"]
+    blocks = [(float(a), float(b)) for a, b in zip(sp["start_time"][:], sp["stop_time"][:])]
+    inv = []
+    if "invalid_times" in h["intervals"]:
+        it = h["intervals/invalid_times"]
+        inv = [(float(a), float(b)) for a, b in zip(it["start_time"][:], it["stop_time"][:])]
+    out = []
+    for a, b in blocks:
+        pieces = [(a, b)]
+        for x, y in inv:
+            pieces = [p for q in pieces for p in ([(q[0], min(q[1], x)), (max(q[0], y), q[1])]
+                                                  if x < q[1] and y > q[0] else [q])]
+        out += [(p, q) for p, q in pieces if q - p >= ALLEN_MIN_BLOCK_S]
+    return sorted(out)
+
+
+ALLEN_CACHE = Path(__file__).resolve().parents[2] / "data/cache/allen"
+
+
+def _allen_cache(a, max_units):
+    """Download one session's spontaneous-block spikes of its good units once; kept locally (third-party data,
+    never committed) as float32 times relative to their block's start, per unit."""
+    import h5py
+    import requests
+    ALLEN_CACHE.mkdir(parents=True, exist_ok=True)
+    f = ALLEN_CACHE / (a["path"].split("/")[0] + ".npz")
+    if f.exists():
+        return np.load(f, allow_pickle=False)
+    url = f"{DANDI}/assets/{a['asset_id']}/download/"
+    with h5py.File(open_url(url), "r") as h:
+        blocks = _allen_blocks(h)
+        idx = np.asarray(h["units/spike_times_index"][:], np.int64)
+        q = h["units/quality"][:]
+        st = h["units/spike_times"]
+        off, n = st.id.get_offset(), st.shape[0]
+        assert st.chunks is None and st.compression is None and st.dtype == np.float64
+    good = np.flatnonzero(np.asarray([x in (b"good", "good") for x in q]))
+    n_good = len(good)
+    if len(good) > max_units:
+        good = np.sort(np.random.default_rng(0).choice(good, max_units, replace=False))
+    s3 = requests.head(url, allow_redirects=True, timeout=60).url
+    T = np.frombuffer(_fetch_range(s3, off, n * 8), np.float64)
+    starts = np.concatenate([[0], idx[:-1]])
+    times, bids, ptr = [], [], [0]
+    for u in good:
+        tt = T[starts[u]:idx[u]]
+        for k, (b0, b1) in enumerate(blocks):
+            sel = tt[(tt >= b0) & (tt < b1)]
+            times.append((sel - b0).astype(np.float32))
+            bids.append(np.full(len(sel), k, np.uint8))
+        ptr.append(sum(len(x) for x in times))
+    del T
+    np.savez(f, times=np.concatenate(times), block=np.concatenate(bids), ptr=np.asarray(ptr, np.int64),
+             blocks=np.asarray(blocks, np.float64), n_good=n_good, n_units=len(idx))
+    return np.load(f, allow_pickle=False)
+
+
+def allen_vcn(skip=(), max_units=ALLEN_MAX_UNITS):
+    """Amendment 24: Allen Brain Observatory Visual Coding Neuropixels (DANDI 000021 and 000022), one session
+    per mouse. Units: Allen's `quality == good` (at most `max_units`, a seeded random subset); activity: 20 ms
+    spike counts in every spontaneous block of at least 60 s after removing invalid intervals, blocks
+    concatenated with segment boundaries."""
+    from .instrument import SPIKE_BIN_S
+    for ds in ALLEN_DANDISETS:
+        for a in sorted((x for x in dandi_assets(ds) if "probe" not in x["path"]), key=lambda x: x["path"]):
+            uid = a["path"].split("/")[0]
+            if uid in skip:
+                yield {"id": uid, "cached": True}
+                continue
+            try:
+                z = _allen_cache(a, max_units)
+                blocks, ptr, times, bid = z["blocks"], z["ptr"], z["times"], z["block"]
+                nbs = [int((b1 - b0) / SPIKE_BIN_S) for b0, b1 in blocks]
+                cum = np.concatenate([[0], np.cumsum(nbs)])
+                X = np.zeros((int(cum[-1]), len(ptr) - 1), np.float32)
+                for j in range(len(ptr) - 1):
+                    tt, bb = times[ptr[j]:ptr[j + 1]], bid[ptr[j]:ptr[j + 1]]
+                    b = (tt / SPIKE_BIN_S).astype(np.int64)
+                    ok = b < np.asarray(nbs)[bb]
+                    np.add.at(X[:, j], cum[bb[ok]] + b[ok], 1)
+                yield {"id": uid, "activity": X, "dt": SPIKE_BIN_S, "segments": [int(c) for c in cum[1:-1]],
+                       "kind": f"Allen VCN {ds}, {len(blocks)} spontaneous blocks, {X.shape[1]} of "
+                               f"{int(z['n_good'])} good units", "blocks_s": blocks.tolist()}
+            except Exception as e:  # noqa: BLE001
+                yield {"id": uid, "error": f"unreadable: {type(e).__name__}: {e}"}
