@@ -2052,3 +2052,39 @@ amendment 24, item 4.
 **Run notes.** The machine restarted twice. Any job left running between turns is stopped, so the mice
 were measured by two workers while the session stayed active (amendment 26). No result was lost: every
 mouse and AI result is cached on completion.
+
+## Amendment 27 (15 Nov 2026): the per-mouse comparison (registered before any per-mouse AI recording)
+
+The Allen result showed that the instrument moves an AI's value more than mice differ, so the AIs have to
+be compared mouse by mouse. The user asked to run that design. **What is already known when this is
+written:**
+- the 35 mice's slow memory;
+- the random RNN's value at the median instrument;
+- its values at 5 of these mice's instruments (the transfer check: 0.038 to 0.112, against those mice's
+  own values).
+
+What is **not** known: the random RNN at the other 30 mice's instruments, and the slow-drive RNN at any
+single mouse's instrument. This test is therefore not blind to the mouse data. It is a registered rule
+applied to new AI recordings, and it is labelled that way.
+
+**Design** (`scripts/map_permouse.py`):
+- *Mice:* the 35 usable on slow memory in the registered Allen analysis.
+- *Recording:* for each mouse, the AI is recorded at that mouse's own single-unit numbers (samples per
+  timescale, spikes per bin, white share, rate spread), pooled in groups of 8, in one crop of 5,000 of that
+  mouse's timescales per recording. There are 2 recordings per instance and 3 instances, with no budget;
+  activity, seeds and code are as in the R4a arm.
+- *AI value at a mouse:* the median over its crops (80% finite).
+- *Paired difference:* d = the mouse's value minus the AI's value at that mouse's instrument. The ruler is
+  the SD of the 35 mice's values (0.042). The equivalence margin is 0.5 ruler units.
+- **B' (random RNN, prediction: below the mice).**
+  - *Confirmed* if a one-sided Wilcoxon signed-rank test gives d > 0 at p < 0.05 **and** the median d
+    exceeds 0.5 ruler units.
+  - *Refuted* if Wilcoxon gives d < 0 at p < 0.05, **or** the 90% bootstrap interval of the median d lies
+    within plus or minus 0.5 ruler units (no meaningful difference).
+  - Otherwise *unclear*.
+- **D' (random RNN with slow drives, prediction: inside, meaning no meaningful difference).**
+  - *Confirmed* if the 90% interval of the median d lies within plus or minus 0.5 ruler units.
+  - *Refuted* if Wilcoxon is significant in either direction **and** the absolute median d exceeds 0.5 ruler
+    units.
+  - Otherwise *unclear*.
+- Either test is *not testable* if fewer than 80% of pairs are defined.
