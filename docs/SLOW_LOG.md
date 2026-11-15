@@ -721,3 +721,12 @@ takes the imaging frame at or after its onset, reads only the span covering the 
 mice, 49% from VISp. Test on the first mouse (shapes only, no statistics): (10, 900, 171), 2.9 MB; about
 0.8 GB for all. A pipeline stage for the replication (calcium instrument numbers on the movie epochs with
 GCaMP6f's registered half-decay; AIs through the calcium model with 10 repeats of 900 frames) is next.
+
+**20:35. The replication arm is in the pipeline** (`--arm 2p`). Stages read and write `2p_*` files; the
+mouse stage takes dF/F on the 10 movie repeats and the map study's calcium instrument numbers (GCaMP6f,
+repeats as segments); AIs, including the LIF network, go through the calcium model at each mouse's
+numbers; clips are sized to 900 frames; playback uses one group at the Neuropixels median timescale. The
+freeze guard covers it. Regression check: the Neuropixels dry run gives the same numbers as before the
+change (A1 at gain 0.25: M1_lag1 0.3509, 0.3648). A calcium recording of the driven random RNN (gain 0.25,
+the map study's R3 calcium numbers as a stand-in, 10 repeats): M1_lag1 0.377, M2_lag1 0.33, against 0.35
+and 0.29 through the spike instrument. The two instruments agree on this system.

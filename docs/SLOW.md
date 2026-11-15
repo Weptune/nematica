@@ -100,7 +100,10 @@ with a shorter input timescale. F1 (below) found the movie in all 58 sessions.
 entry "F3: the two-photon replication is feasible"): 271 mice, each with a "session A" in which natural_movie_one is shown 10
 times. One experiment per mouse: the mouse's VISp experiment if it has one, else its lowest experiment id.
 Calcium imaging (GCaMP6f, 30 Hz), so the AIs are recorded through the map study's calcium model, matched
-to each mouse. The same tests as for the primary dataset, run separately.
+to each mouse's numbers on its movie repeats (GCaMP6f's registered half-decay); the LIF network too. Clip:
+900 frames, 10 repeats. Playback speed: one group, at the Neuropixels mice's median timescale (calcium
+timescales are set by the indicator, not the neurons). The same tests as for the primary dataset, run
+separately (`scripts/slow_run.py --arm 2p`).
 
 **Artificial: every standard family**, 3 instances each, each driven by inputs of its own kind with the
 same repeat structure:
@@ -241,5 +244,4 @@ Every verdict is reported whatever it is, with the number of mice and pairs.
 - Freezing fixes this file and those five files at the freezing commit. Any later change to them is an
   amendment (section 9), with the reason and whether any real data had been seen.
 - Before freezing: an independent review of this draft and the code, its findings and fixes recorded in
-  `SLOW_LOG.md`; the two-photon arm's stages written (the replication uses the same code with the calcium
-  model).
+  `SLOW_LOG.md`; 

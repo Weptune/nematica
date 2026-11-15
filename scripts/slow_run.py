@@ -28,6 +28,10 @@ from nematica.map import instrument as INS  # noqa: E402
 from nematica.slow import data as D, inputs as I, measures as M, record as Rc  # noqa: E402
 
 OUT = ROOT / "docs/figures/slow_runs"
+# per arm: file prefix, recording type, clip length in recorded samples (SLOW.md sections 4 and 5)
+ARMS = {"npx": {"prefix": "", "rtype": "spikes", "clip": 1500},
+        "2p": {"prefix": "2p_", "rtype": "calcium", "clip": 900}}
+CFG = dict(ARMS["npx"])
 GAINS = (0.05, 0.1, 0.25, 0.5, 1.0, 2.0, 4.0)        # SLOW.md section 7
 N_GROUPS = 4                                          # playback-speed groups (quartiles of bins per timescale)
 KEYS = ("bins_per_tau", "count_per_bin", "noise", "rate_log_sd")
@@ -103,10 +107,44 @@ def _fake_mouse(uid):
     return np.clip(np.round(Y), 0, 255).astype(np.uint8)
 
 
+def stage_mice_2p():
+    """Replication mice: dF/F on the 10 movie repeats; the map study's calcium instrument numbers (GCaMP6f's
+    registered half-decay; repeats as segments); the measures."""
+    name = "2p_mice.jsonl"
+    have = {k[0] for k in done(name, ("id",))}
+    for exp in D.twop_experiments():
+        uid = str(exp["id"])
+        if uid in have:
+            continue
+        try:
+            Y = np.asarray(D.twop_movie(exp), np.float32)
+            R, nb, N = Y.shape
+            X = Y.reshape(R * nb, N)
+            seg = [r * nb for r in range(1, R)]
+            ok = X.std(0) > 1e-9
+            prof = INS.instrument_numbers({"activity": X[:, ok], "dt": 1 / 30, "segments": seg,
+                                           "indicator": "GCaMP6f"}, "calcium")
+            row = {"id": uid, "specimen": exp["specimen_id"], "area": exp["targeted_structure"]["acronym"],
+                   "repeats": R, "bins": nb, "units": int(ok.sum()),
+                   "profile": {k: prof.get(k) for k in INS.KEYS["calcium"]}, **measures(Y[:, :, ok]),
+                   "extras": M.unit_internal_shares(Y[:, :, ok]), "frozen": frozen()}
+        except Exception as e:  # noqa: BLE001
+            row = {"id": uid, "error": f"{type(e).__name__}: {e}"}
+        append(name, row)
+        print(uid, {k: row.get(k) for k in ("units", "error")}, flush=True)
+
+
 # ------------------------------------------------------------------------------------------------ AIs
 def mice_table(dry=False):
-    rows = [r for r in map(json.loads, (OUT / ("mice_dry.jsonl" if dry else "mice.jsonl")).read_text().splitlines())
-            if "error" not in r]
+    rows = [r for r in map(json.loads, (OUT / (CFG["prefix"] + ("mice_dry.jsonl" if dry else "mice.jsonl")))
+                           .read_text().splitlines()) if "error" not in r]
+    if CFG["rtype"] == "calcium":
+        # replication: one playback group at the Neuropixels mice's median timescale (calcium timescales are
+        # set by the indicator, not the neurons; SLOW.md section 4)
+        npx = [r for r in map(json.loads, (OUT / "mice.jsonl").read_text().splitlines()) if "error" not in r]
+        for i, r in enumerate(rows):
+            r["instance"], r["group"], r["rtype"] = i % 3, 0, "calcium"
+        return rows, {0: float(np.median([r["profile"]["bins_per_tau"] for r in npx]))}
     bpt = np.array([r["profile"]["bins_per_tau"] for r in rows])
     edges = np.quantile(bpt, np.linspace(0, 1, N_GROUPS + 1))
     for i, r in enumerate(rows):                       # rank in the map study's (session) order
@@ -123,15 +161,18 @@ def record_for_mouse(A, starts, length, r, rng_seed):
     R = r["repeats"]
     st = starts[:R]
     A = A[:, ~M.silent_units(A)]
-    Y, k = Rc.record_repeats(A, st, length, r["profile"], seed=rng_seed)
+    rtype = r.get("rtype", "spikes")
+    Y, k = Rc.record_repeats(A, st, length, r["profile"], rtype=rtype, seed=rng_seed)
     Yn = np.stack([np.asarray(A[s:s + length]) for s in st])
-    return {**measures(Y), "recorded_bins": int(Y.shape[1]), "bin_steps": float(k["bin_steps"]),
+    return {**measures(Y), "recorded_bins": int(Y.shape[1]), "bin_steps": float(Rc.recording.per_sample(k, rtype)),
             "extras": M.unit_internal_shares(Yn)}
 
 
 def lif_for_mouse(A, starts, length, r, rng_seed):
     """A4: recorded like a mouse (SLOW.md section 5): 20 ms bins of its own spikes, thinned to the mouse's
-    spikes per bin."""
+    spikes per bin. In the replication it goes through the calcium model like every other AI."""
+    if r.get("rtype") == "calcium":
+        return record_for_mouse(A, starts, length, r, rng_seed)
     R = r["repeats"]
     nb = length // 4                                   # 4 native 5 ms steps per 20 ms bin
     Y = np.stack([A[s:s + nb * 4].reshape(nb, 4, -1).sum(1) for s in starts[:R]])
@@ -219,7 +260,7 @@ LMS = (("A6", "EleutherAI/pythia-14m-seed{s}"), ("A6", "EleutherAI/pythia-160m-s
 
 
 def group_profile(ms):
-    return {k: float(np.median([m["profile"][k] for m in ms])) for k in KEYS}
+    return {k: float(np.median([m["profile"][k] for m in ms])) for k in ms[0]["profile"]}
 
 
 def clip_units(make, prof, guess, unit_steps=1):
@@ -227,8 +268,8 @@ def clip_units(make, prof, guess, unit_steps=1):
     records as about CLIP_BINS bins. `make(n_units, R)` returns (A, starts); `unit_steps` native steps per
     unit (60 for task trials)."""
     A, st = make(guess, 3)
-    Y, _ = Rc.record_repeats(A, st, guess * unit_steps, prof, seed=0)
-    return max(int(round(guess * CLIP_BINS / Y.shape[1])), 5)
+    Y, _ = Rc.record_repeats(A, st, guess * unit_steps, prof, rtype=CFG["rtype"], seed=0)
+    return max(int(round(guess * CFG["clip"] / Y.shape[1])), 5)
 
 
 def gen_a2(inst, prof, R):
@@ -266,7 +307,7 @@ def gen_lm(model, inst, prof, R):
 
 def stage_ais(only=None, dry=False):
     rows, med = mice_table(dry)
-    name = "ais_dry.jsonl" if dry else "ais.jsonl"
+    name = CFG["prefix"] + ("ais_dry.jsonl" if dry else "ais.jsonl")
     have = done(name, ("family", "run", "id"))
     n_gen = 0
     fams = itertools.chain(families(rows, med, gains=(0.25,) if dry else GAINS), slow_families(rows, med))
@@ -337,10 +378,11 @@ def _verdict(d, ruler):
 
 
 def stage_tests(dry=False):
-    mice = {r["id"]: r for r in map(json.loads, (OUT / ("mice_dry.jsonl" if dry else "mice.jsonl")).read_text()
-                                    .splitlines()) if "error" not in r}
-    ais = [r for r in map(json.loads, (OUT / ("ais_dry.jsonl" if dry else "ais.jsonl")).read_text().splitlines())
-           if "error" not in r and r["id"] in mice]
+    pre = CFG["prefix"]
+    mice = {r["id"]: r for r in map(json.loads, (OUT / (pre + ("mice_dry.jsonl" if dry else "mice.jsonl")))
+                                    .read_text().splitlines()) if "error" not in r}
+    ais = [r for r in map(json.loads, (OUT / (pre + ("ais_dry.jsonl" if dry else "ais.jsonl"))).read_text()
+                          .splitlines()) if "error" not in r and r["id"] in mice]
     out = {"frozen": frozen(), "n_mice": len(mice), "H1": {}, "H2": {}, "H3": {}}
     rulers = {}
     for meas in ("M1", "M2"):
@@ -427,7 +469,7 @@ def stage_tests(dry=False):
                                     "median_log_M2_change": float(np.median(d2)) if d2 else None,
                                     "passes": bool(dl and d2 and _wilcoxon(dl, "less") < 0.05
                                                    and _wilcoxon(d2, "greater") < 0.05)}
-    name = "tests_dry.json" if dry else "tests.json"
+    name = pre + ("tests_dry.json" if dry else "tests.json")
     (OUT / name).write_text(json.dumps(out, indent=1, default=float))
     print(json.dumps(out["H1"]["thesis"]), json.dumps(out.get("H2", {}).get("confirmed")), flush=True)
 
@@ -435,13 +477,15 @@ def stage_tests(dry=False):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("stage", choices=["mice", "ais", "tests"])
+    p.add_argument("--arm", choices=list(ARMS), default="npx")
     p.add_argument("--dry", action="store_true")
     p.add_argument("--only", nargs="*")
     a = p.parse_args()
     if a.stage in ("mice", "ais") and not a.dry and not frozen():
         sys.exit("SLOW.md is not frozen: no real activity is measured before the registration binds.")
+    CFG.update(ARMS[a.arm])
     if a.stage == "mice":
-        stage_mice(dry=a.dry)
+        stage_mice_2p() if a.arm == "2p" else stage_mice(dry=a.dry)
     elif a.stage == "ais":
         stage_ais(only=a.only, dry=a.dry)
     else:
