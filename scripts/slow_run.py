@@ -158,9 +158,77 @@ def families(rows, med, gains=GAINS):
             yield ("A4", f"i{inst}-gain{gain}", ms, lif_for_mouse,
                    lambda ms=ms, gain=gain, inst=inst: I.driven_lif(feat, R=Rmax(ms), spf=(1000 / 30) / 5,
                                                                     gain=gain, seed=inst))
-    # A2, A3, A5, A6, A7: added once their generators are fixed for the frozen run (see SLOW.md section 4);
-    # each follows the same pattern: one generation per instance (and per speed group where the clip length
-    # depends on it), recorded at every mouse it serves.
+    # A2, A3, A5, A6, A7 (SLOW.md section 4): the clip is sized so that it records as about CLIP_BINS bins at
+    # the group's median instrument, from a pilot of the same system (`clip_units`).
+    for inst in range(3):
+        for g in range(N_GROUPS):
+            ms = [r for r in rows if r["instance"] == inst and r["group"] == g]
+            if not ms:
+                continue
+            prof = group_profile(ms)
+            yield ("A2", f"i{inst}-g{g}", ms, record_for_mouse,
+                   lambda ms=ms, inst=inst, prof=prof: gen_a2(inst, prof, Rmax(ms)))
+            for kind, fam in (("gru", "A3"), ("cfc", "A5")):
+                yield (fam, f"i{inst}-g{g}", ms, record_for_mouse,
+                       lambda ms=ms, inst=inst, prof=prof, kind=kind: gen_char(kind, inst, prof, Rmax(ms)))
+            for fam, model in LMS:
+                yield (fam, f"{model.format(s=inst + 1).split('/')[-1]}-i{inst}-g{g}", ms, record_for_mouse,
+                       lambda ms=ms, inst=inst, prof=prof, model=model: gen_lm(model, inst, prof, Rmax(ms)))
+
+
+CLIP_BINS = 1500                                      # natural_movie_one in 20 ms bins
+NETS = ROOT / "data/derived/slow_nets"
+# instances: released seeds for Pythia 14M, 160M and 410M (as in the map study); for 1B and Mamba, instances
+# differ in their text (the clip and contexts are drawn with the instance's seed)
+LMS = (("A6", "EleutherAI/pythia-14m-seed{s}"), ("A6", "EleutherAI/pythia-160m-seed{s}"),
+       ("A6", "EleutherAI/pythia-410m-seed{s}"), ("A6", "EleutherAI/pythia-1b"),
+       ("A7", "state-spaces/mamba-130m-hf"), ("A7", "state-spaces/mamba-370m-hf"))
+
+
+def group_profile(ms):
+    return {k: float(np.median([m["profile"][k] for m in ms])) for k in KEYS}
+
+
+def clip_units(make, prof, guess, unit_steps=1):
+    """Pilot: generate 3 repeats of a clip of `guess` units, record at `prof`, and scale the clip so it
+    records as about CLIP_BINS bins. `make(n_units, R)` returns (A, starts); `unit_steps` native steps per
+    unit (60 for task trials)."""
+    A, st = make(guess, 3)
+    Y, _ = Rc.record_repeats(A, st, guess * unit_steps, prof, seed=0)
+    return max(int(round(guess * CLIP_BINS / Y.shape[1])), 5)
+
+
+def gen_a2(inst, prof, R):
+    f = NETS / f"a2_seed{inst}.pt"
+    if not f.exists():
+        net, acc = I.trained_task_rnn(seed=inst)
+        if acc < 0.7:                                  # the map study's guard (amendment 22)
+            raise RuntimeError(f"A2 seed {inst} did not learn the task (accuracy {acc:.2f})")
+        I.save_task_rnn(net, f)
+    net = I.load_task_rnn(f)
+    n = clip_units(lambda c, r: I.task_rnn_repeats(net, R=r, clip_trials=c, seed=inst), prof, 20, unit_steps=60)
+    return (*I.task_rnn_repeats(net, R=R, clip_trials=n, seed=inst), n * 60)
+
+
+def gen_char(kind, inst, prof, R):
+    from nematica.map import zoo
+    f = NETS / f"{kind}_seed{inst}.pt"
+    if not f.exists():
+        model, data, split = I.trained_char_net(kind, seed=inst)
+        I.save_char_net(model, f, kind)
+    model = I.load_char_net(f)
+    data, _ = zoo.chars()
+    split = len(data) - 200_000
+    n = clip_units(lambda c, r: I.char_repeats(model, data, split, clip_len=c, R=r, seed=inst), prof, 600)
+    return (*I.char_repeats(model, data, split, clip_len=n, R=R, seed=inst), n)
+
+
+def gen_lm(model, inst, prof, R):
+    name = model.format(s=inst + 1)
+    tok = np.load(ROOT / "data/external/books/tokens.npy")
+    mk = lambda c, r: I.lm_repeats(name, *I.text_clip_and_contexts(tok, c, 256, r, seed=inst))[:2]
+    n = clip_units(mk, prof, 300)
+    return (*mk(n, R), n)
 
 
 def stage_ais(only=None, dry=False):
@@ -177,8 +245,9 @@ def stage_ais(only=None, dry=False):
         if not todo:
             continue
         try:
-            A, starts = gen()
-            length = starts[1] - starts[0]
+            res = gen()
+            A, starts = res[0], res[1]
+            length = res[2] if len(res) > 2 else starts[1] - starts[0]   # clip length in native steps
             n_gen += 1
         except Exception as e:  # noqa: BLE001
             append(name, {"family": fam, "run": run, "id": "*", "error": f"generation: {type(e).__name__}: {e}"})

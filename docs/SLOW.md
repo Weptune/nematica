@@ -60,7 +60,8 @@ see `SLOW_LOG.md` 18:30 to 19:05: the lag-0 extrapolation read an internal share
 with none, and that bias also dragged the timescale ratio).
 
 - **M1, internal share** = C_int(1) / C_same(1): the fraction of the one-bin covariance that is not set by
-  the input. (Reported, not tested: the lag-0 version with the extrapolated noise-free variance.)
+  the input. If C_same(1) is not positive (no positive one-bin covariance at all, as in the
+  spiking network at mouse sparseness), M1 is set to 0 and flagged. (Reported, not tested: the lag-0 version with the extrapolated noise-free variance.)
 - **M2, internal slowness** = T_int / T_lock, where each T is an integrated autocorrelation time summed
   from lag 1 and normalised by lag 1: T = sum over k >= 1 of C(k) / C(1), up to the first lag where C
   falls to zero or below. It asks how much slower the internal state moves than the input-driven activity.

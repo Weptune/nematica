@@ -677,3 +677,12 @@ row to `docs/figures/slow_runs/*.jsonl` and resumes after a crash).
   covariance at all**, which left M1_lag1 undefined. Rule: M1_lag1 is then set to 0 and flagged
   `no_lag1_cov` (nothing slow to share out). To go into `SLOW.md` section 3.
 - `tests` is not written yet; it must be written and committed before freezing.
+
+**19:10. All seven families wired into the pipeline; dry runs pass.** A2, A3, A5, A6 and A7 size their clip
+with a pilot: 3 repeats of a guessed clip are recorded at the group's median instrument and the clip is
+scaled to record as about 1,500 bins (the mouse's clip). Trained networks are trained once per instance
+(the A2 accuracy guard of 0.7 applies) and saved. Pythia 14M, 160M and 410M use the released seeds 1 to 3
+as in the map study; Pythia 1B and Mamba use one model with instance-specific text. A bug found by the dry
+run: for families with text or trials between repeats, the clip length is not the spacing of repeat
+starts; generators now return it explicitly. Dry runs (stand-in mice, real AIs, values not to be read as
+results): A1, A2, A3, A4, A6 complete without errors.
