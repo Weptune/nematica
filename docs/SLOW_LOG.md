@@ -498,7 +498,7 @@ opposite. Inspection of single units (saved network, same clip):
   near 0 has no analogue). Draft: AI units with SD below 1% of the median unit SD are excluded as silent
   (this would remove 1 of the 5 strongest latching units here, not the phenomenon).
 
-**00:05 (16 Nov). The autocovariance is now computed with FFTs, a chunk of 64 units at a time.** The GRU
+**00:05. The autocovariance is now computed with FFTs, a chunk of 64 units at a time.** The GRU
 recording (20 repeats of 10,930 bins, 512 units) peaked at 4.3 GB, mostly in `repeat_autocov`, which held
 several float64 copies of the whole array and looped over 2,700 lags. The new version standardises and
 transforms 64 units at a time. Checked against the original lag-by-lag version (kept as
@@ -506,3 +506,8 @@ transforms 64 units at a time. Checked against the original lag-by-lag version (
 (cross). Same quantities, less memory, faster.
 (Background-job outputs filtered through `grep` were block-buffered, so lines appeared late; filters now
 use `--line-buffered`.)
+
+**Clock correction (machine clock 15:08, 15 Nov).** The times on the entries from "18:00. F2 started" to
+"00:05" above are sequence labels I assigned, not clock readings, and they ran ahead of the real clock: all
+of that work happened on 15 Nov between about 12:00 and 15:05 by the machine clock (whose zone is
+unlabelled). Their order is correct. From here on, entries carry the machine clock time.
