@@ -46,6 +46,20 @@ def record_repeats(A, starts, length, prof, rtype="spikes", seed=0, group=None, 
     # own blocks of 400 peak at about 3 GB per 100,000 native rows. Same model, different random draws
     # from the earlier single call.
     rng = np.random.default_rng(seed + 7)
+    if rtype == "spikes":
+        # review S-R1 finding 14: each repeat is binned from its own start (segments at repeat starts and
+        # ends), as the mice are; spike binning has no kernel, so nothing else changes
+        segs = sorted({int(x) for x in list(starts) + [s_ + length for s_ in starts] if 0 < x < len(A)})
+        parts = [recording.record_matched(A[:, a:a + UNIT_BLOCK], rtype, k, rng=rng, segments=segs)
+                 for a in range(0, A.shape[1], UNIT_BLOCK)]
+        Y = np.hstack([p_[0] for p_ in parts])
+        rec_starts = [0] + list(parts[0][1])
+        cuts = sorted(set([0] + segs))
+        where = dict(zip(cuts, rec_starts))
+        n = int(np.floor(length / recording.per_sample(k, rtype)))
+        out = [Y[where[s_]:where[s_] + n] for s_ in starts if s_ in where and where[s_] + n <= len(Y)]
+        out = [o for o in out if len(o) == n]
+        return np.stack(out), k
     Y = np.hstack([recording.record_matched(A[:, a:a + UNIT_BLOCK], rtype, k, rng=rng)[0]
                    for a in range(0, A.shape[1], UNIT_BLOCK)])
     if group:

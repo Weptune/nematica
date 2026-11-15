@@ -161,3 +161,33 @@ def twop_movie(exp):
     out = np.transpose(X[:, idx - lo], (1, 2, 0)).astype(np.float16)                 # R x 900 x cells
     np.savez_compressed(f, dff=out, idx=idx)
     return out
+
+
+def unit_meta(a, units):
+    """Review S-R1 finding 3: per cached unit, its brain area (the location of its peak channel) and Allen's
+    default QC (isi_violations < 0.5, amplitude_cutoff < 0.1, presence_ratio > 0.9, as amendment 25 of the
+    map study). Metadata only; cached locally. Returns (areas as str array, qc bool array) in cache order."""
+    import h5py
+    f = CACHE / (a["path"].split("/")[0] + "_meta.npz")
+    if f.exists():
+        z = np.load(f, allow_pickle=False)
+        return z["area"], z["qc"]
+    CACHE.mkdir(parents=True, exist_ok=True)
+    with h5py.File(mdata.open_url(f"{mdata.DANDI}/assets/{a['asset_id']}/download/"), "r") as h:
+        pk = np.asarray(h["units/peak_channel_id"][:])
+        isi, amp, pres = (np.asarray(h[f"units/{k}"][:]) for k in ("isi_violations", "amplitude_cutoff",
+                                                                     "presence_ratio"))
+        e = h["general/extracellular_ephys/electrodes"]
+        eid = np.asarray(e["id"][:])
+        loc = np.asarray([x.decode() if isinstance(x, bytes) else str(x) for x in e["location"][:]])
+    lut = dict(zip(eid.tolist(), loc.tolist()))
+    u = np.asarray(units)
+    area = np.asarray([lut.get(int(c), "") for c in pk[u]])
+    qc = (isi[u] < 0.5) & (amp[u] < 0.1) & (pres[u] > 0.9)
+    np.savez(f, area=area, qc=qc)
+    return area, qc
+
+
+def visual_cortex(area):
+    """Allen visual cortical areas: acronyms starting with VIS (VISp, VISl, VISal, VISrl, VISam, VISpm, ...)."""
+    return np.char.startswith(np.asarray(area, str), "VIS")

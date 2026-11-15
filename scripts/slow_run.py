@@ -32,10 +32,12 @@ OUT = ROOT / "docs/figures/slow_runs"
 ARMS = {"npx": {"prefix": "", "rtype": "spikes", "clip": 1500},
         "2p": {"prefix": "2p_", "rtype": "calcium", "clip": 900}}
 CFG = dict(ARMS["npx"])
-GAINS = (0.05, 0.1, 0.25, 0.5, 1.0, 2.0, 4.0)        # SLOW.md section 7
+GAINS = (0.05, 0.1, 0.25, 0.5, 0.86, 1.0, 2.0, 4.0)  # SLOW.md section 7; 0.86 = balanced (finding 20)
 N_GROUPS = 4                                          # playback-speed groups (quartiles of bins per timescale)
 KEYS = ("bins_per_tau", "count_per_bin", "noise", "rate_log_sd")
-MEASURES = ("M1_lag1", "no_lag1_cov", "M2_lag1", "M2_ceiling", "M1", "M2_int", "M2", "ti_lag1", "tl_lag1", "noise_share")
+PRIMARY = ("M1", "M2", "ti", "tl", "int_ceiling", "lock_ceiling", "no_shared", "no_locked")
+K0 = 2                                               # first lag used: 2 bins (40 ms), review S-R1 finding 1
+MIN_UNITS = 30                                       # a mouse with fewer included units is excluded
 
 
 def frozen():
@@ -56,36 +58,77 @@ def done(name, key):
     return {tuple(r[k] for k in key) for r in map(json.loads, f.read_text().splitlines()) if "error" not in r}
 
 
+def adaptation_trend(Y):
+    """Reported (SLOW.md section 3): Spearman correlation, over repeats, between repeat number and how well
+    that repeat's population response matches the mean of the other repeats."""
+    from scipy.stats import spearmanr
+    Y = np.asarray(Y, np.float32)
+    R = Y.shape[0]
+    if R < 4:
+        return None
+    tot = Y.sum(0)
+    sim = [float(np.corrcoef(Y[r].ravel(), ((tot - Y[r]) / (R - 1)).ravel())[0, 1]) for r in range(R)]
+    return float(spearmanr(np.arange(R), sim)[0])
+
+
 def measures(Y):
-    r = M.internal_measures(Y)
-    return {k: r.get(k) for k in MEASURES}
+    """Primary (review S-R1 fix): `lag_measures` from lag 2 with units centred within each repeat; also each
+    half of the clip separately (finding 12), the adaptation trend and, for reference, the superseded
+    measures."""
+    r = M.lag_measures(Y, k0=K0)
+    T = Y.shape[1]
+    h1, h2 = M.lag_measures(Y[:, : T // 2], k0=K0), M.lag_measures(Y[:, T // 2:], k0=K0)
+    old = M.internal_measures(Y)
+    return {**{k: r[k] for k in PRIMARY}, "M1_first_half": h1["M1"], "M1_second_half": h2["M1"],
+            "adapt_trend": adaptation_trend(Y),
+            "superseded": {k: old.get(k) for k in ("M1_lag1", "M2_lag1", "M1", "M2_int")}}
+
+
+def split_halves(Y):
+    """C3 (SLOW.md section 6): the primary measures on odd and on even repeats."""
+    a, b = M.lag_measures(Y[0::2], k0=K0), M.lag_measures(Y[1::2], k0=K0)
+    return {"odd": {k: a[k] for k in PRIMARY}, "even": {k: b[k] for k in PRIMARY}}
 
 
 # ------------------------------------------------------------------------------------------------ mice
-def keep_units(X):
-    """The map study's inclusion rule for spikes (nematica.map.instrument.include_units), as a mask."""
-    n = X.sum(0)
-    return (X.std(0) > 1e-9) & (n >= INS.MIN_SPIKES) & (n / (len(X) * INS.SPIKE_BIN_S) >= INS.MIN_RATE_HZ)
+def keep_units(X, per_repeat_bins=None):
+    """The map study's inclusion rule for spikes, with review S-R1 finding 23 fixed: the rate threshold over
+    all repeats, and the 200-spike minimum counted over the first 17 repeats only (17 is the fewest valid
+    repeats seen), so 20- and 60-repeat sessions face the same rule."""
+    n_all = X.sum(0)
+    first = X[: 17 * per_repeat_bins] if per_repeat_bins else X
+    return (X.std(0) > 1e-9) & (first.sum(0) >= INS.MIN_SPIKES) & \
+        (n_all / (len(X) * INS.SPIKE_BIN_S) >= INS.MIN_RATE_HZ)
 
 
 def stage_mice(dry=False):
     name = "mice_dry.jsonl" if dry else "mice.jsonl"
     have = {k[0] for k in done(name, ("id",))}
-    for ds, a in D.sessions():
+    for rank, (ds, a) in enumerate(D.sessions()):    # rank: the fixed session order (finding 15)
         uid = a["path"].split("/")[0]
         if uid in have:
             continue
         try:
-            Y = D.movie_counts(D.movie_cache(a)) if not dry else _fake_mouse(uid)
+            if dry:
+                Y = _fake_mouse(uid)
+                sel = np.ones(Y.shape[2], bool)
+            else:
+                z = D.movie_cache(a)
+                Y = D.movie_counts(z)
+                area, qc = D.unit_meta(a, z["units"])
+                sel = D.visual_cortex(area) & qc          # review S-R1 finding 3: visual cortex, Allen QC
             R, nb, N = Y.shape
             X = Y.reshape(R * nb, N).astype(np.float32)
-            keep = keep_units(X)
+            keep = sel & keep_units(X, nb)
+            if keep.sum() < MIN_UNITS:
+                raise RuntimeError(f"only {int(keep.sum())} included visual-cortex units")
             seg = [r * nb for r in range(1, R)]
             prof = INS.instrument_numbers({"activity": X[:, keep], "dt": INS.SPIKE_BIN_S, "segments": seg},
                                           "spikes")
             del X
-            row = {"id": uid, "dandiset": ds, "repeats": R, "bins": nb, "units": int(keep.sum()), "units_cached": N,
+            row = {"id": uid, "rank": rank, "dandiset": ds, "repeats": R, "bins": nb, "units": int(keep.sum()), "units_cached": N,
                    "profile": {k: prof.get(k) for k in KEYS}, **measures(Y[:, :, keep]),
+                   "split": split_halves(Y[:, :, keep]),
                    "extras": M.unit_internal_shares(Y[:, :, keep]), "dry": dry, "frozen": frozen()}
             if ds == "000022" and not dry:                # validity check: the shuffled movie (SLOW.md 7)
                 Ys = D.movie_counts(D.movie_cache(a, shuffled=True))
@@ -112,7 +155,7 @@ def stage_mice_2p():
     registered half-decay; repeats as segments); the measures."""
     name = "2p_mice.jsonl"
     have = {k[0] for k in done(name, ("id",))}
-    for exp in D.twop_experiments():
+    for rank, exp in enumerate(D.twop_experiments()):
         uid = str(exp["id"])
         if uid in have:
             continue
@@ -124,9 +167,10 @@ def stage_mice_2p():
             ok = X.std(0) > 1e-9
             prof = INS.instrument_numbers({"activity": X[:, ok], "dt": 1 / 30, "segments": seg,
                                            "indicator": "GCaMP6f"}, "calcium")
-            row = {"id": uid, "specimen": exp["specimen_id"], "area": exp["targeted_structure"]["acronym"],
+            row = {"id": uid, "rank": rank, "specimen": exp["specimen_id"], "area": exp["targeted_structure"]["acronym"],
                    "repeats": R, "bins": nb, "units": int(ok.sum()),
                    "profile": {k: prof.get(k) for k in INS.KEYS["calcium"]}, **measures(Y[:, :, ok]),
+                   "split": split_halves(Y[:, :, ok]),
                    "extras": M.unit_internal_shares(Y[:, :, ok]), "frozen": frozen()}
         except Exception as e:  # noqa: BLE001
             row = {"id": uid, "error": f"{type(e).__name__}: {e}"}
@@ -143,12 +187,12 @@ def mice_table(dry=False):
         # set by the indicator, not the neurons; SLOW.md section 4)
         npx = [r for r in map(json.loads, (OUT / "mice.jsonl").read_text().splitlines()) if "error" not in r]
         for i, r in enumerate(rows):
-            r["instance"], r["group"], r["rtype"] = i % 3, 0, "calcium"
+            r["instance"], r["group"], r["rtype"] = r.get("rank", i) % 3, 0, "calcium"
         return rows, {0: float(np.median([r["profile"]["bins_per_tau"] for r in npx]))}
     bpt = np.array([r["profile"]["bins_per_tau"] for r in rows])
     edges = np.quantile(bpt, np.linspace(0, 1, N_GROUPS + 1))
-    for i, r in enumerate(rows):                       # rank in the map study's (session) order
-        r["instance"] = i % 3
+    for i, r in enumerate(rows):                       # instance from the fixed session order (finding 15)
+        r["instance"] = r.get("rank", i) % 3
         r["group"] = int(np.clip(np.searchsorted(edges, r["profile"]["bins_per_tau"], side="right") - 1, 0,
                                  N_GROUPS - 1))
     med = {g: float(np.median([r["profile"]["bins_per_tau"] for r in rows if r["group"] == g]))
@@ -164,8 +208,11 @@ def record_for_mouse(A, starts, length, r, rng_seed):
     rtype = r.get("rtype", "spikes")
     Y, k = Rc.record_repeats(A, st, length, r["profile"], rtype=rtype, seed=rng_seed)
     Yn = np.stack([np.asarray(A[s:s + length]) for s in st])
-    return {**measures(Y), "recorded_bins": int(Y.shape[1]), "bin_steps": float(Rc.recording.per_sample(k, rtype)),
-            "extras": M.unit_internal_shares(Yn)}
+    knobs = {a: (float(v) if isinstance(v, (int, float, np.floating, np.integer)) and not isinstance(v, bool) else v)
+             for a, v in k.items() if isinstance(v, (int, float, bool, np.floating, np.integer, dict))}
+    return {**measures(Y), "recorded_bins": int(Y.shape[1]), "repeats_used": int(Y.shape[0]),
+            "bin_steps": float(Rc.recording.per_sample(k, rtype)), "knobs": knobs,       # finding 10
+            "reached": bool(k.get("reached", True)), "extras": M.unit_internal_shares(Yn)}
 
 
 def lif_for_mouse(A, starts, length, r, rng_seed):
@@ -183,43 +230,82 @@ def lif_for_mouse(A, starts, length, r, rng_seed):
             "extras": M.unit_internal_shares(Y[:, :, keep])}
 
 
+@functools.lru_cache(maxsize=3)
+def a1_tau(inst):
+    """Finding 16: the undriven A1 native timescale, measured per instance (8,000 steps)."""
+    from nematica.map import zoo, measures as MM
+    return float(MM.tau_med(zoo.random_rnn(n=480, steps=8000, seed=inst)[0]))
+
+
 def families(rows, med, gains=GAINS):
-    """Yields (family, run label, generator, mice it serves, recorder). Each generator is called once and its
+    """Yields (family, run label, mice it serves, recorder, generator). Each generator is called once and its
     activity recorded at every mouse it serves, then discarded (disk, SLOW_LOG F4)."""
     feat = I.movie_features()
-    tau_a1 = 27.15                                     # undriven A1 native timescale (SLOW_LOG F2); per
-    Rmax = lambda ms: max(m["repeats"] for m in ms)    # instance it is re-measured in generation (below)
+    Rmax = lambda ms: max(m["repeats"] for m in ms)
     for inst in range(3):
         for g in range(N_GROUPS):
             ms = [r for r in rows if r["instance"] == inst and r["group"] == g]
             if not ms:
                 continue
-            spf = I.steps_per_frame(tau_a1, med[g])
             for gain in gains:
                 yield ("A1", f"i{inst}-g{g}-gain{gain}", ms, record_for_mouse,
-                       lambda ms=ms, gain=gain, spf=spf, inst=inst: I.driven_random_rnn(
-                           feat, R=Rmax(ms), n=480, gain=gain, spf=spf, seed=inst)[:2])
+                       lambda ms=ms, gain=gain, g=g, inst=inst: I.driven_random_rnn(
+                           feat, R=Rmax(ms), n=480, gain=gain, spf=I.steps_per_frame(a1_tau(inst), med[g]),
+                           seed=inst)[:2])
         ms = [r for r in rows if r["instance"] == inst]
         for gain in gains:                             # A4: real-time playback, no speed groups
             yield ("A4", f"i{inst}-gain{gain}", ms, lif_for_mouse,
                    lambda ms=ms, gain=gain, inst=inst: I.driven_lif(feat, R=Rmax(ms), spf=(1000 / 30) / 5,
                                                                     gain=gain, seed=inst))
-    # A2, A3, A5, A6, A7 (SLOW.md section 4): the clip is sized so that it records as about CLIP_BINS bins at
-    # the group's median instrument, from a pilot of the same system (`clip_units`).
+    # A2, A3, A5, A6, A7 (finding 12): one clip per instance, the same for every mouse, sized once so that it
+    # records as about CFG["clip"] samples at the median instrument of all mice (`clip_units`)
+    prof = group_profile(rows)
+    for inst in range(3):
+        ms = [r for r in rows if r["instance"] == inst]
+        yield ("A2", f"i{inst}", ms, record_for_mouse, lambda ms=ms, inst=inst: gen_a2(inst, prof, Rmax(ms)))
+        for kind, fam in (("gru", "A3"), ("cfc", "A5")):
+            yield (fam, f"i{inst}", ms, record_for_mouse,
+                   lambda ms=ms, inst=inst, kind=kind: gen_char(kind, inst, prof, Rmax(ms)))
+        for fam, model in LMS:
+            yield (fam, f"{model.format(s=inst + 1).split('/')[-1]}-i{inst}", ms, record_for_mouse,
+                   lambda ms=ms, inst=inst, model=model: gen_lm(model, inst, prof, Rmax(ms)))
+
+
+def sensitivity_families(rows, med):
+    """Finding 5: playback sensitivity for the balanced-gain A1 (x0.5, x2, and playback from the driven
+    timescale). Finding 7: H2's negative controls, tuned like the slow drive: a fast drive (time constant
+    one frame) and more network noise."""
+    feat = I.movie_features()
     for inst in range(3):
         for g in range(N_GROUPS):
             ms = [r for r in rows if r["instance"] == inst and r["group"] == g]
             if not ms:
                 continue
-            prof = group_profile(ms)
-            yield ("A2", f"i{inst}-g{g}", ms, record_for_mouse,
-                   lambda ms=ms, inst=inst, prof=prof: gen_a2(inst, prof, Rmax(ms)))
-            for kind, fam in (("gru", "A3"), ("cfc", "A5")):
-                yield (fam, f"i{inst}-g{g}", ms, record_for_mouse,
-                       lambda ms=ms, inst=inst, prof=prof, kind=kind: gen_char(kind, inst, prof, Rmax(ms)))
-            for fam, model in LMS:
-                yield (fam, f"{model.format(s=inst + 1).split('/')[-1]}-i{inst}-g{g}", ms, record_for_mouse,
-                       lambda ms=ms, inst=inst, prof=prof, model=model: gen_lm(model, inst, prof, Rmax(ms)))
+            R = max(m["repeats"] for m in ms)
+            spf = lambda inst=inst, g=g: I.steps_per_frame(a1_tau(inst), med[g])
+            for mult in (0.5, 2.0):
+                yield ("A1-play", f"i{inst}-g{g}-x{mult}", ms, record_for_mouse,
+                       lambda R=R, spf=spf, mult=mult, inst=inst: I.driven_random_rnn(
+                           feat, R=R, n=480, gain=BALANCED_GAIN, spf=spf() * mult, seed=inst)[:2])
+
+            def driven_rule(R=R, inst=inst, g=g):
+                from nematica.map import measures as MM
+                A, _, _ = I.driven_random_rnn(feat, R=2, n=480, gain=BALANCED_GAIN,
+                                              spf=I.steps_per_frame(a1_tau(inst), med[g]), seed=inst)
+                return I.driven_random_rnn(feat, R=R, n=480, gain=BALANCED_GAIN,
+                                           spf=I.steps_per_frame(float(MM.tau_med(A)), med[g]), seed=inst)[:2]
+            yield ("A1-play", f"i{inst}-g{g}-driven", ms, record_for_mouse, driven_rule)
+            for share in SLOW_SHARES:
+                def fast(R=R, inst=inst, g=g, share=share):
+                    A, st = _a1_base(inst, g, R, I.steps_per_frame(a1_tau(inst), med[g]))
+                    return I.add_slow_drive(A, share, tau_steps=I.steps_per_frame(a1_tau(inst), med[g]),
+                                            seed=inst), st
+                yield ("A1-fast", f"i{inst}-g{g}-share{share}", ms, record_for_mouse, fast)
+            for noise in (0.2, 0.4, 0.8, 1.6):
+                yield ("A1-noise", f"i{inst}-g{g}-noise{noise}", ms, record_for_mouse,
+                       lambda R=R, inst=inst, g=g, noise=noise: I.driven_random_rnn(
+                           feat, R=R, n=480, gain=BALANCED_GAIN, noise=noise,
+                           spf=I.steps_per_frame(a1_tau(inst), med[g]), seed=inst)[:2])
 
 
 BALANCED_GAIN = 0.86                                  # movie input as strong as recurrent input (SLOW_LOG F2)
@@ -240,7 +326,7 @@ def slow_families(rows, med):
             ms = [r for r in rows if r["instance"] == inst and r["group"] == g]
             if not ms:
                 continue
-            spf = I.steps_per_frame(27.15, med[g])
+            spf = I.steps_per_frame(a1_tau(inst), med[g])
             R = max(m["repeats"] for m in ms)
             for share in SLOW_SHARES:
                 for tau_s in SLOW_TAUS_S:
@@ -273,11 +359,20 @@ def clip_units(make, prof, guess, unit_steps=1):
 
 
 def gen_a2(inst, prof, R):
-    f = NETS / f"a2_seed{inst}.pt"
+    f = NETS / f"a2_inst{inst}.pt"
     if not f.exists():
-        net, acc = I.trained_task_rnn(seed=inst)
-        if acc < 0.7:                                  # the map study's guard (amendment 22)
-            raise RuntimeError(f"A2 seed {inst} did not learn the task (accuracy {acc:.2f})")
+        for seed in (inst, inst + 3, inst + 6):       # SLOW.md section 4: accuracy at least 0.7, else next seed
+            g = NETS / f"a2_seed{seed}.pt"
+            if g.exists():
+                net = I.load_task_rnn(g)
+                break
+            net, acc = I.trained_task_rnn(seed=seed)
+            print("A2 seed", seed, "accuracy", round(acc, 3), flush=True)
+            if acc >= 0.7:
+                I.save_task_rnn(net, g)
+                break
+        else:
+            raise RuntimeError(f"A2 instance {inst}: no seed reached accuracy 0.7")
         I.save_task_rnn(net, f)
     net = I.load_task_rnn(f)
     n = clip_units(lambda c, r: I.task_rnn_repeats(net, R=r, clip_trials=c, seed=inst), prof, 20, unit_steps=60)
@@ -300,7 +395,8 @@ def gen_char(kind, inst, prof, R):
 def gen_lm(model, inst, prof, R):
     name = model.format(s=inst + 1)
     tok = np.load(ROOT / "data/external/books/tokens.npy")
-    mk = lambda c, r: I.lm_repeats(name, *I.text_clip_and_contexts(tok, c, 256, r, seed=inst))[:2]
+    at = len(tok) * (inst + 2) // 6                    # finding 17: each instance its own clip
+    mk = lambda c, r: I.lm_repeats(name, *I.text_clip_and_contexts(tok, c, 256, r, seed=inst, clip_at=at))[:2]
     n = clip_units(mk, prof, 300)
     return (*mk(n, R), n)
 
@@ -310,7 +406,8 @@ def stage_ais(only=None, dry=False):
     name = CFG["prefix"] + ("ais_dry.jsonl" if dry else "ais.jsonl")
     have = done(name, ("family", "run", "id"))
     n_gen = 0
-    fams = itertools.chain(families(rows, med, gains=(0.25,) if dry else GAINS), slow_families(rows, med))
+    fams = itertools.chain(families(rows, med, gains=(0.25,) if dry else GAINS), slow_families(rows, med),
+                           sensitivity_families(rows, med))
     for fam, run, ms, rec, gen in fams:
         if dry and n_gen >= 2:
             break
@@ -333,12 +430,13 @@ def stage_ais(only=None, dry=False):
             except Exception as e:  # noqa: BLE001
                 row = {"family": fam, "run": run, "id": m["id"], "error": f"{type(e).__name__}: {e}"}
             append(name, row)
-            print(fam, run, m["id"], {k: row.get(k) for k in ("M1_lag1", "M2_lag1", "error")}, flush=True)
+            print(fam, run, m["id"], {k: row.get(k) for k in ("M1", "M2", "error")}, flush=True)
         del A
 
 
 # ------------------------------------------------------------------------------------------------ tests
 SPLIT_SEED = 2026
+RUNS_PER_FAMILY = {"A1": len(GAINS), "A4": len(GAINS), "A2": 1, "A3": 1, "A5": 1, "A6": 4, "A7": 2}
 
 
 def _wilcoxon(d, alt):
@@ -350,31 +448,108 @@ def _wilcoxon(d, alt):
     return float(wilcoxon(d, alternative=alt).pvalue)
 
 
-def _boot_ci(d, n=4000, seed=0):
+def _sign_test(x, alt):
+    from scipy.stats import binomtest
+    x = np.asarray(x, float)
+    x = x[np.isfinite(x) & (x != 0)]
+    if len(x) < 4:
+        return np.nan
+    return float(binomtest(int((x > 0).sum()), len(x), 0.5, alternative=alt).pvalue)
+
+
+def _cluster_ci(d, cells, n=4000, seed=0):
+    """Finding 6: bootstrap over generator cells (pairs sharing an AI run are resampled together)."""
+    d, cells = np.asarray(d, float), np.asarray(cells)
+    u = np.unique(cells)
+    idx = {c: np.flatnonzero(cells == c) for c in u}
     rng = np.random.default_rng(seed)
-    d = np.asarray(d, float)
-    d = d[np.isfinite(d)]
-    med = np.median(rng.choice(d, (n, len(d))), 1)
-    return [float(np.quantile(med, 0.05)), float(np.quantile(med, 0.95))]
+    meds = [np.median(np.concatenate([d[idx[c]] for c in rng.choice(u, len(u))])) for _ in range(n)]
+    return [float(np.quantile(meds, 0.05)), float(np.quantile(meds, 0.95))]
 
 
-def _value(row, measure):
-    """M1 as it is; M2 on a log scale, only where the internal part exists (M1 >= 0.05)."""
-    if measure == "M1":
-        return row.get("M1_lag1")
-    m2 = row.get("M2_lag1")
-    if row.get("M1_lag1") is None or row["M1_lag1"] < 0.05 or m2 is None or not np.isfinite(m2) or m2 <= 0:
-        return None
-    return float(np.log(m2))
+def _ruler(v):
+    """Finding 19: a MAD-based SD (1.4826 x median absolute deviation)."""
+    v = np.asarray([x for x in v if x is not None and np.isfinite(x)], float)
+    return float(1.4826 * np.median(np.abs(v - np.median(v)))) if len(v) > 2 else np.nan
 
 
-def _verdict(d, ruler):
+def _value(row, meas):
+    """M1 as it is. M2 on a log scale, only where there is an internal part (M1 >= 0.05, positive shared
+    covariance) and a locked part to time it against (finding 13: 'no_locked' is its own code).
+    Returns (value or None, code)."""
+    if meas == "M1":
+        return row.get("M1"), "ok"
+    if row.get("no_shared") or row.get("M1") is None or row["M1"] < 0.05:
+        return None, "no internal part"
+    if row.get("no_locked"):
+        return None, "no locked part"
+    m2 = row.get("M2")
+    if m2 is None or not np.isfinite(m2) or m2 <= 0:
+        return None, "no internal part"
+    return float(np.log(m2)), "ok"
+
+
+def _pair(mouse, ai_rows, meas):
+    """Finding 2: the bracket rule. d = 0 if the mouse lies within the family's range over its gains or
+    sizes, else mouse minus the nearer end. Finding 4: a mouse at ceiling against a family with a run at
+    ceiling counts as a tie."""
+    mv, _ = _value(mouse, meas)
+    if mv is None:
+        return None, "mouse absent"
+    vals = [(_value(r, meas)[0], r) for r in ai_rows]
+    ok = [(v, r) for v, r in vals if v is not None]
+    if not ok:
+        codes = {_value(r, meas)[1] for r in ai_rows}
+        return None, ("no locked part" if codes == {"no locked part"} else "no internal part")
+    if meas == "M2" and mouse.get("int_ceiling") and any(r.get("int_ceiling") for _, r in ok):
+        return 0.0, "ceiling tie"
+    lo, hi = min(v for v, _ in ok), max(v for v, _ in ok)
+    return (0.0 if lo <= mv <= hi else mv - (hi if mv > hi else lo)), "ok"
+
+
+def _verdict(d, cells, ruler):
     du = np.asarray(d, float) / ruler
+    cells = np.asarray(cells)
+    cell_med = [float(np.median(du[cells == c])) for c in np.unique(cells)]
     p_gap, p_rev = _wilcoxon(du, "greater"), _wilcoxon(du, "less")
+    s_gap, s_rev = _sign_test(cell_med, "greater"), _sign_test(cell_med, "less")
     md = float(np.median(du))
-    v = "confirmed" if p_gap < 0.05 and md > 0.5 else "refuted" if p_rev < 0.05 and md < -0.5 else "not decided"
-    return {"verdict": v, "n_pairs": int(len(du)), "median_d_ruler": md, "p_gap": p_gap, "p_reverse": p_rev,
-            "ci90_median_d": _boot_ci(du)}
+    ci = _cluster_ci(du, cells)
+    if p_gap < 0.05 and s_gap < 0.05 and md > 0.5 and ci[0] > 0:
+        v = "confirmed"
+    elif p_rev < 0.05 and s_rev < 0.05 and md < -0.5 and ci[1] < 0:
+        v = "refuted"
+    else:
+        v = "not decided"
+    return {"verdict": v, "n_pairs": int(len(du)), "n_cells": len(cell_med), "median_d_ruler": md,
+            "p_gap": p_gap, "p_reverse": p_rev, "cell_sign_p_gap": s_gap, "cell_sign_p_reverse": s_rev,
+            "cluster_ci90": ci}
+
+
+def _family_test(mice, ais, fam, meas, ruler, need=None):
+    d, cells, codes, missing = [], [], {}, 0
+    for mid, m in mice.items():
+        rows_m = [r for r in ais if r["family"] == fam and r["id"] == mid]
+        if need and len(rows_m) < need:                # finding 11: every grid point or size must exist
+            missing += 1
+            continue
+        if any(not r.get("reached", True) for r in rows_m):   # finding 10: unreached matches excluded
+            missing += 1
+            continue
+        x, code = _pair(m, rows_m, meas)
+        codes[code] = codes.get(code, 0) + 1
+        if x is not None:
+            d.append(x)
+            cells.append(rows_m[0]["run"].split("-gain")[0].split("-share")[0])
+    n = len(d) + sum(v for k, v in codes.items() if k in ("no internal part", "no locked part"))
+    res = {"codes": codes, "missing": missing}
+    if meas == "M2" and n and codes.get("no internal part", 0) > n / 2:
+        return {**res, "verdict": "no internal part"}
+    if meas == "M2" and n and codes.get("no locked part", 0) > n / 2:
+        return {**res, "verdict": "no locked part"}
+    if len(d) < 6:
+        return {**res, "verdict": "too few pairs", "n_pairs": len(d)}
+    return {**res, **_verdict(d, cells, ruler)}
 
 
 def stage_tests(dry=False):
@@ -384,94 +559,126 @@ def stage_tests(dry=False):
     ais = [r for r in map(json.loads, (OUT / (pre + ("ais_dry.jsonl" if dry else "ais.jsonl"))).read_text()
                           .splitlines()) if "error" not in r and r["id"] in mice]
     out = {"frozen": frozen(), "n_mice": len(mice), "H1": {}, "H2": {}, "H3": {}}
-    rulers = {}
-    for meas in ("M1", "M2"):
-        mv = [_value(m, meas) for m in mice.values()]
-        mv = [v for v in mv if v is not None]
-        rulers[meas] = float(np.std(mv, ddof=1)) if len(mv) > 2 else np.nan
+    rulers = {meas: _ruler([_value(m, meas)[0] for m in mice.values()]) for meas in ("M1", "M2")}
     out["rulers"] = rulers
 
-    def closest(rows_m, meas, target):
-        vals = [_value(r, meas) for r in rows_m]
-        vals = [v for v in vals if v is not None]
-        return None if not vals else min(vals, key=lambda v: abs(v - target))
+    # validity check of M2 (finding 9): locked time falls, M2 rises, and the internal time moves less than
+    # the locked time does
+    sh = [m for m in mice.values() if "shuffled" in m]
+    valid_m2 = True
+    if sh:
+        fin = lambda x: x is not None and np.isfinite(x) and x > 0
+        pairs = [(m, m["shuffled"]) for m in sh if fin(m.get("tl")) and fin(m["shuffled"].get("tl"))]
+        dl = [np.log(b["tl"]) - np.log(a["tl"]) for a, b in pairs]
+        di = [np.log(b["ti"]) - np.log(a["ti"]) for a, b in pairs if fin(a.get("ti")) and fin(b.get("ti"))]
+        d2 = [_value(b, "M2")[0] - _value(a, "M2")[0] for a, b in pairs
+              if _value(a, "M2")[0] is not None and _value(b, "M2")[0] is not None]
+        p_l, p_2 = _wilcoxon(dl, "less"), _wilcoxon(d2, "greater")
+        stable = bool(di and dl and abs(np.median(di)) < abs(np.median(dl)))
+        valid_m2 = bool(p_l < 0.05 and p_2 < 0.05 and stable)
+        out["validity_shuffled"] = {"n_mice": len(pairs), "locked_time_falls_p": p_l, "M2_rises_p": p_2,
+                                    "median_log_locked_change": float(np.median(dl)) if dl else None,
+                                    "median_log_internal_change": float(np.median(di)) if di else None,
+                                    "internal_moves_less": stable, "passes": valid_m2}
 
-    for fam in ("A1", "A2", "A3", "A4", "A5", "A6", "A7"):
-        res = {}
+    # C3 (SLOW.md section 6): odd against even repeats, Spearman across mice
+    from scipy.stats import spearmanr
+    rel = {}
+    for meas in ("M1", "M2"):
+        xy = [(_value(m["split"]["odd"], meas)[0], _value(m["split"]["even"], meas)[0]) for m in mice.values()
+              if "split" in m]
+        xy = [(x, y) for x, y in xy if x is not None and y is not None]
+        rho = float(spearmanr(*zip(*xy))[0]) if len(xy) >= 6 else np.nan
+        rel[meas] = {"n_mice": len(xy), "rho": rho, "reliable": bool(rho >= 0.5)}
+    out["C3"] = rel
+    # nuisance: playback (SLOW.md section 6): the balanced-gain A1 against each playback variant
+    nuis = {}
+    for var in ("x0.5", "x2.0", "driven"):
         for meas in ("M1", "M2"):
-            d, absent = [], 0
-            for mid, m in mice.items():
-                mv = _value(m, meas)
-                rows_m = [r for r in ais if r["family"] == fam and r["id"] == mid]
-                if mv is None or not rows_m:
-                    continue
-                av = closest(rows_m, meas, mv)       # gains and model sizes: the one closest to this mouse
-                if av is None:
-                    absent += 1
-                    continue
-                d.append(mv - av)
-            n = len(d) + absent
-            if meas == "M2" and n and absent > n / 2:
-                res[meas] = {"verdict": "no internal part", "n_pairs": n, "absent": absent}
-            elif d:
-                res[meas] = {**_verdict(d, rulers[meas]), "absent": absent}
-        out["H1"][fam] = res
-    conf = sum(any(v.get("verdict") == "confirmed" for v in r.values()) for r in out["H1"].values())
-    refut = any(v.get("verdict") == "refuted" for r in out["H1"].values() for v in r.values())
-    out["H1"]["thesis"] = {"families_confirmed": conf, "any_refuted": refut, "holds": conf >= 5 and not refut}
+            dd = []
+            for mid in mice:
+                base = [r for r in ais if r["id"] == mid and r["family"] == "A1" and r["run"].endswith("gain0.86")]
+                alt = [r for r in ais if r["id"] == mid and r["family"] == "A1-play" and r["run"].endswith(var)]
+                if base and alt and _value(base[0], meas)[0] is not None and _value(alt[0], meas)[0] is not None:
+                    dd.append((_value(alt[0], meas)[0] - _value(base[0], meas)[0]) / rulers[meas])
+            nuis[f"{var}|{meas}"] = {"n": len(dd), "median_shift_ruler": float(np.median(dd)) if dd else None}
+    out["nuisance_playback"] = nuis
+    playback_sensitive = any(v["median_shift_ruler"] is not None and abs(v["median_shift_ruler"]) >= 0.5
+                             for k, v in nuis.items() if k.endswith("|M2"))
+    out["nuisance_playback_M2_sensitive"] = playback_sensitive
 
-    # H2: tune (share, tau) on a seeded half, test on the other half
+    for fam, need in RUNS_PER_FAMILY.items():
+        out["H1"][fam] = {meas: _family_test(mice, ais, fam, meas, rulers[meas], need) for meas in ("M1", "M2")}
+    for fam in ("A1", "A4"):                           # movie-driven families: M2 set aside if playback-sensitive
+        if playback_sensitive:
+            out["H1"][fam]["M2"]["counted"] = False
+    for fam in RUNS_PER_FAMILY:
+        for meas in ("M1", "M2"):
+            if not rel[meas]["reliable"]:                # C3 failure: the measure is not tested
+                out["H1"][fam][meas]["counted"] = False
+    use = ("M1", "M2") if valid_m2 else ("M1",)        # finding 9: if the check fails, the thesis uses M1 only
+    fams = [f for f in RUNS_PER_FAMILY]
+    cnt = lambda f, m: out["H1"][f][m].get("counted", True)
+    conf = sum(any(out["H1"][f][m].get("verdict") == "confirmed" and cnt(f, m) for m in use) for f in fams)
+    refut = any(out["H1"][f][m].get("verdict") == "refuted" and cnt(f, m) for f in fams for m in use)
+    out["H1"]["thesis"] = {"measures_used": list(use), "families_confirmed": conf, "any_refuted": refut,
+                           "holds": conf >= 5 and not refut}
+
+    # H2 with negative controls (finding 7): each candidate tuned on the seeded half, tested on the other
     ids = sorted(mice)
     half = set(np.random.default_rng(SPLIT_SEED).permutation(ids)[: len(ids) // 2])
-    slow = [r for r in ais if r["family"] == "A1-slow"]
-    grid = sorted({r["run"].split("-share")[1] for r in slow})
-    def d_for(gp, which, meas):
-        return [_value(mice[r["id"]], meas) - _value(r, meas) for r in slow
-                if r["run"].endswith("-share" + gp) and (r["id"] in half) == which
-                and _value(mice[r["id"]], meas) is not None and _value(r, meas) is not None]
-    if grid:
-        score = {gp: sum(abs(np.median(d_for(gp, True, m))) / rulers[m] if d_for(gp, True, m) else np.inf
+
+    def tune_test(fam, key):
+        rows = [r for r in ais if r["family"] == fam]
+        grid = sorted({r["run"].split(key)[1] for r in rows})
+        if not grid:
+            return None
+
+        def d_for(gp, train, meas):
+            out_ = []
+            for r in rows:
+                if r["run"].endswith(key + gp) and (r["id"] in half) == train:
+                    x, _ = _pair(mice[r["id"]], [r], meas)
+                    if x is not None:
+                        out_.append(x / rulers[meas])
+            return out_
+        score = {gp: sum(abs(np.median(d_for(gp, True, m))) if d_for(gp, True, m) else np.inf
                          for m in ("M1", "M2")) for gp in grid}
         best = min(score, key=score.get)
-        out["H2"] = {"chosen": best, "train_score": score[best]}
+        res = {"chosen": best, "train_score": score[best]}
         for meas in ("M1", "M2"):
-            d = np.asarray(d_for(best, False, meas)) / rulers[meas]
-            ci = _boot_ci(d) if len(d) else [np.nan, np.nan]
-            out["H2"][meas] = {"n_pairs": int(len(d)), "median_d_ruler": float(np.median(d)) if len(d) else None,
-                               "ci90": ci, "equivalent": bool(len(d) and -0.5 < ci[0] and ci[1] < 0.5)}
-        out["H2"]["confirmed"] = bool(out["H2"]["M1"]["equivalent"] and out["H2"]["M2"]["equivalent"])
+            dd = d_for(best, False, meas)
+            cells = [r["run"].split(key)[0] for r in rows if r["run"].endswith(key + best) and r["id"] not in half
+                     and _pair(mice[r["id"]], [r], meas)[0] is not None]
+            ci = _cluster_ci(dd, cells) if len(dd) >= 6 else [np.nan, np.nan]
+            res[meas] = {"n_pairs": len(dd), "median_d_ruler": float(np.median(dd)) if dd else None,
+                         "cluster_ci90": ci, "equivalent": bool(-0.5 < ci[0] and ci[1] < 0.5)}
+        res["equivalent_both"] = bool(res["M1"]["equivalent"] and res["M2"]["equivalent"])
+        return res
+    out["H2"] = {"slow": tune_test("A1-slow", "-share"), "control_fast": tune_test("A1-fast", "-share"),
+                 "control_noise": tune_test("A1-noise", "-noise")}
+    if out["H2"]["slow"]:
+        ctrl_fail = all(c is not None and not c["equivalent_both"]
+                        for c in (out["H2"]["control_fast"], out["H2"]["control_noise"]))
+        out["H2"]["confirmed"] = bool(out["H2"]["slow"]["equivalent_both"] and ctrl_fail)
 
-    # H3: Pythia 1B not closer to the mice than Pythia 14M
-    for meas in ("M1", "M2"):
-        diffs = []
-        for mid, m in mice.items():
-            mv = _value(m, meas)
-            a = {k: [_value(r, meas) for r in ais if r["id"] == mid and r["family"] == "A6" and k in r["run"]]
-                 for k in ("pythia-14m", "pythia-1b")}
-            if mv is None or not all(a.values()) or any(v is None for v in a["pythia-14m"] + a["pythia-1b"]):
-                continue
-            diffs.append((abs(mv - a["pythia-14m"][0]) - abs(mv - a["pythia-1b"][0])) / rulers[meas])
-        if diffs:
-            ci = _boot_ci(diffs)
-            out["H3"][meas] = {"n_pairs": len(diffs), "median_closer_by_1b_ruler": float(np.median(diffs)),
-                               "ci90": ci, "confirmed": bool(ci[1] < 0.5)}
-    # validity check of M2: on the shuffled movie the locked part is faster, so the locked integral time
-    # falls and M2 rises, if the internal part is the mouse's own (SLOW.md section 7)
-    sh = [m for m in mice.values() if "shuffled" in m]
-    if sh:
-        dl = [np.log(m["shuffled"]["tl_lag1"]) - np.log(m["tl_lag1"]) for m in sh
-              if m["shuffled"].get("tl_lag1") and m.get("tl_lag1")]
-        d2 = [_value(m["shuffled"], "M2") - _value(m, "M2") for m in sh
-              if _value(m["shuffled"], "M2") is not None and _value(m, "M2") is not None]
-        out["validity_shuffled"] = {"n_mice": len(sh), "locked_time_falls_p": _wilcoxon(dl, "less"),
-                                    "median_log_locked_change": float(np.median(dl)) if dl else None,
-                                    "M2_rises_p": _wilcoxon(d2, "greater"),
-                                    "median_log_M2_change": float(np.median(d2)) if d2 else None,
-                                    "passes": bool(dl and d2 and _wilcoxon(dl, "less") < 0.05
-                                                   and _wilcoxon(d2, "greater") < 0.05)}
+    # H3 (finding 18): on M1, the median over mice of how much closer Pythia 1B is than Pythia 14M
+    diffs, cells = [], []
+    for mid, m in mice.items():
+        mv, _ = _value(m, "M1")
+        a14 = [r for r in ais if r["id"] == mid and r["family"] == "A6" and "pythia-14m" in r["run"]]
+        a1b = [r for r in ais if r["id"] == mid and r["family"] == "A6" and "pythia-1b" in r["run"]]
+        if mv is None or not a14 or not a1b:
+            continue
+        diffs.append((abs(mv - a14[0]["M1"]) - abs(mv - a1b[0]["M1"])) / rulers["M1"])
+        cells.append(a14[0]["run"].split("-i")[-1])
+    if len(diffs) >= 6:
+        ci = _cluster_ci(diffs, cells)
+        out["H3"] = {"measure": "M1", "n_pairs": len(diffs), "median_closer_by_1b_ruler": float(np.median(diffs)),
+                     "cluster_ci90": ci, "confirmed": bool(ci[1] < 0.5)}
     name = pre + ("tests_dry.json" if dry else "tests.json")
     (OUT / name).write_text(json.dumps(out, indent=1, default=float))
-    print(json.dumps(out["H1"]["thesis"]), json.dumps(out.get("H2", {}).get("confirmed")), flush=True)
+    print(json.dumps(out["H1"]["thesis"]), flush=True)
 
 
 def main():

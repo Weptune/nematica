@@ -861,3 +861,44 @@ of the repeats; true internal share 0 or 0.3, internal timescale 25 times the lo
 - A small negative bias at share 0 (-0.01 to -0.05) from per-repeat centring. To be quantified in C1.
 - C1 is being rerun at the four instruments with these measures (`/tmp/s7/c1.py`, results to
   `/tmp/s7/c1k2.jsonl`).
+
+### Draft v0.3: the review's findings resolved in text and code (17:33 UTC)
+
+`SLOW.md` is rewritten as v0.3 and `scripts/slow_run.py` changed to match. Finding by finding:
+- **1, 3 (critical):** measures from lag 2 with units centred within each repeat (entry above); unit
+  selection now Allen good units passing Allen's QC (amendment 25) in visual cortex only
+  (`data.unit_meta`, `data.visual_cortex`: peak-channel area starting with VIS; metadata only). On the one
+  cached test session: 2,110 units, 637 in visual cortex, 932 passing QC, **268 both**. A mouse with fewer
+  than 30 included units is excluded. The claim now says that change slower than one repeat is not counted.
+- **2 (critical):** the bracket rule replaces the closest-value rule, in text and in `tests` (`_pair`).
+  The balanced gain 0.86 is added to the grid.
+- **4:** ties for ceiling pairs; the largest lag is a quarter of the clip everywhere; `lock_ceiling` flag.
+- **5:** `A1-play` sensitivity family (x0.5, x2, driven-timescale rule) and a registered consequence: if
+  playback moves the balanced-gain A1 by 0.5 ruler units or more on M2, the M2 tests of the movie-driven
+  families are not counted.
+- **6:** cluster bootstrap over generator cells for every interval; a sign test over cell medians is
+  required for a verdict.
+- **7:** H2 has two negative controls tuned the same way (`A1-fast`, one-frame drive; `A1-noise`, noise
+  0.2 to 1.6); H2 is confirmed only if the slow drive is equivalent and neither control is. "Smallest" is
+  gone from the claim.
+- **8:** post-freeze C3 (odd against even repeats, Spearman across mice at least 0.5, else the measure is not
+  tested) and the playback nuisance check in ruler units; C1, C4 and spike-type checks are rerun for the
+  new measures before freezing.
+- **9:** finite filters; the internal time must move less than the locked time; if the check fails the
+  thesis count uses M1 only (in code).
+- **10:** knobs, achieved numbers and `reached` stored; unreached matches excluded and counted.
+- **11:** a pair counts only if every gain or size exists at that mouse; missing pairs reported. The extreme
+  cell (fastest playback, 60 repeats) still needs a dry run for memory.
+- **12:** clips for A2, A3, A5, A6, A7 fixed per instance at the median instrument of all mice; M1 per half
+  of the clip reported.
+- **13:** "no locked part" has its own code.
+- **14:** spike recording bins each repeat from its own start (segments); checked: share 0 gives M1 -0.001,
+  share 0.5 gives 0.679.
+- **15:** instance from the fixed session order (`rank`). **16:** A1 timescale per instance. **17:** clip
+  position per instance for Pythia 1B and Mamba. **18:** H3 on M1 only, text matches code. **19:** robust
+  (MAD) ruler; M1 bounded. **20:** adaptation trend computed; M3 dropped; balanced gain on the grid.
+  **21:** UTC stamps. **22:** pre-hold, A2 guard (now: retrain with the next seed if accuracy is below 0.7),
+  seeds, language-model units written in. **23:** the 200-spike minimum counted over the first 17 repeats.
+
+Still to do before freezing: the C1, C4 and spike-type reruns for the final measures (C1 running); a dry
+run of the whole pipeline including the extreme memory cell; a second independent review.
