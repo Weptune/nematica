@@ -225,3 +225,15 @@ Every verdict is reported whatever it is, with the number of mice and pairs.
 - Results files are listed with the commit that made them. Third-party data stays local, and only summary
   numbers are committed.
 - An independent review comes before the first real measurement, with its findings and fixes recorded.
+
+## 10. Code, and what freezing fixes
+
+- Measures: `nematica/slow/measures.py`; recording: `nematica/slow/record.py`; inputs:
+  `nematica/slow/inputs.py`; mouse data: `nematica/slow/data.py`; pipeline: `scripts/slow_run.py`
+  (stages `mice`, `ais`, `tests`; the first two refuse to run until this file says "Frozen at commit").
+- Freezing fixes this file and those five files at the freezing commit. Any later change to them is an
+  amendment (section 9), with the reason and whether any real data had been seen.
+- Before freezing: an independent review of this draft and the code, its findings and fixes recorded in
+  `SLOW_LOG.md`; the shuffled-movie control written into the tests (section 4 names it, the tests do
+  not yet use it); the two-photon arm's stages written (the replication uses the same code with the calcium
+  model).
