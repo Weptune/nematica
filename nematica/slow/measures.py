@@ -57,9 +57,24 @@ def internal_measures(Y, max_lag=None):
     t_lock = _half_life(np.concatenate([[1.0], cross[1:] / c0])) if c0 > 0 else np.nan
     out.update(t_internal=float(t_int) if t_int is not None else np.nan,
                t_locked=float(t_lock) if t_lock is not None else np.nan)
+    out["ti_int"] = integral_time(internal, i0) if i0 > 0 else np.nan
+    out["tl_int"] = integral_time(cross, c0) if c0 > 0 else np.nan
+    out["M2_int"] = float(out["ti_int"] / out["tl_int"]) if np.isfinite(out["ti_int"]) and np.isfinite(out["tl_int"]) \
+        and out["tl_int"] > 0 else np.nan
     out["M2"] = float(out["t_internal"] / out["t_locked"]) if np.isfinite(out["t_internal"]) and \
         np.isfinite(out["t_locked"]) and out["t_locked"] > 0 else np.nan
     return out
+
+
+def integral_time(c, c0, max_k=None):
+    """Integrated autocorrelation time: sum of c(k)/c0 over lags 1.. until the first lag where it falls
+    below zero (or max_k). More robust than the half-life when timescales are only a few samples."""
+    r = np.asarray(c[1:], float) / c0
+    if max_k:
+        r = r[:max_k]
+    neg = np.flatnonzero(r <= 0)
+    r = r[: neg[0]] if len(neg) else r
+    return float(0.5 + r.sum())
 
 
 def carry_over(Y, edge):
