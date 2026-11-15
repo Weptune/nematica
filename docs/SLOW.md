@@ -71,7 +71,9 @@ response).
 **Real (primary): Allen Brain Observatory Visual Coding Neuropixels** (DANDI 000021 and 000022), one
 session per mouse, natural-movie blocks. In brain_observatory sessions these are "natural movie one" (30 s,
 900 frames at 30 Hz) shown 20 times in 2 blocks, and "natural movie three" (120 s) shown 10 times in 2
-blocks. The functional_connectivity sessions are pending the metadata survey (feasibility check F1).
+blocks. The functional_connectivity sessions show "natural movie one" 60 times in 2 blocks, plus a
+*shuffled* version of the same frames 20 times. The shuffled movie is a built-in control: the same images
+with a shorter input timescale. F1 (below) found the movie in all 58 sessions.
 - Individuals: mice.
 - Units: Allen `good` units. Pooling in groups is decided by calibration, not assumed.
 
@@ -140,7 +142,13 @@ Every verdict is reported whatever it is, with the number of mice and pairs.
 
 ## 8. Feasibility checks (before freezing; no activity read for any measurement)
 
-- **F1:** natural-movie metadata in all 58 sessions (repeats, frames, blocks, durations).
+- **F1:** natural-movie metadata in all 58 sessions (repeats, frames, blocks, durations). **Done 15 Nov:**
+  - all 58 readable;
+  - movie one (30 s, 900 frames at 30 Hz) shown 20 times in 32 sessions and 60 times in 26;
+  - movie three (120 s, 10 times) in the 32 brain_observatory sessions;
+  - the shuffled movie one (20 times) in the 26 functional_connectivity sessions;
+  - 600 to 1,803 s of movie one per mouse;
+  - summary in `docs/figures/slow_f1_movie_meta.json`.
 - **F2:** an input pipeline for every AI family. Each produces its activity with repeats that differ in
   internal state.
 - **F3:** the choice of replication dataset (metadata and size).
