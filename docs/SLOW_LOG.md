@@ -1240,3 +1240,9 @@ All S-R3 findings answered in code and recorded in `SLOW.md`, "Amendments", S1. 
   the AI stage reaches the language models: free space (the map study's spontaneous-activity cache in
   `data/cache/allen` is 3.5 GB and re-downloadable; this study's earlier Pythia-160m and Mamba-130m
   downloads are about 1 GB), or accept that A6 and A7 come out "not testable".
+
+### Prefetch done; the mice stage starts: the first real measurement (21:10 UTC)
+
+All 58 sessions cached (1.5 GB in `data/cache/allen_movie/`, git-ignored), no download errors. Disk now
+974 MB free. The mice stage (`scripts/slow_run.py mice`, frozen registration plus amendment S1) starts now;
+rows go to `docs/figures/slow_runs/mice.jsonl` (summary numbers only).
