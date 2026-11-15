@@ -340,3 +340,96 @@ the nominal timescale and got 744 to 3,428 bins instead of 1,500).
 - Cross-talk (reported): at the slowest and noisiest instruments M2_lag1 moves with share at the smallest
   share (2.56 to 2.59 at share 0.05, against 3.9 to 4.5 above it; rho 0.54 and 0.84), and M1_lag1 rises a
   little with the ratio at the fastest instrument (0.62 to 0.75). At the median it is flat (rho -0.07).
+
+**21:40. Spread from re-matching the instrument** (`/tmp/s7/rematch.py`; 5 synthetic systems at share
+0.5, ratio 4, median instrument; each matched with 3 matching seeds and recorded with the same spike seed):
+- the matched knobs vary a lot between matching seeds: bin width 2.9 to 5.3 native steps, gain 0.80 to
+  1.03 (the timescale estimate behind matching is noisy on sparse spikes);
+- the measures barely move: within a system, M1_lag1 varies by 0.01 to 0.03 and M2_lag1 by 0.1 to 0.25,
+  against C1 ranges of about 0.8 and 10. Between the 5 systems (different seeds) M2_lag1 spans 2.6 to 3.2.
+- So matching tolerance is a small source of spread for these measures (it was large for the map study's
+  clock-bound measures). Planned anyway: each AI recording reports its matched knobs.
+
+**21:45. Character-network training copy checked.** `inputs.trained_char_net` and the training part of
+`zoo.char_net` are identical line by line (25 of 25 lines, compared programmatically with `inspect`,
+allowing only the module prefix of `chars` and `_cfc_cell`). Same seeds and data, so the same networks.
+
+**21:50. F2 probe: the driven random RNN through the median instrument** (`/tmp/s7/f2_rnn_inst.py`, seed
+0, 20 repeats, playback at 17.4 steps per frame):
+
+| gain | recorded bins per clip | matched bin (steps) | M1_lag1 | M2_lag1 | M1 (lag 0) |
+|---|---|---|---|---|---|
+| 0.05 | 1,794 | 8.7 | 0.910 | 0.55 | 0.94 |
+| 0.25 | 1,039 | 15.0 | 0.345 | 0.33 | 0.51 |
+| 1 | 471 | 33.2 | 0.018 | 0.28 | 0.09 |
+
+- Through the instrument the picture of the raw probe (18:10) holds: the gain sets M1_lag1 (0.91 to
+  0.02), and M2_lag1 stays well below 1 (0.28 to 0.55).
+- **The recorded clip length depends on the gain** (1,794 to 471 bins, against 1,500 for every mouse).
+  The instrument is matched to the system's timescale *while driven*, and driving slows this network
+  (its activity takes on the movie's slower timescale). Playback speed was set from the undriven
+  timescale (decision at 18:00). Options, to be decided before freezing:
+  - keep it, and rely on C4 (clip length and native clock do not move the measures; C4 covered a 4-fold
+    clip range and a 9-fold clock range);
+  - or iterate the playback speed until the recorded clip is 1,500 bins. This cannot converge for a fully
+    locked system, whose timescale scales with playback speed, so it would need a cap.
+  Draft decision: keep the undriven rule, report recorded bins per clip for every AI, and add a C4 level
+  at 500 bins.
+
+**22:00. C4 extended to short clips** (median instrument, share 0.5, ratio 4, 2 seeds): at about 460
+recorded bins per clip, M1_lag1 0.65 and M2_lag1 2.92 (base, about 1,700 bins: 0.65 and 2.81; ratio 0.01);
+at about 280 bins, 0.64 and 3.37 (ratio 0.06). The gain-dependent clip length of driven AIs (470 to 1,800
+bins) is inside the range where the measures do not move. The undriven playback rule stays.
+
+**22:10. F2 probe: the movie-driven spiking network (A4).**
+- The undriven LIF network (30 s, 17.7 Hz) has **no measurable timescale** at its 5 ms native step
+  (`tau_med` is undefined: lag-1 autocovariance at or below zero). Its activity is asynchronous and
+  irregular. So the spike instrument cannot be matched to it (matching failed with an empty range), and
+  the playback speed cannot come from a native timescale.
+- Decision (draft): the LIF network has real time units, so the movie plays in **real time** (33.3 ms per
+  frame, 6.67 steps of 5 ms) and the network is recorded **like a mouse**: its own spikes summed into 20 ms
+  bins, no spike model. To match each mouse's sparseness, spikes will be thinned at random to the mouse's
+  spikes per bin (independent thinning adds only white noise, which the lag-1 measures ignore).
+- Probe (seed 0, 20 repeats, 1,500 bins of 20 ms, 480 of 1,000 neurons, no thinning):
+
+| gain | spikes per bin | M1_lag1 | M2_lag1 |
+|---|---|---|---|
+| 0.5 | 0.42 | -0.59 | absent |
+| 2 | 0.76 | -0.05 | absent |
+
+  The internal one-bin covariance is negative: what differs between repeats is anticorrelated from one
+  20 ms bin to the next (inhibition and refractoriness), and there is no positive internal component to
+  time. Under the draft rule, M2 is absent for this family.
+- Code fix: `internal_measures` now computes the lag-1 measures before the lag-0 extrapolation check, so
+  they exist even when that extrapolation fails (it did here at gain 0.5).
+
+**22:20. Pythia-14m again, with the lag-1 measures** (clip 1,000 tokens, contexts 256, median
+instrument): M1_lag1 **0.010** (the lag-0 M1 read 0.08 on the same recording, the bias of 18:30). Below the
+draft threshold of 0.05, so M2 is absent for this model. The clip recorded as 5,066 bins (each token is
+held for about 5 bins, since the model's timescale is under one token); 1,500 bins would be about 300
+tokens.
+
+**22:30. F4, the compute budget (estimate from the timings so far, two CPUs shared).**
+
+| step | measured time |
+|---|---|
+| movie-driven random RNN, 480 units, 20 repeats, plus recording | 90 to 120 s |
+| movie-driven LIF network, 20 repeats in real time | 100 to 130 s |
+| Pythia-14m, 20 forward passes of 1,256 tokens, plus recording of 5,000-bin clips | 160 to 185 s |
+| task RNN training (512 units) | 460 s |
+| character network training (512 units) | over 25 min (running) |
+| a synthetic recording at one mouse's instrument | about 60 s |
+
+Count for the per-mouse design (58 mice):
+- all instances at every mouse: about 69 recordings per mouse, 4,000 in all, about 46 hours. Too long.
+- **draft plan: one instance per mouse** (instance = the mouse's rank mod 3, so each instance meets about
+  a third of the mice; the instance spread enters the paired differences, as it should). Per mouse: the
+  random RNN and LIF at 7 gains each, 1 task RNN, 2 character networks, 4 Pythia sizes, 2 Mamba sizes: 23
+  recordings, about 1,330 in all. The LIF needs no spike model (thinning only, seconds). Estimate about
+  15 hours of recording plus about 6 hours of generation and training.
+- Playback speed depends on each mouse's timescale on the movie. To share generation across mice, mice
+  are grouped into 4 playback-speed groups (quartiles of bins per timescale); each AI run is generated
+  once per group.
+- Constraints: disk (3.3 GB free; only Pythia-14m and 70m are cached, so the larger models are downloaded,
+  used and removed one at a time); memory (one heavy job at a time, 6.2 GB limit); background jobs stop
+  when the session goes idle, so every run writes results job by job and resumes.
