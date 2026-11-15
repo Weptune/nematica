@@ -12,6 +12,8 @@ instead (for testing the code path; nothing real is read).
 from __future__ import annotations
 
 import argparse
+import functools
+import itertools
 import json
 import re
 import sys
@@ -176,6 +178,34 @@ def families(rows, med, gains=GAINS):
                        lambda ms=ms, inst=inst, prof=prof, model=model: gen_lm(model, inst, prof, Rmax(ms)))
 
 
+BALANCED_GAIN = 0.86                                  # movie input as strong as recurrent input (SLOW_LOG F2)
+SLOW_SHARES = (0.05, 0.1, 0.2, 0.3, 0.5)              # H2 grid (SLOW.md section 7)
+SLOW_TAUS_S = (0.5, 1.0, 2.0, 5.0)
+
+
+@functools.lru_cache(maxsize=1)
+def _a1_base(inst, g, R, spf):
+    return I.driven_random_rnn(I.movie_features(), R=R, n=480, gain=BALANCED_GAIN, spf=spf, seed=inst)[:2]
+
+
+def slow_families(rows, med):
+    """H2 candidate: the balanced-gain A1 with slow drives (share x time constant grid); the base network is
+    generated once per (instance, group) and the drives added per grid point."""
+    for inst in range(3):
+        for g in range(N_GROUPS):
+            ms = [r for r in rows if r["instance"] == inst and r["group"] == g]
+            if not ms:
+                continue
+            spf = I.steps_per_frame(27.15, med[g])
+            R = max(m["repeats"] for m in ms)
+            for share in SLOW_SHARES:
+                for tau_s in SLOW_TAUS_S:
+                    def gen(inst=inst, g=g, R=R, spf=spf, share=share, tau_s=tau_s):
+                        A, st = _a1_base(inst, g, R, spf)
+                        return I.add_slow_drive(A, share, tau_steps=tau_s * 30 * spf, seed=inst), st
+                    yield ("A1-slow", f"i{inst}-g{g}-share{share}-tau{tau_s}", ms, record_for_mouse, gen)
+
+
 CLIP_BINS = 1500                                      # natural_movie_one in 20 ms bins
 NETS = ROOT / "data/derived/slow_nets"
 # instances: released seeds for Pythia 14M, 160M and 410M (as in the map study); for 1B and Mamba, instances
@@ -236,7 +266,8 @@ def stage_ais(only=None, dry=False):
     name = "ais_dry.jsonl" if dry else "ais.jsonl"
     have = done(name, ("family", "run", "id"))
     n_gen = 0
-    for fam, run, ms, rec, gen in families(rows, med, gains=(0.25,) if dry else GAINS):
+    fams = itertools.chain(families(rows, med, gains=(0.25,) if dry else GAINS), slow_families(rows, med))
+    for fam, run, ms, rec, gen in fams:
         if dry and n_gen >= 2:
             break
         if only and fam not in only:
@@ -262,6 +293,128 @@ def stage_ais(only=None, dry=False):
         del A
 
 
+# ------------------------------------------------------------------------------------------------ tests
+SPLIT_SEED = 2026
+
+
+def _wilcoxon(d, alt):
+    from scipy.stats import wilcoxon
+    d = np.asarray(d, float)
+    d = d[np.isfinite(d)]
+    if len(d) < 6 or np.all(d == 0):
+        return np.nan
+    return float(wilcoxon(d, alternative=alt).pvalue)
+
+
+def _boot_ci(d, n=4000, seed=0):
+    rng = np.random.default_rng(seed)
+    d = np.asarray(d, float)
+    d = d[np.isfinite(d)]
+    med = np.median(rng.choice(d, (n, len(d))), 1)
+    return [float(np.quantile(med, 0.05)), float(np.quantile(med, 0.95))]
+
+
+def _value(row, measure):
+    """M1 as it is; M2 on a log scale, only where the internal part exists (M1 >= 0.05)."""
+    if measure == "M1":
+        return row.get("M1_lag1")
+    m2 = row.get("M2_lag1")
+    if row.get("M1_lag1") is None or row["M1_lag1"] < 0.05 or m2 is None or not np.isfinite(m2) or m2 <= 0:
+        return None
+    return float(np.log(m2))
+
+
+def _verdict(d, ruler):
+    du = np.asarray(d, float) / ruler
+    p_gap, p_rev = _wilcoxon(du, "greater"), _wilcoxon(du, "less")
+    md = float(np.median(du))
+    v = "confirmed" if p_gap < 0.05 and md > 0.5 else "refuted" if p_rev < 0.05 and md < -0.5 else "not decided"
+    return {"verdict": v, "n_pairs": int(len(du)), "median_d_ruler": md, "p_gap": p_gap, "p_reverse": p_rev,
+            "ci90_median_d": _boot_ci(du)}
+
+
+def stage_tests(dry=False):
+    mice = {r["id"]: r for r in map(json.loads, (OUT / ("mice_dry.jsonl" if dry else "mice.jsonl")).read_text()
+                                    .splitlines()) if "error" not in r}
+    ais = [r for r in map(json.loads, (OUT / ("ais_dry.jsonl" if dry else "ais.jsonl")).read_text().splitlines())
+           if "error" not in r and r["id"] in mice]
+    out = {"frozen": frozen(), "n_mice": len(mice), "H1": {}, "H2": {}, "H3": {}}
+    rulers = {}
+    for meas in ("M1", "M2"):
+        mv = [_value(m, meas) for m in mice.values()]
+        mv = [v for v in mv if v is not None]
+        rulers[meas] = float(np.std(mv, ddof=1)) if len(mv) > 2 else np.nan
+    out["rulers"] = rulers
+
+    def closest(rows_m, meas, target):
+        vals = [_value(r, meas) for r in rows_m]
+        vals = [v for v in vals if v is not None]
+        return None if not vals else min(vals, key=lambda v: abs(v - target))
+
+    for fam in ("A1", "A2", "A3", "A4", "A5", "A6", "A7"):
+        res = {}
+        for meas in ("M1", "M2"):
+            d, absent = [], 0
+            for mid, m in mice.items():
+                mv = _value(m, meas)
+                rows_m = [r for r in ais if r["family"] == fam and r["id"] == mid]
+                if mv is None or not rows_m:
+                    continue
+                av = closest(rows_m, meas, mv)       # gains and model sizes: the one closest to this mouse
+                if av is None:
+                    absent += 1
+                    continue
+                d.append(mv - av)
+            n = len(d) + absent
+            if meas == "M2" and n and absent > n / 2:
+                res[meas] = {"verdict": "no internal part", "n_pairs": n, "absent": absent}
+            elif d:
+                res[meas] = {**_verdict(d, rulers[meas]), "absent": absent}
+        out["H1"][fam] = res
+    conf = sum(any(v.get("verdict") == "confirmed" for v in r.values()) for r in out["H1"].values())
+    refut = any(v.get("verdict") == "refuted" for r in out["H1"].values() for v in r.values())
+    out["H1"]["thesis"] = {"families_confirmed": conf, "any_refuted": refut, "holds": conf >= 5 and not refut}
+
+    # H2: tune (share, tau) on a seeded half, test on the other half
+    ids = sorted(mice)
+    half = set(np.random.default_rng(SPLIT_SEED).permutation(ids)[: len(ids) // 2])
+    slow = [r for r in ais if r["family"] == "A1-slow"]
+    grid = sorted({r["run"].split("-share")[1] for r in slow})
+    def d_for(gp, which, meas):
+        return [_value(mice[r["id"]], meas) - _value(r, meas) for r in slow
+                if r["run"].endswith("-share" + gp) and (r["id"] in half) == which
+                and _value(mice[r["id"]], meas) is not None and _value(r, meas) is not None]
+    if grid:
+        score = {gp: sum(abs(np.median(d_for(gp, True, m))) / rulers[m] if d_for(gp, True, m) else np.inf
+                         for m in ("M1", "M2")) for gp in grid}
+        best = min(score, key=score.get)
+        out["H2"] = {"chosen": best, "train_score": score[best]}
+        for meas in ("M1", "M2"):
+            d = np.asarray(d_for(best, False, meas)) / rulers[meas]
+            ci = _boot_ci(d) if len(d) else [np.nan, np.nan]
+            out["H2"][meas] = {"n_pairs": int(len(d)), "median_d_ruler": float(np.median(d)) if len(d) else None,
+                               "ci90": ci, "equivalent": bool(len(d) and -0.5 < ci[0] and ci[1] < 0.5)}
+        out["H2"]["confirmed"] = bool(out["H2"]["M1"]["equivalent"] and out["H2"]["M2"]["equivalent"])
+
+    # H3: Pythia 1B not closer to the mice than Pythia 14M
+    for meas in ("M1", "M2"):
+        diffs = []
+        for mid, m in mice.items():
+            mv = _value(m, meas)
+            a = {k: [_value(r, meas) for r in ais if r["id"] == mid and r["family"] == "A6" and k in r["run"]]
+                 for k in ("pythia-14m", "pythia-1b")}
+            if mv is None or not all(a.values()) or any(v is None for v in a["pythia-14m"] + a["pythia-1b"]):
+                continue
+            diffs.append((abs(mv - a["pythia-14m"][0]) - abs(mv - a["pythia-1b"][0])) / rulers[meas])
+        if diffs:
+            ci = _boot_ci(diffs)
+            out["H3"][meas] = {"n_pairs": len(diffs), "median_closer_by_1b_ruler": float(np.median(diffs)),
+                               "ci90": ci, "confirmed": bool(ci[1] < 0.5)}
+    name = "tests_dry.json" if dry else "tests.json"
+    (OUT / name).write_text(json.dumps(out, indent=1, default=float))
+    print(json.dumps(out["H1"]["thesis"]), json.dumps(out.get("H2", {}).get("confirmed")), flush=True)
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("stage", choices=["mice", "ais", "tests"])
@@ -275,7 +428,7 @@ def main():
     elif a.stage == "ais":
         stage_ais(only=a.only, dry=a.dry)
     else:
-        sys.exit("tests: written before freezing, run after the mice and AI stages (to do)")
+        stage_tests(dry=a.dry)
 
 
 if __name__ == "__main__":

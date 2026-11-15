@@ -686,3 +686,14 @@ as in the map study; Pythia 1B and Mamba use one model with instance-specific te
 run: for families with text or trials between repeats, the clip length is not the spacing of repeat
 starts; generators now return it explicitly. Dry runs (stand-in mice, real AIs, values not to be read as
 results): A1, A2, A3, A4, A6 complete without errors.
+
+**19:40. The `tests` stage and the H2 family are written** (`scripts/slow_run.py`).
+- `tests`: rulers (SD over mice of M1, and of log M2 where it exists); per family and measure, the paired d
+  with the AI value closest to each mouse among that family's gains or model sizes; one-sided Wilcoxon
+  tests both ways; median d in ruler units with a 90% bootstrap interval; the absent-M2 rule; the thesis
+  count. H2: the (share, time constant) pair chosen on the seeded half (seed 2026) and equivalence tested on
+  the other half. H3: Pythia 1B against 14M by how much closer each is to each mouse.
+- `A1-slow` (H2): the balanced-gain random RNN generated once per instance and speed group (kept in memory
+  for its grid), with each of the 20 slow-drive settings added.
+- A dry run of `tests` on the stand-in results completes (its numbers mean nothing: the stand-in mice are
+  copies of one synthetic system, so the rulers are tiny).
