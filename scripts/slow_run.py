@@ -236,17 +236,24 @@ def lif_for_mouse(A, starts, length, r, rng_seed):
             "extras": M.unit_internal_shares(Y[:, :, keep])}
 
 
-@functools.lru_cache(maxsize=3)
 def keep_for(spf):
-    """Memory (finding 11): keep A1 activity as block means so a 20 ms bin still spans at least 4 samples
-    (30 frames per s, so 1.67 frames per bin)."""
-    return max(1, int(spf * 30 / 50 / 4))
+    """Memory (finding 11): keep A1 activity as block means so a 20 ms bin (0.6 frames) still spans at least
+    4 kept samples."""
+    return max(1, int(spf * 0.6 / 4))
 
 
+@functools.lru_cache(maxsize=3)
 def a1_tau(inst):
     """Finding 16: the undriven A1 native timescale, measured per instance (8,000 steps)."""
     from nematica.map import zoo, measures as MM
     return float(MM.tau_med(zoo.random_rnn(n=480, steps=8000, seed=inst)[0]))
+
+
+def a1_run(feat, R, inst, bpt, gain=None, mult=1.0, tau=None, **kw):
+    """One movie-driven A1 run at the playback for a mouse timescale `bpt` (times `mult`), block-mean kept."""
+    spf = I.steps_per_frame(tau or a1_tau(inst), bpt) * mult
+    return I.driven_random_rnn(feat, R=R, n=480, gain=BALANCED_GAIN if gain is None else gain, spf=spf, seed=inst,
+                               keep_every=keep_for(spf), **kw)[:2]
 
 
 def families(rows, med, gains=GAINS):

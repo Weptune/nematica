@@ -1008,3 +1008,13 @@ recorded bins of every pair are reported beside the verdicts.
 - The criteria are not changed after the fact. The narrow failure, its diagnosis and the fix stand in
   `SLOW.md` section 6 as they are. The spike-type spread (up to 0.075 at share 0.3) is a limit on what M1
   differences smaller than about 0.1 can mean; to be compared with the mouse ruler after freezing.
+
+### Dry run of the largest A1 cell (18:06 UTC)
+
+The fastest mouse of the map study (1.43 bins per timescale), 60 repeats, balanced gain, instance 0: 423,600
+kept samples x 480 units (block means of 4 steps), generated in 334 s with a peak of 0.94 GB; recorded at
+that mouse's numbers with 268 units in 34 s, **peak 4.7 GB** (the matching copy and the per-block spike
+model). Under the 6.2 GB limit, so the AI stage runs one job at a time with nothing beside it. Result of the
+dry run (not a measurement of anything real): 288 recorded bins per clip, M1 -0.05, M2 absent.
+(A helper-ordering slip from the previous edit, which had moved a cache decorator onto the wrong function,
+was found by this run and fixed.)
