@@ -2088,3 +2088,40 @@ applied to new AI recordings, and it is labelled that way.
     units.
   - Otherwise *unclear*.
 - Either test is *not testable* if fewer than 80% of pairs are defined.
+
+## Per-mouse results (15 Nov 2026): the first confirmed difference
+
+`docs/figures/map_permouse.json`, figure `docs/figures/map/permouse.png`. Every recording reached its
+targets except 4 of the slow-drive RNN's 35 (those pairs are undefined, leaving 31 of 35, which is above
+the 80% rule).
+
+| test | pairs | median of (mouse minus AI) | in ruler units (SD 0.042) | 90% interval (ruler units) | Wilcoxon | verdict |
+|---|---|---|---|---|---|---|
+| B' random RNN below the mice | 35 | +0.059 | +1.40 | +1.24 to +1.59 | p = 2 x 10^-8 (mouse higher) | **confirmed** |
+| D' slow-drive RNN inside the mice | 31 | -0.138 | -3.29 | -3.67 to -3.03 | p = 5 x 10^-10 (mouse lower) | **refuted** |
+
+- **B' confirmed.** Recorded at each mouse's own instrument, a 480-unit random RNN has less slow memory
+  than the mouse in 33 of 35 mice. Its values run from 0.030 to 0.110 (median 0.080), against the mice's
+  0.031 to 0.228 (median 0.134). The two exceptions are a mouse with almost no slow memory (0.031) and one
+  where the RNN reads 0.102 against 0.090.
+- **D' refuted.** With slow drives (40% of variance at 50 times the native timescale), the same RNN reads
+  0.214 to 0.326, above every one of the 31 mice measured.
+- **Why the earlier median-instrument comparison put the RNN inside the mice:** the "median instrument" is
+  a combination of medians that no single mouse has. At real mice's instruments the RNN reads lower
+  (median 0.080 against 0.107). The RNN's value follows the instrument (Spearman 0.61 with samples per
+  timescale, 0.57 with white share), while the mice's values barely do (0.16).
+
+**What this does and does not show.**
+- It shows that, compared fairly (the same recording, mouse by mouse), the spontaneous activity of mouse
+  cortex carries more slow structure than a standard random recurrent network. Strong slow external drives
+  overshoot it, so real cortex sits between the two.
+- It is one network family (a 480-unit random RNN) and one measurement (slow memory), in one species.
+- The rule was registered before the per-mouse AI recordings but after the mouse values were known
+  (amendment 27).
+- The other AI families were not tested here. Most are too fast to count on a temporal measurement, by
+  the native-speed rule.
+
+**Run note (memory only).** The slow-drive RNN ran out of memory on a mouse with very fine time
+resolution. Its activity was then kept on disk and memory-mapped (`scripts/map_permouse.py`). The script's
+result stamp was frozen at its registered value, so the 35 random-RNN results stayed valid; the edit
+changes memory use only.

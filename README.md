@@ -5122,7 +5122,7 @@ networks, an RL agent, the lab networks, the worm emulator). Every artificial ne
 way the brain it is compared with was recorded; time is measured in each system's own timescale.
 
 **Full registration:** `docs/MAP.md` (systems, recording models, measurements, the ruler in biological
-variation units, calibration gates, phases, and 26 dated amendments, most made before any brain activity was
+variation units, calibration gates, phases, and 27 dated amendments, most made before any brain activity was
 measured). The hypotheses as they stand after amendment 4 (13 Nov 2026), all tested per recording group
 (calcium, spikes) and counted only in a powered group (at least 4 preparation types, 3 measurements):
 
@@ -5137,17 +5137,22 @@ measured). The hypotheses as they stand after amendment 4 (13 Nov 2026), all tes
 | H7 | watching fails beyond the worm | exploratory (no field-potential recording model) |
 | H8 | no body needed | cultures and organoids have a real nearest neighbour |
 
-**Outcome (15 Nov 2026).** Readable account: `docs/MAP_SUMMARY.md`. Full record: `docs/MAP.md` (26
-amendments, 7 independent reviews). Figures: `docs/figures/map/species.png`, `docs/figures/map/allen.png`.
+**Outcome (15 Nov 2026).** Readable account: `docs/MAP_SUMMARY.md`. Full record: `docs/MAP.md` (27
+amendments, 7 independent reviews). Figures: `docs/figures/map/permouse.png`, `allen.png`, `species.png`.
 
-- *No confirmed difference.* Real instruments hide most measurements, so most registered tests were not
-  testable. The one powered test, in 58 Allen Neuropixels mice (35 usable), went against the pattern seen
-  in 3 mice: a random RNN's slow memory lies inside the mouse range.
-- *The main lesson:* the same network recorded at five different mice's instrument settings moves by 1.8
-  times the spread between mice. AI-vs-brain comparisons of this kind need every AI recorded at each
-  animal's own instrument, and many animals.
-- *Exploratory, worms:* none of 14 AIs is worm-like. Slow drive brings a random RNN closest, but in the
-  Allen mice it overshoots. Scale does not help.
+- **One confirmed difference.** Each network was recorded at each Allen mouse's own instrument and compared
+  mouse by mouse (35 mice). A 480-unit random RNN has less slow memory than the mouse in 33 of 35 mice
+  (median 1.4 between-mouse SDs, p = 2 x 10^-8). With strong slow drives, the same RNN overshoots every
+  mouse. Real cortex sits between the two.
+- **Main methodological lesson:** the instrument moves a network's value more than mice differ (1.8 SDs
+  across five mice's settings). Comparisons at a median instrument, or with a few animals, gave patterns
+  that were wrong in both directions.
+- **Limits:**
+  - one network family and one measurement;
+  - the rule was registered after the mouse values were known, but before the AI recordings;
+  - most other AI families are too fast to compare on temporal measurements;
+  - every other registered test was not testable.
+- **Exploratory, worms:** none of 14 AIs is worm-like.
 
 ## Replay lab
 

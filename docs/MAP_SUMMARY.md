@@ -1,7 +1,7 @@
 # The map study, start to finish (12 to 15 Nov 2026)
 
 This is the readable account of the "map of brains and AIs" study. The full, dated record is
-`docs/MAP.md`: every rule written before the data it governs, 26 amendments, 7 independent reviews and
+`docs/MAP.md`: every rule written before the data it governs, 27 amendments, 7 independent reviews and
 every gate result. This file summarises it, lists every deviation in one place, and says where each result
 and script lives. Where the two disagree, `docs/MAP.md` is the record.
 
@@ -66,10 +66,22 @@ animal?
 | 14 Nov | Review 16, amendment 25 | per-measurement SE rule, Allen QC and excluded-mice checks required for B, an instrument-transfer check, stamp and logic fixes |
 | 14 to 15 Nov | Amendment 26, Allen mice measured | two workers after machine restarts; only calibrated measurements (identical values) |
 | 15 Nov | Allen verdicts | B and D not testable (instrument transfer); their primary rules are refuted; E not testable |
+| 15 Nov | Amendment 27, per-mouse comparison | every network recorded at each mouse's own instrument: **B' confirmed** (random RNN below 33 of 35 mice), **D' refuted** (slow-drive RNN above all 31) |
 
 ## Results
 
-**Confirmatory: none confirmed, and the powered test went against the exploratory pattern.**
+**Confirmatory: one confirmed result, from the per-mouse design (amendment 27).**
+- Recorded at each Allen mouse's own instrument, a 480-unit random RNN has **less slow memory than the
+  mouse in 33 of 35 mice**: median difference 1.4 between-mouse SDs (90% interval 1.24 to 1.59),
+  Wilcoxon p = 2 x 10^-8.
+- The same RNN with strong slow drives has **more** slow memory than all 31 mice measured (3.3 SDs).
+- So real cortex sits between the two. Figure: `docs/figures/map/permouse.png`.
+- Limits:
+  - one network family and one measurement;
+  - the rule was registered after the mouse values were known, but before the AI recordings;
+  - most other AI families are too fast to compare on this measurement.
+
+**Before the per-mouse design, every registered test was not testable or went against the pattern:**
 - The worm map, the Stringer-mouse timescale-spread test and the Stringer-mouse distance test: not
   testable.
 - **Allen mice (35 usable on slow memory):**
@@ -81,10 +93,14 @@ animal?
   - The distance test E is not testable.
   - Figure: `docs/figures/map/allen.png`.
 
-**The main lesson of the whole study:** with recordings like these, the recording instrument moves an
-artificial network's measurements more than real individuals differ from each other. A difference between
-"AIs" and "brains" is only readable if every AI is recorded at each animal's own instrument, and with many
-animals. Matching to a median instrument and a few individuals produced patterns that did not survive.
+**The main lessons of the whole study.**
+1. With recordings like these, the recording instrument moves an artificial network's measurements more
+   than real individuals differ from each other.
+2. A difference between AIs and brains is only readable if every AI is recorded at each animal's own
+   instrument, with many animals. Done that way, the difference appeared clearly: cortex has more slow
+   structure than a random RNN.
+3. Matching to a median instrument with a few individuals produced patterns that were wrong in both
+   directions.
 
 **Exploratory** (figure: `docs/figures/map/species.png`; tables: the "Results (14 Nov 2026)" section of
 `docs/MAP.md`):
@@ -104,7 +120,9 @@ animals. Matching to a median instrument and a few individuals produced patterns
    "liquid" network is closer than a GRU.
 
 The exploratory hypothesis drawn from these patterns ("real neurons carry more slow structure, and slow
-drive fixes it") was then put to the powered Allen test, and **it did not hold** (see above).
+drive fixes it") was then tested properly:
+- its first half holds for a random RNN when compared mouse by mouse;
+- its second half fails, because slow drives of this strength overshoot.
 
 ## Every deviation and forking path
 
@@ -201,8 +219,8 @@ Things a reader should weigh, all also in `docs/MAP.md`:
 
 ## What would make it confirmatory now
 
-- Record every AI at each animal's own instrument, and compare per animal. The transfer check shows that the
-  instrument matters more than the animal.
+- Extend the per-mouse design to other measurements and, where native speed allows, other AI families.
+- Find the slow-drive strength that matches cortex, and test it on held-out mice.
 - More individuals per species. Dozens of mice turned an apparent difference into none.
 - Worm recordings several windows long.
 - An instrument that resolves timescales without pooling.

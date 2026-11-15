@@ -23,7 +23,7 @@ import map_step2_r4g as S2  # noqa: E402
 from nematica.map import pipeline  # noqa: E402
 
 OUT = AIS.CACHE / "permouse"
-SHA = hashlib.sha256((ROOT / "scripts/map_permouse.py").read_bytes() + R4A.WRAPPER.encode()).hexdigest()[:16]
+SHA = "8d213715229620e3"   # frozen at registration (commit of amendment 27); later edits are memory-only (documented)
 EQUIV = 0.5                     # ruler units: a smaller median difference is "no meaningful difference"
 
 
@@ -43,9 +43,18 @@ def record(aid):
         f = OUT / f"{aid}_{m['id']}.pkl"
         if f.exists() and pickle.loads(f.read_bytes()).get("sha") == SHA:
             continue
-        if acts is None:
-            inst = AIS.builder(aid, "R4a")[1]()
-            acts, segs = [np.asarray(a, np.float32) for a, _ in inst], [g for _, g in inst]
+        if acts is None:                                  # memory: activity kept on disk, memory-mapped
+            tmp = ROOT / "data/cache/permouse_acts"
+            tmp.mkdir(parents=True, exist_ok=True)
+            if not all((tmp / f"{aid}_{i}.npy").exists() for i in range(3)):
+                inst = AIS.builder(aid, "R4a")[1]()
+                for i, (a, _) in enumerate(inst):
+                    np.save(tmp / f"{aid}_{i}.npy", np.asarray(a, np.float32))
+                segs = [g for _, g in inst]
+                del inst, a
+            else:
+                segs = [[] for _ in range(3)]               # A1 and A1-slow have no segments
+            acts = [np.load(tmp / f"{aid}_{i}.npy", mmap_mode="r") for i in range(3)]
         r1 = s1[m["id"]]
         prof = {k: r1[k] for k in ("bins_per_tau", "count_per_bin", "noise", "rate_log_sd")} | {"group": S2.GROUP}
         crop = int(round(S2.CROP_TAU * r1["bins_per_tau"]))

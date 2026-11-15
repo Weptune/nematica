@@ -254,6 +254,41 @@ def allen():
     save(fig, "allen")
 
 
+def permouse():
+    """Amendment 27: each mouse's slow memory against the random RNN and the slow-drive RNN recorded at that
+    mouse's own instrument."""
+    d = json.loads((ROOT / "docs/figures/map_permouse.json").read_text())
+    pa, ps = d["pairs"]["A1"], {p["mouse"]: p for p in d["pairs"]["A1-slow"]}
+    order = sorted(pa, key=lambda p: p["mouse_value"])
+    fig, ax = plt.subplots(figsize=(11, 5.2))
+    x = np.arange(len(order))
+    mv = [p["mouse_value"] for p in order]
+    a1 = [p["ai_value"] for p in order]
+    a1s = [ps[p["mouse"]]["ai_value"] for p in order]
+    for i in x:
+        ax.plot([i, i], [a1[i], mv[i]], color=FAINT, lw=1.2, zorder=1)
+    ax.scatter(x, mv, s=34, color=CAT["pink"], zorder=3, label="Mouse")
+    ax.scatter(x, a1, s=30, color=CAT["blue"], zorder=3, label="Random RNN at that mouse's instrument")
+    ax.scatter(x, a1s, s=30, facecolors=BG, edgecolors=CAT["amber"], lw=1.4, zorder=3,
+               label="Random RNN + slow drives at that mouse's instrument")
+    ax.set_xticks([])
+    ax.set_xlabel("35 Allen mice, ordered by their own slow memory", fontsize=11)
+    ax.set_ylabel("Slow memory", fontsize=11)
+    for sp in ("top", "right"):
+        ax.spines[sp].set_visible(False)
+    ax.grid(axis="y", color=FAINT, lw=0.6)
+    ax.set_axisbelow(True)
+    leg = ax.legend(frameon=False, fontsize=10, loc="upper center", bbox_to_anchor=(0.5, -0.09), ncol=3)
+    for t in leg.get_texts():
+        t.set_color(INK)
+    n_low = round(d["tests"]["B' per-mouse slow memory"]["frac_mouse_above"] * len(order))
+    ax.set_title(f"Compared mouse by mouse, real cortex lies between the two networks: the random RNN is lower in "
+                 f"{n_low} of {len(order)} mice, the slow-drive RNN higher in all {sum(np.isfinite(a1s))} measured",
+                 fontsize=11.5, loc="left", color=INK,
+                 fontfamily="Newsreader 16pt")
+    save(fig, "permouse")
+
+
 if __name__ == "__main__":
     fonts()
     for name in sys.argv[1:] or ["instrument"]:
