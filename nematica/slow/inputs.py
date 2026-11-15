@@ -77,3 +77,52 @@ def driven_random_rnn(feat, R=20, n=480, g=1.5, alpha=0.2, noise=0.1, gain=1.0, 
             x = (1 - alpha) * x + alpha * np.tanh(g * W @ x + drive[fi[t]]) + noise * rng.standard_normal(n)
             A[r * L + t] = x
     return A, [r * L for r in range(R)], {"family": "A1-movie", "n": n, "g": g, "gain": gain, "spf": spf}
+
+
+def text_clip_and_contexts(tokens, clip_len, ctx_len, R, seed=0, clip_at=None):
+    """A fixed text clip and R different preceding contexts, all from the book sample used in the map study
+    (data/external/books/tokens.npy). The clip is taken from one place; each context is a different
+    stretch elsewhere, chosen at random without overlap with the clip or each other."""
+    rng = np.random.default_rng(seed)
+    T = len(tokens)
+    a = clip_at if clip_at is not None else T // 2
+    clip = tokens[a:a + clip_len]
+    n_slots = T // ctx_len
+    banned = set(range(max(a - ctx_len, 0) // ctx_len, (a + clip_len) // ctx_len + 1))
+    slots = [s for s in rng.permutation(n_slots) if s not in banned][:R]
+    return clip, [tokens[s * ctx_len:(s + 1) * ctx_len] for s in slots]
+
+
+def lm_repeats(model_name, clip, contexts, keep=480, layer=None, seed=0, dtype="float32"):
+    """Language models (families A6, A7) are deterministic and carry no state between calls, so a repeat's
+    internal state is its preceding context: repeat r is one forward pass over contexts[r] + clip, and only
+    the clip's tokens are kept. Units as in the map study (nematica.map.ai): MLP neurons after the
+    nonlinearity of the middle layer (Pythia), gated SSM outputs before out_proj (Mamba); `keep` of them at
+    random (seed). Returns (A, starts): the R clip blocks end to end, so the shared recording code applies."""
+    import torch
+    from transformers import AutoModelForCausalLM
+    torch.set_num_threads(2)
+    m = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=getattr(torch, dtype)).eval()
+    C = len(clip)
+    if "mamba" in model_name:
+        blocks = m.backbone.layers
+        L = layer if layer is not None else len(blocks) // 2
+        target = blocks[L].mixer.out_proj
+        grab = lambda mod, inp, out: buf.append(inp[0][0, -C:].detach().float().numpy())
+    else:
+        blocks = m.gpt_neox.layers
+        L = layer if layer is not None else len(blocks) // 2
+        target = blocks[L].mlp.act
+        grab = lambda mod, inp, out: buf.append(out[0, -C:].detach().float().numpy())
+    buf = []
+    h = target.register_forward_hook(grab)
+    with torch.no_grad():
+        for ctx in contexts:
+            m(torch.tensor(np.concatenate([ctx, clip])[None], dtype=torch.long))
+    h.remove()
+    units = buf[0].shape[1]
+    cols = np.sort(np.random.default_rng(seed).choice(units, min(keep, units), replace=False))
+    A = np.concatenate([b[:, cols] for b in buf], 0).astype(np.float32)
+    del m
+    return A, [r * C for r in range(len(contexts))], {"model": model_name, "layer": int(L), "clip": C,
+                                                     "context": len(contexts[0]), "units_total": int(units)}

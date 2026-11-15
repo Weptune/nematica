@@ -49,6 +49,8 @@ def internal_measures(Y, max_lag=None):
     c0 = float(cross[0])
     i0 = s0 - c0
     out = {"signal_var": s0, "locked_var": c0, "internal_var": i0, "noise_share": float(1 - s0 / same[0])}
+    # lag-1 share: needs no extrapolation, since spike noise is white (F2 note, SLOW_LOG)
+    out["M1_lag1"] = float((same[1] - cross[1]) / same[1]) if same[1] > 0 else np.nan
     if not (np.isfinite(s0) and s0 > 0):
         return out | {"M1": np.nan, "M2": np.nan, "t_internal": np.nan, "t_locked": np.nan}
     out["M1"] = float(np.clip(i0 / s0, -1, 2))
@@ -61,6 +63,12 @@ def internal_measures(Y, max_lag=None):
     out["tl_int"] = integral_time(cross, c0) if c0 > 0 else np.nan
     out["M2_int"] = float(out["ti_int"] / out["tl_int"]) if np.isfinite(out["ti_int"]) and np.isfinite(out["tl_int"]) \
         and out["tl_int"] > 0 else np.nan
+    # lag-1 versions (no extrapolation): integral times from lag 1, normalised by lag 1
+    i1, c1 = float(same[1] - cross[1]), float(cross[1])
+    out["ti_lag1"] = integral_time(internal[1:], i1) - 0.5 + 1.0 if i1 > 0 else np.nan
+    out["tl_lag1"] = integral_time(cross[1:], c1) - 0.5 + 1.0 if c1 > 0 else np.nan
+    out["M2_lag1"] = float(out["ti_lag1"] / out["tl_lag1"]) if np.isfinite(out["ti_lag1"]) and \
+        np.isfinite(out["tl_lag1"]) else np.nan
     out["M2"] = float(out["t_internal"] / out["t_locked"]) if np.isfinite(out["t_internal"]) and \
         np.isfinite(out["t_locked"]) and out["t_locked"] > 0 else np.nan
     return out

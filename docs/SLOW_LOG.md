@@ -136,3 +136,91 @@ repeats, thinned to about 3 samples per frame (`/tmp/s7/f2_rnn.py`, seed 0):
   joint pair (M1, M2_int) across the whole gain curve, not at one gain: "no input strength brings the
   family's M2_int into the mouse's range". This removes the free parameter instead of fixing it by hand.
   It must be written into the registration before any mouse is measured.
+
+**18:20. F2 probe: language models.** `inputs.text_clip_and_contexts` and `inputs.lm_repeats`: a language
+model keeps no state between calls, so a repeat's internal state is its preceding context. Repeat r is one
+forward pass over a different context (from the map study's book sample, away from the clip) followed by
+the same clip; only the clip's tokens are kept. Units as in the map study (middle-layer MLP neurons for
+Pythia, gated SSM outputs for Mamba), 480 at random.
+- Pythia-14m, clip 1,000 tokens, 20 repeats, contexts of 256 or 1,024 tokens: native timescale 0.83
+  tokens (below the map study's native-speed floor of 1.5); **raw internal share 0.00** (lag 0,
+  `(C_same(0) - C_cross(0)) / C_same(0)`). The clip almost fully determines the middle layer; the preceding
+  context leaves no measurable trace in the clip's activity.
+- Through the spike instrument the same activity read **M1 = 0.10 to 0.11**, M2_int 0.23. The raw share is
+  zero, so the instrument reading is a bias. This led to the check below.
+
+**18:30. A bias in M1 found: the lag-0 extrapolation reads above zero when nothing is internal.**
+Synthetic systems with internal share 0, through the Allen median spike instrument (2 seeds, 480 units):
+
+| native locked timescale | M1 (lag-0 extrapolation) | M1_lag1 (new) |
+|---|---|---|
+| 0.7 | 0.07 | 0.00 |
+| 1.5 | 0.09 | 0.00 |
+| 6 | 0.12 | -0.00 |
+
+- Cause: M1's internal variance is the extrapolated noise-free lag-0 variance minus the cross-repeat
+  lag-0 covariance. The cross-repeat term is exact (spike noise is independent across repeats), so every
+  error of the cubic extrapolation lands in the internal part. With white spike noise only lag 0 is
+  contaminated, so **lag 1 needs no extrapolation at all**.
+- New measures (draft), computed alongside the old ones:
+  - `M1_lag1 = (C_same(1) - C_cross(1)) / C_same(1)`: the internal share of the one-bin covariance;
+  - `M2_lag1`: integral times summed from lag 1 and normalised by lag 1, internal over locked.
+- Price: lag-1 share mixes share with speed a little (a fast internal part has decayed more by one bin);
+  the bin is matched to each mouse's timescale, so the mixing is the same for AI and mouse.
+- At share 0, M2_int also reads 0.11 to 0.16, which is meaningless: there is no internal part to time.
+  A rule is needed: M2 only where the internal part is clearly present (threshold to be set from the
+  share-0 spread; draft: M1_lag1 at least 0.05).
+
+**18:40. Lag-1 measures against known truth** (`/tmp/s7/floor2.py`; locked timescale 6 native steps,
+share 0.5, 2 seeds):
+
+| true ratio | 1 | 2 | 4 | 8 | 16 |
+|---|---|---|---|---|---|
+| M2_int | 0.69 | 1.27 | 2.50 | 4.52 | 8.66 |
+| M2_lag1 | 0.88 | 1.58 | 2.93 | 5.38 | 10.71 |
+| M1 | 0.65 | 0.64 | 0.64 | 0.66 | 0.67 |
+| M1_lag1 | 0.58 | 0.60 | 0.62 | 0.65 | 0.66 |
+
+- M2_lag1 is monotone and closer to the true ratio than M2_int (range 0.88 to 10.7 against 0.69 to 8.7).
+- At locked timescale 1.5 (ratio 4): M2_lag1 2.78, M2_int 2.04.
+- The run hit the 10-minute limit before the low-share cases (0.2, 0.05); they are rerun below.
+- **Draft decision:** M1_lag1 and M2_lag1 become the primary measures; the extrapolated versions are
+  reported. To be confirmed by C4, which now includes them.
+
+**18:45. C4 restarted.** The first C4 run was stopped by the background time limit before printing
+(it printed only at the end). Rerun as `/tmp/s7/c4b.py`, saving each job to `/tmp/s7/c4b.jsonl` as it
+finishes and skipping finished jobs on restart, with the lag-1 measures added.
+
+**18:55. Low-share cases** (true ratio 4; 2 seeds; run alongside C4, stopped by the limit before the last
+two cases):
+
+| locked timescale | true share | M1 | M1_lag1 | M2_int | M2_lag1 |
+|---|---|---|---|---|---|
+| 1.5 | 0.2 | 0.35 | 0.29 | 1.82 | 2.56 |
+| 6 | 0.2 | 0.36 | 0.28 | 1.82 | 2.80 |
+| 6 | 0.05 | 0.16 | 0.07 | 1.14 | 2.67 |
+| 6 (above) | 0.5 | 0.64 | 0.62 | 2.50 | 2.93 |
+
+- **M2_lag1 hardly moves with share** (2.67 to 2.93 from share 0.05 to 0.5), while M2_int falls from 2.50
+  to 1.14 as the share shrinks, because the extrapolation bias is a growing part of a small internal
+  variance. So the cross-talk logged at 17:40 (M2_int moving with share, rho 0.76 to 0.81) was mostly
+  this bias.
+- M1_lag1 reads close to the truth at small shares (0.07 at 0.05; M1 reads 0.16).
+
+**19:05. Last low-share cases** (2 seeds; locked timescale 6):
+
+| true ratio | true share | M1 | M1_lag1 | M2_int | M2_lag1 |
+|---|---|---|---|---|---|
+| 1 | 0.05 | 0.18 | 0.06 | 0.35 | 0.85 |
+| 16 | 0.05 | 0.18 | 0.08 | 3.25 | 9.14 |
+| 4 | 0 | 0.12 | -0.00 | 0.11 | 0.19 |
+
+- At share 0.05, M2_lag1 still spans 0.85 to 9.14 for true ratios 1 to 16, close to its values at share
+  0.5 (0.88 to 10.71). M2_int collapses to 0.35 to 3.25.
+- At share 0 there is nothing to time and M2_lag1 reads 0.19 (noise). A small-share rule is still needed;
+  M1_lag1 at share 0 reads 0.00 in every case so far, and 0.06 to 0.08 at share 0.05.
+
+**19:10. C4 runs out of memory with two jobs at once.** The cgroup killed a C4 job at 4.9 GB while a
+calibration run shared the machine; the pool then hung on the lost jobs. 15 of 22 jobs had finished
+(light ones), plus one heavy one. The remaining heavy jobs (1,200 units; 60 repeats; 8,000-step clips;
+one seed of the slowest timescale) now run one at a time with nothing else beside them.
