@@ -476,3 +476,24 @@ AI uses the same number of repeats as its mouse.
   experiment id), each AI recorded through the calcium model matched to that mouse's numbers measured on
   its movie epochs. The IBL brain-wide map is dropped as the replication (its repeated unit is a trial
   type, a weaker analogue). Real instrument numbers are measured only after freezing.
+
+**23:50. GRU (A3) through the median instrument, and why it reads high.** Rerun alone (training 993 s;
+network saved). Through the spike instrument the 3,000-character clip became 10,930 bins (each character
+held about 3.6 bins), and read **M1_lag1 0.377, M2_lag1 67**: a large internal share, and an internal part
+far slower than the input-driven part. The raw per-position share (0.004 after 1,000 characters) said the
+opposite. Inspection of single units (saved network, same clip):
+- about **85 of 512 units (17%) keep an internal share above 0.5 throughout the clip** (128 in the first
+  10 characters, 99 at 10 to 100, 85 at 1,000 to 3,000);
+- these units vary little: their SD over the run is 0.003 to 0.1, against a median unit SD of 0.63. Their
+  value is set by the preceding text and then held (one sits at |h| = 1). They are **latching memory
+  units**: slow internal state in a small, quiet subpopulation.
+- The spike instrument standardises every unit, so quiet units count as much as loud ones, as for the
+  mice, whose units are standardised the same way. The per-position share weights units by variance, so
+  the latching units vanish from it.
+- So the GRU has slow internal state, carried by a minority of quiet units. With the trained task RNN
+  (20:25), that makes two trained recurrent families that **may go against the thesis**. Nothing is
+  changed because of this. Two things go into the draft for transparency, both reported, neither
+  tested: (a) the variance-weighted share for every AI; (b) the fraction of units with internal share
+  above 0.5. A rule for silent units is needed anyway (Allen keeps only units that fire; a unit with SD
+  near 0 has no analogue). Draft: AI units with SD below 1% of the median unit SD are excluded as silent
+  (this would remove 1 of the 5 strongest latching units here, not the phenomenon).
