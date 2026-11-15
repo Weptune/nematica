@@ -454,3 +454,25 @@ on sub-699733573: cached in 42 s, **17 of 20 repeats valid (3 dropped)**, 2,110 
 (17, 1,501, 2,110), 12.9 MB on disk (about 0.75 GB for all 58). Nothing about the activity itself was
 computed or printed. Consequence for the design: the number of valid repeats varies by mouse, so each
 AI uses the same number of repeats as its mouse.
+
+**23:00 to 23:40. F3: the two-photon replication is feasible** (summary `docs/figures/slow_f3.json`).
+- Manifest (Allen's public bucket, `visual-coding-2p/ophys_experiments.json`, metadata only, kept in
+  `data/external/allen2p/`): 1,518 imaging experiments from **271 mice**; every mouse has a session A
+  (natural_movie_one shown 10 times, plus natural_movie_three). Session types: A 506, B 506, C 114, C2 392.
+  Areas: VISp 510, VISl 345, VISpm 282, VISal 138, VISrl 123, VISam 120. NWB files are 200 to 350 MB each
+  on the same bucket (to be read by range, keeping only the movie epochs).
+- Calibration through the map study's **calcium** model, 10 repeats, clip 900 frames (30 Hz), stand-in
+  instrument numbers (the map's R3 median, and the same with white share 0.8), 2 seeds per level:
+
+| instrument | M1_lag1 over share 0.05 to 0.8 (rho) | M2_lag1 over ratio 1 to 16 (rho) |
+|---|---|---|
+| calcium, R3 numbers | 0.06, 0.12, 0.23, 0.46, 0.84 (0.98) | 1.07, 1.78, 3.77, 7.10, 14.75 (0.98) |
+| calcium, white share 0.8 | 0.06, 0.11, 0.23, 0.45, 0.85 (0.98) | 1.05, 1.88, 3.85, 6.97, 13.59 (0.98) |
+
+  C1 passes. Unlike the map study's clock-bound measures, the within-system ratios survive the calcium
+  filter: the indicator smooths internal and locked activity alike.
+- **Draft F3 decision: the replication is Allen Visual Coding two-photon, session A, natural_movie_one,
+  one experiment per mouse** (rule to freeze: the mouse's VISp experiment if it has one, else its lowest
+  experiment id), each AI recorded through the calcium model matched to that mouse's numbers measured on
+  its movie epochs. The IBL brain-wide map is dropped as the replication (its repeated unit is a trial
+  type, a weaker analogue). Real instrument numbers are measured only after freezing.

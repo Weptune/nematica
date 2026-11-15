@@ -1,0 +1,112 @@
+{
+ "what": "Study 2, F3 support: C1 for the lag-1 measures through the map study's calcium recording model (10 repeats, clip 900 frames as in Allen two-photon session A; 480 units; 2 seeds per level). Instrument numbers are stand-ins: the map study's R3 median (decay/tau, frames/tau, noise) and the same with white-noise share 0.8.",
+ "instruments": {
+  "ca_R3": {
+   "decay_over_tau": 0.051,
+   "frames_per_tau": 5.693,
+   "noise": 0.491
+  },
+  "ca_noisy": "as ca_R3 with noise 0.8"
+ },
+ "results": {
+  "ca_R3|share|M1_lag1": {
+   "rho": 0.985,
+   "means": [
+    0.058,
+    0.117,
+    0.229,
+    0.456,
+    0.845
+   ]
+  },
+  "ca_R3|ratio|M2_lag1": {
+   "rho": 0.985,
+   "means": [
+    1.074,
+    1.782,
+    3.765,
+    7.096,
+    14.747
+   ]
+  },
+  "ca_R3|share|M2_lag1": {
+   "rho": -0.32,
+   "means": [
+    3.908,
+    3.853,
+    3.607,
+    3.788,
+    3.071
+   ]
+  },
+  "ca_R3|ratio|M1_lag1": {
+   "rho": 0.985,
+   "means": [
+    0.52,
+    0.537,
+    0.56,
+    0.57,
+    0.6
+   ]
+  },
+  "ca_noisy|share|M1_lag1": {
+   "rho": 0.985,
+   "means": [
+    0.058,
+    0.113,
+    0.23,
+    0.448,
+    0.849
+   ]
+  },
+  "ca_noisy|ratio|M2_lag1": {
+   "rho": 0.985,
+   "means": [
+    1.045,
+    1.882,
+    3.845,
+    6.974,
+    13.591
+   ]
+  },
+  "ca_noisy|share|M2_lag1": {
+   "rho": 0.394,
+   "means": [
+    3.433,
+    3.593,
+    3.662,
+    3.724,
+    4.021
+   ]
+  },
+  "ca_noisy|ratio|M1_lag1": {
+   "rho": 0.985,
+   "means": [
+    0.52,
+    0.534,
+    0.558,
+    0.567,
+    0.583
+   ]
+  }
+ },
+ "allen_2p_manifest": {
+  "experiments": 1518,
+  "mice": 271,
+  "mice_with_session_A": 271,
+  "session_types": {
+   "three_session_C": 114,
+   "three_session_C2": 392,
+   "three_session_A": 506,
+   "three_session_B": 506
+  },
+  "structures": {
+   "VISp": 510,
+   "VISl": 345,
+   "VISam": 120,
+   "VISal": 138,
+   "VISpm": 282,
+   "VISrl": 123
+  }
+ }
+}
