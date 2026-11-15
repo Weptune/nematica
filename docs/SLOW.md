@@ -197,6 +197,13 @@ rank-based).
 - **H3 (scale):** Pythia 1B is not closer to the mice than Pythia 14M. Confirmed if the 90% interval of the
   difference in absolute median d lies above -0.5 ruler units.
 
+- **Validity check of M2 (not a hypothesis about AIs): the shuffled movie.** In the 26
+  functional_connectivity mice, the shuffled movie is one fixed permutation of the same frames, shown 20
+  times. Its input changes faster, so if M2 measures the mouse's own internal slowness relative to its
+  input, the locked integral time falls and M2 rises on the shuffled movie. Passes if both one-sided
+  Wilcoxon tests (locked time falls; log M2 rises) give p < 0.05. If it fails, M2 verdicts are reported
+  with that caveat in the same place, and the thesis rests on M1.
+
 Every verdict is reported whatever it is, with the number of mice and pairs.
 
 ## 8. Feasibility checks (before freezing; no activity read for any measurement)
@@ -234,6 +241,5 @@ Every verdict is reported whatever it is, with the number of mice and pairs.
 - Freezing fixes this file and those five files at the freezing commit. Any later change to them is an
   amendment (section 9), with the reason and whether any real data had been seen.
 - Before freezing: an independent review of this draft and the code, its findings and fixes recorded in
-  `SLOW_LOG.md`; the shuffled-movie control written into the tests (section 4 names it, the tests do
-  not yet use it); the two-photon arm's stages written (the replication uses the same code with the calcium
+  `SLOW_LOG.md`; the two-photon arm's stages written (the replication uses the same code with the calcium
   model).

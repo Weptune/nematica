@@ -83,6 +83,9 @@ def stage_mice(dry=False):
             row = {"id": uid, "dandiset": ds, "repeats": R, "bins": nb, "units": int(keep.sum()), "units_cached": N,
                    "profile": {k: prof.get(k) for k in KEYS}, **measures(Y[:, :, keep]),
                    "extras": M.unit_internal_shares(Y[:, :, keep]), "dry": dry, "frozen": frozen()}
+            if ds == "000022" and not dry:                # validity check: the shuffled movie (SLOW.md 7)
+                Ys = D.movie_counts(D.movie_cache(a, shuffled=True))
+                row["shuffled"] = {**measures(Ys[:, :, keep]), "repeats": int(Ys.shape[0])}
         except Exception as e:  # noqa: BLE001
             row = {"id": uid, "error": f"{type(e).__name__}: {e}"}
         append(name, row)
@@ -410,6 +413,20 @@ def stage_tests(dry=False):
             ci = _boot_ci(diffs)
             out["H3"][meas] = {"n_pairs": len(diffs), "median_closer_by_1b_ruler": float(np.median(diffs)),
                                "ci90": ci, "confirmed": bool(ci[1] < 0.5)}
+    # validity check of M2: on the shuffled movie the locked part is faster, so the locked integral time
+    # falls and M2 rises, if the internal part is the mouse's own (SLOW.md section 7)
+    sh = [m for m in mice.values() if "shuffled" in m]
+    if sh:
+        dl = [np.log(m["shuffled"]["tl_lag1"]) - np.log(m["tl_lag1"]) for m in sh
+              if m["shuffled"].get("tl_lag1") and m.get("tl_lag1")]
+        d2 = [_value(m["shuffled"], "M2") - _value(m, "M2") for m in sh
+              if _value(m["shuffled"], "M2") is not None and _value(m, "M2") is not None]
+        out["validity_shuffled"] = {"n_mice": len(sh), "locked_time_falls_p": _wilcoxon(dl, "less"),
+                                    "median_log_locked_change": float(np.median(dl)) if dl else None,
+                                    "M2_rises_p": _wilcoxon(d2, "greater"),
+                                    "median_log_M2_change": float(np.median(d2)) if d2 else None,
+                                    "passes": bool(dl and d2 and _wilcoxon(dl, "less") < 0.05
+                                                   and _wilcoxon(d2, "greater") < 0.05)}
     name = "tests_dry.json" if dry else "tests.json"
     (OUT / name).write_text(json.dumps(out, indent=1, default=float))
     print(json.dumps(out["H1"]["thesis"]), json.dumps(out.get("H2", {}).get("confirmed")), flush=True)

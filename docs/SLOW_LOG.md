@@ -697,3 +697,18 @@ results): A1, A2, A3, A4, A6 complete without errors.
   for its grid), with each of the 20 slow-drive settings added.
 - A dry run of `tests` on the stand-in results completes (its numbers mean nothing: the stand-in mice are
   copies of one synthetic system, so the rulers are tiny).
+
+**20:00. A loader bug caught before any data were read, and the shuffled-movie check.**
+- Reading only stimulus tables (metadata): natural_movie_one is called
+  `natural_movie_one_more_repeats_presentations` in the 26 functional_connectivity sessions (DANDI 000022),
+  not `natural_movie_one_presentations`. The loader would have failed on all 26. It now takes the name that
+  exists. Checked on one session per dandiset: 17 valid repeats of 20 (000021, 3 dropped for invalid
+  intervals) and 60 of 60 (000022); every repeat spans 30.03 s.
+- The shuffled movie's `frame` column runs 0 to 899 in presentation order, so the table alone does not say
+  whether the shuffle is the same on every repeat. Allen staff state on their forum (community.brain-map.org,
+  thread 1010) that the shuffled movie was created once by permuting the frames of movie one and is
+  identical on every repeat and in every session. So it gives a clean **validity check of M2**: same
+  images, faster input. Written into `SLOW.md` section 7 (locked time must fall and M2 rise, one-sided
+  Wilcoxon p < 0.05 each) and into the pipeline (`mice` stage computes the shuffled measures for 000022
+  sessions with the same units; `tests` reports the check). The loader caches the shuffled repeats
+  separately (20 of 20 valid in the test session).

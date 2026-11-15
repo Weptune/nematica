@@ -15,16 +15,29 @@ import numpy as np
 from ..map import data as mdata
 
 CACHE = Path(__file__).resolve().parents[2] / "data/cache/allen_movie"
-STIM = "natural_movie_one_presentations"
+# natural_movie_one is named differently in the two dandisets (checked on the stimulus tables, SLOW_LOG
+# 20:00); the shuffled version (functional_connectivity sessions only) is one fixed permutation of the same
+# frames, identical on every repeat and in every session (Allen, community forum thread 1010)
+MOVIE = ("natural_movie_one_presentations", "natural_movie_one_more_repeats_presentations")
+SHUFFLED = ("natural_movie_one_shuffled_presentations",)
 BIN_S = 0.02
 FRAMES = 900
 
 
-def _repeats(h):
+def _stim(h, names):
+    for k in names:
+        if k in h["intervals"]:
+            return k
+    raise KeyError(f"none of {names} in this session")
+
+
+def _repeats(h, names=MOVIE):
     """Start time of every repeat (frame 0) and the end of its last frame, in session seconds, after removing
     any repeat that overlaps an invalid interval. Returns (starts, stops, dropped)."""
-    g = h[f"intervals/{STIM}"]
+    g = h[f"intervals/{_stim(h, names)}"]
     st, en, fr = g["start_time"][:], g["stop_time"][:], np.asarray(g["frame"][:]).astype(int)
+    o = np.argsort(st, kind="stable")
+    st, en, fr = st[o], en[o], fr[o]
     first = np.flatnonzero(fr == 0)
     starts, stops = [], []
     for i in first:
@@ -40,17 +53,18 @@ def _repeats(h):
     return np.asarray(starts)[keep], np.asarray(stops)[keep], len(starts) - len(keep)
 
 
-def movie_cache(a, max_units=mdata.ALLEN_MAX_UNITS):
-    """Download one session's spikes during natural_movie_one once and keep them locally."""
+def movie_cache(a, max_units=mdata.ALLEN_MAX_UNITS, shuffled=False):
+    """Download one session's spikes during natural_movie_one (or its shuffled version) once and keep them
+    locally."""
     import h5py
     import requests
     CACHE.mkdir(parents=True, exist_ok=True)
-    f = CACHE / (a["path"].split("/")[0] + ".npz")
+    f = CACHE / (a["path"].split("/")[0] + ("_shuffled" if shuffled else "") + ".npz")
     if f.exists():
         return np.load(f, allow_pickle=False)
     url = f"{mdata.DANDI}/assets/{a['asset_id']}/download/"
     with h5py.File(mdata.open_url(url), "r") as h:
-        starts, stops, dropped = _repeats(h)
+        starts, stops, dropped = _repeats(h, SHUFFLED if shuffled else MOVIE)
         idx = np.asarray(h["units/spike_times_index"][:], np.int64)
         q = h["units/quality"][:]
         st = h["units/spike_times"]
