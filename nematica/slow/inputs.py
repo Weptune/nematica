@@ -290,3 +290,37 @@ def driven_lif(feat, R=20, spf=2.0, gain=0.5, seed=0, n=1000, frac_e=0.8, p=0.1,
             v += W[:, s].sum(1)
             out[s_, s] += 1
     return out, [lead + r * L for r in range(R)]
+
+
+# ---------------------------------------------------------------- saving trained networks (state dicts)
+def save_char_net(model, path, kind):
+    """The map study's cells are local classes, which torch cannot pickle; save state dicts instead."""
+    import torch
+    emb, cell, n = model
+    torch.save({"kind": kind, "n": n, "emb": emb.state_dict(), "cell": cell.state_dict(),
+                "vocab": emb.num_embeddings}, path)
+
+
+def load_char_net(path):
+    import torch
+    from ..map import zoo
+    d = torch.load(path, weights_only=False)
+    emb = torch.nn.Embedding(d["vocab"], 32)
+    cell = torch.nn.GRUCell(32, d["n"]) if d["kind"] == "gru" else zoo._cfc_cell(torch, 32, d["n"])
+    emb.load_state_dict(d["emb"])
+    cell.load_state_dict(d["cell"])
+    return emb.eval(), cell.eval(), d["n"]
+
+
+def save_task_rnn(net, path):
+    import torch
+    torch.save({"rnn": net.rnn.state_dict(), "n": net.rnn.hidden_size}, path)
+
+
+def load_task_rnn(path):
+    import torch
+    from types import SimpleNamespace
+    d = torch.load(path, weights_only=False)
+    rnn = torch.nn.RNN(3, d["n"], batch_first=True, nonlinearity="tanh")
+    rnn.load_state_dict(d["rnn"])
+    return SimpleNamespace(rnn=rnn.eval())

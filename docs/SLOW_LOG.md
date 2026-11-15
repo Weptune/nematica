@@ -523,3 +523,35 @@ unlabelled). Their order is correct. From here on, entries carry the machine clo
 - instruments: the LIF recorded like a mouse (20 ms bins, thinned); silent AI units (SD below 1% of the
   median) excluded; bins per clip reported;
 - reported, not tested: variance-weighted internal share and the fraction of latching units.
+
+**15:20. Two lost trainings, and the fix.** The task RNN and CfC networks trained fine but could not be
+saved: both are local classes in the map study's code, which torch cannot pickle; the task RNN's failed
+save left a corrupt file (deleted). `inputs.save_char_net` / `load_char_net` and `save_task_rnn` /
+`load_task_rnn` now save state dicts and rebuild the modules (tested: a reloaded GRU gives the same output;
+the CfC reloads). The GRU file was converted. Both probes rerun, one after the other.
+
+**15:45. Probes: task RNN through the instrument, and three language models on a short clip.**
+- Task RNN (A2, seed 0, retrained in 715 s, accuracy 0.728, now saved): through the median instrument the
+  100-trial clip became **18,009 bins** (matched bin 2.33 steps, hold 7: the network's raw timescale is
+  only 1.2 steps because of its fast within-trial structure). **M1_lag1 0.69, M2_lag1 0.10** (internal
+  integral time 2.7 bins, locked 26.3). At this instrument the internal part is large but fast. The slow
+  fading of the internal share over dozens of trials seen in the raw probe is a small, slow component that
+  the one-bin measures weight little. To note for the registration: (a) the clip for A2 should be sized
+  like the others, about 1,500 recorded bins (about 58 trials here); (b) the reported fraction of latching
+  units will show whether a slow subpopulation exists.
+- Language models, clip of **300 tokens** (about 1,500 recorded bins, the mouse's clip length), contexts of
+  256 tokens, 20 repeats, median instrument:
+
+| model | timescale (tokens) | raw lag-0 internal share | M1_lag1 | M2_lag1 |
+|---|---|---|---|---|
+| Pythia-14m | 0.89 | 0.00 | 0.018 | (absent) |
+| Pythia-160m (seed 1) | 0.93 | 0.03 | 0.137 | 0.74 |
+
+  The larger model carries more of its context into the clip. Clip length matters for language models
+  (the context's effect fades along the clip: Pythia-14m read 0.010 on a 1,000-token clip), so the clip is
+  fixed by the same rule as for movies: the token count that records as about 1,500 bins at the mouse's
+  instrument.
+- Mamba-130m did not finish 20 forward passes of 556 tokens within 10 minutes on this CPU (the
+  transformers implementation without its compiled kernels is slow). It goes to background runs; F4's
+  estimate for A7 is raised accordingly.
+- Disk: 2.5 GB free after the Pythia-160m and Mamba-130m downloads.
