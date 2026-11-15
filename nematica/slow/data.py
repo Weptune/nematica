@@ -1,0 +1,101 @@
+"""Study 2 mouse data: Allen Visual Coding Neuropixels spikes during natural_movie_one (docs/SLOW.md, section 4).
+
+Third-party data rule: everything downloaded stays in data/cache/allen_movie (git-ignored); only summary
+numbers are committed. Units are the map study's (amendment 24): Allen `quality == good`, at most 2,400 per
+session, the same seeded subset (nematica.map.data._allen_cache), so the QC mask of amendment 25 applies
+unchanged. Spike times are stored per unit as uint16 milliseconds from the start of the repeat they fall in
+(a repeat lasts about 30.0 s, under 65,535 ms), with a uint8 repeat number.
+"""
+from __future__ import annotations
+
+from pathlib import Path
+
+import numpy as np
+
+from ..map import data as mdata
+
+CACHE = Path(__file__).resolve().parents[2] / "data/cache/allen_movie"
+STIM = "natural_movie_one_presentations"
+BIN_S = 0.02
+FRAMES = 900
+
+
+def _repeats(h):
+    """Start time of every repeat (frame 0) and the end of its last frame, in session seconds, after removing
+    any repeat that overlaps an invalid interval. Returns (starts, stops, dropped)."""
+    g = h[f"intervals/{STIM}"]
+    st, en, fr = g["start_time"][:], g["stop_time"][:], np.asarray(g["frame"][:]).astype(int)
+    first = np.flatnonzero(fr == 0)
+    starts, stops = [], []
+    for i in first:
+        j = i + FRAMES - 1
+        if j < len(fr) and fr[j] == FRAMES - 1:
+            starts.append(float(st[i]))
+            stops.append(float(en[j]))
+    inv = []
+    if "invalid_times" in h["intervals"]:
+        it = h["intervals/invalid_times"]
+        inv = list(zip(it["start_time"][:], it["stop_time"][:]))
+    keep = [k for k, (a, b) in enumerate(zip(starts, stops)) if not any(x < b and y > a for x, y in inv)]
+    return np.asarray(starts)[keep], np.asarray(stops)[keep], len(starts) - len(keep)
+
+
+def movie_cache(a, max_units=mdata.ALLEN_MAX_UNITS):
+    """Download one session's spikes during natural_movie_one once and keep them locally."""
+    import h5py
+    import requests
+    CACHE.mkdir(parents=True, exist_ok=True)
+    f = CACHE / (a["path"].split("/")[0] + ".npz")
+    if f.exists():
+        return np.load(f, allow_pickle=False)
+    url = f"{mdata.DANDI}/assets/{a['asset_id']}/download/"
+    with h5py.File(mdata.open_url(url), "r") as h:
+        starts, stops, dropped = _repeats(h)
+        idx = np.asarray(h["units/spike_times_index"][:], np.int64)
+        q = h["units/quality"][:]
+        st = h["units/spike_times"]
+        off, n = st.id.get_offset(), st.shape[0]
+        assert st.chunks is None and st.compression is None and st.dtype == np.float64
+    good = np.flatnonzero(np.asarray([x in (b"good", "good") for x in q]))
+    n_good = len(good)
+    if len(good) > max_units:                          # the map study's subset (same seed and call)
+        good = np.sort(np.random.default_rng(0).choice(good, max_units, replace=False))
+    s3 = requests.head(url, allow_redirects=True, timeout=60).url
+    T = np.frombuffer(mdata._fetch_range(s3, off, n * 8), np.float64)
+    first = np.concatenate([[0], idx[:-1]])
+    assert len(starts) <= 255
+    ms, rep, ptr = [], [], [0]
+    for u in good:
+        tt = T[first[u]:idx[u]]
+        for r, (a0, b0) in enumerate(zip(starts, stops)):
+            sel = tt[(tt >= a0) & (tt < b0)]
+            ms.append(np.floor((sel - a0) * 1000).astype(np.uint16))
+            rep.append(np.full(len(sel), r, np.uint8))
+        ptr.append(ptr[-1] + sum(len(x) for x in ms[-len(starts):]))
+    np.savez_compressed(f, ms=np.concatenate(ms) if ms else np.zeros(0, np.uint16),
+                        rep=np.concatenate(rep) if rep else np.zeros(0, np.uint8), ptr=np.asarray(ptr, np.int64),
+                        starts=starts, stops=stops, dropped=dropped, units=good, n_good=n_good)
+    return np.load(f, allow_pickle=False)
+
+
+def movie_counts(z, n_bins=None):
+    """(R, n_bins, units) spike counts in 20 ms bins from each repeat's start. n_bins defaults to the
+    whole bins in the shortest repeat (1,500 for a 30.0 s clip)."""
+    dur = np.min(z["stops"] - z["starts"])
+    nb = n_bins or int(np.floor(dur / BIN_S + 1e-9))
+    R, N = len(z["starts"]), len(z["ptr"]) - 1
+    Y = np.zeros((R, nb, N), np.uint8)
+    ms, rep, ptr = z["ms"], z["rep"], z["ptr"]
+    for j in range(N):
+        b = (ms[ptr[j]:ptr[j + 1]] // int(BIN_S * 1000)).astype(np.int64)
+        r = rep[ptr[j]:ptr[j + 1]].astype(np.int64)
+        ok = b < nb
+        np.add.at(Y[:, :, j], (r[ok], b[ok]), 1)
+    return Y
+
+
+def sessions():
+    """The 58 sessions (one per mouse), in the map study's order."""
+    for ds in mdata.ALLEN_DANDISETS:
+        for a in sorted((x for x in mdata.dandi_assets(ds) if "probe" not in x["path"]), key=lambda x: x["path"]):
+            yield ds, a

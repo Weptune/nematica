@@ -433,3 +433,24 @@ Count for the per-mouse design (58 mice):
 - Constraints: disk (3.3 GB free; only Pythia-14m and 70m are cached, so the larger models are downloaded,
   used and removed one at a time); memory (one heavy job at a time, 6.2 GB limit); background jobs stop
   when the session goes idle, so every run writes results job by job and resumes.
+
+**22:45. F2 probe: the GRU character network (A3), first attempt.** Training took 1,404 s (shared CPUs).
+The network's timescale is 1.71 characters. Raw activity over a 3,000-character clip shown 20 times, each
+after 200 to 600 characters of other text: the internal share, by position in the clip, is 0.10 in the first
+10 characters, 0.011 at 10 to 50, 0.008 at 50 to 200, and 0.004 to 0.006 after that. **The preceding
+text is forgotten within about 10 characters.** (Pooled over standardised units the lag-0 and lag-1
+shares read 0.20 and 0.66; the per-position figure weights units by their variance, the pooled one weights
+them equally, so a few low-variance units that carry context dominate the pooled number. To be resolved
+through the instrument, which is what counts.) The run was then killed for memory (4.0 GB) during the
+instrument step, while the mouse loader test below shared the machine. Rerun alone, with the trained network
+saved to `data/derived/slow_nets/` (git-ignored) so it is not trained again.
+
+**22:50. Mouse loader written and tested on one session (shapes only, no statistics).**
+`nematica/slow/data.py`: spikes of the map study's units (Allen good units, at most 2,400, the same seeded
+subset, so its QC mask still applies) during every repeat of natural_movie_one, stored as uint16
+milliseconds from the repeat's start with a uint8 repeat number (third-party data, local only, in
+`data/cache/allen_movie/`). A repeat is dropped if it overlaps one of Allen's invalid intervals. Test
+on sub-699733573: cached in 42 s, **17 of 20 repeats valid (3 dropped)**, 2,110 units, counts array
+(17, 1,501, 2,110), 12.9 MB on disk (about 0.75 GB for all 58). Nothing about the activity itself was
+computed or printed. Consequence for the design: the number of valid repeats varies by mouse, so each
+AI uses the same number of repeats as its mouse.
