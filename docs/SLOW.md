@@ -1,10 +1,11 @@
-# Study 2: is the difference slow internal state? (draft registration, v0.4)
+# Study 2: is the difference slow internal state? (registration, v1.0)
 
-**Status: DRAFT, not frozen.** Started 15 Nov 2026. Nothing in this file binds until it is frozen. Freezing
-means a commit whose message says "SLOW registration frozen", and that commit hash is written here. It
-happens only after the feasibility checks and the synthetic calibration below have passed. Until then any
-part may change, and every change is logged in `docs/SLOW_LOG.md`. **No real activity is read for any
-measurement before freezing.**
+**Status: FROZEN** (16 Nov 2026, after feasibility checks F1 to F5, synthetic calibration, and two
+independent reviews, S-R1 and S-R2, whose findings and responses are in `docs/SLOW_LOG.md`). The freezing
+commit's message says "SLOW registration frozen"; its hash is recorded below. From here on any change to this
+file, or to code the results depend on, is a numbered amendment (S1, S2, ...), dated and labelled "before any
+real data" or "after X was seen". **No mouse activity had been read for any measurement when this was frozen**
+(only metadata, stimulus tables, behaviour shapes, and array shapes of one cached session).
 
 The lab notebook for this study is `docs/SLOW_LOG.md`: every run, failure, restart and decision, dated, in
 order. The first study (the map, `docs/MAP.md`, summary `docs/MAP_SUMMARY.md`) is closed and is not
