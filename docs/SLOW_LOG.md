@@ -902,3 +902,30 @@ of the repeats; true internal share 0 or 0.3, internal timescale 25 times the lo
 
 Still to do before freezing: the C1, C4 and spike-type reruns for the final measures (C1 running); a dry
 run of the whole pipeline including the extreme memory cell; a second independent review.
+
+### C1 rerun for the v0.3 measures (17:45 UTC)
+
+80 runs, four instruments (summary `docs/figures/slow_c1_v3.json`). These ran with the earlier repeat
+cutting: the per-repeat binning fix (finding 14) landed while the workers were already running.
+
+| instrument | M1 over share 0.05, 0.1, 0.2, 0.4, 0.8 (rho) | M2 over ratio 1, 2, 4, 8, 16 (rho) |
+|---|---|---|
+| median | 0.07, 0.15, 0.31, 0.56, 0.92 (0.98) | 0.88, 1.50, 2.63, 4.94, 9.16 (0.98) |
+| fastest | 0.08, 0.18, 0.36, 0.67, 0.95 (0.98) | 0.82, 1.42, 2.56, 4.71, 8.08 (0.98) |
+| slowest | 0.02, 0.08, 0.19, 0.39, 0.82 (0.98) | 1.03, 1.65, 2.71, 4.47, 7.36 (0.98) |
+| noisiest | 0.04, 0.10, 0.20, 0.41, 0.82 (0.98) | 0.98, 1.63, 2.73, 4.81, 7.05 (0.98) |
+
+- C1 passes for both measures at every instrument; no run at ceiling.
+- Bias (reported, as the review asked): M1 reads close to the true share (within 0.12) at every
+  instrument; M2 reads about half the true ratio at the top of the range (7 to 9 for 16), the same at every
+  instrument within a factor of 1.3.
+- Cross-talk: M2 depends on share at small shares (true ratio 4: M2 0.9 to 2.0 at share 0.05, 2.6 to 2.9 at
+  0.8; rho 0.81 to 0.94). An AI with a small internal part will read a lower M2 than a mouse with the same
+  ratio and a larger part. This works in the direction of the thesis, so it must be stated beside every M2
+  verdict, and the M2 test is restricted to pairs where both M1 are at least 0.05 (already the rule).
+  Draft addition: M2 verdicts are also reported with pairs restricted to AI M1 at least 0.2.
+- M1 hardly depends on the ratio except at the fastest instrument (0.59 to 0.84 over ratios 1 to 16).
+
+Next: C4 for the v0.3 measures (`/tmp/s7/c4b.py`, now including a 450-step clip) and the formal
+spike-type check (`/tmp/s7/spiketrain.py`: 2 seeds x shares 0, 0.1, 0.3, 0.6 x Poisson, dead time, bursts,
+plus block drift), run one after the other.

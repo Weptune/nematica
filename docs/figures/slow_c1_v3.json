@@ -1,0 +1,180 @@
+{
+ "what": "Study 2 C1 rerun for the v0.3 measures (lag 2, units centred within each repeat): synthetic, 20 repeats, clip 1,500 bins, 480 units, locked timescale 6 native steps, 2 seeds per level, four instruments of the map study. Share sweep at ratio 4; ratio sweep at share 0.5. Recorded with the unsegmented repeat cutting (the per-repeat binning fix landed while this ran).",
+ "share_levels": [
+  0.05,
+  0.1,
+  0.2,
+  0.4,
+  0.8
+ ],
+ "ratio_levels": [
+  1,
+  2,
+  4,
+  8,
+  16
+ ],
+ "results": {
+  "median|share|M1": {
+   "rho": 0.985,
+   "means": [
+    0.066,
+    0.152,
+    0.311,
+    0.563,
+    0.921
+   ]
+  },
+  "median|ratio|M2": {
+   "rho": 0.985,
+   "means": [
+    0.878,
+    1.503,
+    2.625,
+    4.938,
+    9.16
+   ]
+  },
+  "median|share|M2": {
+   "rho": 0.911,
+   "means": [
+    1.819,
+    2.27,
+    2.473,
+    2.685,
+    2.715
+   ]
+  },
+  "median|ratio|M1": {
+   "rho": 0.96,
+   "means": [
+    0.555,
+    0.622,
+    0.673,
+    0.723,
+    0.741
+   ]
+  },
+  "fastest|share|M1": {
+   "rho": 0.985,
+   "means": [
+    0.083,
+    0.183,
+    0.358,
+    0.667,
+    0.953
+   ]
+  },
+  "fastest|ratio|M2": {
+   "rho": 0.985,
+   "means": [
+    0.825,
+    1.418,
+    2.556,
+    4.711,
+    8.08
+   ]
+  },
+  "fastest|share|M2": {
+   "rho": 0.812,
+   "means": [
+    2.03,
+    2.156,
+    2.403,
+    2.51,
+    2.569
+   ]
+  },
+  "fastest|ratio|M1": {
+   "rho": 0.96,
+   "means": [
+    0.585,
+    0.669,
+    0.752,
+    0.818,
+    0.84
+   ]
+  },
+  "slowest|share|M1": {
+   "rho": 0.985,
+   "means": [
+    0.024,
+    0.084,
+    0.194,
+    0.39,
+    0.825
+   ]
+  },
+  "slowest|ratio|M2": {
+   "rho": 0.985,
+   "means": [
+    1.03,
+    1.648,
+    2.711,
+    4.473,
+    7.357
+   ]
+  },
+  "slowest|share|M2": {
+   "rho": 0.886,
+   "means": [
+    1.132,
+    1.511,
+    2.183,
+    2.757,
+    2.853
+   ]
+  },
+  "slowest|ratio|M1": {
+   "rho": -0.222,
+   "means": [
+    0.509,
+    0.516,
+    0.519,
+    0.519,
+    0.481
+   ]
+  },
+  "noisiest|share|M1": {
+   "rho": 0.985,
+   "means": [
+    0.035,
+    0.098,
+    0.2,
+    0.414,
+    0.821
+   ]
+  },
+  "noisiest|ratio|M2": {
+   "rho": 0.985,
+   "means": [
+    0.981,
+    1.635,
+    2.73,
+    4.81,
+    7.046
+   ]
+  },
+  "noisiest|share|M2": {
+   "rho": 0.935,
+   "means": [
+    0.899,
+    1.734,
+    2.273,
+    2.592,
+    2.938
+   ]
+  },
+  "noisiest|ratio|M1": {
+   "rho": -0.172,
+   "means": [
+    0.504,
+    0.522,
+    0.509,
+    0.51,
+    0.498
+   ]
+  }
+ },
+ "log": "SLOW_LOG.md, 'C1 rerun for the v0.3 measures'"
+}
