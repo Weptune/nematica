@@ -1018,3 +1018,78 @@ model). Under the 6.2 GB limit, so the AI stage runs one job at a time with noth
 dry run (not a measurement of anything real): 288 recorded bins per clip, M1 -0.05, M2 absent.
 (A helper-ordering slip from the previous edit, which had moved a cache decorator onto the wrong function,
 was found by this run and fixed.)
+
+### Review S-R2: second independent pre-freeze review (18:26 UTC)
+
+A second independent reviewer (separate agent, read-only, synthetic checks only, outputs kept outside the
+repository) reviewed v0.3 at commit f770c08. Verdict: freezing must wait. Its findings, with my planned
+responses:
+
+**Status of S-R1:** resolved: 2, 3, 12, 13, 15 to 23 (23 for mice only). Not fully resolved: 1 (Neuropixels
+fine at lag 2, but the spike-type failure has no consequence, and the two-photon arm has the same problem
+in a worse form), 4 (AI-only ceilings and locked ceilings unused), 5 and 8 (the playback check cannot fire;
+the clip-length, pre-hold and re-matching nuisance checks promised in the S-R1 response were dropped from
+v0.3 without a logged reason; C1 v3 ran on the old repeat cutting), 6 (per-instance test broken for A6 and
+A7), 7 (controls cannot reach the mice by construction), 9 (stability rule weaker than promised; the 2p arm
+has no shuffled movie but defaults to "valid"), 10 ( describes the matching recording, not the
+recorded repeats), 11 (no limit on missing pairs), 14 (fixed, but the fix caused finding 1 below).
+
+**Critical**
+1. **Per-repeat recording erases between-repeat gain changes in AIs only.** Recording each repeat as its own
+   segment makes the spike model re-standardise and re-normalise the rate per repeat, so a unit's amplitude
+   change from repeat to repeat disappears. Reviewer's check, share 0 plus a per-repeat population gain
+   (log-SD 0.3 / 0.5): native M1 0.09 to 0.12 / 0.21 to 0.27; segmented recording -0.02 / -0.003; continuous
+   recording 0.32 / 0.49 to 0.62. Gain modulation (arousal, running) is a large part of mouse variability.
+   My note "spike binning has no kernel, so nothing else changes" was wrong. *Response:* standardise and
+   rate-normalise each unit once over the whole run, bin per repeat only; match on the same activity; add a
+   multiplicative internal state to C1.
+2. **The two-photon arm repeats S-R1 finding 1 for calcium.** Each cell's own spike shot noise, filtered by
+   GCaMP6f (1/e about 4.3 frames), has no cross-repeat counterpart and counts as internal far past lag 2;
+   the calcium model drives the indicator with rates, so AIs lack it. Reviewer's check at true share 0:
+   spikes through the indicator read M1 0.91 / 0.73 / 0.50 at 0.5 / 2 / 5 Hz; rates read 0.00. *Response:*
+   drive the AI calcium model with Poisson spikes, and start the two-photon lags past the kernel; recalibrate
+   through the calcium model with spike-driven synthetic data.
+
+**Major**
+3. Per-instance test broken for A6 and A7 (instance parsed from a model name). *Response:* store
+    and  on every AI row.
+4. The playback check uses the balanced-gain A1, which has no internal part, so it can never fire.
+   *Response:* run the playback variants at a gain with M1 of 0.2 or more (0.25), and apply the rule to M1
+   and the locked time too.
+5.  and achieved numbers come from the matching recording, not the recorded repeats (reviewer: count
+   per bin 0.081 to 0.094 against 0.066, 2.0 bins per timescale against 2.6, rate log-SD 0.88 against 1.2,
+   with  true). *Response:* compute the mouse's instrument function on each AI recording, store it,
+   define  from it, apply the exclusion in every test.
+6. **No floor for mouse-AI bias, and every known bias lowers AI M1**: unmatched bins per clip (A1 from 1,990
+   to 417; 288 in the fastest cell), short clips read lower, bursting mice read higher than Poisson AIs. With
+   a small mouse ruler, 0.5 ruler units can be about 0.03. *Response:* register a bias bound from calibration
+   at the actual AI bin counts and spike types, and require median d above max(0.5 ruler, bound); and match
+   bins per clip where possible.
+7. **The thesis rule does not test the claim.** Slowness is never required (M1 or M2 counts); the noise-free
+   families will mostly carry the gap on M1 alone, which is near-true by construction and sized by design
+   choices; A1 can hardly be confirmed on M1 (its grid spans -0.07 to 0.88); M1 mixes amount and slowness;
+   H2 and H3 are outside the rule. *Response:* one verdict per claim item; item 2 needs M2; deterministic and
+   noisy families reported separately; items 3 and 4 defined by H2 and H3.
+8. **H2 is rigged**: 20 grid points for the slow drive against 5 and 4 for the controls; the controls cannot
+   reach the mice's M2 by construction; the drive is added to outputs; tuning and test halves share AI runs.
+   *Response:* equal grid sizes; hold out by generator cell; test on quantities not used in tuning; add a
+   slow process inside the dynamics.
+9. The spike-type failure has no registered consequence. *Response:* the bias bound of finding 6.
+10. Unit matching incomplete (A4 not matched; mice above 480 units not capped; AI units skip the inclusion
+    rule). *Response:* cap mice at 480, apply the inclusion rule to AI recordings, then subsample.
+11. **Most serious threat: behavioural state.** Mouse "internal state" includes modulation by running and
+    arousal, a slow non-visual input the AIs never get; the design cannot separate "slow internal dynamics"
+    from "an unmodelled slow input". *Response:* a registered mouse analysis with running speed (and pupil
+    where available) regressed out per unit, and the claim worded by what survives.
+12. AI-only ceilings inflate d;  unused. *Response:* censored pairs as ties or excluded, counted.
+
+**Minor:** 13 freeze the whole repository commit and store git HEAD in every row; 14 a maximum share of
+missing pairs (25%) above which a verdict is "not testable"; 15 text and code inconsistencies (A4 unit rule
+and thinning, 2p 30-unit minimum, retraining seeds wording, section cross-reference, per-repeat
+standardisation not stated, M2 bracket counting only runs with an internal part); 16 robustness asserts in
+recording; 17 the tests-logic check misses A4, A6 with 4 sizes, A7, unreached matches, ceilings, no locked
+part; 18 block means are not a pure clock change (unchecked); 19  gives M1 = 0, which counts
+towards a gap.
+
+This is a larger revision than S-R1's. I start with the critical recording fix (1), which every later
+calibration depends on.
