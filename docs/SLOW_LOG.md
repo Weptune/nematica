@@ -947,3 +947,20 @@ mice than 14M; a shuffled movie with a faster locked part and an unchanged inter
   internal time moves less).
 - Also added (reported, not counted): each M2 verdict repeated with the AI's runs restricted to M1 at
   least 0.2, because of the C1 cross-talk.
+
+### Memory for the largest A1 cell, finding 11 (17:48 UTC)
+
+The fastest playback group (mice at about 1.5 bins per timescale) with 60 repeats would need about 31 native
+steps per frame, 1.7 million steps x 480 units, 3.3 GB in float32, and the recording path made two more
+copies. Changes:
+- `inputs.driven_random_rnn(keep_every=k)` keeps activity as means over k consecutive steps (block means,
+  not decimation). Checked: equal to averaging the full run (largest difference 2e-7).
+- Every A1 run in the pipeline (grid, playback sensitivity, slow and fast drives, noise control) goes through
+  `a1_run`, which sets k so that a 20 ms bin still spans at least 4 kept samples (`keep_for`): k = 2 at
+  the median playback, 4 at the fastest. The slow-drive time constants are converted to kept samples. The
+  measures are clock-free (C4: a 9-fold change of native clock moved them by 0.01 of their range), so this
+  changes nothing they measure.
+- `record_for_mouse` copies the activity only if a silent unit is removed, and computes the reported
+  extras on 100 units.
+- `scripts/slow_test_logic.py`: the synthetic check of the tests stage, now in the repository.
+A dry run of the extreme cell follows once the C4 rerun has finished (they cannot share the memory).

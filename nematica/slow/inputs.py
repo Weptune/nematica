@@ -56,7 +56,7 @@ def frame_index(T, spf):
 
 
 def driven_random_rnn(feat, R=20, n=480, g=1.5, alpha=0.2, noise=0.1, gain=1.0, spf=3.0, seed=0, burn=2000,
-                      lead_frames=None):
+                      lead_frames=None, keep_every=1):
     """Family A1, movie-driven: x <- (1 - alpha) x + alpha tanh(g W x + gain B u(t)) + noise, with W as in
     nematica.map.zoo.random_rnn and B a fixed Gaussian input matrix (variance 1/d). The clip is shown R times
     back to back, as in an Allen block; the network runs continuously from a burn-in on a blank (zero) input,
@@ -71,12 +71,22 @@ def driven_random_rnn(feat, R=20, n=480, g=1.5, alpha=0.2, noise=0.1, gain=1.0, 
     x = rng.normal(0, 1, n)
     for _ in range(burn):
         x = (1 - alpha) * x + alpha * np.tanh(g * W @ x) + noise * rng.standard_normal(n)
-    A = np.empty((R * L, n), np.float32)
+    # memory (review S-R1 finding 11): with keep_every = k > 1, activity is kept as means over k consecutive
+    # steps (block means, never decimation); each repeat keeps L // k samples
+    k = int(keep_every)
+    Lk = L // k
+    A = np.empty((R * Lk, n), np.float32)
+    acc = np.zeros(n)
     for r in range(R):
         for t in range(L):
             x = (1 - alpha) * x + alpha * np.tanh(g * W @ x + drive[fi[t]]) + noise * rng.standard_normal(n)
-            A[r * L + t] = x
-    return A, [r * L for r in range(R)], {"family": "A1-movie", "n": n, "g": g, "gain": gain, "spf": spf}
+            if t < Lk * k:
+                acc += x
+                if (t + 1) % k == 0:
+                    A[r * Lk + t // k] = acc / k
+                    acc[:] = 0
+    return A, [r * Lk for r in range(R)], {"family": "A1-movie", "n": n, "g": g, "gain": gain, "spf": spf,
+                                          "keep_every": k}
 
 
 def text_clip_and_contexts(tokens, clip_len, ctx_len, R, seed=0, clip_at=None):

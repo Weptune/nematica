@@ -204,10 +204,12 @@ def record_for_mouse(A, starts, length, r, rng_seed):
     """One AI run at one mouse: the mouse's number of repeats, silent units excluded, its spike instrument."""
     R = r["repeats"]
     st = starts[:R]
-    A = A[:, ~M.silent_units(A)]
+    sil = M.silent_units(A)
+    if sil.any():                                      # memory: copy only when something is removed
+        A = A[:, ~sil]
     rtype = r.get("rtype", "spikes")
     Y, k = Rc.record_repeats(A, st, length, r["profile"], rtype=rtype, seed=rng_seed)
-    Yn = np.stack([np.asarray(A[s:s + length]) for s in st])
+    Yn = np.stack([np.asarray(A[s:s + length, :100]) for s in st])     # extras on 100 units (memory)
     knobs = {a: (float(v) if isinstance(v, (int, float, np.floating, np.integer)) and not isinstance(v, bool) else v)
              for a, v in k.items() if isinstance(v, (int, float, bool, np.floating, np.integer, dict))}
     return {**measures(Y), "recorded_bins": int(Y.shape[1]), "repeats_used": int(Y.shape[0]),
@@ -231,6 +233,12 @@ def lif_for_mouse(A, starts, length, r, rng_seed):
 
 
 @functools.lru_cache(maxsize=3)
+def keep_for(spf):
+    """Memory (finding 11): keep A1 activity as block means so a 20 ms bin still spans at least 4 samples
+    (30 frames per s, so 1.67 frames per bin)."""
+    return max(1, int(spf * 30 / 50 / 4))
+
+
 def a1_tau(inst):
     """Finding 16: the undriven A1 native timescale, measured per instance (8,000 steps)."""
     from nematica.map import zoo, measures as MM
@@ -249,9 +257,7 @@ def families(rows, med, gains=GAINS):
                 continue
             for gain in gains:
                 yield ("A1", f"i{inst}-g{g}-gain{gain}", ms, record_for_mouse,
-                       lambda ms=ms, gain=gain, g=g, inst=inst: I.driven_random_rnn(
-                           feat, R=Rmax(ms), n=480, gain=gain, spf=I.steps_per_frame(a1_tau(inst), med[g]),
-                           seed=inst)[:2])
+                       lambda ms=ms, gain=gain, g=g, inst=inst: a1_run(feat, Rmax(ms), inst, med[g], gain=gain))
         ms = [r for r in rows if r["instance"] == inst]
         for gain in gains:                             # A4: real-time playback, no speed groups
             yield ("A4", f"i{inst}-gain{gain}", ms, lif_for_mouse,
@@ -285,27 +291,23 @@ def sensitivity_families(rows, med):
             spf = lambda inst=inst, g=g: I.steps_per_frame(a1_tau(inst), med[g])
             for mult in (0.5, 2.0):
                 yield ("A1-play", f"i{inst}-g{g}-x{mult}", ms, record_for_mouse,
-                       lambda R=R, spf=spf, mult=mult, inst=inst: I.driven_random_rnn(
-                           feat, R=R, n=480, gain=BALANCED_GAIN, spf=spf() * mult, seed=inst)[:2])
+                       lambda R=R, mult=mult, inst=inst, g=g: a1_run(feat, R, inst, med[g], mult=mult))
 
             def driven_rule(R=R, inst=inst, g=g):
                 from nematica.map import measures as MM
                 A, _, _ = I.driven_random_rnn(feat, R=2, n=480, gain=BALANCED_GAIN,
                                               spf=I.steps_per_frame(a1_tau(inst), med[g]), seed=inst)
-                return I.driven_random_rnn(feat, R=R, n=480, gain=BALANCED_GAIN,
-                                           spf=I.steps_per_frame(float(MM.tau_med(A)), med[g]), seed=inst)[:2]
+                return a1_run(feat, R, inst, med[g], tau=float(MM.tau_med(A)))
             yield ("A1-play", f"i{inst}-g{g}-driven", ms, record_for_mouse, driven_rule)
             for share in SLOW_SHARES:
                 def fast(R=R, inst=inst, g=g, share=share):
-                    A, st = _a1_base(inst, g, R, I.steps_per_frame(a1_tau(inst), med[g]))
-                    return I.add_slow_drive(A, share, tau_steps=I.steps_per_frame(a1_tau(inst), med[g]),
-                                            seed=inst), st
+                    spf_ = I.steps_per_frame(a1_tau(inst), med[g])
+                    A, st = _a1_base(inst, g, R, spf_)
+                    return I.add_slow_drive(A, share, tau_steps=spf_ / keep_for(spf_), seed=inst), st
                 yield ("A1-fast", f"i{inst}-g{g}-share{share}", ms, record_for_mouse, fast)
             for noise in (0.2, 0.4, 0.8, 1.6):
                 yield ("A1-noise", f"i{inst}-g{g}-noise{noise}", ms, record_for_mouse,
-                       lambda R=R, inst=inst, g=g, noise=noise: I.driven_random_rnn(
-                           feat, R=R, n=480, gain=BALANCED_GAIN, noise=noise,
-                           spf=I.steps_per_frame(a1_tau(inst), med[g]), seed=inst)[:2])
+                       lambda R=R, inst=inst, g=g, noise=noise: a1_run(feat, R, inst, med[g], noise=noise))
 
 
 BALANCED_GAIN = 0.86                                  # movie input as strong as recurrent input (SLOW_LOG F2)
@@ -315,7 +317,8 @@ SLOW_TAUS_S = (0.5, 1.0, 2.0, 5.0)
 
 @functools.lru_cache(maxsize=1)
 def _a1_base(inst, g, R, spf):
-    return I.driven_random_rnn(I.movie_features(), R=R, n=480, gain=BALANCED_GAIN, spf=spf, seed=inst)[:2]
+    return I.driven_random_rnn(I.movie_features(), R=R, n=480, gain=BALANCED_GAIN, spf=spf, seed=inst,
+                               keep_every=keep_for(spf))[:2]
 
 
 def slow_families(rows, med):
@@ -332,7 +335,7 @@ def slow_families(rows, med):
                 for tau_s in SLOW_TAUS_S:
                     def gen(inst=inst, g=g, R=R, spf=spf, share=share, tau_s=tau_s):
                         A, st = _a1_base(inst, g, R, spf)
-                        return I.add_slow_drive(A, share, tau_steps=tau_s * 30 * spf, seed=inst), st
+                        return I.add_slow_drive(A, share, tau_steps=tau_s * 30 * spf / keep_for(spf), seed=inst), st
                     yield ("A1-slow", f"i{inst}-g{g}-share{share}-tau{tau_s}", ms, record_for_mouse, gen)
 
 
