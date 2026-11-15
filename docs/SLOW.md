@@ -143,8 +143,8 @@ quartile of bins per timescale and each AI run is generated once per group, at t
 undriven timescale of A1 is measured per instance (8,000 steps). AIs with no measurable native timescale
 (the LIF network) play the movie in real time. A playback sensitivity is run for A1 at gain 0.25, where it
 has an internal part (x0.5, x2, and playback from the driven timescale; section 6). A1 activity is kept as
-block means of k native steps so that a 20 ms bin spans at least 4 kept samples (memory; a clock change,
-which the measures do not see).
+block means of k native steps so that every playback group has about 5 kept samples per 20 ms bin (memory;
+at the median this lowers M1 by about 0.01 against full resolution, `SLOW_LOG.md`, "Block means").
 
 *Augmented (H2):* the balanced-gain random RNN with slow drives; negative controls: the same with a fast
 drive, and A1 with more network noise; 8 settings each (section 7).
@@ -287,10 +287,10 @@ Every verdict is reported whatever it is, with the numbers of mice, pairs, cells
 - **F3:** the Allen two-photon dataset was chosen and its loader written; deferred to a separate
   registration after review S-R2 (section 4).
 - **F4:** done as an estimate: about 1,330 recordings with one instance per mouse, about 20 hours.
-- **F5:** for the lag-1 measures of v0.2, C1 passed at four real instruments and C4 passed; after review
-  S-R1 the measures changed (lag 2, within-repeat centring), so C1, C4 and the spike-type check are rerun
-  for them before freezing. Summaries: `docs/figures/slow_c1.json`, `slow_c4.json`, `slow_f3.json` (v0.2
-  measures); the reruns are logged in `SLOW_LOG.md`.
+- **F5:** for the final measures and recording path: C1 passes at four real instruments for M1, M2 and a
+  multiplicative internal state (`docs/figures/slow_c1_v4.json`); C4 passes (`slow_c4_v3.json`); the
+  spike-type check failed narrowly and became the bias bound (section 6). Earlier versions:
+  `slow_c1.json`, `slow_c4.json` (v0.2), `slow_c1_v3.json` (v0.3).
 
 ## 9. Documentation rules
 

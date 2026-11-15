@@ -1141,3 +1141,34 @@ calibration depends on.
   v0.3 dropped them without saying why. Reasons now in `SLOW.md` section 6: clip length is fixed by design
   and covered by C4; pre-hold matters only for CfC and LIF and did not move M1; re-matching moved the
   measures little before freezing.
+
+### C1 on the final recording path, with the multiplicative case (19:23 UTC)
+
+120 runs (summary `docs/figures/slow_c1_v4.json`), recorded with `spikes_aligned` (whole-run spike model,
+per-repeat bins):
+
+| instrument | M1 over share (rho) | M2 over ratio (rho) | M1 over multiplicative gain 0 to 0.8 (rho) |
+|---|---|---|---|
+| median | 0.07 to 0.92 (0.98) | 0.89 to 9.07 (0.98) | -0.01, 0.04, 0.22, 0.77, 0.99 (0.98) |
+| fastest | 0.10 to 0.96 (0.98) | 0.82 to 8.15 (0.98) | -0.00, 0.07, 0.33, 0.87, 1.00 (0.98) |
+| slowest | 0.04 to 0.82 (0.98) | 1.01 to 7.12 (0.98) | -0.01, 0.00, 0.06, 0.44, 0.94 (0.98) |
+| noisiest | 0.03 to 0.82 (0.98) | 0.94 to 7.22 (0.98) | -0.03, -0.00, 0.04, 0.31, 0.93 (0.98) |
+
+- C1 passes for all three sweeps at every instrument. A slow gain change with no additive internal part is
+  seen as internal state, strongly once its log-SD reaches 0.4 (the exponential spike model amplifies it).
+- Cross-talk as before (M2 low at small shares; rho of M2 with share 0.81 to 0.94).
+
+### Block means, S-R2 finding 18 (19:23 UTC)
+
+A1 at gain 0.25, median instrument, 20 repeats, seed 0, recorded with the instrument check: kept every
+step (10 samples per bin) M1 0.212, M2 0.27; block means of 2 (5 per bin) 0.201, 0.30; of 4 (2.6 per bin)
+0.171, 0.24. Not a pure clock change after all: averaging before the spike model's nonlinearity lowers M1
+a little. `keep_for` now holds about 5 kept samples per bin in every playback group (k = 4 in the fastest
+group, 2 at the median, 1 where steps are already coarse), so A1 is the same system across groups; the
+remaining shift against full resolution is about 0.01 in M1, inside the bias bound.
+
+### Pre-training (19:23 UTC)
+
+All trained instances exist (`data/derived/slow_nets/`, git-ignored): GRU seeds 0 to 2 (386 and 536 s for
+seeds 1 and 2), CfC seeds 0 to 2 (487 s for seed 1), task RNN seeds 0 to 2 (accuracy 0.728, 0.797, 0.704; all
+pass the 0.7 guard).

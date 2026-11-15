@@ -1,0 +1,248 @@
+{
+ "what": "Study 2 C1 on the final recording path (v0.4: whole-run spike model, per-repeat bins; lag-2 measures, within-repeat centring). Synthetic, 20 repeats, clip 1,500 bins, 480 units, locked timescale 6 native steps, 2 seeds per level, four instruments of the map study. Sweeps: share (ratio 4), ratio (share 0.5), gain = multiplicative internal state (slow per-unit gain with log-SD 0 to 0.8 on the locked activity, no additive internal part).",
+ "levels": {
+  "share": [
+   0.05,
+   0.1,
+   0.2,
+   0.4,
+   0.8
+  ],
+  "ratio": [
+   1,
+   2,
+   4,
+   8,
+   16
+  ],
+  "gain": [
+   0,
+   0.1,
+   0.2,
+   0.4,
+   0.8
+  ]
+ },
+ "results": {
+  "median|share|M1": {
+   "rho": 0.985,
+   "means": [
+    0.068,
+    0.156,
+    0.316,
+    0.563,
+    0.923
+   ],
+   "ceilings": 0
+  },
+  "median|ratio|M2": {
+   "rho": 0.985,
+   "means": [
+    0.889,
+    1.513,
+    2.467,
+    4.861,
+    9.068
+   ],
+   "ceilings": 0
+  },
+  "median|gain|M1": {
+   "rho": 0.985,
+   "means": [
+    -0.013,
+    0.043,
+    0.223,
+    0.771,
+    0.989
+   ],
+   "ceilings": 0
+  },
+  "median|share|M2": {
+   "rho": 0.935,
+   "means": [
+    1.902,
+    2.183,
+    2.416,
+    2.749,
+    2.728
+   ],
+   "ceilings": 0
+  },
+  "median|ratio|M1": {
+   "rho": 0.96,
+   "means": [
+    0.557,
+    0.626,
+    0.675,
+    0.729,
+    0.748
+   ],
+   "ceilings": 0
+  },
+  "fastest|share|M1": {
+   "rho": 0.985,
+   "means": [
+    0.104,
+    0.197,
+    0.371,
+    0.678,
+    0.956
+   ],
+   "ceilings": 0
+  },
+  "fastest|ratio|M2": {
+   "rho": 0.985,
+   "means": [
+    0.825,
+    1.43,
+    2.554,
+    4.561,
+    8.148
+   ],
+   "ceilings": 0
+  },
+  "fastest|gain|M1": {
+   "rho": 0.985,
+   "means": [
+    -0.004,
+    0.07,
+    0.331,
+    0.869,
+    0.995
+   ],
+   "ceilings": 0
+  },
+  "fastest|share|M2": {
+   "rho": 0.862,
+   "means": [
+    1.729,
+    2.041,
+    2.337,
+    2.495,
+    2.562
+   ],
+   "ceilings": 0
+  },
+  "fastest|ratio|M1": {
+   "rho": 0.985,
+   "means": [
+    0.591,
+    0.676,
+    0.761,
+    0.825,
+    0.849
+   ],
+   "ceilings": 0
+  },
+  "slowest|share|M1": {
+   "rho": 0.985,
+   "means": [
+    0.036,
+    0.089,
+    0.187,
+    0.394,
+    0.822
+   ],
+   "ceilings": 0
+  },
+  "slowest|ratio|M2": {
+   "rho": 0.985,
+   "means": [
+    1.01,
+    1.605,
+    2.788,
+    4.451,
+    7.117
+   ],
+   "ceilings": 0
+  },
+  "slowest|gain|M1": {
+   "rho": 0.985,
+   "means": [
+    -0.015,
+    0.002,
+    0.063,
+    0.436,
+    0.944
+   ],
+   "ceilings": 0
+  },
+  "slowest|share|M2": {
+   "rho": 0.886,
+   "means": [
+    0.871,
+    1.415,
+    2.318,
+    2.712,
+    2.852
+   ],
+   "ceilings": 0
+  },
+  "slowest|ratio|M1": {
+   "rho": -0.394,
+   "means": [
+    0.514,
+    0.523,
+    0.513,
+    0.516,
+    0.489
+   ],
+   "ceilings": 0
+  },
+  "noisiest|share|M1": {
+   "rho": 0.985,
+   "means": [
+    0.028,
+    0.088,
+    0.196,
+    0.411,
+    0.82
+   ],
+   "ceilings": 0
+  },
+  "noisiest|ratio|M2": {
+   "rho": 0.985,
+   "means": [
+    0.939,
+    1.644,
+    2.81,
+    4.648,
+    7.219
+   ],
+   "ceilings": 0
+  },
+  "noisiest|gain|M1": {
+   "rho": 0.985,
+   "means": [
+    -0.027,
+    -0.002,
+    0.041,
+    0.306,
+    0.926
+   ],
+   "ceilings": 0
+  },
+  "noisiest|share|M2": {
+   "rho": 0.812,
+   "means": [
+    0.945,
+    1.97,
+    2.381,
+    2.596,
+    2.973
+   ],
+   "ceilings": 0
+  },
+  "noisiest|ratio|M1": {
+   "rho": -0.566,
+   "means": [
+    0.513,
+    0.522,
+    0.507,
+    0.514,
+    0.488
+   ],
+   "ceilings": 0
+  }
+ }
+}

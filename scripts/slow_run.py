@@ -288,9 +288,12 @@ def lif_for_mouse(A, starts, length, r, rng_seed):
 
 
 def keep_for(spf):
-    """Memory (finding 11): keep A1 activity as block means so a 20 ms bin (0.6 frames) still spans at least
-    4 kept samples."""
-    return max(1, int(spf * 0.6 / 4))
+    """Memory (S-R1 finding 11) and S-R2 finding 18: A1 activity is kept as block means so that every playback
+    group has about 5 kept samples per 20 ms bin (0.6 frames per bin). Block means are not a pure clock change
+    (the spike model's nonlinearity acts on the means): at the median group, M1 read 0.212 at 10 samples per
+    bin, 0.201 at 5 and 0.171 at 2.6; holding the samples per bin equal keeps the family the same system in
+    every group (SLOW_LOG, "Block means")."""
+    return max(1, int(round(spf * 0.6 / 5)))
 
 
 @functools.lru_cache(maxsize=3)
