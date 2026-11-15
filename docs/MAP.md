@@ -2125,3 +2125,33 @@ the 80% rule).
 resolution. Its activity was then kept on disk and memory-mapped (`scripts/map_permouse.py`). The script's
 result stamp was frozen at its registered value, so the 35 random-RNN results stayed valid; the edit
 changes memory use only.
+
+## Amendment 28 (15 Nov 2026): tune the slow-drive strength on half the mice, test it on the other half (registered before any recording)
+
+Amendment 27 placed mouse cortex between the random RNN without slow drives (too little slow memory) and
+with drives carrying 40% of each unit's variance (too much). The user asked to find the strength that
+matches and to test it on mice it was not tuned on.
+
+**Design** (`scripts/map_slowdrive.py`):
+- *Split:* the 35 mice of amendment 27, sorted by id and permuted with seed 2026. The first 17 are for
+  tuning; the other 18 are held out.
+- *Networks:* the random RNN (480 units, 3 seeds, 280,000 steps) plus slow drives
+  (`zoo.with_slow_drives`: k = 10, time constant 50 times its native timescale) carrying a share s of each
+  unit's variance. Each is recorded at each mouse's own instrument exactly as in amendment 27.
+- *Tuning:*
+  - grid s = 0.06, 0.12 and 0.18, recorded at the 17 tuning mice;
+  - s = 0 and s = 0.4 reuse amendment 27's recordings and are reported;
+  - the chosen s is the grid value with the smallest absolute median of (mouse minus network) over the
+    tuning mice (ties go to the smaller share).
+- *Test:* the chosen network is recorded at the 18 held-out mice. The prediction is no meaningful
+  difference.
+  - **Confirmed** if the 90% bootstrap interval of the median paired difference lies within plus or minus
+    0.5 ruler units (ruler: SD of the 35 mice, 0.042).
+  - **Refuted** if a Wilcoxon signed-rank test is significant at 0.05 in either direction and the absolute
+    median exceeds 0.5 ruler units.
+  - Otherwise unclear. "Not testable" if fewer than 80% of pairs are defined.
+- *What is known already:* every mouse value, and the s = 0 and s = 0.4 values at every mouse. Not known:
+  any value at s = 0.06, 0.12 or 0.18. The held-out test is blind to the network's values at those mice,
+  not to the mouse values.
+- *Exploratory only:* whether the matched network also matches the mice on shared fraction (not usable at
+  R4a, because it fails the budget).
