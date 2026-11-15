@@ -191,3 +191,62 @@ def unit_meta(a, units):
 def visual_cortex(area):
     """Allen visual cortical areas: acronyms starting with VIS (VISp, VISl, VISal, VISrl, VISam, VISpm, ...)."""
     return np.char.startswith(np.asarray(area, str), "VIS")
+
+
+def behaviour(a, starts, stops, n_bins):
+    """S-R2 finding 11: running speed (all sessions) and pupil area (where tracked) in 20 ms bins aligned to
+    each movie repeat: (R, n_bins, 1 or 2), NaN where not measured. Behaviour only, no neural data; cached."""
+    import h5py
+    f = CACHE / (a["path"].split("/")[0] + "_behaviour.npz")
+    if f.exists():
+        return np.load(f, allow_pickle=False)["B"]
+    CACHE.mkdir(parents=True, exist_ok=True)
+    with h5py.File(mdata.open_url(f"{mdata.DANDI}/assets/{a['asset_id']}/download/"), "r") as h:
+        rs = h["processing/running/running_speed"]
+        sig = [(np.asarray(rs["timestamps"][:]), np.asarray(rs["data"][:], float))]
+        pp = "processing/filtered_gaze_mapping/pupil_area"
+        if pp in h:
+            sig.append((np.asarray(h[pp]["timestamps"][:]), np.asarray(h[pp]["data"][:], float)))
+    B = np.full((len(starts), n_bins, len(sig)), np.nan)
+    for j, (t, x) in enumerate(sig):
+        ok = np.isfinite(x)
+        t, x = t[ok], x[ok]
+        for r, s0 in enumerate(starts):
+            centres = s0 + (np.arange(n_bins) + 0.5) * BIN_S
+            B[r, :, j] = np.interp(centres, t, x)
+    np.savez(f, B=B)
+    return B
+
+
+def regress_out(Y, B):
+    """Per unit, remove the part of its counts that a linear model of behaviour explains. Regressors: each
+    behavioural signal and its 1 s running mean (additive effects), the same multiplied by the unit's mean
+    response over repeats at that time (gain effects: behaviour scaling the stimulus response), and a constant
+    per repeat; fitted on all repeats at once. Returns residuals (R, n_bins, units) and the median fraction
+    of variance explained."""
+    R, nb, N = Y.shape
+    sigs = []
+    for j in range(B.shape[2]):
+        x = B[:, :, j]
+        if not np.isfinite(x).all():
+            continue
+        k = np.ones(50) / 50
+        sm = np.stack([np.convolve(xr, k, mode="same") for xr in x])
+        for c in (x, sm):
+            sigs.append(((c - c.mean()) / (c.std() + 1e-12)).reshape(-1))
+    rep = np.repeat(np.eye(R), nb, axis=0)
+    Yf = np.asarray(Y, float).reshape(R * nb, N)
+    psth = np.asarray(Y, float).mean(0)                                  # nb x N
+    res = np.empty_like(Yf)
+    r2 = np.full(N, np.nan)
+    for u in range(N):
+        pu = np.tile(psth[:, u] - psth[:, u].mean(), R)
+        cols = sigs + [x_ * pu for x_ in sigs]
+        X = np.column_stack(cols + [rep]) if cols else rep
+        beta, *_ = np.linalg.lstsq(X, Yf[:, u], rcond=None)
+        fit = X @ beta
+        res[:, u] = Yf[:, u] - fit + rep @ beta[-R:]
+        v = Yf[:, u].var()
+        if v > 0:
+            r2[u] = 1 - (Yf[:, u] - fit).var() / v
+    return res.reshape(R, nb, N), float(np.nanmedian(r2))

@@ -1,4 +1,4 @@
-# Study 2: is the difference slow internal state? (draft registration, v0.3)
+# Study 2: is the difference slow internal state? (draft registration, v0.4)
 
 **Status: DRAFT, not frozen.** Started 15 Nov 2026. Nothing in this file binds until it is frozen. Freezing
 means a commit whose message says "SLOW registration frozen", and that commit hash is written here. It
@@ -24,16 +24,18 @@ set by the current input and changes slowly.
 This study tests that thesis directly, across every standard family of artificial network, with a
 measurement that does not depend on any system's own clock.
 
-**Claim under test:**
-- real cortex carries more internal state (activity not locked to its input) than standard artificial
-  networks;
-- that internal state is slower relative to the input;
-- a slow internal state closes the gap, and simpler candidates (a fast drive, more noise) do not;
-- scale is not.
+**Claim under test, four items, each with its own verdict (section 7):**
+1. real cortex carries more internal state (activity not locked to its input) than standard artificial
+   networks;
+2. that internal state is slower relative to the input;
+3. a slow internal state closes the gap, and simpler candidates (a fast drive, more noise) do not;
+4. scale is not what closes it.
 
 "Internal state" here means activity that differs between repeats of the same input *within* a repeat:
 units are centred within each repeat, so change slower than one repeat (30 s), such as drift between the
-two movie blocks, is not counted, in mice or in AIs.
+two movie blocks, is not counted, in mice or in AIs. Mouse internal state includes whatever the animal's
+behaviour (running, arousal) adds; items 1 and 2 are also reported with behaviour regressed out (section 7),
+and the wording of any conclusion follows what survives that.
 
 ## 2. Lessons from the map study, built in from the start
 
@@ -59,7 +61,7 @@ between repeats of the same input.
 
 A single unit's own spike-train structure (Poisson noise, refractoriness, bursts) has no cross-repeat
 counterpart and sits at lags 0 and 1 of C_same in 20 ms bins. **The measures therefore start at lag
-k0 = 2** (40 ms in spike bins; 2 frames, 67 ms, in calcium frames). History: the first draft extrapolated
+k0 = 2** (40 ms in spike bins). History: the first draft extrapolated
 lag 0 (biased by about 0.1 with no internal state), the second started at lag 1 (driven to -1 by a dead
 time and to +0.77 by bursts with no internal state; review S-R1 finding 1). From lag 2 the spike type and
 drift between blocks no longer matter (`SLOW_LOG.md`, "Fix for S-R1 findings 1 and 3").
@@ -94,20 +96,20 @@ with a shorter input timescale. F1 (below) found the movie in all 58 sessions.
   Allen's default QC (amendment 25: isi_violations < 0.5, amplitude_cutoff < 0.1, presence_ratio > 0.9)
   and sit in **visual cortex** (peak channel in an area whose acronym starts with VIS); then the map study's
   inclusion rule (rate at least 0.05 Hz over all repeats; at least 200 spikes over the first 17 repeats, so
-  20- and 60-repeat sessions face the same rule). A mouse with fewer than 30 included units is excluded.
-  No pooling.
+  20- and 60-repeat sessions face the same rule). A mouse with fewer than 30 included units is excluded; a
+  mouse with more than 480 keeps a seeded subset of 480 (the AIs have 480 or 512 units). No pooling.
+- Behaviour: running speed (all sessions) and pupil area (where tracked) in 20 ms bins on each repeat, for
+  the behaviour-removed sensitivity (section 7).
 - Repeats: every repeat of natural_movie_one that does not overlap one of Allen's invalid intervals (the
   number varies by mouse: one test session kept 17 of 20). Each AI is given the same number of repeats as
   the mouse it is compared with.
 
-**Real (replication): Allen Brain Observatory Visual Coding two-photon** (chosen in F3; `SLOW_LOG.md`,
-entry "F3: the two-photon replication is feasible"): 271 mice, each with a "session A" in which natural_movie_one is shown 10
-times. One experiment per mouse: the mouse's VISp experiment if it has one, else its lowest experiment id.
-Calcium imaging (GCaMP6f, 30 Hz), so the AIs are recorded through the map study's calcium model, matched
-to each mouse's numbers on its movie repeats (GCaMP6f's registered half-decay); the LIF network too. Clip:
-900 frames, 10 repeats. Playback speed: one group, at the Neuropixels mice's median timescale (calcium
-timescales are set by the indicator, not the neurons). The same tests as for the primary dataset, run
-separately (`scripts/slow_run.py --arm 2p`).
+**Real (replication): deferred.** The Allen Visual Coding two-photon dataset was chosen in F3 (271 mice,
+natural_movie_one 10 times each), and its loader and pipeline arm exist (`--arm 2p`). Review S-R2 (finding 2)
+showed that the lag-2 measures do not remove single-cell spike noise once it is filtered by the calcium
+indicator (spike-driven dF/F with no internal state read M1 0.50 to 0.91), and the AI calcium model lacks
+that term. The replication is therefore **not part of this registration**. It will be registered separately,
+with its own calibration, before any two-photon activity is read.
 
 **Artificial: every standard family**, 3 instances each, each driven by inputs of its own kind with the
 same repeat structure:
@@ -115,7 +117,7 @@ same repeat structure:
 | family | systems | input and repeat structure |
 |---|---|---|
 | A1 random RNN | 480 units, g 1.5, noise 0.1 | the movie's 64 principal-component features through a fixed random input matrix; clip repeated back to back after a 2,000-step blank burn-in; input gain on a grid (section 7) |
-| A2 trained RNN | the map study's decision-task RNN, 512 units (accuracy at least 0.7 or the instance is retrained with the next seed) | one fixed draw of trials repeated, 5 to 15 random trials before each repeat, one continuous session |
+| A2 trained RNN | the map study's decision-task RNN, 512 units (accuracy at least 0.7; otherwise seed + 3, then seed + 6, is trained instead) | one fixed draw of trials repeated, 5 to 15 random trials before each repeat, one continuous session |
 | A3 GRU, A5 CfC | the map study's character networks, 512 units | a held-out clip repeated, each repeat after 200 to 600 characters of other held-out text, one continuous run |
 | A4 spiking network | the map study's LIF network, 1,000 neurons | external Poisson rates modulated by the movie features (gain grid); movie in real time (33.3 ms per frame) |
 | A6 transformers | Pythia 14M, 160M, 410M (released seeds 1 to 3, one per instance), 1B | a text clip after a different 256-token context on each repeat; one forward pass per repeat; units: 480 middle-layer MLP neurons |
@@ -139,11 +141,13 @@ timescale as the mouse does relative to its movie timescale: native steps per fr
 (bins_per_tau x 20 ms / 33.3 ms). To share generation across mice, mice are split into 4 groups by
 quartile of bins per timescale and each AI run is generated once per group, at the group median. The
 undriven timescale of A1 is measured per instance (8,000 steps). AIs with no measurable native timescale
-(the LIF network) play the movie in real time. A playback sensitivity is run for the balanced-gain A1
-(x0.5, x2, and playback from the driven timescale; section 7).
+(the LIF network) play the movie in real time. A playback sensitivity is run for A1 at gain 0.25, where it
+has an internal part (x0.5, x2, and playback from the driven timescale; section 6). A1 activity is kept as
+block means of k native steps so that a 20 ms bin spans at least 4 kept samples (memory; a clock change,
+which the measures do not see).
 
 *Augmented (H2):* the balanced-gain random RNN with slow drives; negative controls: the same with a fast
-drive, and with more network noise.
+drive, and A1 with more network noise; 8 settings each (section 7).
 
 Repeats must differ in internal state, otherwise C_int is zero by construction:
 - networks with noise run continuously, with intervening input between repeats, as mice watch movies;
@@ -154,19 +158,24 @@ Repeats must differ in internal state, otherwise C_int is zero by construction:
 
 - Every AI except the spiking network is recorded through the map study's registered spike model at each
   mouse's own single-unit numbers (bins per timescale, spikes per bin, white share, rate spread), measured
-  on that mouse's movie repeats (included units, repeats as segments) after freezing. Units are recorded
-  100 at a time with one shared random generator; each repeat is binned from its own start, as the mice are.
+  on that mouse's movie repeats (included units, repeats as segments) after freezing.
+- The spike model is applied to the whole run at once: each unit is standardised and rate-normalised once,
+  and only the bins are laid out from each repeat's own start (`record.spikes_aligned`). (v0.3 recorded each
+  repeat separately, which re-standardised per repeat and erased between-repeat gain changes in AIs only:
+  review S-R2 finding 1.)
+- After recording, the mouse's instrument function is computed on the recorded repeats themselves. If the
+  bins per timescale, spikes per bin or rate spread differ from the mouse's by more than 15%, 15% or 20%, or
+  the white share by more than 0.05, the mean count, bin width and rate spread are scaled toward the mouse
+  and the recording repeated, at most twice (`record.record_checked`). A recording still outside tolerance
+  is "not reached": excluded and counted. The numbers measured on the repeats are stored.
 - A system with no measurable native timescale is pre-held (each step repeated 4 times) before matching.
-- The matched knobs, the achieved numbers and whether matching reached its targets are stored for every
-  recording. A recording whose match is not reached is excluded and counted.
-- The spiking network (A4) is recorded like a mouse: its own spikes in 20 ms bins, thinned at random to
-  the mouse's spikes per bin.
-- AI units with SD below 1% of the median unit SD are excluded as silent (Allen keeps only firing units).
-- Each AI is recorded with the same number of units as its mouse has included units (a seeded random
-  subset of its non-silent units, at most all of them): the M1 estimate has a small-sample bias that depends
-  on the number of units (C4 population: 0.65 at 200 units, 0.70 at 480), so the pair must match.
+- AI units with SD below 1% of the median unit SD are excluded as silent. The recorded units then go through
+  the mouse's inclusion rule, and a seeded subset of the mouse's size is kept (the M1 estimate has a
+  small-sample bias that depends on the number of units: C4 population, 0.65 at 200 units, 0.70 at 480).
+- The spiking network (A4) is recorded like a mouse: its own spikes in 20 ms bins, thinned at random to the
+  mouse's spikes per bin (thinning probability from its included neurons), the mouse's inclusion rule, then
+  the mouse's number of units.
 - Each AI gets the same number of repeats as its mouse. Recorded bins per clip are reported.
-- Replication: the calcium model, matched to each two-photon mouse's numbers on its movie repeats.
 
 ## 6. Calibration
 
@@ -182,67 +191,87 @@ Ornstein-Uhlenbeck part continuous through the repeats; known shares and timesca
   (Run before freezing; it failed narrowly, see `SLOW_LOG.md`, "C4 and spike-type checks for the v0.3
   measures"; the criterion was not changed.)
 
+- **Multiplicative internal state:** a slow per-unit gain on the locked activity (no additive internal part)
+  must raise M1 monotonically (Spearman at least 0.9 over 5 levels), so gain changes between repeats are
+  seen through the instrument as they would be in mice (review S-R2 finding 1).
+- **Bias bounds.** The known mouse-AI biases from these checks set a floor on what counts as a gap (section
+  7): spike type (up to 0.075 in M1, up to 0.5 in log M2) and short recorded clips (M1 lower by 0.03 to 0.04
+  at about 570 bins; log M2 lower by 0.33 at 218 bins). Bounds: **0.10 for M1 and 0.5 for log M2**. This is
+  the registered consequence of the spike-type check failing narrowly (S-R2 finding 9).
+
 After freezing, on the real recordings, before any verdict is read (review S-R1 finding 8):
 - **C3, reliability:** split each mouse's repeats into odd and even; Spearman across mice of M1 (and of log
   M2) between halves at least 0.5. A measure that fails is reported as unreliable and not tested.
-- **Nuisance checks, in mouse-ruler units:** the balanced-gain A1 under the playback sensitivity (x0.5, x2,
-  driven rule). If a nuisance moves the family's median value by 0.5 ruler units or more, the M2 test of
-  every movie-driven family is reported as "playback-sensitive" and not counted for the thesis.
+- **Playback, in mouse-ruler units:** A1 at gain 0.25 under the playback sensitivity (x0.5, x2, driven
+  rule). If any variant moves the median of a measure by 0.5 ruler units or more, that measure's test for the
+  movie-driven families (A1, A4) is reported but not counted.
+- Not repeated after freezing, with reasons: clip length (fixed by design for each family, and C4 covers
+  200 to 4,000 bins); pre-hold (only CfC and LIF, and M1 did not move between pre-holds of 2, 4 and 8);
+  re-matching (moved M1 by at most 0.03 and M2 by at most 0.25 before freezing).
 
 ## 7. Hypotheses and decision rules (to be frozen)
 
 All tests are paired, mouse by mouse: d = mouse minus AI at that mouse's instrument. **The ruler is a
-robust SD of the mice's values** (1.4826 x the median absolute deviation); the equivalence margin is 0.5
-ruler units. M1 is analysed as it is, M2 on a log scale.
+robust SD of the mice's values** (1.4826 x the median absolute deviation). M1 is analysed as it is, M2 on a
+log scale. **The margin for a gap is the larger of 0.5 ruler units and the bias bound** (0.10 in M1, 0.5 in
+log M2; section 6).
 
-**From several runs to one d (the bracket rule; review S-R1 finding 2).** Movie-driven families run on a
-gain grid (0.05, 0.1, 0.25, 0.5, 0.86 balanced, 1, 2, 4), and A6 and A7 have several model sizes. For each
-mouse and measure: d = 0 if the mouse's value lies within the range of the family's values over its gains or
-sizes at that mouse; otherwise d = mouse minus the nearer end. So a confirmed gap means no gain or size in the
-grid reaches the mouse. A pair counts only if every gain or size of the family was recorded at that mouse
-with a reached match; missing pairs are counted and reported.
+**From several runs to one d (the bracket rule).** Movie-driven families run on a gain grid (0.05, 0.1,
+0.25, 0.5, 0.86 balanced, 1, 2, 4); A6 has 4 model sizes and A7 has 2. For each mouse and measure, among the
+family's runs that have a value for that measure (on M2, runs with an internal part): d = 0 if the mouse
+lies within their range, else mouse minus the nearer end. A pair counts only if every gain or size was
+recorded at that mouse with a reached instrument; if more than 25% of mice lack a pair, the family's verdict
+is "not testable".
 
-**Ceiling (finding 4).** On M2, a mouse at ceiling against a family with a run at ceiling counts as a tie
-(d = 0).
+**Codes.** "No shared part": no positive covariance at lag 2 at all; excluded (not counted as 0). "No
+internal part" (M1 below 0.05) and "no locked part" apply to M2. If more than half of a family's pairs have
+one code, that code is the family's verdict on that measure.
 
-**Dependence (finding 6).** Pairs that share an AI run (a generator cell: instance, and playback group for
-movie-driven families) are not independent. Every interval is a cluster bootstrap over cells (4,000
-resamples), and the one-sided test must also hold **within each of the 3 instances** separately (pairs
-within an instance differ in mice). A sign test over cell medians was considered and dropped: with 3 cells
-for most families it can never reach p < 0.05.
+**Ceilings and censoring (M2).** A mouse at internal ceiling against a family with a run at ceiling is a
+tie (d = 0). A pair whose nearer AI run is at internal ceiling while the mouse lies above it, or where
+either side's locked time is at ceiling, is censored: excluded and counted.
 
-- **H1 (gap):** for each standard family (A1 to A7), M1 and M2 are each lower in the AI than in the mice.
-  - Confirmed: one-sided Wilcoxon signed-rank (mouse greater) p < 0.05 over all pairs and within every
-    instance, median d above 0.5 ruler units, and the lower end of the cluster interval above 0.
-  - Refuted: the same in the opposite direction.
-  - Otherwise: not decided. Fewer than 6 pairs: "too few pairs".
-  - M2 codes: if more than half the family's pairs have no internal part, its M2 verdict is "no internal
-    part" (the gap is then carried by M1); if more than half have no locked part, "no locked part".
-  - Reported beside every M2 verdict, not counted: the same test with the AI's runs restricted to those
-    with M1 at least 0.2. Reason: in C1, M2 reads low when the internal share is small (true ratio 4: 0.9
-    to 2.0 at share 0.05, 2.6 to 2.9 at 0.8), which favours the thesis for AIs with little internal state.
-  - **The thesis holds** if at least 5 of the 7 families are confirmed on M1 or M2 and none is refuted on
-    either. If the validity check below fails, M2 is set aside and the count uses M1 only.
-- **H2 (ingredient), with negative controls (finding 7).** Three candidates, each the balanced-gain random
-  RNN with one change, each tuned on a seeded half of the mice (seed 2026) by minimising the sum of the
-  absolute median d on M1 and log M2 (in ruler units), then tested on the other half:
-  - **slow drive** (`inputs.add_slow_drive`: 10 Ornstein-Uhlenbeck drives through a fixed random
-    projection added to unit activity; share 0.05, 0.1, 0.2, 0.3, 0.5 x time constant 0.5, 1, 2, 5 s of
-    movie time);
-  - **fast drive**, control: the same with a time constant of one movie frame (share grid as above);
-  - **more noise**, control: network noise 0.2, 0.4, 0.8, 1.6 (from 0.1).
-  - Equivalent: the 90% cluster interval of the median d within plus or minus 0.5 ruler units on both M1
-    and M2. **H2 is confirmed** if the slow drive is equivalent and neither control is.
-- **H3 (scale):** Pythia 1B is not closer to the mice than Pythia 14M, on M1 (Pythia 14M has almost no
+**Dependence.** Pairs that share an AI run (a generator cell: instance, and playback group for
+movie-driven families; both stored on every AI row) are not independent. Every interval is a cluster
+bootstrap over cells (4,000 resamples), and the one-sided test must hold within each of the 3 instances as
+well as overall.
+
+- **H1 (gap), per family and measure:** confirmed if the one-sided Wilcoxon signed-rank test (mouse
+  greater) gives p < 0.05 overall and within every instance, the median d exceeds the margin, and the lower
+  end of the cluster interval is above 0. Refuted: the same in the opposite direction. Otherwise not
+  decided; fewer than 6 pairs: too few pairs. Reported beside every M2 verdict, not counted: the same test
+  with the AI's runs restricted to M1 at least 0.2 (in C1, M2 reads low when the internal share is small).
+- **Claim 1 (more internal state)** holds if at least 5 of the 7 families are confirmed on M1 and none is
+  refuted on M1. Noisy families (A1, A4) and noise-free ones (A2, A3, A5, A6, A7, whose only internal state
+  is what the preceding input left) are reported separately.
+- **Claim 2 (slower relative to the input)** holds if the shuffled-movie check passes, at least 3 families
+  have a testable M2 verdict (confirmed, refuted or not decided), at least two thirds of those are
+  confirmed, and none is refuted. If the check fails, claim 2 is "not assessable".
+- **Claim 3 (H2).** Three candidates, each tuned on the mice of a seeded half of the generator cells (seed
+  2026; tuning and test halves share no AI run) by minimising the sum of the absolute median d on M1 and log
+  M2 (ruler units), then tested on the mice of the other cells. 8 settings each:
+  - **slow drive** (`inputs.add_slow_drive`: 10 Ornstein-Uhlenbeck drives through a fixed random projection
+    added to unit activity of the balanced-gain A1): share 0.1, 0.2, 0.3, 0.5 x time constant 1 or 3 s;
+  - **fast drive**, control: the same with a time constant of 1 or 2 movie frames;
+  - **more noise**, control: A1 with network noise 0.2, 0.4, 0.8, 1.6 x input gain 0.25 or 0.86.
+  - Equivalent: the 90% cluster interval of the median d within plus or minus 0.5 ruler units on both M1 and
+    M2. Claim 3 holds if the slow drive is equivalent and neither control is. The drive is added to the
+    activity, not built into the dynamics, so a confirmed claim 3 says a slow additive state suffices, not
+    which mechanism produces it.
+- **Claim 4 (H3, scale):** Pythia 1B is not closer to the mice than Pythia 14M, on M1 (14M has almost no
   internal part, so M2 cannot be compared). For each mouse, closer-by = |d(14M)| - |d(1B)| in ruler units;
-  confirmed if the upper end of the 90% cluster interval of its median is below 0.5.
-- **Validity check of M2 (not about AIs): the shuffled movie.** In the 26 functional_connectivity mice the
-  shuffled movie is one fixed permutation of the same frames, shown 20 times (Allen staff, community
-  forum thread 1010). Same units as the movie. Passes if the locked time falls (one-sided Wilcoxon p < 0.05),
-  log M2 rises (p < 0.05), and the internal time moves less than the locked time (median absolute log
-  change). M2 rising alone would be mechanical, since it is a ratio with the locked time below.
+  holds if the upper end of the 90% cluster interval of its median is below 0.5.
+- **Behaviour (review S-R2 finding 11).** Each mouse's measures are also computed after regressing out
+  running speed and pupil area (each signal and its 1 s mean, additive and as gain on the unit's mean
+  response; a constant per repeat). Claims 1 and 2 are re-evaluated with these values; each claim is reported
+  as holding "with" or "without" behaviour removed. In a synthetic check this regression removed about
+  three quarters of running-driven internal state and left unrelated internal state untouched (0.34 to 0.34).
+- **Validity check of M2: the shuffled movie.** In the 26 functional_connectivity mice, the shuffled movie
+  (one fixed permutation of the same frames, 20 times; same units). Passes if the locked time falls
+  (one-sided Wilcoxon p < 0.05), log M2 rises (p < 0.05), and the median log change of the internal time is
+  smaller in size than that of the locked time.
 
-Every verdict is reported whatever it is, with the numbers of mice, pairs, cells and missing pairs.
+Every verdict is reported whatever it is, with the numbers of mice, pairs, cells, missing and censored pairs.
 
 ## 8. Feasibility checks (before freezing; no activity read for any measurement)
 
@@ -255,7 +284,8 @@ Every verdict is reported whatever it is, with the numbers of mice, pairs, cells
   - summary in `docs/figures/slow_f1_movie_meta.json`.
 - **F2:** an input pipeline for every AI family. Code in `nematica/slow/inputs.py`; probes of every family
   logged (A1 to A7); larger models are downloaded one at a time (disk).
-- **F3:** done: the Allen two-photon dataset (section 4), C1 passes through the calcium model.
+- **F3:** the Allen two-photon dataset was chosen and its loader written; deferred to a separate
+  registration after review S-R2 (section 4).
 - **F4:** done as an estimate: about 1,330 recordings with one instance per mouse, about 20 hours.
 - **F5:** for the lag-1 measures of v0.2, C1 passed at four real instruments and C4 passed; after review
   S-R1 the measures changed (lag 2, within-repeat centring), so C1, C4 and the spike-type check are rerun
@@ -279,9 +309,12 @@ Every verdict is reported whatever it is, with the numbers of mice, pairs, cells
 - Measures: `nematica/slow/measures.py`; recording: `nematica/slow/record.py`; inputs:
   `nematica/slow/inputs.py`; mouse data: `nematica/slow/data.py`; pipeline: `scripts/slow_run.py`
   (stages `mice`, `ais`, `tests`; the first two refuse to run until this file says "Frozen at commit").
-- Freezing fixes this file and those five files at the freezing commit. Any later change to them is an
-  amendment (section 9), with the reason and whether any real data had been seen.
+- Freezing fixes the whole repository at the freezing commit (the study also depends on the map study's
+  `nematica/map` code). Every result row stores the commit and whether the code differed from it. Any
+  later change to code the results depend on is an amendment (section 9).
 - Seeds: the H2 split 2026; per-run recording seeds from `zlib.crc32` of the run label; instance seeds
   0 to 2.
-- Before freezing: every critical and major finding of review S-R1 resolved (`SLOW_LOG.md`); C1, C4 and
-  the spike-type check rerun for the final measures; a second review of the frozen text and code. 
+- Before freezing: every critical and major finding of reviews S-R1 and S-R2 resolved (`SLOW_LOG.md`); C1
+  rerun on the final recording path, with the multiplicative case; a check of the tests logic on synthetic
+  rows (`scripts/slow_test_logic.py`); a review of the frozen text and code before the first real
+  measurement. 

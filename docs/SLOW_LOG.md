@@ -1093,3 +1093,51 @@ towards a gap.
 
 This is a larger revision than S-R1's. I start with the critical recording fix (1), which every later
 calibration depends on.
+
+### Responses to S-R2 in text and code; draft v0.4 (18:36 UTC)
+
+- **1 (critical):** `record.spikes_aligned` applies the spike model to the whole run (each unit standardised
+  and rate-normalised once) and only lays the bins out from each repeat's start. Checked: share 0 gives M1
+  -0.013, share 0.5 gives 0.685; a per-repeat gain (log-SD 0.3) with no additive internal part now reads M1
+  0.385 through the instrument (native 0.067): gain changes survive recording, as in mice (amplified by the
+  exponential nonlinearity, as the reviewer found for continuous recording). C1 gets a multiplicative sweep.
+- **2 (critical):** the two-photon replication is taken out of this registration and will be registered
+  separately with its own calibration before any two-photon activity is read.
+- **3:** every AI row stores `instance` and `group`; cells are built from them.
+- **4:** the playback variants run at gain 0.25 (M1 about 0.35); the rule applies to M1 and M2.
+- **5:** `record.record_checked`: after recording, the mouse's instrument function runs on the recorded
+  repeats; if outside tolerance (15%, 15%, 20%, white share 0.05) the knobs are scaled toward the mouse and
+  the recording repeated, at most twice; `reached` is defined on the repeats and excluded pairs are counted
+  in every test. Checked on A1 at gain 0.25: first recording 2.13 bins per timescale and 0.082 spikes per bin
+  against 2.60 and 0.066; after one correction 2.28, 0.070, white share 0.895, rate spread 1.12; reached.
+- **6 and 9:** bias bounds registered (0.10 in M1, 0.5 in log M2), from the pre-freeze checks; the gap margin
+  is the larger of 0.5 ruler units and the bound.
+- **7:** one verdict per claim item (`out["claims"]`), with claim 2 requiring M2 and the validity check;
+  noisy and noise-free families reported separately.
+- **8:** 8 settings for each H2 candidate; the noise control varies noise and input gain; tuning and test
+  halves split by generator cell; the mechanism caveat written into the claim.
+- **10:** mice capped at 480 units; AI recordings go through the mouse inclusion rule, then the mouse's unit
+  count; the LIF too.
+- **11 (behaviour):** `data.behaviour` (running speed, pupil area where tracked; behaviour only, tested on
+  one session: 17 x 1,501 bins, running only) and `data.regress_out` (additive and gain terms per unit,
+  constant per repeat). Synthetic check: running-driven internal state with no true internal part read M1
+  0.566, 0.166 after regression (a linear model of counts cannot remove all of a multiplicative effect);
+  true internal state unrelated to running read 0.341 before and 0.337 after. Claims 1 and 2 are re-evaluated
+  with behaviour-removed mouse values.
+- **12:** censoring of AI-only ceilings and locked ceilings (excluded and counted).
+- **13:** every row stores the git commit and whether the code differed; freezing covers the repository.
+- **14:** more than 25% missing pairs gives "not testable".
+- **15:** the inconsistencies listed are fixed (A4 rules, retraining-seed wording, cross-reference,
+  per-repeat recording stated). The 2p minimum-units point is moot with the arm deferred.
+- **16:** asserts in `spikes_aligned`.
+- **17:** `scripts/slow_test_logic.py` now covers A4 (no shared part), A6 with 4 sizes and a gap in only two
+  instances, A7 with unreached instruments, H2 with 8-point grids, and the playback rule. Its run: A1 not
+  decided (bracket); A4 "no shared part"; A2 confirmed; A3 refuted; A5 confirmed on M1, M2 "no internal
+  part"; A6 not decided (the per-instance test catches the instance without a gap); A7 "not testable"; H2
+  chooses the matching setting and both controls fail; playback flags A1. All as designed.
+- **18:** block means: a check of keep 1, 2 and 4 is run below.
+- **19:** "no shared part" is excluded, not counted as M1 = 0.
+- The S-R1 response to finding 8 had promised clip-length, pre-hold and re-matching checks after freezing;
+  v0.3 dropped them without saying why. Reasons now in `SLOW.md` section 6: clip length is fixed by design
+  and covered by C4; pre-hold matters only for CfC and LIF and did not move M1; re-matching moved the
+  measures little before freezing.
