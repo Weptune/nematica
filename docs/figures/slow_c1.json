@@ -1,0 +1,311 @@
+{
+ "what": "Study 2 calibration C1 for the lag-1 measures (synthetic; 20 repeats; clip 1,500 bins as in Allen natural_movie_one; 480 units; locked timescale 6 native steps; 2 seeds per level). Share sweep at ratio 4; ratio sweep at share 0.5. rho = Spearman over 10 runs; gate rho >= 0.9.",
+ "instruments (map study R4a single-unit numbers, whole sessions)": {
+  "median": {
+   "bins_per_tau": 2.601,
+   "count_per_bin": 0.066,
+   "noise": 0.897,
+   "rate_log_sd": 1.219
+  },
+  "fastest": {
+   "bins_per_tau": 1.431,
+   "count_per_bin": 0.054,
+   "noise": 0.825,
+   "rate_log_sd": 1.329
+  },
+  "slowest": {
+   "bins_per_tau": 23.895,
+   "count_per_bin": 0.092,
+   "noise": 0.963,
+   "rate_log_sd": 1.104
+  },
+  "noisiest": {
+   "bins_per_tau": 17.816,
+   "count_per_bin": 0.102,
+   "noise": 0.965,
+   "rate_log_sd": 1.126
+  }
+ },
+ "share_levels": [
+  0.05,
+  0.1,
+  0.2,
+  0.4,
+  0.8
+ ],
+ "ratio_levels": [
+  1,
+  2,
+  4,
+  8,
+  16
+ ],
+ "results": {
+  "median|share|M1_lag1": {
+   "rho": 0.985,
+   "means": [
+    0.072,
+    0.151,
+    0.288,
+    0.535,
+    0.894
+   ],
+   "n": 10
+  },
+  "median|share|M1": {
+   "rho": 0.985,
+   "means": [
+    0.146,
+    0.234,
+    0.368,
+    0.57,
+    0.89
+   ],
+   "n": 10
+  },
+  "median|share|M2_lag1": {
+   "rho": -0.074,
+   "means": [
+    2.807,
+    2.852,
+    2.792,
+    2.956,
+    2.824
+   ],
+   "n": 10
+  },
+  "median|ratio|M2_lag1": {
+   "rho": 0.985,
+   "means": [
+    0.937,
+    1.615,
+    2.882,
+    5.192,
+    10.645
+   ],
+   "n": 10
+  },
+  "median|ratio|M2_int": {
+   "rho": 0.985,
+   "means": [
+    0.756,
+    1.281,
+    2.349,
+    3.96,
+    8.478
+   ],
+   "n": 10
+  },
+  "median|ratio|M1_lag1": {
+   "rho": 0.985,
+   "means": [
+    0.578,
+    0.608,
+    0.634,
+    0.664,
+    0.671
+   ],
+   "n": 10
+  },
+  "fastest|share|M1_lag1": {
+   "rho": 0.985,
+   "means": [
+    0.088,
+    0.173,
+    0.334,
+    0.612,
+    0.925
+   ],
+   "n": 10
+  },
+  "fastest|share|M1": {
+   "rho": 0.985,
+   "means": [
+    0.28,
+    0.318,
+    0.456,
+    0.668,
+    0.926
+   ],
+   "n": 10
+  },
+  "fastest|share|M2_lag1": {
+   "rho": 0.295,
+   "means": [
+    2.264,
+    2.391,
+    2.442,
+    2.36,
+    2.4
+   ],
+   "n": 10
+  },
+  "fastest|ratio|M2_lag1": {
+   "rho": 0.985,
+   "means": [
+    0.859,
+    1.426,
+    2.41,
+    4.341,
+    8.013
+   ],
+   "n": 10
+  },
+  "fastest|ratio|M2_int": {
+   "rho": 0.985,
+   "means": [
+    0.639,
+    1.083,
+    1.759,
+    3.341,
+    5.616
+   ],
+   "n": 10
+  },
+  "fastest|ratio|M1_lag1": {
+   "rho": 0.985,
+   "means": [
+    0.621,
+    0.655,
+    0.705,
+    0.735,
+    0.747
+   ],
+   "n": 10
+  },
+  "slowest|share|M1_lag1": {
+   "rho": 0.985,
+   "means": [
+    0.064,
+    0.103,
+    0.233,
+    0.433,
+    0.831
+   ],
+   "n": 10
+  },
+  "slowest|share|M1": {
+   "rho": 0.911,
+   "means": [
+    0.116,
+    0.067,
+    0.245,
+    0.473,
+    0.823
+   ],
+   "n": 10
+  },
+  "slowest|share|M2_lag1": {
+   "rho": 0.542,
+   "means": [
+    2.56,
+    4.208,
+    4.111,
+    4.314,
+    4.335
+   ],
+   "n": 10
+  },
+  "slowest|ratio|M2_lag1": {
+   "rho": 0.985,
+   "means": [
+    1.283,
+    2.168,
+    4.113,
+    7.55,
+    13.596
+   ],
+   "n": 10
+  },
+  "slowest|ratio|M2_int": {
+   "rho": 0.985,
+   "means": [
+    1.253,
+    2.187,
+    4.093,
+    7.668,
+    13.255
+   ],
+   "n": 10
+  },
+  "slowest|ratio|M1_lag1": {
+   "rho": 0.739,
+   "means": [
+    0.534,
+    0.531,
+    0.543,
+    0.55,
+    0.543
+   ],
+   "n": 10
+  },
+  "noisiest|share|M1_lag1": {
+   "rho": 0.985,
+   "means": [
+    0.066,
+    0.116,
+    0.227,
+    0.433,
+    0.829
+   ],
+   "n": 10
+  },
+  "noisiest|share|M1": {
+   "rho": 0.935,
+   "means": [
+    0.058,
+    0.094,
+    0.239,
+    0.419,
+    0.816
+   ],
+   "n": 10
+  },
+  "noisiest|share|M2_lag1": {
+   "rho": 0.837,
+   "means": [
+    2.59,
+    3.377,
+    3.916,
+    3.907,
+    4.485
+   ],
+   "n": 10
+  },
+  "noisiest|ratio|M2_lag1": {
+   "rho": 0.985,
+   "means": [
+    1.149,
+    2.061,
+    4.469,
+    7.443,
+    13.618
+   ],
+   "n": 10
+  },
+  "noisiest|ratio|M2_int": {
+   "rho": 0.985,
+   "means": [
+    0.946,
+    2.075,
+    4.849,
+    7.13,
+    14.692
+   ],
+   "n": 10
+  },
+  "noisiest|ratio|M1_lag1": {
+   "rho": 0.517,
+   "means": [
+    0.531,
+    0.533,
+    0.533,
+    0.535,
+    0.546
+   ],
+   "n": 10
+  }
+ },
+ "code": "/tmp/s7/c1.py (temporary); nematica/slow",
+ "log": "docs/SLOW_LOG.md 21:30"
+}

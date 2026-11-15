@@ -295,3 +295,48 @@ study's calcium recording model.
   (the evidence so far is spread over several runs); (b) the spread from instrument re-matching (19:20);
   (c) calibration at the extreme per-mouse instruments, not only the median; (d) C1 through the calcium
   instrument if the two-photon replication is chosen.
+
+**20:25. F2 probe: the trained task RNN (A2).** `trained_task_rnn(seed=0)`: the registered training ran
+in 460 s (sharing the CPUs with C4); accuracy 0.728 on 1,000 independent trials (the map study's guard is
+0.7). Repeats: 100 fixed trials (6,000 steps) shown 20 times, 5 to 15 random trials before each. Raw
+activity, no instrument (`/tmp/s7/f2_a2.py`):
+- **raw lag-0 internal share 0.72**: most of this network's activity differs between repeats of identical
+  input;
+- the internal share **fades slowly through the clip**: 0.94 in the first trial, 0.90 in the second, 0.85
+  in the fifth, 0.81 in the 20th, 0.53 in the 100th. The state left by the preceding random trials
+  persists for dozens of trials (thousands of steps), consistent with the map study's estimate of a
+  timescale of about 930 to 1,500 steps for this network.
+- Shares computed at lags of 10 to 600 steps exceeded 1 (1.14 to 2.51): with a 60-step trial structure the
+  stimulus-locked autocovariance goes negative at some lags, so a ratio to C_same is not a share there.
+  For M1 at lag 1 bin this needs care: the bin must be shorter than the trial structure. To be handled
+  through the instrument (which bins at the mouse's timescale).
+- **This family may contradict the thesis**: a task-trained RNN carries a large, slow internal state.
+  That is exactly the kind of result the study must be able to report; nothing is changed because of it.
+  (It is a probe of the input pipeline, not a measurement: the registration is not frozen and the mice
+  have not been measured.)
+
+**20:35 to 21:30. Formal C1 for the lag-1 measures, at four real instruments** (`/tmp/s7/c1.py`, 80 runs,
+two at a time; summary `docs/figures/slow_c1.json`). The instruments are the map study's single-unit
+numbers (whole sessions) of: the median mouse; the fastest (1.43 bins per timescale); the slowest (23.9);
+the noisiest (white share 0.965). Each run: 20 repeats, 480 units, and the clip sized to **1,500 bins**,
+the real length of natural_movie_one in 20 ms bins. The clip is sized from a pilot match of the same
+system, because the matched bin depends on the system's measured timescale (a first attempt sized it from
+the nominal timescale and got 744 to 3,428 bins instead of 1,500).
+
+| instrument | M1_lag1 over share 0.05, 0.1, 0.2, 0.4, 0.8 (rho) | M2_lag1 over ratio 1, 2, 4, 8, 16 (rho) |
+|---|---|---|
+| median | 0.07, 0.15, 0.29, 0.54, 0.89 (0.98) | 0.94, 1.61, 2.88, 5.19, 10.64 (0.98) |
+| fastest | 0.09, 0.17, 0.33, 0.61, 0.92 (0.98) | 0.86, 1.43, 2.41, 4.34, 8.01 (0.98) |
+| slowest | 0.06, 0.10, 0.23, 0.43, 0.83 (0.98) | 1.28, 2.17, 4.11, 7.55, 13.60 (0.98) |
+| noisiest | 0.07, 0.12, 0.23, 0.43, 0.83 (0.98) | 1.15, 2.06, 4.47, 7.44, 13.62 (0.98) |
+
+- **C1 passes for both primary measures at every instrument** (gate rho 0.9). 0.98 is the ceiling here:
+  two seeds per level, and the two seeds' order within a level does not count.
+- The lag-0 M1 reads 0.12 to 0.28 at true share 0.05 and drops to rho 0.91 at the slowest instrument (it
+  is non-monotone there: 0.12 then 0.07). The lag-1 choice is confirmed.
+- **The instrument shifts the values** (M2_lag1 at true ratio 16: 8.0 at the fastest mouse, 13.6 at the
+  slowest). This is why every AI is recorded at each mouse's own instrument and compared with that mouse
+  only: the shift is the same for both members of a pair.
+- Cross-talk (reported): at the slowest and noisiest instruments M2_lag1 moves with share at the smallest
+  share (2.56 to 2.59 at share 0.05, against 3.9 to 4.5 above it; rho 0.54 and 0.84), and M1_lag1 rises a
+  little with the ratio at the fastest instrument (0.62 to 0.75). At the median it is flat (rho -0.07).
