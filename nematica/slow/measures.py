@@ -78,7 +78,10 @@ def internal_measures(Y, max_lag=None):
     i0 = s0 - c0
     out = {"signal_var": s0, "locked_var": c0, "internal_var": i0, "noise_share": float(1 - s0 / same[0])}
     # lag-1 share: needs no extrapolation, since spike noise is white (F2 note, SLOW_LOG)
-    out["M1_lag1"] = float((same[1] - cross[1]) / same[1]) if same[1] > 0 else np.nan
+    # no positive one-bin covariance at all (e.g. the LIF network, SLOW_LOG 18:30): nothing slow to share out;
+    # M1_lag1 is set to 0 and flagged
+    out["no_lag1_cov"] = bool(not same[1] > 0)
+    out["M1_lag1"] = float((same[1] - cross[1]) / same[1]) if same[1] > 0 else 0.0
     # lag-1 versions (no extrapolation): integral times from lag 1, normalised by lag 1
     i1, c1 = float(same[1] - cross[1]), float(cross[1])
     out["ti_lag1"] = integral_time((same - cross)[1:], i1) - 0.5 + 1.0 if i1 > 0 else np.nan
@@ -125,3 +128,22 @@ def carry_over(Y, edge):
     a = E[:-1, -edge:].mean(1).ravel()
     b = E[1:, :edge].mean(1).ravel()
     return float(np.corrcoef(a, b)[0, 1])
+
+
+def unit_internal_shares(Y):
+    """Reported extras (SLOW.md section 3), on native activity (R, T, N): per unit, the share of its variance
+    that differs between repeats (mean over time of the across-repeat variance, over its total variance);
+    the variance-weighted share over units; and the fraction of units whose share exceeds 0.5."""
+    Y = np.asarray(Y, np.float64)
+    within = Y.var(0).mean(0)
+    total = Y.reshape(-1, Y.shape[2]).var(0)
+    ok = total > 1e-12
+    sh = within[ok] / total[ok]
+    return {"weighted_share": float(within[ok].sum() / total[ok].sum()),
+            "frac_units_above_half": float((sh > 0.5).mean()), "n_units": int(ok.sum())}
+
+
+def silent_units(A, frac=0.01):
+    """SLOW.md section 5: AI units whose SD is below `frac` of the median unit SD (boolean mask of silent)."""
+    sd = np.asarray(A).std(0)
+    return sd < frac * np.median(sd)

@@ -656,3 +656,24 @@ mice on M2, equivalence tested on the other half on both measures).
 recorded bins, M1_lag1 0.646 and M2_lag1 3.11 (SD 0.32); at 1,584 to 2,051 bins, 0.645 and 2.87 (SD 0.12).
 Shift 0.24 in M2_lag1 against a C1 range of about 10 (ratio 0.02); the spread grows at short clips, as
 expected. The measures hold down to about 200 bins.
+
+**18:30. The pipeline: `scripts/slow_run.py`** (stages `mice`, `ais`, `tests`; each appends results row by
+row to `docs/figures/slow_runs/*.jsonl` and resumes after a crash).
+- **Freeze guard:** the `mice` and `ais` stages exit unless `SLOW.md` contains "Frozen at commit <hash>"
+  (checked: it refuses now). `--dry` runs them on synthetic stand-in mice instead, writing `*_dry.jsonl`
+  (git-ignored); nothing real is read.
+- `mice`: per session, the cached movie repeats in 20 ms bins, the map study's unit inclusion rule, the
+  map study's instrument numbers (`instrument_numbers`, with repeat boundaries as segments), the measures
+  and the reported extras.
+- `ais`: mice get an instance (rank mod 3) and a playback-speed group (quartile of bins per timescale).
+  Each AI run is generated once per (instance, group, gain), recorded at every mouse it serves with that
+  mouse's repeats and instrument, then discarded (disk). Silent units are excluded. The LIF network is
+  binned at 20 ms and thinned to the mouse's spikes per bin. A1 and A4 are wired in; A2, A3, A5, A6, A7
+  follow the same pattern and are added next.
+- Dry runs passed for `mice` (6 stand-ins, recovered numbers near the synthetic instrument: 3.3 bins per
+  timescale for a nominal 2.6, white share 0.92 for 0.90) and for `ais` with A1 and A4.
+- Two small fixes from the dry run: Python's `hash` is randomised per process, so seeds now come from
+  `zlib.crc32`; and the LIF network, once thinned to mouse sparseness, has **no positive one-bin
+  covariance at all**, which left M1_lag1 undefined. Rule: M1_lag1 is then set to 0 and flagged
+  `no_lag1_cov` (nothing slow to share out). To go into `SLOW.md` section 3.
+- `tests` is not written yet; it must be written and committed before freezing.
