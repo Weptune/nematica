@@ -1172,3 +1172,9 @@ remaining shift against full resolution is about 0.01 in M1, inside the bias bou
 All trained instances exist (`data/derived/slow_nets/`, git-ignored): GRU seeds 0 to 2 (386 and 536 s for
 seeds 1 and 2), CfC seeds 0 to 2 (487 s for seed 1), task RNN seeds 0 to 2 (accuracy 0.728, 0.797, 0.704; all
 pass the 0.7 guard).
+
+### Registration frozen (19:27 UTC)
+
+`SLOW.md` v1.0 frozen at commit 8df8c650b0e0 ("SLOW registration frozen"). Before freezing: the logic check
+(`scripts/slow_test_logic.py`) gave the designed verdicts on the final code, and dry runs of the mouse stage
+and of A1 completed. Next, as registered: a review of the frozen version before the first real measurement.

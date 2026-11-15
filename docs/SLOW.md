@@ -2,7 +2,7 @@
 
 **Status: FROZEN** (16 Nov 2026, after feasibility checks F1 to F5, synthetic calibration, and two
 independent reviews, S-R1 and S-R2, whose findings and responses are in `docs/SLOW_LOG.md`). The freezing
-commit's message says "SLOW registration frozen"; its hash is recorded below. From here on any change to this
+commit's message says "SLOW registration frozen"; its hash is recorded here: **Frozen at commit 8df8c650b0e0**. From here on any change to this
 file, or to code the results depend on, is a numbered amendment (S1, S2, ...), dated and labelled "before any
 real data" or "after X was seen". **No mouse activity had been read for any measurement when this was frozen**
 (only metadata, stimulus tables, behaviour shapes, and array shapes of one cached session).
