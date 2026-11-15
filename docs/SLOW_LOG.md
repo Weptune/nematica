@@ -626,3 +626,28 @@ Synthetic systems at the median instrument, clip 3,500 native steps, share 0.5, 
 - M2_lag1 keeps its order but compresses as it nears the ceiling (52, 97, 111 for 100-fold, 580-fold and
   5,800-fold slower internal parts). So beyond the ceiling M2 is an ordinal lower bound; the paired tests
   are rank-based (Wilcoxon), which tolerates this, and the ruler is taken on log M2.
+
+**17:35. Draft decision rules tightened** (`SLOW.md` section 7, still a draft): M2 on a log scale with
+ceiling values as lower bounds; a refutation rule (the opposite one-sided test with median d below -0.5
+ruler units); the absent-M2 rule (if the AI's M2 is absent in more than half its pairs, the family's M2
+verdict is "no internal part"); the thesis counts families confirmed on M1 or M2 and needs none refuted on
+either; H2 specified (balanced-gain random RNN with the map study's slow drives, share chosen on half the
+mice on M2, equivalence tested on the other half on both measures).
+
+**17:45. H2 candidate probed** (driven random RNN, balanced gain 0.86, seed 0, median instrument):
+
+| slow drive | recorded bins | M1_lag1 | M2_lag1 | ceiling |
+|---|---|---|---|---|
+| none | 468 | 0.025 | 0.28 | no |
+| map version (50 x own timescale), share 0.1 / 0.3 | 404 / 234 | 0.32 / 0.60 | 12.1 / 15.1 | yes |
+| 1 s of movie time, share 0.1 / 0.3 | 332 / 364 | 0.31 / 0.53 | 2.32 / 2.67 | no |
+| 5 s of movie time, share 0.1 / 0.3 | 341 / 280 | 0.30 / 0.57 | 8.75 / 10.41 | yes |
+
+- The map study's drive takes its time constant from the network's own timescale, which becomes long once
+  the network is driven, so the drive outlasts the clip (ceiling) and coarsens the instrument (234 bins).
+  New `inputs.add_slow_drive` takes the time constant in movie time instead.
+- Slow drives raise both measures, and the time constant moves M2 from about 2.5 (1 s) to the ceiling
+  (5 s). So H2 now tunes share and time constant together on the training half (grid of 5 x 4), then
+  tests on the other half (`SLOW.md`, H2).
+- Recorded bins fall to 280 to 360 with drives; C4 covered down to about 280 bins (ratio 0.06). At the
+  edge; to be extended to 200 bins in the final C4.

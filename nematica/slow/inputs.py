@@ -324,3 +324,22 @@ def load_task_rnn(path):
     rnn = torch.nn.RNN(3, d["n"], batch_first=True, nonlinearity="tanh")
     rnn.load_state_dict(d["rnn"])
     return SimpleNamespace(rnn=rnn.eval())
+
+
+def add_slow_drive(A, share, tau_steps, seed=0, k=10):
+    """H2 candidate: k Ornstein-Uhlenbeck drives with 1/e time `tau_steps` (native steps) through a fixed random
+    projection, added to unit activity so they carry `share` of each unit's variance (as
+    nematica.map.zoo.with_slow_drives, but with the time constant given directly, in movie time: the map
+    version's 50 x the network's own timescale outlasts the clip once the network is driven; SLOW_LOG 17:45)."""
+    A = np.asarray(A, np.float32)
+    rng = np.random.default_rng(10_000 + seed)
+    a = np.exp(-1 / tau_steps)
+    Zs = np.empty((len(A), k), np.float32)
+    z = rng.standard_normal(k)
+    e = rng.standard_normal((len(A), k)) * np.sqrt(1 - a * a)
+    for t in range(len(A)):
+        z = a * z + e[t]
+        Zs[t] = z
+    S = Zs @ rng.normal(0, 1, (k, A.shape[1])).astype(np.float32)
+    S = (S - S.mean(0)) / S.std(0)
+    return A + S * (A.std(0) * np.sqrt(share / (1 - share)))

@@ -186,11 +186,13 @@ rank-based).
   gain grid (draft: 0.05, 0.1, 0.25, 0.5, 1, 2, 4), and the family's d at each mouse is taken at the gain
   that brings it **closest** to that mouse on the measure tested. A gap confirmed this way holds for every
   input strength in the grid. The balanced gain (movie input as strong as recurrent input) is reported.
-- **H2 (ingredient):** the random RNN at its balanced gain, with slow drives added as in the map study
-  (`zoo.with_slow_drives`: Ornstein-Uhlenbeck drives 50 times slower than the network, carrying a share of
-  each unit's variance). The share is chosen on a seeded half of the mice (grid 0.05 to 0.6, the value
-  minimising the absolute median d on M2) and tested on the other half. Confirmed if the 90% bootstrap
-  interval of the median d lies within plus or minus 0.5 ruler units on both M1 and M2 (equivalence).
+- **H2 (ingredient):** the random RNN at its balanced gain, with slow drives added (`inputs.add_slow_drive`:
+  10 Ornstein-Uhlenbeck drives through a fixed random projection, carrying a share of each unit's variance,
+  time constant given in movie time). Share (0.05, 0.1, 0.2, 0.3, 0.5) and time constant (0.5, 1, 2, 5 s)
+  are chosen together on a seeded half of the mice (the pair minimising the sum of the absolute median d on
+  M1 and on log M2) and tested on the other half. Confirmed if the 90% bootstrap interval of the median d
+  lies within plus or minus 0.5 ruler units on both M1 and M2 (equivalence). (The map study's version, 50
+  times the network's own timescale, outlasts the clip once the network is driven: `SLOW_LOG.md` 17:45.)
 - **H3 (scale):** Pythia 1B is not closer to the mice than Pythia 14M. Confirmed if the 90% interval of the
   difference in absolute median d lies above -0.5 ruler units.
 
