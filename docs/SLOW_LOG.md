@@ -712,3 +712,12 @@ results): A1, A2, A3, A4, A6 complete without errors.
   Wilcoxon p < 0.05 each) and into the pipeline (`mice` stage computes the shuffled measures for 000022
   sessions with the same units; `tests` reports the check). The loader caches the shuffled repeats
   separately (20 of 20 valid in the test session).
+
+**20:15. Two-photon loader** (`data.twop_experiments`, `data.twop_movie`). The Allen two-photon NWB files
+keep dF/F per imaging plane (cells x about 115,700 frames, gzip, one chunk row per cell) and the movie's
+presentation table (9,000 rows: 10 repeats of 900 frames, with timestamps). For each movie frame the loader
+takes the imaging frame at or after its onset, reads only the span covering the movie, and caches
+(R, 900, cells) as float16 (third-party, local, `data/cache/allen2p_movie/`). The selection rule gives 271
+mice, 49% from VISp. Test on the first mouse (shapes only, no statistics): (10, 900, 171), 2.9 MB; about
+0.8 GB for all. A pipeline stage for the replication (calcium instrument numbers on the movie epochs with
+GCaMP6f's registered half-decay; AIs through the calcium model with 10 repeats of 900 frames) is next.

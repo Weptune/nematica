@@ -113,3 +113,51 @@ def sessions():
     for ds in mdata.ALLEN_DANDISETS:
         for a in sorted((x for x in mdata.dandi_assets(ds) if "probe" not in x["path"]), key=lambda x: x["path"]):
             yield ds, a
+
+
+# ---------------------------------------------------------------- replication: Allen Visual Coding two-photon
+TWOP_MANIFEST = Path(__file__).resolve().parents[2] / "data/external/allen2p/ophys_experiments.json"
+TWOP_URL = "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_data/{}.nwb"
+TWOP_CACHE = Path(__file__).resolve().parents[2] / "data/cache/allen2p_movie"
+TWOP_DFF = "processing/brain_observatory_pipeline/DfOverF/imaging_plane_1"
+
+
+def twop_experiments():
+    """One session-A experiment per mouse (SLOW.md section 4): the mouse's VISp experiment if it has one,
+    else its lowest experiment id; in order of specimen id."""
+    import json
+    e = [x for x in json.loads(TWOP_MANIFEST.read_text()) if x["stimulus_name"] == "three_session_A"]
+    by = {}
+    for x in e:
+        by.setdefault(x["specimen_id"], []).append(x)
+    out = []
+    for sid in sorted(by):
+        xs = sorted(by[sid], key=lambda x: x["id"])
+        visp = [x for x in xs if x["targeted_structure"]["acronym"] == "VISp"]
+        out.append((visp or xs)[0])
+    return out
+
+
+def twop_movie(exp):
+    """dF/F of every cell at each natural_movie_one frame of each of the 10 repeats: (R, 900, cells), float16,
+    the imaging frame at or after each movie frame's onset. Cached locally (third-party data)."""
+    import h5py
+    TWOP_CACHE.mkdir(parents=True, exist_ok=True)
+    f = TWOP_CACHE / f"{exp['id']}.npz"
+    if f.exists():
+        return np.load(f, allow_pickle=False)["dff"]
+    with h5py.File(mdata.open_url(TWOP_URL.format(exp["id"])), "r") as h:
+        g = h["stimulus/presentation/natural_movie_one_stimulus"]
+        fr = np.asarray(g["data"][:]).astype(int)
+        ts = np.asarray(g["timestamps"][:])
+        img_t = np.asarray(h[f"{TWOP_DFF}/timestamps"][:])
+        D_ = h[f"{TWOP_DFF}/data"]
+        first = np.flatnonzero(fr == 0)
+        reps = [i for i in first if i + FRAMES <= len(fr) and fr[i + FRAMES - 1] == FRAMES - 1]
+        idx = np.stack([np.searchsorted(img_t, ts[i:i + FRAMES]) for i in reps])     # R x 900 imaging frames
+        idx = np.clip(idx, 0, len(img_t) - 1)
+        lo, hi = int(idx.min()), int(idx.max()) + 1
+        X = np.asarray(D_[:, lo:hi], np.float32)                                     # cells x span
+    out = np.transpose(X[:, idx - lo], (1, 2, 0)).astype(np.float16)                 # R x 900 x cells
+    np.savez_compressed(f, dff=out, idx=idx)
+    return out
