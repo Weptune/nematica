@@ -565,3 +565,30 @@ moves about as fast as its input-driven part. F4: about 19 minutes per Mamba-130
 machine, so A7 at about 58 mice x 2 sizes needs generation shared across mice (the clip and contexts do
 not depend on the mouse; only the instrument does), which is the plan: generate once per instance,
 record per mouse.
+
+**16:45. CfC (A5) probe, and a rule for systems with no measurable timescale.** CfC trained in 1,501 s
+(saved). Its activity has **no measurable timescale** at the character step (like the LIF network), and the
+preceding text leaves no trace: raw internal share 0.001 at lag 0, 0.08 in the first 10 characters of the
+clip, 0.000 after that. The spike instrument could not be matched (no timescale to match), so:
+- `record.record_repeats` now **pre-holds** a system whose native timescale is undefined: each native step
+  is repeated 4 times (`PREHOLD`) before matching, which gives it a timescale the matcher can use. The
+  measures are clock-free (C4: a 9-fold change of native clock moved them by 0.01 of their range), so the
+  choice of 4 should not matter; to be checked with 2 and 8 as a sensitivity. Systems with a timescale are
+  unaffected (the check runs on the first 20,000 rows).
+- Result: 15,787 bins per 3,000-character clip, **M1_lag1 0.003** (M2 absent under the 0.05 rule; the
+  lag-0 M1 read 0.084, the old bias again).
+
+**Probe summary so far** (seed 0 or one released seed, median mouse instrument, not measurements):
+
+| family | M1_lag1 | M2_lag1 | note |
+|---|---|---|---|
+| A1 random RNN, movie gain 0.05 / 0.25 / 1 | 0.91 / 0.35 / 0.02 | 0.55 / 0.33 / 0.28 | gain sets M1; internal always faster |
+| A2 task RNN | 0.69 | 0.10 | large, fast internal part; slow fading over trials |
+| A3 GRU | 0.38 | 67 | quiet latching units (17%) hold context |
+| A4 LIF, gain 0.5 / 2 | -0.59 / -0.05 | absent | internal part anticorrelated bin to bin |
+| A5 CfC | 0.003 | absent | forgets context within 10 characters |
+| A6 Pythia-14m / 160m | 0.018 / 0.137 | absent / 0.74 | 300-token clip |
+| A7 Mamba-130m | 0.61 | 1.03 | carries context in its state |
+
+The families differ a great deal from each other. Whether any of them resembles a mouse is unknown: no
+mouse has been measured, and none will be until the registration is frozen and reviewed.

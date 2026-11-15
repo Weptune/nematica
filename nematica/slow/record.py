@@ -24,12 +24,20 @@ def cut_repeats(Y, starts, length, per_sample):
 
 
 UNIT_BLOCK = 100
+PREHOLD = 4      # steps are repeated this many times when a system has no measurable timescale
 
 
-def record_repeats(A, starts, length, prof, rtype="spikes", seed=0, group=None, k=None):
+def record_repeats(A, starts, length, prof, rtype="spikes", seed=0, group=None, k=None, prehold=None):
     """Match (unless knobs k are given) and record native activity A (time x units), cut into repeats.
     Returns (repeats, knobs)."""
     A = np.asarray(A)
+    if prehold is None:                                  # SLOW_LOG 16:45: no measurable native timescale
+        from ..map.measures import tau_med
+        prehold = PREHOLD if not np.isfinite(tau_med(np.asarray(A[:20000, :recording.MATCH_MIN_UNITS], float))) else 1
+    if prehold > 1:
+        A = np.repeat(A, prehold, axis=0)
+        starts = [s * prehold for s in starts]
+        length = length * prehold
     if k is None:
         # match() reads only the first MATCH_MIN_UNITS columns; passing just those gives the same knobs
         # without a float64 copy of all of A (memory, SLOW_LOG 19:20)
