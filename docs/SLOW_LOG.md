@@ -651,3 +651,8 @@ mice on M2, equivalence tested on the other half on both measures).
   tests on the other half (`SLOW.md`, H2).
 - Recorded bins fall to 280 to 360 with drives; C4 covered down to about 280 bins (ratio 0.06). At the
   edge; to be extended to 200 bins in the final C4.
+
+**17:55. C4 down to about 200 bins** (3 seeds, median instrument, share 0.5, ratio 4): at 181 to 253
+recorded bins, M1_lag1 0.646 and M2_lag1 3.11 (SD 0.32); at 1,584 to 2,051 bins, 0.645 and 2.87 (SD 0.12).
+Shift 0.24 in M2_lag1 against a C1 range of about 10 (ratio 0.02); the spread grows at short clips, as
+expected. The measures hold down to about 200 bins.
