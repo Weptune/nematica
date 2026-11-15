@@ -162,6 +162,9 @@ Repeats must differ in internal state, otherwise C_int is zero by construction:
 - The spiking network (A4) is recorded like a mouse: its own spikes in 20 ms bins, thinned at random to
   the mouse's spikes per bin.
 - AI units with SD below 1% of the median unit SD are excluded as silent (Allen keeps only firing units).
+- Each AI is recorded with the same number of units as its mouse has included units (a seeded random
+  subset of its non-silent units, at most all of them): the M1 estimate has a small-sample bias that depends
+  on the number of units (C4 population: 0.65 at 200 units, 0.70 at 480), so the pair must match.
 - Each AI gets the same number of repeats as its mouse. Recorded bins per clip are reported.
 - Replication: the calcium model, matched to each two-photon mouse's numbers on its movie repeats.
 
@@ -176,6 +179,8 @@ Ornstein-Uhlenbeck part continuous through the repeats; known shares and timesca
   population, repeats, clip length from about 200 to 3,400 bins).
 - **Spike types and drift:** at true share 0, M1 within 0.05 of 0 for Poisson, dead-time and bursting spike
   trains and for rate drift between blocks; at share 0.3, the three spike types within 0.05 of each other.
+  (Run before freezing; it failed narrowly, see `SLOW_LOG.md`, "C4 and spike-type checks for the v0.3
+  measures"; the criterion was not changed.)
 
 After freezing, on the real recordings, before any verdict is read (review S-R1 finding 8):
 - **C3, reliability:** split each mouse's repeats into odd and even; Spearman across mice of M1 (and of log

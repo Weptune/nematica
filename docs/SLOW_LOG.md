@@ -964,3 +964,47 @@ copies. Changes:
   extras on 100 units.
 - `scripts/slow_test_logic.py`: the synthetic check of the tests stage, now in the repository.
 A dry run of the extreme cell follows once the C4 rerun has finished (they cannot share the memory).
+
+### C4 and spike-type checks for the v0.3 measures (17:59 UTC)
+
+Summary file `docs/figures/slow_c4_v3.json`.
+
+**C4 passes** (ratio = spread of level means over the v0.3 C1 range; gate 0.5):
+
+| knob (levels) | M1 | M2 | recorded bins |
+|---|---|---|---|
+| native timescale (2/8, 6/24, 18/72) | 0.007 | 0.014 | 1,632 to 1,803 |
+| population (200, 480, 1,200) | 0.048 | 0.013 | 1,632 to 2,178 |
+| repeats (20, 60) | 0.027 | 0.002 | 1,632 to 1,973 |
+| clip length (450 to 8,000 steps) | 0.098 | 0.118 | 218 to 4,062 |
+
+The shortest clip (218 bins) reads lower on both (M1 0.61, M2 1.96 against 0.69 and 2.72 at 1,632 bins):
+the largest lag is a quarter of the clip, which cuts the internal time short. AI recordings with few bins
+(A1 at high gain, about 470) are near this edge. Low M2 for short AI recordings favours the thesis, so the
+recorded bins of every pair are reported beside the verdicts.
+
+**Spike-type and drift check: it fails narrowly against the criterion set before it ran.** 2 seeds each:
+
+| true share | spikes | M1 (two seeds) |
+|---|---|---|
+| 0 | Poisson | -0.072, -0.049 |
+| 0 | dead time | -0.071, -0.048 |
+| 0 | bursts | -0.025, 0.043 |
+| 0 | Poisson, drift SD 0.2 / 0.4 | -0.007, -0.051 / 0.013, -0.022 |
+| 0.1 | Poisson / dead / bursts | 0.080, 0.056 / 0.070, 0.046 / 0.110, 0.105 |
+| 0.3 | Poisson / dead / bursts | 0.338, 0.276 / 0.336, 0.255 / 0.376, 0.330 |
+| 0.6 | Poisson / dead / bursts | 0.654, 0.634 / 0.640, 0.622 / 0.661, 0.657 |
+
+- Criterion 1 (share 0 within 0.05 of 0): two runs read -0.072 and -0.071. Fail by 0.02.
+- Criterion 2 (spike types within 0.05 at share 0.3): spread 0.04 (seed 1) and 0.075 (seed 2). Fail on one
+  seed. At share 0.6 the spread is 0.02 and 0.035.
+- Drift between blocks is handled (within 0.05 at both drift levels).
+- Diagnosis of the negative reading at share 0: M1 = 1 - C_cross/C_same, and the same-repeat estimate is
+  noisier than the cross-repeat one, so the ratio is biased (Jensen), more so with weak signals and few
+  units. The same bias appears in C4's population knob (0.65 at 200 units, 0.70 at 480). It cancels in a
+  pair only if mouse and AI have the same number of units and repeats. Repeats were already matched;
+  **units now are too** (`record_for_mouse` takes a seeded subset of the AI's non-silent units of the
+  mouse's size; `SLOW.md` section 5).
+- The criteria are not changed after the fact. The narrow failure, its diagnosis and the fix stand in
+  `SLOW.md` section 6 as they are. The spike-type spread (up to 0.075 at share 0.3) is a limit on what M1
+  differences smaller than about 0.1 can mean; to be compared with the mouse ruler after freezing.

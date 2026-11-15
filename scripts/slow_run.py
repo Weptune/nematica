@@ -205,8 +205,12 @@ def record_for_mouse(A, starts, length, r, rng_seed):
     R = r["repeats"]
     st = starts[:R]
     sil = M.silent_units(A)
-    if sil.any():                                      # memory: copy only when something is removed
-        A = A[:, ~sil]
+    keep = np.flatnonzero(~sil)
+    n_m = int(r.get("units", len(keep)))               # same number of units as the mouse (SLOW_LOG: the M1
+    if n_m < len(keep):                                # estimate's small-sample bias depends on it)
+        keep = np.sort(np.random.default_rng(rng_seed).choice(keep, n_m, replace=False))
+    if len(keep) < A.shape[1]:                         # memory: copy only when something is removed
+        A = A[:, keep]
     rtype = r.get("rtype", "spikes")
     Y, k = Rc.record_repeats(A, st, length, r["profile"], rtype=rtype, seed=rng_seed)
     Yn = np.stack([np.asarray(A[s:s + length, :100]) for s in st])     # extras on 100 units (memory)
