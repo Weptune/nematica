@@ -1031,7 +1031,7 @@ in a worse form), 4 (AI-only ceilings and locked ceilings unused), 5 and 8 (the 
 the clip-length, pre-hold and re-matching nuisance checks promised in the S-R1 response were dropped from
 v0.3 without a logged reason; C1 v3 ran on the old repeat cutting), 6 (per-instance test broken for A6 and
 A7), 7 (controls cannot reach the mice by construction), 9 (stability rule weaker than promised; the 2p arm
-has no shuffled movie but defaults to "valid"), 10 ( describes the matching recording, not the
+has no shuffled movie but defaults to "valid"), 10 (`reached` describes the matching recording, not the
 recorded repeats), 11 (no limit on missing pairs), 14 (fixed, but the fix caused finding 1 below).
 
 **Critical**
@@ -1052,14 +1052,14 @@ recorded repeats), 11 (no limit on missing pairs), 14 (fixed, but the fix caused
 
 **Major**
 3. Per-instance test broken for A6 and A7 (instance parsed from a model name). *Response:* store
-    and  on every AI row.
+    `instance` and `group` on every AI row.
 4. The playback check uses the balanced-gain A1, which has no internal part, so it can never fire.
    *Response:* run the playback variants at a gain with M1 of 0.2 or more (0.25), and apply the rule to M1
    and the locked time too.
-5.  and achieved numbers come from the matching recording, not the recorded repeats (reviewer: count
+5. `reached` and achieved numbers come from the matching recording, not the recorded repeats (reviewer: count
    per bin 0.081 to 0.094 against 0.066, 2.0 bins per timescale against 2.6, rate log-SD 0.88 against 1.2,
-   with  true). *Response:* compute the mouse's instrument function on each AI recording, store it,
-   define  from it, apply the exclusion in every test.
+   with `reached` true). *Response:* compute the mouse's instrument function on each AI recording, store it,
+   define `reached` from it, apply the exclusion in every test.
 6. **No floor for mouse-AI bias, and every known bias lowers AI M1**: unmatched bins per clip (A1 from 1,990
    to 417; 288 in the fastest cell), short clips read lower, bursting mice read higher than Poisson AIs. With
    a small mouse ruler, 0.5 ruler units can be about 0.03. *Response:* register a bias bound from calibration
@@ -1081,14 +1081,14 @@ recorded repeats), 11 (no limit on missing pairs), 14 (fixed, but the fix caused
     arousal, a slow non-visual input the AIs never get; the design cannot separate "slow internal dynamics"
     from "an unmodelled slow input". *Response:* a registered mouse analysis with running speed (and pupil
     where available) regressed out per unit, and the claim worded by what survives.
-12. AI-only ceilings inflate d;  unused. *Response:* censored pairs as ties or excluded, counted.
+12. AI-only ceilings inflate d; `lock_ceiling` unused. *Response:* censored pairs as ties or excluded, counted.
 
 **Minor:** 13 freeze the whole repository commit and store git HEAD in every row; 14 a maximum share of
 missing pairs (25%) above which a verdict is "not testable"; 15 text and code inconsistencies (A4 unit rule
 and thinning, 2p 30-unit minimum, retraining seeds wording, section cross-reference, per-repeat
 standardisation not stated, M2 bracket counting only runs with an internal part); 16 robustness asserts in
 recording; 17 the tests-logic check misses A4, A6 with 4 sizes, A7, unreached matches, ceilings, no locked
-part; 18 block means are not a pure clock change (unchecked); 19  gives M1 = 0, which counts
+part; 18 block means are not a pure clock change (unchecked); 19 `no_shared` gives M1 = 0, which counts
 towards a gap.
 
 This is a larger revision than S-R1's. I start with the critical recording fix (1), which every later
