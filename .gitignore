@@ -24,3 +24,4 @@ web/data/brain.js
 brainlike_data/
 lab/film-dist/
 docs/figures/slow_runs/*_dry.jsonl
+docs/figures/slow_runs/*_dry.json
