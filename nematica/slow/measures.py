@@ -17,7 +17,7 @@ import numpy as np
 from ..map.measures import _half_life, _signal_var
 
 
-def repeat_autocov(Y, max_lag, chunk=64):
+def repeat_autocov(Y, max_lag, chunk=64, center="all"):
     """(C_same, C_cross), each of length max_lag + 1, averaged over units. Units are standardised over all
     repeats and time; constant units are dropped. Computed with FFTs, a chunk of units at a time (memory and
     speed, SLOW_LOG 00:05); equal to the direct lag-by-lag sums (`_repeat_autocov_direct`) to rounding."""
@@ -30,12 +30,20 @@ def repeat_autocov(Y, max_lag, chunk=64):
     used = 0
     for a in range(0, N, chunk):
         Z = np.asarray(Y[:, :, a:a + chunk], float)
-        flat = Z.reshape(R * T, -1)
-        sd = flat.std(0)
-        keep = sd > 1e-9
-        if not keep.any():
-            continue
-        Z = (Z[:, :, keep] - flat[:, keep].mean(0)) / sd[keep]
+        if center == "repeat":                            # review S-R1 finding 3: centre within each repeat
+            Z = Z - Z.mean(1, keepdims=True)
+            sd = np.sqrt((Z ** 2).mean((0, 1)))
+            keep = sd > 1e-9
+            if not keep.any():
+                continue
+            Z = Z[:, :, keep] / sd[keep]
+        else:
+            flat = Z.reshape(R * T, -1)
+            sd = flat.std(0)
+            keep = sd > 1e-9
+            if not keep.any():
+                continue
+            Z = (Z[:, :, keep] - flat[:, keep].mean(0)) / sd[keep]
         F = np.fft.rfft(Z, nfft, axis=1)                          # R x f x n
         s_same = np.fft.irfft((F * F.conj()).real.sum(0), nfft, axis=0)[: max_lag + 1]   # lags x n
         G = F.sum(0)
@@ -44,6 +52,99 @@ def repeat_autocov(Y, max_lag, chunk=64):
         cross += ((s_all - s_same) / (R * (R - 1) * n[:, None])).sum(1)
         used += int(keep.sum())
     return same / used, cross / used
+
+
+def lag_measures(Y, k0=2, max_lag=None, center="repeat"):
+    """Draft primary after review S-R1 (findings 1 and 3): measures that start at lag k0 (k0 = 2 bins = 40 ms
+    for 20 ms spike bins), past single-unit spike-train structure (refractoriness, bursts), with units centred
+    within each repeat (rate drift between blocks removed).
+    M1 = C_int(k0) / C_same(k0); M2 = T_int / T_lock, T = sum over k >= k0 of C(k)/C(k0) up to the first
+    lag where C falls to zero or below. Flags as in `pair_measures`."""
+    Y = np.asarray(Y)
+    T = Y.shape[1]
+    L = int(max_lag or max(min(T // 4, 4000), k0 + 8))
+    same, cross = repeat_autocov(Y, L, center=center)
+    inter = same - cross
+    s0, c0, i0 = float(same[k0]), float(cross[k0]), float(inter[k0])
+    out = {"k0": k0, "max_lag": L, "no_shared": bool(not s0 > 0), "no_locked": bool(not c0 > 0)}
+    out["M1"] = float(np.clip(i0 / s0, -1, 1)) if s0 > 0 else 0.0
+    tsum = lambda c, c_k0: float(1.0 + integral_time(c[k0:], c_k0) - 0.5)
+    out["ti"] = tsum(inter, i0) if i0 > 0 else np.nan
+    out["tl"] = tsum(cross, c0) if c0 > 0 else np.nan
+    out["M2"] = float(out["ti"] / out["tl"]) if np.isfinite(out["ti"]) and np.isfinite(out["tl"]) else np.nan
+    out["int_ceiling"] = bool(i0 > 0 and np.all(inter[k0:] > 0))
+    out["lock_ceiling"] = bool(c0 > 0 and np.all(cross[k0:] > 0))
+    return out
+
+
+def pair_autocov(Y, max_lag, center="repeat", chunk=64):
+    """Review S-R1 findings 1 and 3. Autocovariances averaged over pairs of DISTINCT units only, so that each
+    unit's own spike-train structure (refractoriness, bursting, Poisson noise) is excluded at every lag,
+    including lag 0. Units are centred within each repeat (center="repeat"; "all" centres over all
+    repeats, as `repeat_autocov`) and scaled by their pooled within-repeat SD.
+    Returns (same, cross, self_same, self_cross): the distinct-pair autocovariances (same repeat; different
+    repeats) and, for reference, the single-unit (self) ones."""
+    Y = np.asarray(Y)
+    R, T, N = Y.shape
+    nfft = 1 << int(np.ceil(np.log2(2 * T)))
+    n = (T - np.arange(max_lag + 1)).astype(float)
+    FP = None                                             # FFT of the population sum per repeat: R x f
+    s_self_same = np.zeros(max_lag + 1)                   # sums of self terms, before normalising
+    s_self_all = np.zeros(max_lag + 1)
+    used = 0
+    for a in range(0, N, chunk):
+        Z = np.asarray(Y[:, :, a:a + chunk], float)
+        Z = Z - (Z.mean(1, keepdims=True) if center == "repeat" else Z.reshape(R * T, -1).mean(0))
+        sd = np.sqrt((Z ** 2).mean((0, 1)))
+        keep = sd > 1e-9
+        if not keep.any():
+            continue
+        Z = Z[:, :, keep] / sd[keep]
+        F = np.fft.rfft(Z, nfft, axis=1)                  # R x f x n
+        s_self_same += np.fft.irfft((F * F.conj()).real.sum((0, 2)), nfft)[: max_lag + 1]
+        G = F.sum(0)                                      # f x n: per unit, summed over repeats
+        s_self_all += np.fft.irfft((G * G.conj()).real.sum(1), nfft)[: max_lag + 1]
+        FP = F.sum(2) if FP is None else FP + F.sum(2)
+        used += int(keep.sum())
+    if used < 2:
+        nan = np.full(max_lag + 1, np.nan)
+        return nan, nan, nan, nan
+    s_pop_same = np.fft.irfft((FP * FP.conj()).real.sum(0), nfft)[: max_lag + 1]
+    GP = FP.sum(0)
+    s_pop_all = np.fft.irfft((GP * GP.conj()).real, nfft)[: max_lag + 1]
+    pairs = used * (used - 1)
+    same = (s_pop_same - s_self_same) / (R * n * pairs)
+    cross = (s_pop_all - s_pop_same - (s_self_all - s_self_same)) / (R * (R - 1) * n * pairs)
+    self_same = s_self_same / (R * n * used)
+    self_cross = (s_self_all - s_self_same) / (R * (R - 1) * n * used)
+    return same, cross, self_same, self_cross
+
+
+def pair_measures(Y, max_lag=None, center="repeat"):
+    """Primary measures after review S-R1 (draft): from distinct-unit pairs, so lag 0 is noise-free and no
+    extrapolation is needed.
+    M1 = C_int(0) / C_same(0); M2 = T_int / T_lock with T = 0.5 + sum over k >= 1 of C(k)/C(0) up to the
+    first lag where C falls to zero or below. Flags: `no_shared` (C_same(0) <= 0: no shared covariance),
+    `no_locked` (C_cross(0) <= 0: no locked part to time against), `int_ceiling` / `lock_ceiling` (the
+    autocovariance stays positive up to the largest lag, a quarter of the clip)."""
+    Y = np.asarray(Y)
+    T = Y.shape[1]
+    L = int(max_lag or max(min(T // 4, 4000), 8))
+    same, cross, ss, sc = pair_autocov(Y, L, center=center)
+    inter = same - cross
+    out = {"C_same0": float(same[0]), "C_cross0": float(cross[0]), "self_same0": float(ss[0]),
+           "self_cross0": float(sc[0]), "max_lag": L}
+    out["no_shared"] = bool(not same[0] > 0)
+    out["no_locked"] = bool(not cross[0] > 0)
+    out["M1"] = float(np.clip(inter[0] / same[0], -1, 1)) if same[0] > 0 else 0.0
+    out["ti"] = integral_time(inter, inter[0]) if inter[0] > 0 else np.nan
+    out["tl"] = integral_time(cross, cross[0]) if cross[0] > 0 else np.nan
+    out["M2"] = float(out["ti"] / out["tl"]) if np.isfinite(out["ti"]) and np.isfinite(out["tl"]) else np.nan
+    out["int_ceiling"] = bool(inter[0] > 0 and np.all(inter[1:] > 0))
+    out["lock_ceiling"] = bool(cross[0] > 0 and np.all(cross[1:] > 0))
+    # reported: the single-unit (self) internal share, which includes each unit's own spike-train structure
+    out["M1_self"] = float((ss[0] - sc[0]) / ss[0]) if ss[0] > 0 else np.nan
+    return out
 
 
 def _repeat_autocov_direct(Y, max_lag):

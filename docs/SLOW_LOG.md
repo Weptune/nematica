@@ -826,3 +826,38 @@ non-Poisson spikes, block drift, unequal clip lengths, transient internal state 
 minority, and reports bias as well as rank order.
 
 Freezing waits until every critical and major finding is resolved and logged.
+
+### Fix for S-R1 findings 1 and 3: measures from lag 2, units centred within each repeat (17:55 UTC)
+
+First attempt, rejected: autocovariances over pairs of distinct units (`measures.pair_autocov`, checked
+exact against a brute-force sum, difference 8e-18). It removes each unit's own spike-train structure, but
+averaging signed covariances over pairs cancels whenever units load on the shared signals with mixed signs:
+at true internal share 0 it read M1 -0.14. It is kept in the code, unused.
+
+Adopted (draft): `measures.lag_measures`, which starts at lag k0 = 2 bins (40 ms), past refractoriness and
+bursts, with every unit centred within each repeat (so a unit's rate change between the two movie blocks
+no longer adds a constant to the internal part). Synthetic check (`/tmp/s7/spiketrain.py`; 200 units, 20
+repeats of 1,500 bins, about 3 Hz, a locked signal identical on every repeat; spikes generated at 1 ms
+resolution with Poisson statistics, a 10 ms dead time, or bursts; per-unit rate drift between the two halves
+of the repeats; true internal share 0 or 0.3, internal timescale 25 times the locked one):
+
+| spikes | drift SD | true share | M1, k0 = 1 | M1, k0 = 2 | M1, k0 = 3 | M1, k0 = 2 but centred over all repeats |
+|---|---|---|---|---|---|---|
+| Poisson | 0 | 0 | -0.05 | -0.04 | -0.05 | -0.00 |
+| dead time | 0 | 0 | -1.00 | -0.03 | -0.04 | 0.01 |
+| bursts | 0 | 0 | 0.77 | -0.01 | -0.03 | 0.03 |
+| Poisson | 0.2 | 0 | -0.03 | -0.02 | -0.03 | 0.07 (M2 24, spurious) |
+| Poisson | 0.3 | 0 | -0.02 | -0.01 | -0.02 | 0.13 (M2 37, spurious) |
+| Poisson | 0 | 0.3 | 0.26 | 0.30 | 0.35 | 0.38 |
+| dead time | 0 | 0.3 | -1.00 | 0.29 | 0.34 | 0.37 |
+| bursts | 0 | 0.3 | 0.85 | 0.33 | 0.35 | 0.41 |
+
+- At lag 1 the reviewer's finding reproduces (dead time drives M1 to -1, bursts to +0.77 with nothing
+  internal). From lag 2 the spike type no longer matters: M1 is -0.04 to -0.01 at share 0 and 0.29 to 0.33
+  at share 0.3, and M2 is 6.9 to 8.5 for every spike type.
+- Centring over all repeats lets block drift through (M1 0.07 and 0.13, M2 24 and 37 with no internal
+  state); centring within each repeat removes it. The cost: internal change slower than one repeat (30 s) is
+  no longer counted, for mice and AIs alike. Stated in the claim.
+- A small negative bias at share 0 (-0.01 to -0.05) from per-repeat centring. To be quantified in C1.
+- C1 is being rerun at the four instruments with these measures (`/tmp/s7/c1.py`, results to
+  `/tmp/s7/c1k2.jsonl`).
