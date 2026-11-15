@@ -827,7 +827,7 @@ minority, and reports bias as well as rank order.
 
 Freezing waits until every critical and major finding is resolved and logged.
 
-### Fix for S-R1 findings 1 and 3: measures from lag 2, units centred within each repeat (17:55 UTC)
+### Fix for S-R1 findings 1 and 3: measures from lag 2, units centred within each repeat (17:15 UTC)
 
 First attempt, rejected: autocovariances over pairs of distinct units (`measures.pair_autocov`, checked
 exact against a brute-force sum, difference 8e-18). It removes each unit's own spike-train structure, but
