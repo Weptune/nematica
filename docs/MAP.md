@@ -2155,3 +2155,33 @@ matches and to test it on mice it was not tuned on.
   not to the mouse values.
 - *Exploratory only:* whether the matched network also matches the mice on shared fraction (not usable at
   R4a, because it fails the budget).
+
+## Slow-drive results (15 Nov 2026): the matched strength is centred on the held-out mice, but the test is unclear
+
+`docs/figures/map_slowdrive.json`, figure `docs/figures/map/slowdrive.png`.
+
+**Tuning (17 mice).** Median of (mouse minus network) by slow-drive share:
+
+| share | 0 | 0.06 | 0.12 | 0.18 | 0.4 |
+|---|---|---|---|---|---|
+| median difference | +0.059 | **+0.001** | -0.036 | -0.051 | -0.132 |
+| in ruler units | +1.40 | **+0.03** | -0.86 | -1.22 | -3.15 |
+| pairs defined | 17 | 16 | 17 | 16 | 15 |
+
+The chosen share is **0.06**: slow drives carrying about 6% of each unit's variance.
+
+**Held-out test (18 mice, all pairs defined).**
+- The median of (mouse minus network) is **+0.001, or 0.03 ruler units**.
+- Its 90% bootstrap interval runs from -0.08 to +0.73 ruler units. Wilcoxon gives p = 0.14 for "mouse
+  higher" and 0.87 for "mouse lower".
+- **Verdict: unclear.** The centre is almost exactly on the mice, but the interval's upper end passes the
+  0.5 margin, so equivalence is not shown. Nothing is refuted either.
+
+**What it shows (descriptive).**
+- A very small slow drive (about 6% of variance at 50 times the native timescale) brings the random RNN's
+  slow memory to the mice's typical level.
+- The network does not follow the mice's individual differences. Across the held-out mice it spans 0.07 to
+  0.16, while the mice span 0.03 to 0.23. Mice with very high slow memory stay above it, and those with
+  very low slow memory stay below.
+- The remaining gap is between-animal variation, which a single network cannot have. An honest summary is
+  "matches the typical mouse, not each mouse".

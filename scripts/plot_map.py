@@ -289,6 +289,51 @@ def permouse():
     save(fig, "permouse")
 
 
+def slowdrive():
+    """Amendment 28: the slow-drive tuning curve on 17 mice and the held-out test on 18."""
+    import pickle
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import map_permouse as PM
+    import map_slowdrive as SD
+    d = json.loads((ROOT / "docs/figures/map_slowdrive.json").read_text())
+    sd = d["ruler_sd"]
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(13, 4.8), gridspec_kw={"width_ratios": [1, 1.4], "wspace": 0.25})
+    xs = sorted(float(k) for k in d["tuning_curve"])
+    ys = [d["tuning_curve"][str(x) if str(x) in d["tuning_curve"] else repr(x)]["median_diff"] / sd for x in xs]
+    a1.axhspan(-0.5, 0.5, color=CAT["pink"], alpha=0.12, lw=0)
+    a1.axhline(0, color=FAINT, lw=1)
+    a1.plot(xs, ys, color=CAT["amber"], lw=2, marker="o", ms=7)
+    a1.scatter([d["chosen_share"]], [d["tuning_curve"][str(d["chosen_share"])]["median_diff"] / sd], s=140,
+               facecolors="none", edgecolors=INK, lw=1.5, zorder=4)
+    a1.set_xlabel("Share of each unit's variance carried by slow drives", fontsize=10.5)
+    a1.set_ylabel("Mouse minus network (between-mouse SDs)", fontsize=10.5)
+    a1.set_title("Tuning, 17 mice: about 6% slow drive matches", fontsize=11.5, loc="left", color=INK,
+                 fontfamily="Newsreader 16pt")
+    mv = {m["id"]: m["values"]["slow_fraction"] for m in PM.mice()}
+    held = sorted(d["held_out_mice"], key=lambda i: mv[i])
+    av = [PM.ai_value(pickle.loads((SD.OUT / f"s{d['chosen_share']}_{i}.pkl").read_bytes())) for i in held]
+    x = np.arange(len(held))
+    for i in x:
+        a2.plot([i, i], [av[i], mv[held[i]]], color=FAINT, lw=1.2)
+    a2.scatter(x, [mv[i] for i in held], s=34, color=CAT["pink"], zorder=3, label="Held-out mouse")
+    a2.scatter(x, av, s=34, color=CAT["amber"], zorder=3, label=f"RNN + {int(d['chosen_share'] * 100)}% slow drive at that mouse's instrument")
+    a2.set_xticks([])
+    a2.set_xlabel("18 held-out mice, ordered by their own slow memory", fontsize=10.5)
+    a2.set_ylabel("Slow memory", fontsize=10.5)
+    lo, hi = d["ci90_ruler"]
+    a2.set_title(f"Held out: median difference {d['median_diff_ruler']:+.2f} SDs (90% interval {lo:+.2f} to {hi:+.2f}); "
+                 f"verdict {d['result']}", fontsize=11.5, loc="left", color=INK, fontfamily="Newsreader 16pt")
+    leg = a2.legend(frameon=False, fontsize=9.5, loc="upper left")
+    for t in leg.get_texts():
+        t.set_color(INK)
+    for ax in (a1, a2):
+        for sp in ("top", "right"):
+            ax.spines[sp].set_visible(False)
+        ax.grid(axis="y", color=FAINT, lw=0.6)
+        ax.set_axisbelow(True)
+    save(fig, "slowdrive")
+
+
 if __name__ == "__main__":
     fonts()
     for name in sys.argv[1:] or ["instrument"]:

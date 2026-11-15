@@ -1,7 +1,7 @@
 # The map study, start to finish (12 to 15 Nov 2026)
 
 This is the readable account of the "map of brains and AIs" study. The full, dated record is
-`docs/MAP.md`: every rule written before the data it governs, 27 amendments, 7 independent reviews and
+`docs/MAP.md`: every rule written before the data it governs, 28 amendments, 7 independent reviews and
 every gate result. This file summarises it, lists every deviation in one place, and says where each result
 and script lives. Where the two disagree, `docs/MAP.md` is the record.
 
@@ -67,6 +67,7 @@ animal?
 | 14 to 15 Nov | Amendment 26, Allen mice measured | two workers after machine restarts; only calibrated measurements (identical values) |
 | 15 Nov | Allen verdicts | B and D not testable (instrument transfer); their primary rules are refuted; E not testable |
 | 15 Nov | Amendment 27, per-mouse comparison | every network recorded at each mouse's own instrument: **B' confirmed** (random RNN below 33 of 35 mice), **D' refuted** (slow-drive RNN above all 31) |
+| 15 Nov | Amendment 28, tune then test | slow-drive strength tuned on 17 mice (6% of variance matches), tested on 18 held-out mice: centred on them (+0.03 SDs) but **unclear** (interval up to +0.73 SDs) |
 
 ## Results
 
@@ -76,6 +77,12 @@ animal?
   Wilcoxon p = 2 x 10^-8.
 - The same RNN with strong slow drives has **more** slow memory than all 31 mice measured (3.3 SDs).
 - So real cortex sits between the two. Figure: `docs/figures/map/permouse.png`.
+- **Tuned on 17 mice, a slow drive carrying about 6% of each unit's variance brings the RNN to the typical
+  mouse.**
+  - On 18 held-out mice its median difference is +0.03 SDs. The 90% interval (-0.08 to +0.73 SDs) is too
+    wide to show equivalence, so the verdict is "unclear".
+  - The network does not reproduce how mice differ from each other.
+  - Figure: `docs/figures/map/slowdrive.png`.
 - Limits:
   - one network family and one measurement;
   - the rule was registered after the mouse values were known, but before the AI recordings;
