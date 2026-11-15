@@ -592,3 +592,21 @@ clip, 0.000 after that. The spike instrument could not be matched (no timescale 
 
 The families differ a great deal from each other. Whether any of them resembles a mouse is unknown: no
 mouse has been measured, and none will be until the registration is frozen and reviewed.
+
+**17:05. Pre-hold sensitivity** (1,000-character clip, 20 repeats, median instrument):
+
+| network | pre-hold | bins | M1_lag1 | M2_lag1 |
+|---|---|---|---|---|
+| CfC | 2 / 4 / 8 | 5,171 / 4,924 / 5,221 | 0.004 / 0.004 / 0.007 | 0.38 / 0.74 / 0.77 (absent by rule) |
+| GRU | 1 / 4 | 3,688 / 3,619 | 0.304 / 0.288 | 221 / 227 |
+
+- M1_lag1 does not depend on the pre-hold. Kept at 4.
+- **New problem: M2 has a ceiling set by the clip.** The GRU read M2_lag1 221 on a 1,000-character clip
+  and 67 on a 3,000-character clip. Its latching units hold a nearly constant value through a repeat, so
+  their internal autocovariance never reaches zero and the integral time is cut only by the largest lag
+  (a quarter of the clip). C4 did not catch this, because its synthetic internal part always had a
+  timescale shorter than the clip. Draft decisions:
+  - M2 is analysed on a **log scale** (it is a ratio; the ruler and differences are taken on log M2);
+  - a recording whose internal integral time reaches the largest lag is flagged **at ceiling**, and its
+    value is reported as a lower bound;
+  - a C4 check with internal timescales longer than the clip is added before freezing.
