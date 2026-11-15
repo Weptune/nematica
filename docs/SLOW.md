@@ -1,4 +1,4 @@
-# Study 2: is the difference slow internal state? (draft registration, v0.1)
+# Study 2: is the difference slow internal state? (draft registration, v0.2)
 
 **Status: DRAFT, not frozen.** Started 15 Nov 2026. Nothing in this file binds until it is frozen. Freezing
 means a commit whose message says "SLOW registration frozen", and that commit hash is written here. It
@@ -69,6 +69,10 @@ with none, and that bias also dragged the timescale ratio).
   - M2 exists only where there is an internal part to time: it is computed only when M1 is at least 0.05
     (draft threshold; at true share 0, M1 read 0.00 in every calibration run, and 0.06 to 0.08 at true
     share 0.05). A system below the threshold has M2 "absent", which is reported as such.
+- *Reported for every AI, not tested:* the internal share weighted by unit variance (native activity, no
+  instrument), and the fraction of units whose own internal share exceeds 0.5. Both were added after the
+  GRU probe (`SLOW_LOG.md`, "GRU through the median instrument"), where a quiet minority of latching
+  units carried the internal state.
 - *Secondary:* **M3, carry-over** = the correlation of a unit group's internal component between the end
   of one repeat and the start of the next. It asks whether internal state outlasts the clip.
 
@@ -85,25 +89,43 @@ blocks. The functional_connectivity sessions show "natural movie one" 60 times i
 *shuffled* version of the same frames 20 times. The shuffled movie is a built-in control: the same images
 with a shorter input timescale. F1 (below) found the movie in all 58 sessions.
 - Individuals: mice.
-- Units: Allen `good` units. Pooling in groups is decided by calibration, not assumed.
+- Units: Allen `good` units, the map study's subset (at most 2,400 per session, seeded) and its QC mask
+  (amendment 25). No pooling (F5: repeats already average out spike noise).
+- Repeats: every repeat of natural_movie_one that does not overlap one of Allen's invalid intervals (the
+  number varies by mouse: one test session kept 17 of 20). Each AI is given the same number of repeats as
+  the mouse it is compared with.
 
-**Real (replication): to be chosen in feasibility check F3** from:
-- the IBL brain-wide map (trial-aligned decision task; "stimulus-locked" = per-condition trial average);
-- the worm data (no repeated sensory clips; probably unsuitable);
-- a second Allen dataset.
+**Real (replication): Allen Brain Observatory Visual Coding two-photon** (chosen in F3; `SLOW_LOG.md`,
+entry "F3: the two-photon replication is feasible"): 271 mice, each with a "session A" in which natural_movie_one is shown 10
+times. One experiment per mouse: the mouse's VISp experiment if it has one, else its lowest experiment id.
+Calcium imaging (GCaMP6f, 30 Hz), so the AIs are recorded through the map study's calcium model, matched
+to each mouse. The same tests as for the primary dataset, run separately.
 
 **Artificial: every standard family**, 3 instances each, each driven by inputs of its own kind with the
 same repeat structure:
 
-| family | systems | input |
+| family | systems | input and repeat structure |
 |---|---|---|
-| random RNN | 480 units | movie frames, downsampled, through a fixed random projection |
-| trained RNN | task RNN (decision task) | its task stream, the same trial sequence repeated |
-| GRU, CfC | character networks | a text clip repeated, each repeat after different preceding text |
-| spiking network | LIF, 1,000 neurons | movie projection as input current |
-| transformers | Pythia 14M to 1B | a text clip repeated, each repeat after different preceding text |
-| state-space models | Mamba 130M, 370M | as transformers |
-| vision network | a CNN plus recurrent readout (to be specified in F2) | movie frames |
+| A1 random RNN | 480 units, g 1.5, noise 0.1 | the movie's 64 principal-component features through a fixed random input matrix; clip repeated back to back after a 2,000-step blank burn-in; input gain on a grid (section 7) |
+| A2 trained RNN | the map study's decision-task RNN, 512 units | one fixed draw of 100 trials repeated, 5 to 15 random trials before each repeat, one continuous session |
+| A3 GRU, A5 CfC | the map study's character networks, 512 units | a 3,000-character held-out clip repeated, each repeat after 200 to 600 characters of other held-out text, one continuous run |
+| A4 spiking network | the map study's LIF network, 1,000 neurons | external Poisson rates modulated by the movie features (gain grid); movie in real time (33.3 ms per frame) |
+| A6 transformers | Pythia 14M, 160M, 410M, 1B | a text clip after a different context (256 tokens) on each repeat; one forward pass per repeat |
+| A7 state-space models | Mamba 130M, 370M | as transformers |
+
+The vision network of v0 is dropped: a feedforward network has no internal state by construction, and no
+standard recurrent vision network is part of the map study's families. Language models carry no state
+between calls, so their only internal state is the preceding context.
+
+**Instances.** Three instances per family (seeds, or released seeds for Pythia as in the map study). To fit
+the compute budget (F4) each mouse is compared with one instance per family: instance = the mouse's rank
+(in the map study's order) mod 3.
+
+**Playback speed.** A movie-driven AI sees the clip at the same speed relative to its own undriven native
+timescale as the mouse does relative to its movie timescale: native steps per frame = tau_native /
+(bins_per_tau x 20 ms / 33.3 ms). To share generation across mice, mice are split into 4 groups by
+quartile of bins per timescale and each AI run is generated once per group, at the group median. AIs with
+no measurable native timescale (the LIF network) play the movie in real time.
 
 *Augmented:* the random RNN with slow drives (the share to be tuned on half the mice and tested on the
 other half), and Pythia with a slow latent.
@@ -115,10 +137,16 @@ Repeats must differ in internal state, otherwise C_int is zero by construction:
 
 ## 5. Instruments
 
-Each AI is recorded through the registered spike model at each mouse's own single-unit numbers, measured
-on that mouse's natural-movie blocks. Pooling in groups follows calibration. The movie and repeat
-structure are reproduced: the same number of repeats, and clip length in units of the AI's
-stimulus-locked timescale equal to the mouse's.
+- Every AI except the spiking network is recorded through the map study's registered spike model at each
+  mouse's own single-unit numbers (bins per timescale, spikes per bin, white share, rate spread), measured
+  on that mouse's natural-movie repeats after freezing. Units are recorded 100 at a time with one shared
+  random generator (memory; same model).
+- The spiking network (A4) is recorded like a mouse: its own spikes in 20 ms bins, thinned at random to
+  the mouse's spikes per bin.
+- AI units with SD below 1% of the median unit SD are excluded as silent (Allen keeps only firing units).
+- The recorded clip length is whatever the matched instrument gives; C4 showed the measures do not move
+  between about 280 and 3,400 recorded bins per clip. Bins per clip are reported for every recording.
+- Replication: the calcium model, matched to each two-photon mouse's numbers on its movie epochs.
 
 ## 6. Calibration (before freezing, synthetic only)
 
@@ -165,11 +193,13 @@ Every verdict is reported whatever it is, with the number of mice and pairs.
   - the shuffled movie one (20 times) in the 26 functional_connectivity sessions;
   - 600 to 1,803 s of movie one per mouse;
   - summary in `docs/figures/slow_f1_movie_meta.json`.
-- **F2:** an input pipeline for every AI family. Each produces its activity with repeats that differ in
-  internal state.
-- **F3:** the choice of replication dataset (metadata and size).
-- **F4:** compute budget: per-mouse recording of 13 or more AIs times about 50 mice on this machine.
-- **F5:** synthetic calibration (section 6).
+- **F2:** an input pipeline for every AI family. Code in `nematica/slow/inputs.py`; probes logged. Done for
+  A1, A2, A3, A4 and Pythia-14m; CfC running; larger Pythia and Mamba to download (disk).
+- **F3:** done: the Allen two-photon dataset (section 4), C1 passes through the calcium model.
+- **F4:** done as an estimate: about 1,330 recordings with one instance per mouse, about 20 hours.
+- **F5:** C1 passes at four real instruments (median, fastest, slowest, noisiest mouse) for M1 and M2
+  (rho 0.98 each); C4 passes (all ratios 0.06 or less, including short clips); re-matching the instrument
+  moves the measures little. Summaries: `docs/figures/slow_c1.json`, `slow_c4.json`, `slow_f3.json`.
 
 ## 9. Documentation rules
 
