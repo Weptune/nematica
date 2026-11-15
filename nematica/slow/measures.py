@@ -17,22 +17,50 @@ import numpy as np
 from ..map.measures import _half_life, _signal_var
 
 
-def repeat_autocov(Y, max_lag):
+def repeat_autocov(Y, max_lag, chunk=64):
     """(C_same, C_cross), each of length max_lag + 1, averaged over units. Units are standardised over all
-    repeats and time; constant units are dropped."""
+    repeats and time; constant units are dropped. Computed with FFTs, a chunk of units at a time (memory and
+    speed, SLOW_LOG 00:05); equal to the direct lag-by-lag sums (`_repeat_autocov_direct`) to rounding."""
+    Y = np.asarray(Y)
+    R, T, N = Y.shape
+    nfft = 1 << int(np.ceil(np.log2(2 * T)))
+    n = (T - np.arange(max_lag + 1)).astype(float)
+    same = np.zeros(max_lag + 1)
+    cross = np.zeros(max_lag + 1)
+    used = 0
+    for a in range(0, N, chunk):
+        Z = np.asarray(Y[:, :, a:a + chunk], float)
+        flat = Z.reshape(R * T, -1)
+        sd = flat.std(0)
+        keep = sd > 1e-9
+        if not keep.any():
+            continue
+        Z = (Z[:, :, keep] - flat[:, keep].mean(0)) / sd[keep]
+        F = np.fft.rfft(Z, nfft, axis=1)                          # R x f x n
+        s_same = np.fft.irfft((F * F.conj()).real.sum(0), nfft, axis=0)[: max_lag + 1]   # lags x n
+        G = F.sum(0)
+        s_all = np.fft.irfft((G * G.conj()).real, nfft, axis=0)[: max_lag + 1]
+        same += (s_same / (R * n[:, None])).sum(1)
+        cross += ((s_all - s_same) / (R * (R - 1) * n[:, None])).sum(1)
+        used += int(keep.sum())
+    return same / used, cross / used
+
+
+def _repeat_autocov_direct(Y, max_lag):
+    """The original lag-by-lag version, kept as the reference for the FFT version."""
     Y = np.asarray(Y, float)
     R, T, N = Y.shape
     flat = Y.reshape(R * T, N)
     sd = flat.std(0)
     keep = sd > 1e-9
     Y = (Y[:, :, keep] - flat[:, keep].mean(0)) / sd[keep]
-    S = Y.sum(0)                                          # T x N
+    S = Y.sum(0)
     same = np.zeros(max_lag + 1)
     cross = np.zeros(max_lag + 1)
     for k in range(max_lag + 1):
         a, b = Y[:, : T - k], Y[:, k:]
-        s_same = (a * b).sum((0, 1))                      # per unit, summed over repeats and time
-        s_all = (S[: T - k] * S[k:]).sum(0)               # includes r = r' terms
+        s_same = (a * b).sum((0, 1))
+        s_all = (S[: T - k] * S[k:]).sum(0)
         n = T - k
         same[k] = np.mean(s_same / (R * n))
         cross[k] = np.mean((s_all - s_same) / (R * (R - 1) * n))
@@ -41,7 +69,7 @@ def repeat_autocov(Y, max_lag):
 
 def internal_measures(Y, max_lag=None):
     """M1 (internal share) and M2 (internal half-life over stimulus-locked half-life), with the pieces."""
-    Y = np.asarray(Y, float)
+    Y = np.asarray(Y)
     T = Y.shape[1]
     L = int(max_lag or max(min(T // 4, 4000), 8))
     same, cross = repeat_autocov(Y, L)

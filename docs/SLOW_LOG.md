@@ -497,3 +497,12 @@ opposite. Inspection of single units (saved network, same clip):
   above 0.5. A rule for silent units is needed anyway (Allen keeps only units that fire; a unit with SD
   near 0 has no analogue). Draft: AI units with SD below 1% of the median unit SD are excluded as silent
   (this would remove 1 of the 5 strongest latching units here, not the phenomenon).
+
+**00:05 (16 Nov). The autocovariance is now computed with FFTs, a chunk of 64 units at a time.** The GRU
+recording (20 repeats of 10,930 bins, 512 units) peaked at 4.3 GB, mostly in `repeat_autocov`, which held
+several float64 copies of the whole array and looped over 2,700 lags. The new version standardises and
+transforms 64 units at a time. Checked against the original lag-by-lag version (kept as
+`_repeat_autocov_direct`) on a test array with a constant unit: largest difference 3e-16 (same) and 4e-17
+(cross). Same quantities, less memory, faster.
+(Background-job outputs filtered through `grep` were block-buffered, so lines appeared late; filters now
+use `--line-buffered`.)
