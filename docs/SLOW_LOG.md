@@ -1178,3 +1178,10 @@ pass the 0.7 guard).
 `SLOW.md` v1.0 frozen at commit 8df8c650b0e0 ("SLOW registration frozen"). Before freezing: the logic check
 (`scripts/slow_test_logic.py`) gave the designed verdicts on the final code, and dry runs of the mouse stage
 and of A1 completed. Next, as registered: a review of the frozen version before the first real measurement.
+
+### Data prefetch started (19:29 UTC)
+
+While the frozen version is reviewed, `/tmp/s7/prefetch.py` downloads and caches, for each of the 58
+sessions, the movie-repeat spikes, unit metadata (areas, QC) and behaviour (and the shuffled-movie spikes for
+the 26 DANDI 000022 sessions), into git-ignored `data/cache/allen_movie/`. It computes and prints nothing
+about the activity; no measurement runs before the review is in.
