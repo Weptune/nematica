@@ -1,0 +1,2032 @@
+{
+ "sub-699733573": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361181315740396,
+   "blocks": [
+    [
+     2835.8617329367066,
+     3136.0792214220564
+    ],
+    [
+     7693.936522936707,
+     7994.15392275539
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.033361181315740396,
+   "blocks": [
+    [
+     2205.3016329367065,
+     2805.80329175539
+    ],
+    [
+     4066.8901229367066,
+     4667.358381088723
+    ]
+   ]
+  }
+ },
+ "sub-703279277": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361190817231545,
+   "blocks": [
+    [
+     2852.1870373815905,
+     3152.4044162390746
+    ],
+    [
+     7710.293937381591,
+     8010.5113162390735
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.033361190817231545,
+   "blocks": [
+    [
+     2221.6604473815905,
+     2822.128605905741
+    ],
+    [
+     4083.215117381591,
+     4683.683205572408
+    ]
+   ]
+  }
+ },
+ "sub-707296975": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361200245053624,
+   "blocks": [
+    [
+     2848.5758121410963,
+     3148.793151008008
+    ],
+    [
+     7706.665832141096,
+     8006.883199674674
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.033361200245053624,
+   "blocks": [
+    [
+     2218.049252141096,
+     2818.5173900080085
+    ],
+    [
+     4079.603792141096,
+     4680.0718806746745
+    ]
+   ]
+  }
+ },
+ "sub-716813540": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336132941149117,
+   "blocks": [
+    [
+     2850.9918699899017,
+     3151.2092789859807
+    ],
+    [
+     7715.455139989904,
+     8015.672748652648
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336132941103642,
+   "blocks": [
+    [
+     2220.4651899899027,
+     2820.933398985981
+    ],
+    [
+     4082.0200699899024,
+     4682.504948985981
+    ]
+   ]
+  }
+ },
+ "sub-717038285": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336129148829059,
+   "blocks": [
+    [
+     2843.9373842945442,
+     3144.188202336389
+    ],
+    [
+     7702.195094294543,
+     8002.412573336388
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336129148829059,
+   "blocks": [
+    [
+     2213.410564294544,
+     2813.878922669722
+    ],
+    [
+     4075.065754294544,
+     4675.600673003055
+    ]
+   ]
+  }
+ },
+ "sub-718643564": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336132172080397,
+   "blocks": [
+    [
+     2851.3558798129625,
+     3151.573308491241
+    ],
+    [
+     7715.451729812961,
+     8015.685789491242
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336132172080397,
+   "blocks": [
+    [
+     2220.829259812963,
+     2821.297458824574
+    ],
+    [
+     4082.4174098129615,
+     4682.885578491241
+    ]
+   ]
+  }
+ },
+ "sub-719817799": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336131045625734,
+   "blocks": [
+    [
+     2846.9248398391837,
+     3147.1422885287275
+    ],
+    [
+     7710.9892898391845,
+     8011.206768528727
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336131045671209,
+   "blocks": [
+    [
+     2216.3981198391843,
+     2816.866388528728
+    ],
+    [
+     4077.953239839184,
+     4678.421779195393
+    ]
+   ]
+  }
+ },
+ "sub-719828686": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361245372361736,
+   "blocks": [
+    [
+     2846.914201250348,
+     3147.1316608290526
+    ],
+    [
+     7711.044371250347,
+     8011.4286476994985
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.033361245372361736,
+   "blocks": [
+    [
+     2216.3874612503478,
+     2816.855749829053
+    ],
+    [
+     4077.942641250347,
+     4678.410920162387
+    ]
+   ]
+  }
+ },
+ "sub-722882751": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336132629465283,
+   "blocks": [
+    [
+     2846.9835853390723,
+     3147.2009943320345
+    ],
+    [
+     7711.047365339071,
+     8011.2648139986995
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336132629556232,
+   "blocks": [
+    [
+     2216.456915339072,
+     2816.9251343320343
+    ],
+    [
+     4078.0119853390725,
+     4678.480434998701
+    ]
+   ]
+  }
+ },
+ "sub-723627600": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361255718318716,
+   "blocks": [
+    [
+     2847.0602240017115,
+     3147.2776620793256
+    ],
+    [
+     7711.123034001712,
+     8011.340453079326
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.033361255718318716,
+   "blocks": [
+    [
+     2216.533564001711,
+     2817.001773412659
+    ],
+    [
+     4078.088434001711,
+     4678.556672745993
+    ]
+   ]
+  }
+ },
+ "sub-726141242": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336117826256668,
+   "blocks": [
+    [
+     2846.7012377485457,
+     3146.918676570282
+    ],
+    [
+     7710.797907748545,
+     8011.015337570281
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336117826347618,
+   "blocks": [
+    [
+     2216.1744677485453,
+     2816.642746570282
+    ],
+    [
+     4077.729587748545,
+     4678.197866903614
+    ]
+   ]
+  }
+ },
+ "sub-726162193": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336123105236766,
+   "blocks": [
+    [
+     2846.623388924872,
+     3146.8408383604865
+    ],
+    [
+     7710.7044289248715,
+     8010.92191769382
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336123105145816,
+   "blocks": [
+    [
+     2216.096688924872,
+     2816.5649480271527
+    ],
+    [
+     4077.651708924872,
+     4678.120147360488
+    ]
+   ]
+  }
+ },
+ "sub-726170927": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361235284246504,
+   "blocks": [
+    [
+     2857.143814170874,
+     3157.361213935589
+    ],
+    [
+     7721.206744170873,
+     8021.424183935591
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.033361235284246504,
+   "blocks": [
+    [
+     2226.617134170874,
+     2827.0853829355897
+    ],
+    [
+     4088.172044170874,
+     4688.64027393559
+    ]
+   ]
+  }
+ },
+ "sub-726298249": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361317713570315,
+   "blocks": [
+    [
+     2846.905219921552,
+     3147.1226689371706
+    ],
+    [
+     7711.001919921551,
+     8011.219378603838
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.033361317714252436,
+   "blocks": [
+    [
+     2216.3784199215515,
+     2816.84677793717
+    ],
+    [
+     4077.933569921552,
+     4678.401878270504
+    ]
+   ]
+  }
+ },
+ "sub-730756767": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361278485699586,
+   "blocks": [
+    [
+     2846.8817508695142,
+     3147.099270147999
+    ],
+    [
+     7710.9458408695145,
+     8011.163320147999
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.033361278485699586,
+   "blocks": [
+    [
+     2216.354920869513,
+     2816.823309814666
+    ],
+    [
+     4077.9103608695136,
+     4678.3787198146665
+    ]
+   ]
+  }
+ },
+ "sub-730760263": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336119854293429,
+   "blocks": [
+    [
+     2846.9458474243456,
+     3147.1634262895564
+    ],
+    [
+     7711.011867424346,
+     8011.229476956222
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336119854338904,
+   "blocks": [
+    [
+     2216.4188474243456,
+     2816.8873479562226
+    ],
+    [
+     4077.974817424346,
+     4678.443535956222
+    ]
+   ]
+  }
+ },
+ "sub-732548371": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336132069489395,
+   "blocks": [
+    [
+     2846.579235503244,
+     3146.7967741572725
+    ],
+    [
+     7710.642715503243,
+     8010.8601941572715
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336132069489395,
+   "blocks": [
+    [
+     2216.052435503244,
+     2816.5208531572716
+    ],
+    [
+     4077.607805503244,
+     4678.076094490606
+    ]
+   ]
+  }
+ },
+ "sub-733457986": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336131938249309,
+   "blocks": [
+    [
+     2847.167374578195,
+     3147.3849245921447
+    ],
+    [
+     7711.232154578194,
+     8011.449693925479
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336131938294784,
+   "blocks": [
+    [
+     2216.640484578195,
+     2817.1089729254777
+    ],
+    [
+     4078.1961345781947,
+     4678.664623592144
+    ]
+   ]
+  }
+ },
+ "sub-734865729": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361234376116045,
+   "blocks": [
+    [
+     2846.7885979863613,
+     3147.006217418652
+    ],
+    [
+     7710.871347986361,
+     8011.088927418651
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336123437657079,
+   "blocks": [
+    [
+     2216.2614979863615,
+     2816.730137085319
+    ],
+    [
+     4077.8343479863615,
+     4678.302986418651
+    ]
+   ]
+  }
+ },
+ "sub-735109599": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361271561261674,
+   "blocks": [
+    [
+     2846.9279387345937,
+     3147.145506129698
+    ],
+    [
+     7711.009098734594,
+     8011.226637463033
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336127156217117,
+   "blocks": [
+    [
+     2216.4010087345937,
+     2816.8694581296973
+    ],
+    [
+     4077.956638734594,
+     4678.441689463032
+    ]
+   ]
+  }
+ },
+ "sub-738651046": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336127445481907,
+   "blocks": [
+    [
+     2841.1273841390503,
+     3141.344872531261
+    ],
+    [
+     7705.191034139049,
+     8005.4085621979275
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.033361274455273815,
+   "blocks": [
+    [
+     2210.60059413905,
+     2811.0689421979278
+    ],
+    [
+     4072.1558841390497,
+     4672.6241828645925
+    ]
+   ]
+  }
+ },
+ "sub-739783158": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336126408930795,
+   "blocks": [
+    [
+     2847.110055501195,
+     3147.327633431951
+    ],
+    [
+     7711.1745255011965,
+     8011.392013765284
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.0333612640897627,
+   "blocks": [
+    [
+     2216.5832055011947,
+     2817.0515954319512
+    ],
+    [
+     4078.1388255011952,
+     4678.607354765286
+    ]
+   ]
+  }
+ },
+ "sub-740268983": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336124598945389,
+   "blocks": [
+    [
+     2847.162108947011,
+     3147.3796377010212
+    ],
+    [
+     7711.2592989470095,
+     8011.4767787010205
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336124598990864,
+   "blocks": [
+    [
+     2216.6353289470107,
+     2817.103688367688
+    ],
+    [
+     4078.190638947011,
+     4678.6589880343545
+    ]
+   ]
+  }
+ },
+ "sub-742602884": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361325230544026,
+   "blocks": [
+    [
+     2850.414885347105,
+     3150.632344672336
+    ],
+    [
+     7714.479635347105,
+     8014.69736300567
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.033361325230544026,
+   "blocks": [
+    [
+     2219.8880053471053,
+     2820.356403672335
+    ],
+    [
+     4081.443415347105,
+     4681.9117743390025
+    ]
+   ]
+  }
+ },
+ "sub-742714472": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361325417899934,
+   "blocks": [
+    [
+     2853.85359512746,
+     3154.0711041353743
+    ],
+    [
+     7717.951245127459,
+     8018.168783468707
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336132541835468,
+   "blocks": [
+    [
+     2223.326725127459,
+     2823.7951238020405
+    ],
+    [
+     4084.882225127459,
+     4685.350604468707
+    ]
+   ]
+  }
+ },
+ "sub-744915196": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336127849661352,
+   "blocks": [
+    [
+     2852.685379114927,
+     3152.9195975030957
+    ],
+    [
+     7716.799629114927,
+     8017.017287836428
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336127849706827,
+   "blocks": [
+    [
+     2222.1585491149267,
+     2822.62692883643
+    ],
+    [
+     4083.7306591149268,
+     4684.199027503097
+    ]
+   ]
+  }
+ },
+ "sub-745276220": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336124739507795,
+   "blocks": [
+    [
+     2854.0026542142955,
+     3154.2201729669
+    ],
+    [
+     7718.0674442142945,
+     8018.284992966898
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336124739598745,
+   "blocks": [
+    [
+     2223.4758142142955,
+     2823.944232300233
+    ],
+    [
+     4085.031234214296,
+     4685.499613633567
+    ]
+   ]
+  }
+ },
+ "sub-757329617": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336132380900381,
+   "blocks": [
+    [
+     2851.827510293133,
+     3152.045059283609
+    ],
+    [
+     7715.959140293134,
+     8016.176707950276
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336132380900381,
+   "blocks": [
+    [
+     2221.300580293134,
+     2821.769039616943
+    ],
+    [
+     4082.8563202931327,
+     4683.324848283611
+    ]
+   ]
+  }
+ },
+ "sub-769360771": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336117034814379,
+   "blocks": [
+    [
+     2851.523082344928,
+     3151.74068117458
+    ],
+    [
+     7715.588972344928,
+     8015.80679117458
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336117034814379,
+   "blocks": [
+    [
+     2220.996122344928,
+     2821.46467017458
+    ],
+    [
+     4082.551902344928,
+     4683.020441841247
+    ]
+   ]
+  }
+ },
+ "sub-772616820": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336125728446859,
+   "blocks": [
+    [
+     2851.381559149658,
+     3151.5825178923747
+    ],
+    [
+     7715.464159149659,
+     8015.681787225707
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.033361257284013845,
+   "blocks": [
+    [
+     2220.8378191496586,
+     2821.306418559041
+    ],
+    [
+     4082.427299149658,
+     4682.895918225708
+    ]
+   ]
+  }
+ },
+ "sub-775876808": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336123244207556,
+   "blocks": [
+    [
+     2847.2347465610087,
+     3147.452345126785
+    ],
+    [
+     7711.30017656101,
+     8011.517765460118
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.03336123244253031,
+   "blocks": [
+    [
+     2216.707716561009,
+     2817.1762851267854
+    ],
+    [
+     4078.263666561009,
+     4678.732224793453
+    ]
+   ]
+  }
+ },
+ "sub-776061236": {
+  "dandiset": "000021",
+  "natural_movie_one_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.0333611702599228,
+   "blocks": [
+    [
+     2851.671497544809,
+     3151.889225715069
+    ],
+    [
+     7715.73732754481,
+     8015.954946381735
+    ]
+   ]
+  },
+  "natural_movie_three_presentations": {
+   "n_presentations": 36000,
+   "repeats": 10,
+   "frames_per_repeat": 3600,
+   "frame_s": 0.0333611702599228,
+   "blocks": [
+    [
+     2221.144257544809,
+     2821.613075048402
+    ],
+    [
+     4082.700747544809,
+     4683.169307381735
+    ]
+   ]
+  }
+ },
+ "sub-744912845": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336124159568499,
+   "blocks": [
+    [
+     2297.212884154053,
+     3197.9321835791234
+    ],
+    [
+     7401.477914154051,
+     8302.19722324579
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336124159523024,
+   "blocks": [
+    [
+     3197.9655441540526,
+     3498.1831029124573
+    ],
+    [
+     7101.227054154051,
+     7401.4445532457885
+    ]
+   ]
+  }
+ },
+ "sub-753795604": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361172721015464,
+   "blocks": [
+    [
+     2297.2412824159383,
+     3197.960782588659
+    ],
+    [
+     7401.507662415937,
+     8302.226902255326
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361172721015464,
+   "blocks": [
+    [
+     3197.9941424159383,
+     3498.211811588659
+    ],
+    [
+     7101.256772415937,
+     7401.474300921994
+    ]
+   ]
+  }
+ },
+ "sub-754477355": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336129954732314,
+   "blocks": [
+    [
+     2297.2133994731425,
+     3197.932697173595
+    ],
+    [
+     7401.478259473142,
+     8302.214168506927
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336129954732314,
+   "blocks": [
+    [
+     3197.9660594731426,
+     3498.183548840261
+    ],
+    [
+     7101.2274194731435,
+     7401.444898173595
+    ]
+   ]
+  }
+ },
+ "sub-754488976": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336127932107047,
+   "blocks": [
+    [
+     2297.3860846027287,
+     3198.1055939900734
+    ],
+    [
+     7401.651534602728,
+     8302.370883323407
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336127932152522,
+   "blocks": [
+    [
+     3198.138954602728,
+     3498.3565329900734
+    ],
+    [
+     7101.4006546027285,
+     7401.618173323406
+    ]
+   ]
+  }
+ },
+ "sub-756578432": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336132445929252,
+   "blocks": [
+    [
+     2297.215610100296,
+     3197.934839442504
+    ],
+    [
+     7401.515940100297,
+     8302.235368109172
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336132445929252,
+   "blocks": [
+    [
+     3197.968200100296,
+     3498.185729775837
+    ],
+    [
+     7101.2649701002965,
+     7401.482578109171
+    ]
+   ]
+  }
+ },
+ "sub-759674767": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336126340764167,
+   "blocks": [
+    [
+     2290.823360911186,
+     3191.5427001745943
+    ],
+    [
+     7395.089740911187,
+     8295.809729174594
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336126340764167,
+   "blocks": [
+    [
+     3191.576060911186,
+     3491.793609507927
+    ],
+    [
+     7094.838630911187,
+     7395.056380841261
+    ]
+   ]
+  }
+ },
+ "sub-759711149": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336128597447896,
+   "blocks": [
+    [
+     2290.999629113489,
+     3191.718908494181
+    ],
+    [
+     7395.2655791134885,
+     8295.985398160847
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336128597447896,
+   "blocks": [
+    [
+     3191.7522691134886,
+     3491.969817827515
+    ],
+    [
+     7095.014529113489,
+     7395.232217827514
+    ]
+   ]
+  }
+ },
+ "sub-760938794": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.0333612306840223,
+   "blocks": [
+    [
+     2297.1500131665075,
+     3197.869293269156
+    ],
+    [
+     7401.415073166508,
+     8302.134372269156
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.0333612306840223,
+   "blocks": [
+    [
+     3197.9026531665068,
+     3498.1202119358227
+    ],
+    [
+     7101.164203166508,
+     7401.3817126024915
+    ]
+   ]
+  }
+ },
+ "sub-760946810": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336117634535185,
+   "blocks": [
+    [
+     2297.1213018754074,
+     3197.8406917184197
+    ],
+    [
+     7401.403521875408,
+     8302.122920385087
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336117634535185,
+   "blocks": [
+    [
+     3197.874051875407,
+     3498.0916307184198
+    ],
+    [
+     7101.1526018754075,
+     7401.370161051754
+    ]
+   ]
+  }
+ },
+ "sub-760960650": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336128269756955,
+   "blocks": [
+    [
+     2297.3732541319505,
+     3198.0931225159197
+    ],
+    [
+     7401.656514131951,
+     8302.375912182584
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.0333612826971148,
+   "blocks": [
+    [
+     3198.1264841319507,
+     3498.3441631825863
+    ],
+    [
+     7101.405604131951,
+     7401.623153182585
+    ]
+   ]
+  }
+ },
+ "sub-763236006": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361254124884,
+   "blocks": [
+    [
+     2297.185308568995,
+     3197.904697648203
+    ],
+    [
+     7401.468768568994,
+     8302.188437648203
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361254125338746,
+   "blocks": [
+    [
+     3197.9380585689946,
+     3498.1556279815363
+    ],
+    [
+     7101.217738568996,
+     7401.435407981536
+    ]
+   ]
+  }
+ },
+ "sub-763808588": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336122537530173,
+   "blocks": [
+    [
+     2297.3030763426405,
+     3198.022595234683
+    ],
+    [
+     7401.56913634264,
+     8302.288545234682
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336122537530173,
+   "blocks": [
+    [
+     3198.0559563426405,
+     3498.2735642346834
+    ],
+    [
+     7101.318186342642,
+     7401.535775568018
+    ]
+   ]
+  }
+ },
+ "sub-763884096": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336125088753761,
+   "blocks": [
+    [
+     2297.2326688603807,
+     3197.968797609493
+    ],
+    [
+     7401.515288860381,
+     8302.251408942828
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336125088753761,
+   "blocks": [
+    [
+     3198.002158860381,
+     3498.219756942827
+    ],
+    [
+     7101.264368860381,
+     7401.48192827616
+    ]
+   ]
+  }
+ },
+ "sub-769319621": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361314797275554,
+   "blocks": [
+    [
+     2299.0600793924496,
+     3200.931238077652
+    ],
+    [
+     7404.512369392449,
+     8305.231878077653
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.0333613147977303,
+   "blocks": [
+    [
+     3200.964599392449,
+     3501.182418744319
+    ],
+    [
+     7104.261419392449,
+     7404.479008410984
+    ]
+   ]
+  }
+ },
+ "sub-774672354": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336121767733857,
+   "blocks": [
+    [
+     2290.8391181681786,
+     3191.558706950501
+    ],
+    [
+     7395.105468168177,
+     8295.82499761717
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336121767733857,
+   "blocks": [
+    [
+     3191.5920681681787,
+     3491.809666950501
+    ],
+    [
+     7094.854498168177,
+     7395.072107617167
+    ]
+   ]
+  }
+ },
+ "sub-791857600": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336130925481484,
+   "blocks": [
+    [
+     2290.661219680961,
+     3191.3807787050396
+    ],
+    [
+     7394.9277996809615,
+     8295.647498371707
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336130925481484,
+   "blocks": [
+    [
+     3191.414139680962,
+     3491.6317683717066
+    ],
+    [
+     7094.676839680962,
+     7394.894438371706
+    ]
+   ]
+  }
+ },
+ "sub-795770029": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361176760081435,
+   "blocks": [
+    [
+     2290.380742364098,
+     3191.1001715206708
+    ],
+    [
+     7394.646642364098,
+     8295.366421187337
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361176760081435,
+   "blocks": [
+    [
+     3191.133532364098,
+     3491.351120187337
+    ],
+    [
+     7094.395692364096,
+     7394.613281520671
+    ]
+   ]
+  }
+ },
+ "sub-800249582": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336117634216862,
+   "blocks": [
+    [
+     2290.211412969299,
+     3190.9475814596226
+    ],
+    [
+     7394.543932969299,
+     8295.279973126291
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361176342623367,
+   "blocks": [
+    [
+     3190.9809429692987,
+     3491.1985507929558
+    ],
+    [
+     7094.293032969299,
+     7394.510572126289
+    ]
+   ]
+  }
+ },
+ "sub-800250054": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336126592785149,
+   "blocks": [
+    [
+     2293.17864426163,
+     3193.8982436623687
+    ],
+    [
+     7397.44662426163,
+     8298.166382329036
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336126592830624,
+   "blocks": [
+    [
+     3193.93160426163,
+     3494.1492623290355
+    ],
+    [
+     7097.19551426163,
+     7397.4132629957
+    ]
+   ]
+  }
+ },
+ "sub-803390283": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336129721537873,
+   "blocks": [
+    [
+     2290.388150519393,
+     3191.1081001499406
+    ],
+    [
+     7394.655190519395,
+     8295.374639816608
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336129721537873,
+   "blocks": [
+    [
+     3191.1414605193927,
+     3491.3592091499413
+    ],
+    [
+     7094.404210519395,
+     7394.621828816609
+    ]
+   ]
+  }
+ },
+ "sub-811322604": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361322947712324,
+   "blocks": [
+    [
+     2290.337065346309,
+     3191.0566343566948
+    ],
+    [
+     7394.60395534631,
+     8295.324103356694
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361322947712324,
+   "blocks": [
+    [
+     3191.089995346309,
+     3491.307584690028
+    ],
+    [
+     7094.352815346309,
+     7394.570593690028
+    ]
+   ]
+  }
+ },
+ "sub-813701555": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361269011948025,
+   "blocks": [
+    [
+     2290.427796019417,
+     3191.1472659550964
+    ],
+    [
+     7394.728586019416,
+     8295.44821428843
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361269011948025,
+   "blocks": [
+    [
+     3191.180626019417,
+     3491.3982746217625
+    ],
+    [
+     7094.4775960194165,
+     7394.695224621762
+    ]
+   ]
+  }
+ },
+ "sub-817060743": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336108431540197,
+   "blocks": [
+    [
+     2290.790058743493,
+     3191.5048888278093
+    ],
+    [
+     7395.029878743492,
+     8295.74471982781
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361084315856715,
+   "blocks": [
+    [
+     3191.5382487434936,
+     3491.754327827809
+    ],
+    [
+     7094.780428743494,
+     7394.996516827809
+    ]
+   ]
+  }
+ },
+ "sub-820866111": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361051738211245,
+   "blocks": [
+    [
+     2290.826543858922,
+     3191.5414819106604
+    ],
+    [
+     7395.1168338589205,
+     8295.831704577327
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.033361051738211245,
+   "blocks": [
+    [
+     3191.5748438589217,
+     3491.807602577327
+    ],
+    [
+     7094.867463858921,
+     7395.083473577325
+    ]
+   ]
+  }
+ },
+ "sub-821469659": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336125823261682,
+   "blocks": [
+    [
+     2290.384863836883,
+     3191.1044832453167
+    ],
+    [
+     7394.653523836882,
+     8295.373711911983
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336125823261682,
+   "blocks": [
+    [
+     3191.137843836883,
+     3491.3554529119842
+    ],
+    [
+     7094.402283836882,
+     7394.620162245316
+    ]
+   ]
+  }
+ },
+ "sub-827809879": {
+  "dandiset": "000022",
+  "natural_movie_one_more_repeats_presentations": {
+   "n_presentations": 54000,
+   "repeats": 60,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336102202320035,
+   "blocks": [
+    [
+     2290.491439954788,
+     3191.2063689768115
+    ],
+    [
+     7394.731349954787,
+     8295.446259976812
+    ]
+   ]
+  },
+  "natural_movie_one_shuffled_presentations": {
+   "n_presentations": 18000,
+   "repeats": 20,
+   "frames_per_repeat": 900,
+   "frame_s": 0.03336102202320035,
+   "blocks": [
+    [
+     3191.2397299547883,
+     3491.455788976812
+    ],
+    [
+     7094.481899954788,
+     7394.697987976811
+    ]
+   ]
+  }
+ }
+}

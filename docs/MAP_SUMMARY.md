@@ -234,3 +234,9 @@ Things a reader should weigh, all also in `docs/MAP.md`:
 - For fast AIs, a definition of temporal measurements that does not need holding.
 
 The current results say where to look. They do not settle the question.
+
+## What comes next: study 2
+
+The map study is closed. Its lessons shaped **study 2** (`docs/SLOW.md`, lab notebook `docs/SLOW_LOG.md`),
+started 15 Nov 2026. It tests the slow-internal-state thesis on every AI family with clock-free measures
+from repeated movie clips, mouse by mouse, in the 58 Allen mice, with a replication dataset to be chosen.
