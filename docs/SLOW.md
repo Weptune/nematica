@@ -165,20 +165,32 @@ A measurement that fails calibration is dropped before freezing, and that is log
 ## 7. Hypotheses and decision rules (to be frozen)
 
 All tests are paired, mouse by mouse: d = mouse minus AI at that mouse's instrument. The ruler is the SD of
-the mice's values, and the equivalence margin is 0.5 ruler units.
-- **H1 (gap):** for each standard family, M2 (and separately M1) is lower in the AI than in the mice.
-  - Per family: confirmed if a one-sided Wilcoxon test gives p < 0.05 and the median d exceeds 0.5 ruler
+the mice's values, and the equivalence margin is 0.5 ruler units. **M1 is analysed as it is; M2 on a log
+scale** (it is a ratio), and a value flagged at ceiling enters as the lower bound it is (the tests are
+rank-based).
+- **H1 (gap):** for each standard family (A1 to A7), M1 is lower in the AI than in the mice, and M2 is
+  lower in the AI than in the mice; two separate tests per family.
+  - Confirmed: a one-sided Wilcoxon signed-rank test (mouse greater) gives p < 0.05 and the median d
+    exceeds 0.5 ruler units.
+  - Refuted: the opposite one-sided test (AI greater) gives p < 0.05 and the median d is below -0.5 ruler
     units.
-  - The thesis holds if at least 5 of 7 families are confirmed and none is refuted.
+  - Otherwise: not decided.
+  - **M2 where the AI has no internal part.** M2 exists only where M1 is at least 0.05. If the AI's M2 is
+    absent in more than half of its pairs, the family's M2 verdict is "no internal part" (the gap is then
+    carried by M1 alone); otherwise the M2 test uses the pairs where both values exist, and the number of
+    absent pairs is reported.
+  - The thesis holds if at least 5 of 7 families are confirmed on M1 or M2 and none is refuted on either.
 - **Free input strength (added 15 Nov during F2, `SLOW_LOG.md` 18:10).** For movie-driven families (random
   RNN, spiking network) the strength of the movie input is a free parameter, and it sets M1 almost by
   itself (0.91 to 0.04 over gains 0.05 to 4 in the random RNN). So these families are measured on a fixed
   gain grid (draft: 0.05, 0.1, 0.25, 0.5, 1, 2, 4), and the family's d at each mouse is taken at the gain
   that brings it **closest** to that mouse on the measure tested. A gap confirmed this way holds for every
   input strength in the grid. The balanced gain (movie input as strong as recurrent input) is reported.
-- **H2 (ingredient):** the slow-drive strength is tuned on a seeded half of the mice and tested on the
-  other half. Confirmed if the 90% interval of the median d lies within plus or minus 0.5 ruler units
-  (equivalence).
+- **H2 (ingredient):** the random RNN at its balanced gain, with slow drives added as in the map study
+  (`zoo.with_slow_drives`: Ornstein-Uhlenbeck drives 50 times slower than the network, carrying a share of
+  each unit's variance). The share is chosen on a seeded half of the mice (grid 0.05 to 0.6, the value
+  minimising the absolute median d on M2) and tested on the other half. Confirmed if the 90% bootstrap
+  interval of the median d lies within plus or minus 0.5 ruler units on both M1 and M2 (equivalence).
 - **H3 (scale):** Pythia 1B is not closer to the mice than Pythia 14M. Confirmed if the 90% interval of the
   difference in absolute median d lies above -0.5 ruler units.
 
