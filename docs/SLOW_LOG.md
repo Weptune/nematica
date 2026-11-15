@@ -511,3 +511,15 @@ use `--line-buffered`.)
 "00:05" above are sequence labels I assigned, not clock readings, and they ran ahead of the real clock: all
 of that work happened on 15 Nov between about 12:00 and 15:05 by the machine clock (whose zone is
 unlabelled). Their order is correct. From here on, entries carry the machine clock time.
+
+**15:15. Draft registration v0.2** (`SLOW.md`; not frozen). Changes, all from the feasibility work above:
+- replication dataset fixed (Allen two-photon, session A, one experiment per mouse, calcium model);
+- units: the map study's Allen subset and QC mask, no pooling; repeats: all valid repeats, the AI gets the
+  mouse's number;
+- the family table now states each family's input and repeat structure; the vision network is dropped
+  (no internal state by construction, and not one of the map study's families);
+- one instance per family per mouse (instance = mouse rank mod 3), for the compute budget;
+- playback speed from the undriven native timescale, in 4 quartile groups of mice; real time for the LIF;
+- instruments: the LIF recorded like a mouse (20 ms bins, thinned); silent AI units (SD below 1% of the
+  median) excluded; bins per clip reported;
+- reported, not tested: variance-weighted internal share and the fraction of latching units.
