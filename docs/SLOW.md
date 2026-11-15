@@ -202,15 +202,20 @@ with a reached match; missing pairs are counted and reported.
 
 **Dependence (finding 6).** Pairs that share an AI run (a generator cell: instance, and playback group for
 movie-driven families) are not independent. Every interval is a cluster bootstrap over cells (4,000
-resamples), and a sign test over cell medians is required beside the Wilcoxon test.
+resamples), and the one-sided test must also hold **within each of the 3 instances** separately (pairs
+within an instance differ in mice). A sign test over cell medians was considered and dropped: with 3 cells
+for most families it can never reach p < 0.05.
 
 - **H1 (gap):** for each standard family (A1 to A7), M1 and M2 are each lower in the AI than in the mice.
-  - Confirmed: one-sided Wilcoxon signed-rank (mouse greater) p < 0.05, cell sign test p < 0.05, median d
-    above 0.5 ruler units, and the lower end of the cluster interval above 0.
+  - Confirmed: one-sided Wilcoxon signed-rank (mouse greater) p < 0.05 over all pairs and within every
+    instance, median d above 0.5 ruler units, and the lower end of the cluster interval above 0.
   - Refuted: the same in the opposite direction.
   - Otherwise: not decided. Fewer than 6 pairs: "too few pairs".
   - M2 codes: if more than half the family's pairs have no internal part, its M2 verdict is "no internal
     part" (the gap is then carried by M1); if more than half have no locked part, "no locked part".
+  - Reported beside every M2 verdict, not counted: the same test with the AI's runs restricted to those
+    with M1 at least 0.2. Reason: in C1, M2 reads low when the internal share is small (true ratio 4: 0.9
+    to 2.0 at share 0.05, 2.6 to 2.9 at 0.8), which favours the thesis for AIs with little internal state.
   - **The thesis holds** if at least 5 of the 7 families are confirmed on M1 or M2 and none is refuted on
     either. If the validity check below fails, M2 is set aside and the count uses M1 only.
 - **H2 (ingredient), with negative controls (finding 7).** Three candidates, each the balanced-gain random

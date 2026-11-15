@@ -929,3 +929,21 @@ cutting: the per-repeat binning fix (finding 14) landed while the workers were a
 Next: C4 for the v0.3 measures (`/tmp/s7/c4b.py`, now including a 450-step clip) and the formal
 spike-type check (`/tmp/s7/spiketrain.py`: 2 seeds x shares 0, 0.1, 0.3, 0.6 x Poisson, dead time, bursts,
 plus block drift), run one after the other.
+
+### Synthetic check of the tests stage (17:47 UTC)
+
+`/tmp/s7/test_tests.py` writes synthetic mice and AI rows with known answers and runs `tests`: 58 mice;
+A2 clearly below the mice, A3 clearly above, A1's gain grid spanning every mouse, A5 with no internal part;
+an H2 grid where only one slow-drive setting matches; controls that never match; Pythia 1B closer to the
+mice than 14M; a shuffled movie with a faster locked part and an unchanged internal part.
+- First run: A2's clear gap came out "not decided". Cause: the cell sign test of finding 6 needs at least
+  4 cells, and A2, A3, A5, A6 and A7 have 3 (one per instance), so it could never pass. Replaced by a
+  per-instance test: the one-sided Wilcoxon must hold within each of the 3 instances as well as overall
+  (`SLOW.md` section 7 updated).
+- Second run, every answer right: A1 not decided (d = 0 by the bracket rule); A2 confirmed on M1 and M2;
+  A3 refuted on both; A5 confirmed on M1 with M2 "no internal part"; C3 reliable (rho 0.93 and 0.87); H2
+  picks the matching setting (share 0.2, 1 s), both controls fail equivalence, H2 confirmed; H3 not
+  confirmed (1B is closer); the shuffled check passes (locked time falls p = 2e-7, M2 rises p = 2e-6,
+  internal time moves less).
+- Also added (reported, not counted): each M2 verdict repeated with the AI's runs restricted to M1 at
+  least 0.2, because of the C1 cross-talk.

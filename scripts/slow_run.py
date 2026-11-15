@@ -508,25 +508,30 @@ def _pair(mouse, ai_rows, meas):
 
 
 def _verdict(d, cells, ruler):
+    """Finding 6, as revised after a synthetic check of this code (SLOW_LOG): with only 3 instances for most
+    families a sign test over cells can never reach p < 0.05, so the test is done within each instance
+    (pairs within an instance share AI runs but differ in mice) and must hold in every instance."""
     du = np.asarray(d, float) / ruler
     cells = np.asarray(cells)
-    cell_med = [float(np.median(du[cells == c])) for c in np.unique(cells)]
+    inst = np.asarray([c.split("-")[0] for c in cells])
+    per = {i: (_wilcoxon(du[inst == i], "greater"), _wilcoxon(du[inst == i], "less")) for i in np.unique(inst)}
     p_gap, p_rev = _wilcoxon(du, "greater"), _wilcoxon(du, "less")
-    s_gap, s_rev = _sign_test(cell_med, "greater"), _sign_test(cell_med, "less")
     md = float(np.median(du))
     ci = _cluster_ci(du, cells)
-    if p_gap < 0.05 and s_gap < 0.05 and md > 0.5 and ci[0] > 0:
+    all_gap = all(np.isfinite(g) and g < 0.05 for g, _ in per.values())
+    all_rev = all(np.isfinite(r) and r < 0.05 for _, r in per.values())
+    if p_gap < 0.05 and all_gap and md > 0.5 and ci[0] > 0:
         v = "confirmed"
-    elif p_rev < 0.05 and s_rev < 0.05 and md < -0.5 and ci[1] < 0:
+    elif p_rev < 0.05 and all_rev and md < -0.5 and ci[1] < 0:
         v = "refuted"
     else:
         v = "not decided"
-    return {"verdict": v, "n_pairs": int(len(du)), "n_cells": len(cell_med), "median_d_ruler": md,
-            "p_gap": p_gap, "p_reverse": p_rev, "cell_sign_p_gap": s_gap, "cell_sign_p_reverse": s_rev,
+    return {"verdict": v, "n_pairs": int(len(du)), "n_cells": int(len(np.unique(cells))), "median_d_ruler": md,
+            "p_gap": p_gap, "p_reverse": p_rev, "per_instance_p": {k: list(v_) for k, v_ in per.items()},
             "cluster_ci90": ci}
 
 
-def _family_test(mice, ais, fam, meas, ruler, need=None):
+def _family_test(mice, ais, fam, meas, ruler, need=None, min_ai_m1=None):
     d, cells, codes, missing = [], [], {}, 0
     for mid, m in mice.items():
         rows_m = [r for r in ais if r["family"] == fam and r["id"] == mid]
@@ -536,7 +541,11 @@ def _family_test(mice, ais, fam, meas, ruler, need=None):
         if any(not r.get("reached", True) for r in rows_m):   # finding 10: unreached matches excluded
             missing += 1
             continue
-        x, code = _pair(m, rows_m, meas)
+        use_rows = [r for r in rows_m if r.get("M1", 0) >= min_ai_m1] if min_ai_m1 else rows_m
+        if not use_rows:
+            codes["AI M1 below the restriction"] = codes.get("AI M1 below the restriction", 0) + 1
+            continue
+        x, code = _pair(m, use_rows, meas)
         codes[code] = codes.get(code, 0) + 1
         if x is not None:
             d.append(x)
@@ -609,6 +618,9 @@ def stage_tests(dry=False):
 
     for fam, need in RUNS_PER_FAMILY.items():
         out["H1"][fam] = {meas: _family_test(mice, ais, fam, meas, rulers[meas], need) for meas in ("M1", "M2")}
+        # reported, not counted: M2 with AI runs restricted to M1 at least 0.2 (C1 cross-talk, SLOW.md 7)
+        out["H1"][fam]["M2_ai_m1_ge_0.2"] = {**_family_test(mice, ais, fam, "M2", rulers["M2"], need, 0.2),
+                                             "counted": False}
     for fam in ("A1", "A4"):                           # movie-driven families: M2 set aside if playback-sensitive
         if playback_sensitive:
             out["H1"][fam]["M2"]["counted"] = False
@@ -621,6 +633,7 @@ def stage_tests(dry=False):
     cnt = lambda f, m: out["H1"][f][m].get("counted", True)
     conf = sum(any(out["H1"][f][m].get("verdict") == "confirmed" and cnt(f, m) for m in use) for f in fams)
     refut = any(out["H1"][f][m].get("verdict") == "refuted" and cnt(f, m) for f in fams for m in use)
+    # (the restricted M2 entries are never in `use`, so they never count)
     out["H1"]["thesis"] = {"measures_used": list(use), "families_confirmed": conf, "any_refuted": refut,
                            "holds": conf >= 5 and not refut}
 
