@@ -1,4 +1,4 @@
-# Study 2: is the difference slow internal state? (draft registration, v0)
+# Study 2: is the difference slow internal state? (draft registration, v0.1)
 
 **Status: DRAFT, not frozen.** Started 15 Nov 2026. Nothing in this file binds until it is frozen. Freezing
 means a commit whose message says "SLOW registration frozen", and that commit hash is written here. It
@@ -54,11 +54,21 @@ autocovariance. C_int = C_same - C_cross is the **internal** autocovariance: eve
 between repeats of the same input. White measurement noise appears only at lag 0 of C_same, so lag-0
 values are extrapolated from lags 1 to 4, as in the map study's `_signal_var`.
 
-- **M1, internal share** = C_int(0) / C_same(0), with lag-0 values noise-corrected. It is the fraction of
-  real (non-noise) activity not set by the input.
-- **M2, internal slowness** = half-life of the normalised C_int over half-life of the normalised C_cross.
-  It asks how much slower the internal state moves than the input-driven activity. Both half-lives are in
-  the same system's samples, so the ratio has no clock.
+Spike noise is independent from bin to bin and from repeat to repeat, so it sits only at lag 0 of C_same.
+**The primary measures therefore start at lag 1 and need no extrapolation** (changed 15 Nov during F5,
+see `SLOW_LOG.md` 18:30 to 19:05: the lag-0 extrapolation read an internal share of 0.07 to 0.12 in systems
+with none, and that bias also dragged the timescale ratio).
+
+- **M1, internal share** = C_int(1) / C_same(1): the fraction of the one-bin covariance that is not set by
+  the input. (Reported, not tested: the lag-0 version with the extrapolated noise-free variance.)
+- **M2, internal slowness** = T_int / T_lock, where each T is an integrated autocorrelation time summed
+  from lag 1 and normalised by lag 1: T = sum over k >= 1 of C(k) / C(1), up to the first lag where C
+  falls to zero or below. It asks how much slower the internal state moves than the input-driven activity.
+  Both times are in the same system's samples, so the ratio has no clock. (Reported, not tested: the
+  half-life ratio and the lag-0 integral ratio.)
+  - M2 exists only where there is an internal part to time: it is computed only when M1 is at least 0.05
+    (draft threshold; at true share 0, M1 read 0.00 in every calibration run, and 0.06 to 0.08 at true
+    share 0.05). A system below the threshold has M2 "absent", which is reported as such.
 - *Secondary:* **M3, carry-over** = the correlation of a unit group's internal component between the end
   of one repeat and the start of the next. It asks whether internal state outlasts the clip.
 
@@ -132,6 +142,12 @@ the mice's values, and the equivalence margin is 0.5 ruler units.
   - Per family: confirmed if a one-sided Wilcoxon test gives p < 0.05 and the median d exceeds 0.5 ruler
     units.
   - The thesis holds if at least 5 of 7 families are confirmed and none is refuted.
+- **Free input strength (added 15 Nov during F2, `SLOW_LOG.md` 18:10).** For movie-driven families (random
+  RNN, spiking network) the strength of the movie input is a free parameter, and it sets M1 almost by
+  itself (0.91 to 0.04 over gains 0.05 to 4 in the random RNN). So these families are measured on a fixed
+  gain grid (draft: 0.05, 0.1, 0.25, 0.5, 1, 2, 4), and the family's d at each mouse is taken at the gain
+  that brings it **closest** to that mouse on the measure tested. A gap confirmed this way holds for every
+  input strength in the grid. The balanced gain (movie input as strong as recurrent input) is reported.
 - **H2 (ingredient):** the slow-drive strength is tuned on a seeded half of the mice and tested on the
   other half. Confirmed if the 90% interval of the median d lies within plus or minus 0.5 ruler units
   (equivalence).

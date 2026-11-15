@@ -35,11 +35,15 @@ def continuous(rng, R=20, T=900, N=200, share=0.5, tau_locked=10.0, tau_internal
     s = s / s.std(0)
     total = lead + R * T
     e = ou(total, np.full(K, tau_internal), rng, K) @ Li
-    e = e / e.std(0)
-    stim = np.zeros((total, N))
+    e /= e.std(0)
+    # memory (SLOW_LOG 19:20): built in float32 and in place; the same random draws as before, so values
+    # differ from the float64 version only by rounding
+    A = (np.sqrt(share) * e).astype(np.float32)
+    del e
+    sl = (np.sqrt(1 - share) * s).astype(np.float32)
     for r in range(R):
-        stim[lead + r * T: lead + (r + 1) * T] = s
-    stim[:lead] = ou(lead, np.full(K, tau_locked), rng, K) @ Ls / np.sqrt((Ls ** 2).sum(0)).clip(1e-9) \
-        if lead else 0.0
-    A = np.sqrt(1 - share) * stim + np.sqrt(share) * e
+        A[lead + r * T: lead + (r + 1) * T] += sl
+    if lead:
+        A[:lead] += (np.sqrt(1 - share) * (ou(lead, np.full(K, tau_locked), rng, K) @ Ls
+                                           / np.sqrt((Ls ** 2).sum(0)).clip(1e-9))).astype(np.float32)
     return A, [lead + r * T for r in range(R)]

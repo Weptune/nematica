@@ -224,3 +224,55 @@ two cases):
 calibration run shared the machine; the pool then hung on the lost jobs. 15 of 22 jobs had finished
 (light ones), plus one heavy one. The remaining heavy jobs (1,200 units; 60 repeats; 8,000-step clips;
 one seed of the slowest timescale) now run one at a time with nothing else beside them.
+
+**19:20. Memory fixes, and a note on matching.** The heavy C4 jobs were killed again (exit 137) even
+alone. Two changes:
+- `synthetic.continuous` now builds its output in float32, in place. Same random draws; the arrays differ
+  from the float64 version by at most 4e-7 (checked).
+- `record.record_repeats` passes only the first 200 columns to `recording.match`, which reads only those
+  (`MATCH_MIN_UNITS`); checked to give the same knobs, in float32 and float64. This avoids a float64 copy
+  of the whole activity. `nematica/map/recording.py` itself is unchanged (it is frozen by the map study).
+- **Matching is sensitive to rounding.** The same synthetic system, rounded to float32, matched to gain
+  0.845 instead of 0.913 in float64. The matched instrument is a solution within a tolerance, not a unique
+  point, and tiny input changes can pick a different one. On a small test (6 repeats, 300 units) this
+  moved M2_lag1 from 2.53 to 3.11, part of which is the different spike draws. Consequence: C4 and C3
+  should include instrument re-matching as a source of spread (planned: match each system twice with
+  different seeds and report the spread).
+- All C4 jobs are being rerun with the lean code, one at a time, so that every row comes from the same
+  code. The 16 earlier rows are kept in `/tmp/s7/c4b_mixed_old.jsonl` for comparison only.
+
+**19:40. Recording memory.** Profiling one C4 job (20 repeats of 4,000 steps, 480 units): peak 0.84 GB
+after the synthetic system, 2.42 GB after recording. `recording.record_matched` records units in blocks of
+400 in float64, with a hold of 2 here, so its peak grows with rows x 400. Fix in `record.record_repeats`:
+units go to `record_matched` 100 at a time (`UNIT_BLOCK`), with one shared random generator. Peak now
+0.93 GB. Same spike model; different random draws than the single call, so the F5 numbers logged above
+(17:15 to 19:05) came from the earlier path. They are statistically equivalent; the formal calibration
+after freezing uses only the new path. C4 restarted from scratch.
+
+**19:45. F2 code for the other families** (in `nematica/slow/inputs.py`, not yet tested at scale):
+- A2 `trained_task_rnn` + `task_rnn_repeats`: the map study's trained decision-task RNN (512 units, lr
+  3e-4), trained by the registered code itself (its long-session helper is swapped for one that returns
+  the network). Repeats: one fixed draw of 100 trials, shown 20 times in one continuous session, with 5 to
+  15 fresh random trials before each repeat, so every repeat starts from a different state.
+- A3, A5 `trained_char_net` + `char_repeats`: a verbatim copy of the map study's character-network training
+  (to be checked against `zoo.char_net`'s recorded states). Repeats: a fixed held-out clip, each repeat
+  after 200 to 600 characters of other held-out text, one continuous run.
+- A4 `driven_lif`: the map study's LIF network with each neuron's external Poisson rate multiplied by
+  max(0, 1 + gain x (B u(t))_i), B fixed random over the 64 movie features.
+
+**19:55. Draft registration v0.1** (`SLOW.md`, still not frozen):
+- section 3: M1 and M2 are now the lag-1 versions (no extrapolation); the lag-0 versions and the half-life
+  ratio are reported, not tested; M2 is computed only where M1 is at least 0.05 (draft threshold);
+- section 7: movie-driven families are measured on a fixed input-gain grid (0.05 to 4), and each mouse is
+  compared with the gain closest to it, so a confirmed gap holds for every input strength in the grid.
+
+**20:00. F3 first look: a replication dataset.** Candidate: the **Allen Brain Observatory Visual Coding
+two-photon** dataset. It shows the same natural_movie_one clip, repeated within session, in each of its
+three session types, to many mice (calcium imaging, GCaMP6f; NWB files per session). Strengths: the same
+clip, a different instrument, many more mice. Risk, from the map study: its two-photon arm (Stringer et al.
+2019, deconvolved, 7 mice) failed step 2 because no measurement survived that instrument. The repeat
+measures are ratios within one system, so a shared calcium filter acts on both parts alike, but this must
+be calibrated through the calcium instrument before choosing. The IBL brain-wide map stays the fallback
+(trial-averaged, so "locked" means per-condition average, a weaker analogue).
+Next for F3: list sessions and repeats from the Allen two-photon manifest, and run C1 through the map
+study's calcium recording model.

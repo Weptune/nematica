@@ -23,13 +23,23 @@ def cut_repeats(Y, starts, length, per_sample):
     return np.stack(out)
 
 
+UNIT_BLOCK = 100
+
+
 def record_repeats(A, starts, length, prof, rtype="spikes", seed=0, group=None, k=None):
     """Match (unless knobs k are given) and record native activity A (time x units), cut into repeats.
     Returns (repeats, knobs)."""
     A = np.asarray(A)
     if k is None:
-        k = recording.match(A, rtype, prof, seed=seed)
-    Y, _ = recording.record_matched(A, rtype, k, rng=np.random.default_rng(seed + 7))
+        # match() reads only the first MATCH_MIN_UNITS columns; passing just those gives the same knobs
+        # without a float64 copy of all of A (memory, SLOW_LOG 19:20)
+        k = recording.match(A[:, :recording.MATCH_MIN_UNITS], rtype, prof, seed=seed)
+    # memory (SLOW_LOG 19:40): units recorded 100 at a time with one shared generator; record_matched's
+    # own blocks of 400 peak at about 3 GB per 100,000 native rows. Same model, different random draws
+    # from the earlier single call.
+    rng = np.random.default_rng(seed + 7)
+    Y = np.hstack([recording.record_matched(A[:, a:a + UNIT_BLOCK], rtype, k, rng=rng)[0]
+                   for a in range(0, A.shape[1], UNIT_BLOCK)])
     if group:
         Y = recording.pool(Y, int(group), seed=seed)
     per = recording.per_sample(k, rtype)

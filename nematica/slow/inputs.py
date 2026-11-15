@@ -126,3 +126,167 @@ def lm_repeats(model_name, clip, contexts, keep=480, layer=None, seed=0, dtype="
     del m
     return A, [r * C for r in range(len(contexts))], {"model": model_name, "layer": int(L), "clip": C,
                                                      "context": len(contexts[0]), "units_total": int(units)}
+
+
+# ---------------------------------------------------------------- A2: the trained decision-task RNN
+def trained_task_rnn(seed=0, n=512, lr=3e-4):
+    """The map study's A2 network, trained by the registered code (nematica.map.zoo.task_rnn, settings of
+    amendments 19 and 22). task_rnn does not return the network, so its long-session helper is swapped for
+    one that captures it; nothing else in the training path changes."""
+    import torch
+    from ..map import zoo
+    got = {}
+
+    def capture(net, n_, trials, every, seed_, chunk=1000):
+        got["net"] = net
+        return np.zeros((1, n_), np.float32), None
+
+    orig = zoo._long_session
+    zoo._long_session = capture
+    try:
+        zoo.task_rnn(seed=seed, n=n, trials=1000, every=60, lr=lr)
+    finally:
+        zoo._long_session = orig
+    net = got["net"]
+    X, y = zoo.decision_task(1000, rng=np.random.default_rng(seed + 777))
+    with torch.no_grad():
+        _, o = net(torch.tensor(X))
+    acc = float((o[:, -1].argmax(-1).numpy() == y).mean())
+    return net, acc
+
+
+def task_rnn_repeats(net, R=20, clip_trials=100, between=(5, 15), seed=0, n=512):
+    """The same sequence of `clip_trials` trials (one fixed draw of evidence noise) shown R times; between
+    repeats a random number (uniform in `between`) of fresh random trials, so that each repeat starts from
+    a different state. The network runs as one continuous session, as in the map study. Returns (A, starts)
+    in native steps (60 per trial)."""
+    import torch
+    from ..map import zoo
+    rng = np.random.default_rng(50_000 + seed)
+    clip, _ = zoo.decision_task(clip_trials, rng=np.random.default_rng(60_000 + seed))
+    clip = clip.reshape(1, -1, 3)
+    parts, starts, t = [], [], 0
+    with torch.no_grad():
+        h0 = torch.zeros(1, 1, n)
+        for r in range(R + 1):
+            g, _ = zoo.decision_task(int(rng.integers(between[0], between[1] + 1)), rng=rng)
+            h, h0 = net.rnn(torch.tensor(g.reshape(1, -1, 3)), h0)
+            parts.append(h[0].numpy())
+            t += h.shape[1]
+            if r == R:
+                break
+            h, h0 = net.rnn(torch.tensor(clip), h0)
+            parts.append(h[0].numpy())
+            starts.append(t)
+            t += h.shape[1]
+    return np.concatenate(parts).astype(np.float32), starts
+
+
+# ---------------------------------------------------------------- A3, A5: character networks
+def trained_char_net(kind="gru", seed=0, n=512, train_steps=1500, seq=128, batch=32, record_chars=200_000):
+    """The map study's character network (nematica.map.zoo.char_net), trained by a verbatim copy of its
+    training code, which returns only activity; the same seeds and data give the same weights (checked
+    against zoo.char_net's first recorded states, see SLOW_LOG)."""
+    import torch
+    from ..map import zoo
+    torch.set_num_threads(2)
+    data, V = zoo.chars()
+    split = len(data) - record_chars
+    torch.manual_seed(seed)
+    emb = torch.nn.Embedding(V, 32)
+    cell = torch.nn.GRUCell(32, n) if kind == "gru" else zoo._cfc_cell(torch, 32, n)
+    head = torch.nn.Linear(n, V)
+    params = list(emb.parameters()) + list(cell.parameters()) + list(head.parameters())
+    opt = torch.optim.Adam(params, lr=2e-3)
+    rng = np.random.default_rng(seed)
+    for i in range(train_steps):
+        s = rng.integers(0, split - seq - 1, batch)
+        xb = torch.tensor(np.stack([data[a:a + seq] for a in s]))
+        yb = torch.tensor(np.stack([data[a + 1:a + seq + 1] for a in s]))
+        h = torch.zeros(batch, n)
+        e = emb(xb)
+        loss = 0
+        for t in range(seq):
+            h = cell(e[:, t], h)
+            loss = loss + torch.nn.functional.cross_entropy(head(h), yb[:, t])
+        loss = loss / seq
+        opt.zero_grad()
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(params, 1.0)
+        opt.step()
+    return (emb, cell, n), data, split
+
+
+def char_repeats(model, data, split, clip_len, R=20, between=(200, 600), seed=0):
+    """A fixed clip of held-out characters shown R times; before each repeat, a stretch of other held-out
+    text of random length (uniform in `between`), so the state entering each repeat differs. One continuous
+    run from a zero state. Returns (A, starts) in characters."""
+    import torch
+    emb, cell, n = model
+    rng = np.random.default_rng(70_000 + seed)
+    held = data[split:]
+    clip = held[:clip_len]
+    seq, starts = [], []
+    t = 0
+    for r in range(R):
+        L = int(rng.integers(between[0], between[1] + 1))
+        a = int(rng.integers(clip_len, len(held) - L))
+        seq.append(held[a:a + L])
+        t += L
+        starts.append(t)
+        seq.append(clip)
+        t += clip_len
+    x = torch.tensor(np.concatenate(seq))
+    out = np.empty((len(x), n), np.float32)
+    with torch.no_grad():
+        e = emb(x)
+        h = torch.zeros(1, n)
+        for i in range(len(x)):
+            h = cell(e[i:i + 1], h)
+            out[i] = h[0].numpy()
+    return out, starts
+
+
+# ---------------------------------------------------------------- A4: the spiking network, movie-driven
+def driven_lif(feat, R=20, spf=2.0, gain=0.5, seed=0, n=1000, frac_e=0.8, p=0.1, dt=0.0005, step=0.005,
+               lead_s=2.0):
+    """The map study's LIF network (nematica.map.zoo.lif_network, same constants), with the external
+    Poisson rate of each neuron modulated by the movie: rate_i(t) = nu_ext * max(0, 1 + gain * (B u(t))_i),
+    B a fixed Gaussian matrix with unit-variance rows over the 64 features (so B u has SD about 1).
+    `spf` native 5 ms steps per frame. Runs continuously: `lead_s` seconds of blank input, then R repeats
+    back to back. Activity: spike counts per 5 ms step. Returns (A, starts)."""
+    rng = np.random.default_rng(seed)
+    ne = int(n * frac_e)
+    tau_m, v_th, v_r, t_ref = 0.02, 1.0, 0.0, 0.002
+    J, g = 0.02, 5.0
+    W = (rng.random((n, n)) < p).astype(np.float32)
+    np.fill_diagonal(W, 0)
+    W[:, :ne] *= J
+    W[:, ne:] *= -g * J
+    nu_ext = 1.1 * v_th / (J * p * ne * tau_m)
+    lam = nu_ext * p * ne * dt
+    rin = np.random.default_rng(80_000 + seed)
+    B = rin.normal(0, 1 / np.sqrt(feat.shape[1]), (n, feat.shape[1]))
+    mod = np.clip(1 + gain * (feat @ B.T), 0, None)          # (900, n)
+    per = int(round(step / dt))
+    L = int(round(900 * spf))
+    lead = int(round(lead_s / step))
+    fi = frame_index(L, spf)
+    steps = lead + R * L
+    v = rng.random(n) * v_th
+    ref = np.zeros(n)
+    out = np.zeros((steps, n), np.float32)
+    for t in range(steps * per):
+        s_ = t // per
+        m = 1.0 if s_ < lead else mod[fi[(s_ - lead) % L]]
+        I = J * rng.poisson(lam * m, n)
+        v += dt / tau_m * (-v) + I
+        v[ref > 0] = v_r
+        ref -= dt
+        s = np.flatnonzero(v >= v_th)
+        if len(s):
+            v[s] = v_r
+            ref[s] = t_ref
+            v += W[:, s].sum(1)
+            out[s_, s] += 1
+    return out, [lead + r * L for r in range(R)]
