@@ -1,0 +1,166 @@
+{
+ "what": "Study 2 calibration C4 (synthetic, Allen median spike instrument, 2 seeds per level). Means of each measure per knob level; ratio = spread of means / C1 range. Gate: ratio < 0.5.",
+ "base": {
+  "repeats": 20,
+  "native_steps_per_repeat": 4000,
+  "units": 480,
+  "share": 0.5,
+  "tau_locked": 6,
+  "tau_internal": 24
+ },
+ "levels": {
+  "native_tau": [
+   "2/8",
+   "6/24",
+   "18/72"
+  ],
+  "population": [
+   200,
+   480,
+   1200
+  ],
+  "repeats": [
+   20,
+   60
+  ],
+  "clip_length": [
+   2000,
+   4000,
+   8000
+  ]
+ },
+ "c1_range": {
+  "M1": 0.66,
+  "M1_lag1": 0.59,
+  "M2_int": 6.4,
+  "M2_lag1": 9.83
+ },
+ "results": {
+  "native_tau|M1": {
+   "means": [
+    0.678,
+    0.676,
+    0.677
+   ],
+   "ratio": 0.003
+  },
+  "native_tau|M1_lag1": {
+   "means": [
+    0.647,
+    0.648,
+    0.647
+   ],
+   "ratio": 0.003
+  },
+  "native_tau|M2_int": {
+   "means": [
+    2.124,
+    2.205,
+    2.174
+   ],
+   "ratio": 0.013
+  },
+  "native_tau|M2_lag1": {
+   "means": [
+    2.732,
+    2.806,
+    2.743
+   ],
+   "ratio": 0.008
+  },
+  "population|M1": {
+   "means": [
+    0.654,
+    0.676,
+    0.667
+   ],
+   "ratio": 0.032
+  },
+  "population|M1_lag1": {
+   "means": [
+    0.623,
+    0.648,
+    0.636
+   ],
+   "ratio": 0.043
+  },
+  "population|M2_int": {
+   "means": [
+    2.337,
+    2.205,
+    2.299
+   ],
+   "ratio": 0.021
+  },
+  "population|M2_lag1": {
+   "means": [
+    2.935,
+    2.806,
+    2.921
+   ],
+   "ratio": 0.013
+  },
+  "repeats|M1": {
+   "means": [
+    0.676,
+    0.664
+   ],
+   "ratio": 0.018
+  },
+  "repeats|M1_lag1": {
+   "means": [
+    0.648,
+    0.635
+   ],
+   "ratio": 0.022
+  },
+  "repeats|M2_int": {
+   "means": [
+    2.205,
+    2.273
+   ],
+   "ratio": 0.011
+  },
+  "repeats|M2_lag1": {
+   "means": [
+    2.806,
+    2.848
+   ],
+   "ratio": 0.004
+  },
+  "clip_length|M1": {
+   "means": [
+    0.664,
+    0.676,
+    0.654
+   ],
+   "ratio": 0.034
+  },
+  "clip_length|M1_lag1": {
+   "means": [
+    0.639,
+    0.648,
+    0.63
+   ],
+   "ratio": 0.031
+  },
+  "clip_length|M2_int": {
+   "means": [
+    2.418,
+    2.205,
+    2.408
+   ],
+   "ratio": 0.033
+  },
+  "clip_length|M2_lag1": {
+   "means": [
+    3.025,
+    2.806,
+    2.957
+   ],
+   "ratio": 0.022
+  }
+ },
+ "code": "/tmp/s7/c4b.py (temporary), nematica/slow at commit after df32538",
+ "log": "docs/SLOW_LOG.md 20:15"
+}

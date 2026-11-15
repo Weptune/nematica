@@ -276,3 +276,22 @@ be calibrated through the calcium instrument before choosing. The IBL brain-wide
 (trial-averaged, so "locked" means per-condition average, a weaker analogue).
 Next for F3: list sessions and repeats from the Allen two-photon manifest, and run C1 through the map
 study's calcium recording model.
+
+**20:15. C4 passed, by a wide margin.** All 22 jobs (one at a time, lean code; summary in
+`docs/figures/slow_c4.json`). Ratio = spread of the level means over the measure's C1 range (gate 0.5):
+
+| knob (levels) | M1_lag1 | M2_lag1 | M1 (lag 0) | M2_int |
+|---|---|---|---|---|
+| native timescale (2/8, 6/24, 18/72 steps) | 0.00 | 0.01 | 0.00 | 0.01 |
+| population (200, 480, 1,200 units) | 0.04 | 0.01 | 0.03 | 0.02 |
+| repeats (20, 60) | 0.02 | 0.00 | 0.02 | 0.01 |
+| clip length (2,000, 4,000, 8,000 steps) | 0.03 | 0.02 | 0.03 | 0.03 |
+
+- The measures do not move when a system's native clock changes 9-fold, which is the point of a
+  clock-free design (the map study's timescales moved with the instrument by 1.8 mouse SDs).
+- C1 ranges used: M1_lag1 0.59 (0.07 at share 0.05 to 0.66), M2_lag1 9.83 (0.88 to 10.71), from the
+  18:40 to 19:05 runs.
+- Still open in F5: (a) C1 for the lag-1 measures in a single formal sweep with 5 levels and 2 seeds each
+  (the evidence so far is spread over several runs); (b) the spread from instrument re-matching (19:20);
+  (c) calibration at the extreme per-mouse instruments, not only the median; (d) C1 through the calcium
+  instrument if the two-photon replication is chosen.
