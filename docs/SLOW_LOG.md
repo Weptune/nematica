@@ -1185,3 +1185,41 @@ While the frozen version is reviewed, `/tmp/s7/prefetch.py` downloads and caches
 sessions, the movie-repeat spikes, unit metadata (areas, QC) and behaviour (and the shuffled-movie spikes for
 the 26 DANDI 000022 sessions), into git-ignored `data/cache/allen_movie/`. It computes and prints nothing
 about the activity; no measurement runs before the review is in.
+
+### Review S-R3 of the frozen registration (19:48 UTC)
+
+An independent reviewer (separate agent, read-only, synthetic checks only) reviewed the frozen v1.0 before
+the first real measurement. Two blocking findings, fourteen non-blocking; all answered by amendment S1
+(before any real data), next entry.
+
+**Blocking**
+- **B1.** `record_checked` cannot reach the mouse's instrument when the recorded clip is short, and its
+  corrections can push the count the wrong way. The mouse numbers come from units passing 200 spikes over
+  17 repeats x 1,501 bins (about 0.008 spikes per bin); on an AI clip of 300 to 800 bins the same absolute
+  200 spikes is a 2 to 5 times stricter per-bin rule, which cuts low-rate units and raises the median count.
+  The count and bin corrections were applied separately although count per bin is roughly mean count x bin
+  width; no knob acted on the white share; the last round, not the best, was returned. Reviewer's checks
+  (A1, 17 repeats): reached at the median group and gain 0.25 (1,221 bins); not reached in the q1 group
+  (745 bins; count 0.076 to 0.087 against 0.066), at gain 2 (407 bins) or in the fastest group (293 bins;
+  0.114 to 0.147 against 0.06). So A1 would likely be "not testable". With the 200-spike rule scaled per bin
+  and decoupled corrections, the q1 and gain-2 cases reach on the first recording.
+- **B2.** Not enough disk for the language models (2.3 GB free; several GB of models still to download),
+  and nothing deletes a model after use.
+
+**Non-blocking:** N1 A4 rows carry a playback group, so its 3 true clusters were split into up to 12;
+N2 memory peaks (previous run held during the next generation; the A1 base cache; temporaries in
+`add_slow_drive`), estimated 5.7 GB; N3 if fewer AI units pass inclusion than the mouse has, fewer are kept
+silently, and if none pass the row reads "no shared part"; numbers stored on pre-inclusion units; N4 the
+shuffled check defaults to valid when no mouse has shuffled data; N5 a failure in the behaviour or shuffled
+step drops the mouse from the primary analysis; N6 behaviour-removed claims ignore the counted flags and do
+not re-apply the registered claim-2 rule; N7 H2, the playback check and H3 skip `reached`, and H3 uses raw
+M1; N8 a NaN instrument number counts as within tolerance and can crash the correction; N9 the
+per-instance test passes with an instance missing; N10 pupil area may never be found (both cached
+sessions have running only); N11 the mouse table (instance, group, group medians) is recomputed on every
+run and can drift between resumes; N12 code state compared with HEAD, not the freezing commit, and none in
+tests.json; N13 compute underestimated (about 3,000 recordings, days rather than 20 hours); N14 no minimum
+number of repeats.
+
+Checked and consistent: `spikes_aligned` against an exact integral of the whole-run rate (6e-8); pre-hold
+handling; the 480-unit cap and the 17-repeat rule; the bracket rule, ceilings, codes and the 25% rule; the
+bias margin; instance and group fields; H2 grids and split; the playback gain; the logic check.
