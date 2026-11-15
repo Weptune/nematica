@@ -1246,3 +1246,39 @@ All S-R3 findings answered in code and recorded in `SLOW.md`, "Amendments", S1. 
 All 58 sessions cached (1.5 GB in `data/cache/allen_movie/`, git-ignored), no download errors. Disk now
 974 MB free. The mice stage (`scripts/slow_run.py mice`, frozen registration plus amendment S1) starts now;
 rows go to `docs/figures/slow_runs/mice.jsonl` (summary numbers only).
+
+### Mice stage done: first real numbers (21:51 UTC)
+
+58 of 58 sessions measured, no errors (`docs/figures/slow_runs/mice.jsonl`, summary numbers only).
+Descriptive only; no hypothesis is tested until the AI stage is done. Percentiles 10 / 25 / 50 / 75 / 90:
+
+| quantity | values |
+|---|---|
+| valid repeats | 20 / 20 / 20 / 60 / 60 |
+| included visual-cortex units | 207 / 254 / 290 / 327 / 375 |
+| **M1** (internal share at lag 2) | 0.445 / 0.489 / **0.575** / 0.641 / 0.699 |
+| **M2** (internal over locked time; all 58 defined) | 0.51 / 0.58 / **0.69** / 0.85 / 0.96 |
+| M1 with behaviour regressed out | 0.456 / 0.514 / 0.574 / 0.648 / 0.699 |
+| behaviour R2 per unit (median per mouse) | 0.015 / 0.019 / 0.025 / 0.027 / 0.033 |
+| bins per timescale on the movie | 13.5 / 22.5 / 43.1 / 86.0 / 132.8 |
+| spikes per bin | 0.073 / 0.078 / 0.090 / 0.102 / 0.109 |
+| white share | 0.911 / 0.934 / 0.964 / 0.975 / 1.000 |
+
+- No ceilings, no "no shared part", no "no locked part"; every mouse has M1 above 0.05.
+- **C3 passes:** odd against even repeats, Spearman across mice 0.958 for M1 and 0.848 for log M2 (gate 0.5).
+- **Behaviour explains little:** running (all mice) and pupil (the 26 mice with eye tracking) explain about 2.5%
+  of a unit's variance; removing them moves M1 by at most about 0.02.
+- **Shuffled-movie check (26 mice):** the locked time falls steeply (median log change -3.65, about 39-fold;
+  one-sided p = 1.5e-8) and the internal time rises a little (median log change +0.28), so the internal part
+  moves much less than the locked part. M1 rises on the shuffled movie (median 0.58 to 0.79). The formal
+  check (with log M2 rising) runs in the tests stage.
+- **Two things to note now, before any AI is compared:**
+  - **M2 is below 1 in every one of the 58 mice** (90th percentile 0.96): in mouse visual cortex watching this
+    movie, what differs between repeats moves *faster* than what is locked to the movie, at lags of 40 ms and
+    more. Claim 2 compares AIs with this; it does not require M2 above 1, but the plain-language picture of
+    "slow internal state" from the map study does not describe these mice at this timescale.
+  - **The mice's timescale on the movie is long** (median 43 bins, 0.86 s, against 2.6 bins on spontaneous
+    activity in the map study): the locked response follows the movie's slow content. By the registered
+    playback rule, a movie-driven AI therefore sees about one movie frame per native timescale or faster,
+    and its instrument bins are fine relative to its own dynamics. The registered playback sensitivity
+    (x0.5, x2, driven-timescale rule) is the check on how much this matters.
