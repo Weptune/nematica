@@ -610,3 +610,19 @@ mouse has been measured, and none will be until the registration is frozen and r
   - a recording whose internal integral time reaches the largest lag is flagged **at ceiling**, and its
     value is reported as a lower bound;
   - a C4 check with internal timescales longer than the clip is added before freezing.
+
+**17:20. Ceiling flag and a long-timescale C4 check.** `internal_measures` now returns `M2_ceiling`: true
+when the internal autocovariance stays above zero at every lag up to the largest (a quarter of the clip).
+Synthetic systems at the median instrument, clip 3,500 native steps, share 0.5, locked timescale 6:
+
+| internal timescale (native steps) | M1_lag1 | M2_lag1 | at ceiling |
+|---|---|---|---|
+| 24 | 0.63 | 2.9 | no |
+| 600 | 0.67 | 52 | yes |
+| 3,500 (the clip) | 0.68 | 97 | yes |
+| 35,000 | 0.65 | 111 | yes |
+
+- M1_lag1 is unaffected by how slow the internal part is.
+- M2_lag1 keeps its order but compresses as it nears the ceiling (52, 97, 111 for 100-fold, 580-fold and
+  5,800-fold slower internal parts). So beyond the ceiling M2 is an ordinal lower bound; the paired tests
+  are rank-based (Wilcoxon), which tolerates this, and the ruler is taken on log M2.

@@ -85,6 +85,9 @@ def internal_measures(Y, max_lag=None):
     out["tl_lag1"] = integral_time(cross[1:], c1) - 0.5 + 1.0 if c1 > 0 else np.nan
     out["M2_lag1"] = float(out["ti_lag1"] / out["tl_lag1"]) if np.isfinite(out["ti_lag1"]) and \
         np.isfinite(out["tl_lag1"]) else np.nan
+    # ceiling (SLOW_LOG 17:05): the internal autocovariance never reached zero within the largest lag, so the
+    # integral time, and M2, are lower bounds set by the clip
+    out["M2_ceiling"] = bool(i1 > 0 and np.all((same - cross)[1:] > 0))
     if not (np.isfinite(s0) and s0 > 0):
         return out | {"M1": np.nan, "M2": np.nan, "t_internal": np.nan, "t_locked": np.nan, "ti_int": np.nan,
                       "tl_int": np.nan, "M2_int": np.nan}
