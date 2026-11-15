@@ -730,3 +730,99 @@ freeze guard covers it. Regression check: the Neuropixels dry run gives the same
 change (A1 at gain 0.25: M1_lag1 0.3509, 0.3648). A calcium recording of the driven random RNN (gain 0.25,
 the map study's R3 calcium numbers as a stand-in, 10 repeats): M1_lag1 0.377, M2_lag1 0.33, against 0.35
 and 0.29 through the spike instrument. The two instruments agree on this system.
+
+---
+
+### Timestamps from here on
+
+The review below found that, even after the clock correction, my entry labels again ran ahead of the clock
+and repeated (16:20, 17:05, 17:45, 18:30, 19:10, 19:40 and 20:00 each occur twice). From here on every entry
+is stamped with `date -u` (UTC) and cited by its title, not its time. For the record, the entries from
+"Clock correction" to "The replication arm is in the pipeline" were committed between 15:10 and 17:04 UTC
+(commit times in `git log`).
+
+### Review S-R1: independent pre-freeze review (17:12 UTC)
+
+An independent reviewer (a separate agent with no part in the work, read-only) reviewed `SLOW.md`, this
+notebook and all study-2 code at commit 2a12dd5 plus the working tree, running small synthetic checks only.
+Its findings, in its own severity order, with what I do about each (fixes are logged in the entries that
+follow, each citing the finding number):
+
+**Critical**
+1. **Spike-train structure counts as internal.** The lag-1 measures assume spike noise is white at 20 ms.
+   It is not in real neurons. In a synthetic check with zero internal share, a 10 ms dead time gave
+   M1_lag1 -0.41 and mild bursting gave +0.56; Poisson gave 0.005. AIs go through a Poisson model, mice do
+   not, so this alone could make or erase a gap. C1 and C4 used Poisson spikes only. *Response:* compute the
+   autocovariances over pairs of **distinct units** (population sum minus self terms). Single-unit spike-train
+   structure is then excluded at every lag; recalibrate with refractory and bursting spike generators.
+2. **The closest-gain rule creates spurious verdicts.** On a discrete grid the nearest value can sit on
+   either side of the mouse; with the gain curve passing through every simulated mouse the reviewer obtained
+   both "confirmed" and "refuted". The draft's claim that a gap so confirmed "holds for every input strength"
+   is false. *Response:* bracket rule: d = 0 when the mouse lies within the family's range over the grid
+   (or its model sizes), else mouse minus the nearer end. Same rule for model sizes, written into `SLOW.md`.
+3. **Rate drift between blocks reads as slow internal state, and the claimed QC is absent.** Units are
+   centred over all repeats, so a per-unit rate change between the two movie blocks adds a constant to
+   C_int (rate change SD 0.2 gave M1_lag1 0.05 and M2 48 at ceiling with no internal state). Mice see two
+   blocks with other stimuli between; AIs run continuously. The amendment-25 QC mask that `SLOW.md` cites is
+   not applied, and there is no area filter (hippocampal, thalamic and midbrain units would count).
+   *Response:* centre each unit **within each repeat** (primary; this also matches the formula in
+   `SLOW.md`); apply the QC mask; keep only visual-cortex units; store block ids.
+
+**Major**
+4. **M2 at ceiling scales with clip length**, and a signed-rank test does not handle censoring. *Response:*
+   the largest lag is a fixed fraction of the clip in every system (so the cap is the same in movie time);
+   a pair where both are at ceiling counts as a tie (d = 0); a locked part at ceiling is flagged too.
+5. **M2 is clock-free but not input-free**: the locked time reflects the input's own timescale and the
+   playback speed, which rests on an unvalidated anchor. *Response:* register a playback sensitivity (x0.5,
+   x2, and the driven-timescale rule) and report it beside every M2 verdict for movie-driven families.
+6. **Pairs are not independent**: about 12 generator runs per family serve 58 mice. *Response:* cluster
+   bootstrap over (instance, group) cells for every interval, and a cell-level sign test beside the
+   Wilcoxon.
+7. **H2 cannot show "the smallest ingredient"**: two parameters tuned to two medians on an exchangeable
+   half nearly guarantee equivalence, and no competitor must fail. *Response:* add negative controls tuned the
+   same way that must fail equivalence (a fast drive at or below the locked time; more network noise),
+   and drop "smallest" from the claim unless the controls fail.
+8. **Calibration did not use the instruments that will be used** (movie-block numbers are unknown before
+   freezing), and the C4 gate is in synthetic-range units, not mouse-ruler units. *Response:* register
+   post-freeze nuisance checks in mouse-ruler units (clip length, pre-hold, re-matching, playback); a test is
+   "not testable" if a nuisance moves values by 0.5 ruler units or more; give C3 a threshold and a
+   consequence.
+9. **The shuffled check is inconsistent, weak and has a NaN bug** (NaN passes a truthiness filter; M2 rises
+   mechanically when the locked time falls; the thesis count ignores the check). *Response:* finite
+   filters; add that the internal time must not fall (invariance within 0.5 ruler units); if the check fails
+   the thesis count uses M1 only, in code.
+10. **Matching quality is not stored.** *Response:* store all knobs, achieved numbers and `reached`; an
+    unreached match is reported and excluded.
+11. **Missing data handling is undefined**, and the fastest-playback A1 cell with 60 repeats may run out of
+    memory. *Response:* dry-run the extreme cell; a pair counts only if every grid point exists; report
+    what is missing.
+12. **Text and trial families have transient internal state**, so M1 depends on clip length, and the
+    clips vary with the mice's instruments; `SLOW.md` still says 100 trials and 3,000 characters.
+    *Response:* fix these clips independently of the mouse, and report M1 by position in the clip.
+13. **A locked lag-1 covariance at or below 0 is mislabelled "no internal part".** *Response:* its own code
+    and rule.
+
+**Minor**
+14. Repeat cutting gives each repeat a different sub-bin phase (M1_lag1 0.020 against 0.000 aligned).
+    *Response:* record with repeat starts as segments.
+15. Instance assignment depends on file order. *Response:* index from the fixed session order.
+16. The A1 timescale is hard-coded for all instances. *Response:* measure per instance.
+17. Pythia-1B and Mamba instances share one clip. *Response:* draw the clip position with the instance seed.
+18. H3 code and text differ, and on M2 Pythia-14M is absent almost everywhere. *Response:* align the text to
+    the code (median over mice of how much closer 1B is), H3 on M1 only, M2 reported.
+19. Outliers move the SD ruler. *Response:* MAD-based ruler; M1 bounded to [-1, 1].
+20. Promised but not computed: M3 carry-over, the adaptation trend, the balanced-gain A1 without a drive.
+    *Response:* compute the last two; drop M3 from the registration (it has no lag-1 version yet).
+21. Notebook timestamps (above). *Response:* done.
+22. Decided in the log or code but missing from `SLOW.md`: pre-hold, the A2 guard, seeds, the language-model
+    layer and units. *Response:* written in.
+23. MIN_SPIKES over the whole movie means different rate thresholds in 20- and 60-repeat sessions.
+    *Response:* a rate threshold only (the map study's 0.05 Hz) plus a minimum of 200 spikes computed
+    over the first 17 repeats in every session.
+
+On calibration the reviewer notes that C1 and C4 checked rank order, not bias, and only for stationary,
+additive, Gaussian parts with Poisson spikes. Accepted: the recalibration after the fixes adds
+non-Poisson spikes, block drift, unequal clip lengths, transient internal state and a quiet latching
+minority, and reports bias as well as rank order.
+
+Freezing waits until every critical and major finding is resolved and logged.
