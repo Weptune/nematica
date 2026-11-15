@@ -555,3 +555,13 @@ the CfC reloads). The GRU file was converted. Both probes rerun, one after the o
   transformers implementation without its compiled kernels is slow). It goes to background runs; F4's
   estimate for A7 is raised accordingly.
 - Disk: 2.5 GB free after the Pythia-160m and Mamba-130m downloads.
+
+**16:20. Mamba-130m probe** (background, 1,132 s: the reference PyTorch scan, since the compiled
+`mamba_ssm` kernels are not installed). Clip 300 tokens, contexts 256, 20 repeats, median instrument:
+timescale 1.13 tokens, raw lag-0 internal share **0.18**, recorded 1,455 bins, **M1_lag1 0.61, M2_lag1
+1.03**. The state-space model carries much more of its preceding context into the clip than the
+transformers of similar size (Pythia-160m: 0.137), consistent with its recurrent state; its internal part
+moves about as fast as its input-driven part. F4: about 19 minutes per Mamba-130m recording set on this
+machine, so A7 at about 58 mice x 2 sizes needs generation shared across mice (the clip and contexts do
+not depend on the mouse; only the instrument does), which is the plan: generate once per instance,
+record per mouse.
