@@ -1223,3 +1223,20 @@ number of repeats.
 Checked and consistent: `spikes_aligned` against an exact integral of the whole-run rate (6e-8); pre-hold
 handling; the 480-unit cap and the 17-repeat rule; the bracket rule, ceilings, codes and the 25% rule; the
 bias margin; instance and group fields; H2 grids and split; the playback gain; the logic check.
+
+### Amendment S1, before any real data (20:00 UTC)
+
+All S-R3 findings answered in code and recorded in `SLOW.md`, "Amendments", S1. Checks:
+- The reviewer's unreachable instrument cases, rerun with the amended correction (A1, instance 0, 17
+  repeats, judged on the analysed units): median group at gain 2 (381 bins) reached after one correction
+  (2.43 bins per timescale, 0.063 spikes per bin, white share 0.917, rate spread 1.15 against 2.60, 0.066,
+  0.897, 1.22); median group at gain 0.05 (1,965 bins) reached; fastest group at gain 0.25 (414 bins) not
+  reached by the old definition after 3 corrections, but its numbers on the analysed units (1.62, 0.057,
+  0.850, 1.29 against 1.43, 0.054, 0.825, 1.33) are within tolerance, so "reached" is now judged on those
+  units, as the mouse's numbers were on its own.
+- The slow drive built in place reproduces its share (0.299 for a nominal 0.3).
+- The logic check gives the same designed verdicts; dry runs of mice, A1 and tests complete.
+- Disk: 2.3 GB free, below the 3 GB the language-model step now requires. Decision for the user before
+  the AI stage reaches the language models: free space (the map study's spontaneous-activity cache in
+  `data/cache/allen` is 3.5 GB and re-downloadable; this study's earlier Pythia-160m and Mamba-130m
+  downloads are about 1 GB), or accept that A6 and A7 come out "not testable".

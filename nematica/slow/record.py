@@ -99,9 +99,17 @@ def spikes_aligned(A, starts, length, k, rng):
 TOL = {"bins_per_tau": 0.15, "count_per_bin": 0.15, "rate_log_sd": 0.20}   # relative; noise: 0.05 absolute
 
 
-def recorded_numbers(Y, rtype="spikes"):
+def scaled_min_spikes(nb_ai, nb_mouse, min_spikes=200):
+    """Amendment S1 (review S-R3 B1): the mouse's spike minimum applies to the same movie time. An AI clip
+    recorded at nb_ai bins has the same repeats as its mouse, so the minimum is scaled by nb_ai / nb_mouse
+    (the same number of spikes per bin of movie)."""
+    return float(min_spikes) * nb_ai / float(nb_mouse)
+
+
+def recorded_numbers(Y, rtype="spikes", min_spikes=None):
     """The mouse's instrument function (`instrument.instrument_numbers`) on recorded repeats (R, bins, units),
-    repeats as segments: what the AI recording actually looks like (review S-R2 finding 5)."""
+    repeats as segments (review S-R2 finding 5). `min_spikes` replaces the map study's absolute 200-spike
+    inclusion minimum for this call (amendment S1), so the per-bin rule matches the mouse's."""
     from ..map import instrument as INS
     R, nb, N = Y.shape
     X = np.asarray(Y, float).reshape(R * nb, N)
@@ -109,29 +117,60 @@ def recorded_numbers(Y, rtype="spikes"):
     ind = {"activity": X, "dt": dt, "segments": [r * nb for r in range(1, R)]}
     if rtype == "calcium":
         ind["indicator"] = "GCaMP6f"
-    return INS.instrument_numbers(ind, rtype)
+    old = INS.MIN_SPIKES
+    try:
+        if min_spikes is not None:
+            INS.MIN_SPIKES = min_spikes
+        return INS.instrument_numbers(ind, rtype)
+    finally:
+        INS.MIN_SPIKES = old
+
+
+def _err(got, prof):
+    """Largest relative error over the toleranced numbers (noise in units of its 0.05 tolerance); inf if any
+    is not finite (amendment S1, review S-R3 N8: a NaN number is not within tolerance)."""
+    e = []
+    for x, t in TOL.items():
+        if x in prof:
+            g = got.get(x, np.nan)
+            if not np.isfinite(g):
+                return np.inf
+            e.append(abs(g / prof[x] - 1) / t)
+    g = got.get("noise", np.nan)
+    if not np.isfinite(g):
+        return np.inf
+    e.append(abs(g - prof["noise"]) / 0.05)
+    return max(e)
 
 
 def within_tolerance(got, prof):
-    ok = all(abs(got[x] / prof[x] - 1) <= t for x, t in TOL.items() if x in prof and np.isfinite(got.get(x, np.nan)))
-    return bool(ok and abs(got["noise"] - prof["noise"]) <= 0.05)
+    return bool(_err(got, prof) <= 1.0)
 
 
-def record_checked(A, starts, length, prof, seed=0, rounds=2):
+def record_checked(A, starts, length, prof, seed=0, rounds=3, nb_mouse=1501):
     """Spike recording with the matched knobs corrected on the recorded repeats themselves (review S-R2
-    finding 5): after each recording, the instrument numbers are measured on the repeats as for a mouse, and
-    mean count, bin width and rate spread are scaled toward the mouse's values (at most `rounds` times).
-    Returns (repeats, knobs, numbers measured on the final repeats, reached on the repeats)."""
+    finding 5; amendment S1 for review S-R3 B1): after each recording the instrument numbers are measured on
+    the repeats as for a mouse, with the mouse's per-bin inclusion rule; then the bin width is scaled by the
+    timescale error, the mean count by the count error divided by the bin change (count per bin is mean count
+    x bin width), the rate spread by its error, and the gain toward the white-share target. At most `rounds`
+    corrections; the best round is kept. Returns (repeats, knobs, numbers on those repeats, reached)."""
     Y, k = record_repeats(A, starts, length, prof, seed=seed)
-    got = recorded_numbers(Y)
+    ms = lambda Y_: scaled_min_spikes(Y_.shape[1], nb_mouse)
+    got = recorded_numbers(Y, min_spikes=ms(Y))
+    best = (_err(got, prof), Y, k, got)
     for _ in range(rounds):
-        if within_tolerance(got, prof):
+        if best[0] <= 1.0 or not np.isfinite(_err(got, prof)):
             break
         k = dict(k)
-        k["mean_count"] *= prof["count_per_bin"] / got["count_per_bin"]
-        k["bin_steps"] *= got["bins_per_tau"] / prof["bins_per_tau"]
+        fb = got["bins_per_tau"] / prof["bins_per_tau"]
+        k["bin_steps"] *= fb
+        k["mean_count"] *= prof["count_per_bin"] / got["count_per_bin"] / fb
         k["rate_log_sd"] = k.get("rate_log_sd", 0.0) * prof["rate_log_sd"] / max(got["rate_log_sd"], 1e-6)
+        k["gain"] *= float(np.exp(2.0 * (got["noise"] - prof["noise"])))   # more gain, less white share
         k["corrected"] = k.get("corrected", 0) + 1
         Y, k = record_repeats(A, starts, length, prof, seed=seed, k=k)
-        got = recorded_numbers(Y)
-    return Y, k, got, within_tolerance(got, prof)
+        got = recorded_numbers(Y, min_spikes=ms(Y))
+        if _err(got, prof) < best[0]:
+            best = (_err(got, prof), Y, k, got)
+    e, Y, k, got = best
+    return Y, k, got, bool(e <= 1.0)

@@ -210,6 +210,8 @@ def behaviour(a, starts, stops, n_bins):
     B = np.full((len(starts), n_bins, len(sig)), np.nan)
     for j, (t, x) in enumerate(sig):
         ok = np.isfinite(x)
+        if ok.sum() < 2:                                  # amendment S1 (S-R3 N10): nothing measured
+            continue
         t, x = t[ok], x[ok]
         for r, s0 in enumerate(starts):
             centres = s0 + (np.arange(n_bins) + 0.5) * BIN_S

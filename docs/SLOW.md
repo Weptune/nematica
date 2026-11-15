@@ -319,3 +319,28 @@ Every verdict is reported whatever it is, with the numbers of mice, pairs, cells
   rerun on the final recording path, with the multiplicative case; a check of the tests logic on synthetic
   rows (`scripts/slow_test_logic.py`); a review of the frozen text and code before the first real
   measurement. 
+
+## Amendments
+
+### S1 (16 Nov 2026), before any real data
+
+Labelled **before any real data**: no mouse activity had been measured (the data prefetch downloads and
+caches only). Cause: review S-R3 of the frozen version (`SLOW_LOG.md`, "Review S-R3"). Changes:
+- **Instrument check (B1).** The AI's instrument numbers and its unit inclusion use the mouse's spike
+  minimum scaled to the same movie time (200 x AI bins per clip / mouse bins per clip). Corrections scale
+  the bin width by the timescale error, the mean count by the count error divided by the bin change, the
+  rate spread by its error and the gain toward the white-share target; at most 3 rounds; the best round is
+  kept. "Reached" is judged on the analysed units, and a recording with fewer analysed units than its mouse
+  is not reached. A non-finite instrument number is never within tolerance.
+- **Disk (B2).** Language models run last, model by model; each large model's download is removed after its
+  last use; generation stops with an error if under 3 GB is free.
+- A4 rows have no playback group (its 3 instances are its clusters). The shuffled check defaults to "not
+  assessable" when no mouse has shuffled data. Behaviour and shuffled steps fail on their own without
+  dropping the mouse. Behaviour-removed claims re-apply the registered claim rules and counted flags. H2, the
+  playback check and H3 use reached instruments only, and H3 uses the same codes as H1. A family verdict needs
+  all 3 instances. Pupil area exists only in the 26 DANDI 000022 sessions (eye tracking); elsewhere behaviour is
+  running speed alone. The mouse table (instance, group, group medians) is written once after the mice stage
+  covers all 58 sessions, and later runs must agree with it. Code provenance is compared with the freezing
+  commit and stored in tests.json. A mouse with fewer than 10 valid repeats is excluded. The slow drive is
+  built in place (memory).
+- Compute: about 3,000 AI recordings, so the AI stage takes days, not 20 hours (F4 was an underestimate).

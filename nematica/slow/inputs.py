@@ -351,5 +351,7 @@ def add_slow_drive(A, share, tau_steps, seed=0, k=10):
         z = a * z + e[t]
         Zs[t] = z
     S = Zs @ rng.normal(0, 1, (k, A.shape[1])).astype(np.float32)
-    S = (S - S.mean(0)) / S.std(0)
-    return A + S * (A.std(0) * np.sqrt(share / (1 - share)))
+    S -= S.mean(0)                                    # in place, float32 (memory, amendment S1)
+    S *= (A.std(0) * np.sqrt(share / (1 - share)) / S.std(0)).astype(np.float32)
+    S += A
+    return S

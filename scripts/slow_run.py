@@ -36,6 +36,7 @@ GAINS = (0.05, 0.1, 0.25, 0.5, 0.86, 1.0, 2.0, 4.0)  # SLOW.md section 7; 0.86 =
 N_GROUPS = 4                                          # playback-speed groups (quartiles of bins per timescale)
 KEYS = ("bins_per_tau", "count_per_bin", "noise", "rate_log_sd")
 MOVIE_FAMS = {"A1", "A4", "A1-slow", "A1-fast", "A1-noise", "A1-play"}
+PLAYBACK_FAMS = MOVIE_FAMS - {"A4"}                 # amendment S1 (S-R3 N1): A4 plays in real time, no groups
 
 
 def _code_state():
@@ -45,7 +46,10 @@ def _code_state():
         head = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
         dirty = bool(subprocess.run(["git", "-C", str(ROOT), "status", "--porcelain", "--", "nematica", "scripts"],
                                     capture_output=True, text=True).stdout.strip())
-        return {"head": head, "dirty": dirty}
+        fz = frozen()                                  # amendment S1 (S-R3 N12): code compared with the freeze
+        since = subprocess.run(["git", "-C", str(ROOT), "diff", "--name-only", fz, "--", "nematica", "scripts"],
+                               capture_output=True, text=True).stdout.split() if fz else None
+        return {"head": head, "dirty": dirty, "frozen": fz, "code_files_changed_since_freeze": since}
     except Exception:  # noqa: BLE001
         return {"head": None, "dirty": None}
 
@@ -54,6 +58,7 @@ CODE_STATE = _code_state()
 PRIMARY = ("M1", "M2", "ti", "tl", "int_ceiling", "lock_ceiling", "no_shared", "no_locked")
 K0 = 2                                               # first lag used: 2 bins (40 ms), review S-R1 finding 1
 MIN_UNITS = 30                                       # a mouse with fewer included units is excluded
+MIN_REPEATS = 10                                     # amendment S1: a mouse with fewer valid repeats is excluded
 MAX_UNITS = 480                                      # and one with more keeps a seeded subset of 480
 
 
@@ -108,13 +113,14 @@ def split_halves(Y):
 
 
 # ------------------------------------------------------------------------------------------------ mice
-def keep_units(X, per_repeat_bins=None):
+def keep_units(X, per_repeat_bins=None, min_spikes=None):
     """The map study's inclusion rule for spikes, with review S-R1 finding 23 fixed: the rate threshold over
     all repeats, and the 200-spike minimum counted over the first 17 repeats only (17 is the fewest valid
     repeats seen), so 20- and 60-repeat sessions face the same rule."""
     n_all = X.sum(0)
     first = X[: 17 * per_repeat_bins] if per_repeat_bins else X
-    return (X.std(0) > 1e-9) & (first.sum(0) >= INS.MIN_SPIKES) & \
+    ms = INS.MIN_SPIKES if min_spikes is None else min_spikes   # amendment S1: scaled for AI clips
+    return (X.std(0) > 1e-9) & (first.sum(0) >= ms) & \
         (n_all / (len(X) * INS.SPIKE_BIN_S) >= INS.MIN_RATE_HZ)
 
 
@@ -137,6 +143,8 @@ def stage_mice(dry=False):
             R, nb, N = Y.shape
             X = Y.reshape(R * nb, N).astype(np.float32)
             keep = sel & keep_units(X, nb)
+            if R < MIN_REPEATS:                           # amendment S1 (S-R3 N14)
+                raise RuntimeError(f"only {R} valid repeats")
             if keep.sum() < MIN_UNITS:
                 raise RuntimeError(f"only {int(keep.sum())} included visual-cortex units")
             if keep.sum() > MAX_UNITS:                    # S-R2 finding 10: at most as many units as the AIs
@@ -152,17 +160,23 @@ def stage_mice(dry=False):
                    "profile": {k: prof.get(k) for k in KEYS}, **measures(Y[:, :, keep]),
                    "split": split_halves(Y[:, :, keep]),
                    "extras": M.unit_internal_shares(Y[:, :, keep]), "dry": dry, "frozen": frozen()}
-            if not dry:                                   # S-R2 finding 11: behaviour regressed out
+        except Exception as e:  # noqa: BLE001
+            row = {"id": uid, "error": f"{type(e).__name__}: {e}"}
+        if "error" not in row and not dry:                # amendment S1 (S-R3 N5): sensitivities fail alone
+            try:                                          # S-R2 finding 11: behaviour regressed out
                 Bh = D.behaviour(a, z["starts"], z["stops"], nb)
                 Yr_, r2 = D.regress_out(Y[:, :, keep], Bh)
                 row["behaviour_removed"] = {**{k_: v_ for k_, v_ in M.lag_measures(Yr_, k0=K0).items()
                                                if k_ in PRIMARY}, "median_r2": r2,
                                             "signals": int(np.isfinite(Bh).all((0, 1)).sum())}
-            if ds == "000022" and not dry:                # validity check: the shuffled movie (SLOW.md 7)
-                Ys = D.movie_counts(D.movie_cache(a, shuffled=True))
-                row["shuffled"] = {**measures(Ys[:, :, keep]), "repeats": int(Ys.shape[0])}
-        except Exception as e:  # noqa: BLE001
-            row = {"id": uid, "error": f"{type(e).__name__}: {e}"}
+            except Exception as e:  # noqa: BLE001
+                row["behaviour_error"] = f"{type(e).__name__}: {e}"
+            if ds == "000022":                            # validity check: the shuffled movie (SLOW.md 7)
+                try:
+                    Ys = D.movie_counts(D.movie_cache(a, shuffled=True))
+                    row["shuffled"] = {**measures(Ys[:, :, keep]), "repeats": int(Ys.shape[0])}
+                except Exception as e:  # noqa: BLE001
+                    row["shuffled_error"] = f"{type(e).__name__}: {e}"
         append(name, row)
         print(uid, {k: row.get(k) for k in ("repeats", "units", "error")}, flush=True)
         if dry and len(done(name, ("id",))) >= 6:
@@ -246,15 +260,22 @@ def record_for_mouse(A, starts, length, r, rng_seed):
         A = A[:, ~sil]
     rtype = r.get("rtype", "spikes")
     if rtype == "spikes":
-        Y, k, got, reached = Rc.record_checked(A, st, length, r["profile"], seed=rng_seed)
+        Y, k, got, reached = Rc.record_checked(A, st, length, r["profile"], seed=rng_seed,
+                                               nb_mouse=int(r.get("bins", 1501)))
     else:
         Y, k = Rc.record_repeats(A, st, length, r["profile"], rtype=rtype, seed=rng_seed)
         got = Rc.recorded_numbers(Y, rtype)
         reached = bool(abs(got["noise"] - r["profile"]["noise"]) <= 0.05)
     R_, nb, N = Y.shape
-    inc = keep_units(Y.reshape(R_ * nb, N), nb) if rtype == "spikes" else Y.reshape(R_ * nb, N).std(0) > 1e-9
+    msp = Rc.scaled_min_spikes(nb, int(r.get("bins", 1501)))
+    inc = keep_units(Y.reshape(R_ * nb, N), nb, msp) if rtype == "spikes" else Y.reshape(R_ * nb, N).std(0) > 1e-9
     idx = _subsample(np.flatnonzero(inc), int(r.get("units", N)), rng_seed)
     Y = Y[:, :, idx]
+    if rtype == "spikes":                              # numbers on the analysed subset (S-R3 N3); reached is
+        got = Rc.recorded_numbers(Y, min_spikes=msp)   # judged on them, as the mouse's were on its units
+        reached = Rc.within_tolerance(got, r["profile"])
+    if len(idx) < int(r.get("units", 0)):             # amendment S1 (S-R3 N3): fewer units than the mouse
+        reached = False
     Yn = np.stack([np.asarray(A[s:s + length, :100]) for s in st])     # extras on 100 units (memory)
     knobs = {a: (float(v) if isinstance(v, (int, float, np.floating, np.integer)) and not isinstance(v, bool) else v)
              for a, v in k.items() if isinstance(v, (int, float, bool, np.floating, np.integer, dict))}
@@ -273,17 +294,18 @@ def lif_for_mouse(A, starts, length, r, rng_seed):
     R = r["repeats"]
     nb = length // 4                                   # 4 native 5 ms steps per 20 ms bin
     Y = np.stack([A[s:s + nb * 4].reshape(nb, 4, -1).sum(1) for s in starts[:R]])
-    inc0 = keep_units(Y.reshape(-1, Y.shape[2]), nb)
+    msp = Rc.scaled_min_spikes(nb, int(r.get("bins", 1501)))
+    inc0 = keep_units(Y.reshape(-1, Y.shape[2]), nb, msp)
     med = float(np.median(Y[:, :, inc0].mean((0, 1)))) if inc0.any() else 1.0
     p = min(1.0, r["profile"]["count_per_bin"] / max(med, 1e-9))
     Y = np.random.default_rng(rng_seed).binomial(Y.astype(np.int64), p).astype(np.float32)
-    idx = _subsample(np.flatnonzero(keep_units(Y.reshape(-1, Y.shape[2]), nb)), int(r.get("units", Y.shape[2])),
-                     rng_seed)
+    idx = _subsample(np.flatnonzero(keep_units(Y.reshape(-1, Y.shape[2]), nb, msp)),
+                     int(r.get("units", Y.shape[2])), rng_seed)
     Y = Y[:, :, idx]
-    got = Rc.recorded_numbers(Y)
+    got = Rc.recorded_numbers(Y, min_spikes=msp)
     return {**measures(Y), "recorded_bins": int(nb), "repeats_used": int(Y.shape[0]), "units_used": int(len(idx)),
             "thin_p": p, "numbers_on_repeats": {x: got.get(x) for x in r["profile"]},
-            "reached": True,      # the LIF is not matched; its own timescale and noise are reported, not tuned
+            "reached": bool(len(idx) >= int(r.get("units", 0))),   # not matched; units must suffice (S1)
             "extras": M.unit_internal_shares(Y)}
 
 
@@ -337,7 +359,11 @@ def families(rows, med, gains=GAINS):
         for kind, fam in (("gru", "A3"), ("cfc", "A5")):
             yield (fam, f"i{inst}", ms, record_for_mouse,
                    lambda ms=ms, inst=inst, kind=kind: gen_char(kind, inst, prof, Rmax(ms)))
-        for fam, model in LMS:
+    # language models last, model by model, so each large model is downloaded, used for its instances and
+    # removed before the next (amendment S1, review S-R3 B2: disk)
+    for fam, model in LMS:
+        for inst in range(3):
+            ms = [r for r in rows if r["instance"] == inst]
             yield (fam, f"{model.format(s=inst + 1).split('/')[-1]}-i{inst}", ms, record_for_mouse,
                    lambda ms=ms, inst=inst, model=model: gen_lm(model, inst, prof, Rmax(ms)))
 
@@ -473,12 +499,59 @@ def gen_lm(model, inst, prof, R):
     tok = np.load(ROOT / "data/external/books/tokens.npy")
     at = len(tok) * (inst + 2) // 6                    # finding 17: each instance its own clip
     mk = lambda c, r: I.lm_repeats(name, *I.text_clip_and_contexts(tok, c, 256, r, seed=inst, clip_at=at))[:2]
+    import shutil
+    free = shutil.disk_usage(ROOT).free / 1e9
+    if free < 3.0:
+        raise RuntimeError(f"only {free:.1f} GB free; a language model needs up to about 3 GB")
     n = clip_units(mk, prof, 300)
-    return (*mk(n, R), n)
+    out = (*mk(n, R), n)
+    if "{s}" in model or inst == 2:                    # last use of this download
+        drop_model_cache(name)
+    return out
+
+
+DROP_AFTER_USE = ("pythia-160m", "pythia-410m", "pythia-1b", "mamba-130m", "mamba-370m")
+
+
+def drop_model_cache(name):
+    """Remove a downloaded model from the local Hugging Face cache after its last use (amendment S1: disk).
+    Only the large models this study downloads; the small Pythia-14m files stay."""
+    import os
+    import shutil
+    if not any(x in name for x in DROP_AFTER_USE):
+        return
+    d = Path.home() / ".cache/huggingface/hub" / ("models--" + name.replace("/", "--"))
+    if not d.exists():
+        return
+    for snap in d.glob("snapshots/*/*"):
+        tgt = Path(os.path.realpath(snap))
+        if tgt.exists() and tgt.is_file():
+            tgt.unlink()
+    shutil.rmtree(d)
+
+
+def fixed_mice_table(dry=False):
+    """Amendment S1 (S-R3 N11): the mouse table (instance, playback group, group medians) is written once,
+    after the mice stage has covered every session, and every later AI or test run must agree with it."""
+    rows, med = mice_table(dry)
+    f = OUT / (CFG["prefix"] + ("mice_table_dry.json" if dry else "mice_table.json"))
+    tab = {"rows": {r["id"]: [r["instance"], r["group"]] for r in rows}, "med": {str(k): v for k, v in med.items()}}
+    if not dry and CFG["prefix"] == "":
+        seen = {k[0] for k in done("mice.jsonl", ("id",))} | {
+            r["id"] for r in map(json.loads, (OUT / "mice.jsonl").read_text().splitlines()) if "error" in r}
+        if len(seen) < 58:
+            sys.exit(f"the mice stage has covered {len(seen)} of 58 sessions; finish it first")
+    if f.exists():
+        old = json.loads(f.read_text())
+        if old != json.loads(json.dumps(tab)):
+            sys.exit(f"{f.name} differs from the current mouse table; the mice stage changed after AI runs began")
+    else:
+        f.write_text(json.dumps(tab, indent=1))
+    return rows, med
 
 
 def stage_ais(only=None, dry=False):
-    rows, med = mice_table(dry)
+    rows, med = fixed_mice_table(dry)
     name = CFG["prefix"] + ("ais_dry.jsonl" if dry else "ais.jsonl")
     have = done(name, ("family", "run", "id"))
     n_gen = 0
@@ -500,10 +573,11 @@ def stage_ais(only=None, dry=False):
         except Exception as e:  # noqa: BLE001
             append(name, {"family": fam, "run": run, "id": "*", "error": f"generation: {type(e).__name__}: {e}"})
             continue
+        del res
         for m in todo:
             try:
                 row = {"family": fam, "run": run, "id": m["id"], "instance": m["instance"],
-                       "group": m["group"] if fam in MOVIE_FAMS else None, "code": CODE_STATE,
+                       "group": m["group"] if fam in PLAYBACK_FAMS else None, "code": CODE_STATE,
                        **rec(A, starts, length, m, rng_seed=zlib.crc32(run.encode()) % 2**31)}
             except Exception as e:  # noqa: BLE001
                 row = {"family": fam, "run": run, "id": m["id"], "error": f"{type(e).__name__}: {e}"}
@@ -618,8 +692,9 @@ def _verdict(d, cells, ruler, bound=0.0):
     md = float(np.median(du))
     ci = _cluster_ci(du, cells)
     margin = max(0.5, bound / ruler) if ruler and np.isfinite(ruler) else 0.5
-    all_gap = all(np.isfinite(g) and g < 0.05 for g, _ in per.values())
-    all_rev = all(np.isfinite(r) and r < 0.05 for _, r in per.values())
+    full = len(per) == 3                               # amendment S1 (S-R3 N9): all 3 instances must be present
+    all_gap = full and all(np.isfinite(g) and g < 0.05 for g, _ in per.values())
+    all_rev = full and all(np.isfinite(r) and r < 0.05 for _, r in per.values())
     if p_gap < 0.05 and all_gap and md > margin and ci[0] > 0:
         v = "confirmed"
     elif p_rev < 0.05 and all_rev and md < -margin and ci[1] < 0:
@@ -668,17 +743,18 @@ def _family_test(mice, ais, fam, meas, ruler, need=None, min_ai_m1=None):
 
 def stage_tests(dry=False):
     pre = CFG["prefix"]
-    mice = {r["id"]: r for r in mice_table(dry)[0]}   # with instance and playback group
+    mice = {r["id"]: r for r in fixed_mice_table(dry)[0]}   # with instance and playback group
     ais = [r for r in map(json.loads, (OUT / (pre + ("ais_dry.jsonl" if dry else "ais.jsonl"))).read_text()
                           .splitlines()) if "error" not in r and r["id"] in mice]
-    out = {"frozen": frozen(), "n_mice": len(mice), "H1": {}, "H2": {}, "H3": {}}
+    ok_ais = [r for r in ais if r.get("reached", True)]  # amendment S1 (S-R3 N7): reached instruments only
+    out = {"frozen": frozen(), "code": CODE_STATE, "n_mice": len(mice), "H1": {}, "H2": {}, "H3": {}}
     rulers = {meas: _ruler([_value(m, meas)[0] for m in mice.values()]) for meas in ("M1", "M2")}
     out["rulers"] = rulers
 
     # validity check of M2 (finding 9): locked time falls, M2 rises, and the internal time moves less than
     # the locked time does
     sh = [m for m in mice.values() if "shuffled" in m]
-    valid_m2 = True
+    valid_m2 = False                                   # amendment S1 (S-R3 N4): no shuffled data, no check
     if sh:
         fin = lambda x: x is not None and np.isfinite(x) and x > 0
         pairs = [(m, m["shuffled"]) for m in sh if fin(m.get("tl")) and fin(m["shuffled"].get("tl"))]
@@ -710,8 +786,8 @@ def stage_tests(dry=False):
         for meas in ("M1", "M2"):
             dd = []
             for mid in mice:
-                base = [r for r in ais if r["id"] == mid and r["family"] == "A1" and r["run"].endswith(f"gain{PLAY_GAIN}")]
-                alt = [r for r in ais if r["id"] == mid and r["family"] == "A1-play" and r["run"].endswith(var)]
+                base = [r for r in ok_ais if r["id"] == mid and r["family"] == "A1" and r["run"].endswith(f"gain{PLAY_GAIN}")]
+                alt = [r for r in ok_ais if r["id"] == mid and r["family"] == "A1-play" and r["run"].endswith(var)]
                 if base and alt and _value(base[0], meas)[0] is not None and _value(alt[0], meas)[0] is not None:
                     dd.append((_value(alt[0], meas)[0] - _value(base[0], meas)[0]) / rulers[meas])
             nuis[f"{var}|{meas}"] = {"n": len(dd), "median_shift_ruler": float(np.median(dd)) if dd else None}
@@ -753,15 +829,21 @@ def stage_tests(dry=False):
     out["claims"] = {"1_more_internal_state": c1, "2_slower_relative_to_input": c2}
     # S-R2 finding 11: the same family tests with each mouse's values after behaviour is regressed out
     mice_b = {mid: {**m, **m["behaviour_removed"]} for mid, m in mice.items() if "behaviour_removed" in m}
-    if len(mice_b) >= 6:
+    if len(mice_b) >= 6:                               # amendment S1 (S-R3 N6): the same rules and flags
         rb = {meas: _ruler([_value(m, meas)[0] for m in mice_b.values()]) for meas in ("M1", "M2")}
-        hb = {f: {meas: _family_test(mice_b, ais, f, meas, rb[meas], need).get("verdict") for meas in ("M1", "M2")}
+        hb = {f: {meas: {**_family_test(mice_b, ais, f, meas, rb[meas], need),
+                         "counted": out["H1"][f][meas].get("counted", True)} for meas in ("M1", "M2")}
               for f, need in RUNS_PER_FAMILY.items()}
         out["H1_behaviour_removed"] = hb
-        c1["holds_with_behaviour_removed"] = bool(
-            sum(hb[f]["M1"] == "confirmed" for f in fams) >= 5 and not any(hb[f]["M1"] == "refuted" for f in fams))
-        c2["holds_with_behaviour_removed"] = bool(
-            c2["holds"] and all(hb[f]["M2"] == "confirmed" for f in c2["confirmed"]))
+        vb = lambda f, m: hb[f][m].get("verdict")
+        cb = lambda f, m: hb[f][m].get("counted", True)
+        conf_b = [f for f in fams if vb(f, "M1") == "confirmed" and cb(f, "M1")]
+        ref_b = [f for f in fams if vb(f, "M1") == "refuted" and cb(f, "M1")]
+        c1["holds_with_behaviour_removed"] = bool(len(conf_b) >= 5 and not ref_b)
+        tb = [f for f in fams if vb(f, "M2") in ("confirmed", "refuted", "not decided") and cb(f, "M2")]
+        cfb = [f for f in tb if vb(f, "M2") == "confirmed"]
+        c2["holds_with_behaviour_removed"] = bool(valid_m2 and len(tb) >= 3 and len(cfb) * 3 >= len(tb) * 2
+                                                  and not any(vb(f, "M2") == "refuted" for f in tb))
 
     # H2 with negative controls (finding 7): each candidate tuned on the seeded half, tested on the other
     # S-R2 finding 8: hold out by generator cell, so tuning and test halves share no AI run
@@ -770,7 +852,7 @@ def stage_tests(dry=False):
     half = {mid for mid, m in mice.items() if f"{m['instance']}|{m['group']}" in train_cells}
 
     def tune_test(fam, key):
-        rows = [r for r in ais if r["family"] == fam]
+        rows = [r for r in ok_ais if r["family"] == fam]
         grid = sorted({r["run"].split(key)[1] for r in rows})
         if not grid:
             return None
@@ -808,11 +890,14 @@ def stage_tests(dry=False):
     diffs, cells = [], []
     for mid, m in mice.items():
         mv, _ = _value(m, "M1")
-        a14 = [r for r in ais if r["id"] == mid and r["family"] == "A6" and "pythia-14m" in r["run"]]
-        a1b = [r for r in ais if r["id"] == mid and r["family"] == "A6" and "pythia-1b" in r["run"]]
+        a14 = [r for r in ok_ais if r["id"] == mid and r["family"] == "A6" and "pythia-14m" in r["run"]]
+        a1b = [r for r in ok_ais if r["id"] == mid and r["family"] == "A6" and "pythia-1b" in r["run"]]
         if mv is None or not a14 or not a1b:
             continue
-        diffs.append((abs(mv - a14[0]["M1"]) - abs(mv - a1b[0]["M1"])) / rulers["M1"])
+        v14, v1b = _value(a14[0], "M1")[0], _value(a1b[0], "M1")[0]   # S-R3 N7: codes as in H1
+        if v14 is None or v1b is None:
+            continue
+        diffs.append((abs(mv - v14) - abs(mv - v1b)) / rulers["M1"])
         cells.append(a14[0]["run"].split("-i")[-1])
     if len(diffs) >= 6:
         ci = _cluster_ci(diffs, cells)
