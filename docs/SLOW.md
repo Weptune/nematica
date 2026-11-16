@@ -384,3 +384,14 @@ timescale and 1% on spikes per bin); (2) a correction that asked for bins finer 
 silently clamped; the hold is now raised instead (`stream.renormalise_hold`). Up to 5 corrections; the gain
 step toward the white-share target doubled. On one full cell (16 mice, A1 at gain 0.05) 15 of 16 recordings
 reached. The rows written before this change were set aside, unread for comparison, and are recomputed.
+
+### S6 (16 Nov 2026), after the mice stage, before any AI-mouse comparison
+
+**After the mouse measurements were seen** (descriptively; no AI had been compared with a mouse). For 9 of
+the 58 mice (7 from DANDI 000021, 2 from 000022) the map study's instrument function returns no timescale on
+the movie repeats (NaN bins per timescale; white share 0.97 to 1.0), so there is no instrument to record an
+AI at. These mice are left out of every AI comparison (49 remain) and reported. They differ from the rest:
+fewer units (median 246 against 293), lower M1 (median 0.49 against 0.59) and higher M2 (0.89 against
+0.69). The NaN values had also broken the playback groups (every mouse fell into one group with a NaN
+median), so the A1 rows written so far were set aside unread and are recomputed; A4 rows, which do not
+depend on groups, are kept.

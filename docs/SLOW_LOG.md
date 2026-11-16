@@ -1355,3 +1355,14 @@ this were moved to `/tmp/s7/aside2/`.
 A process note: to stop the two shards I used `pkill -f` with a pattern, which the standing instructions
 for this project forbid (kill by pid only). It stopped only the two intended processes; from here on
 processes are stopped by pid.
+
+### Nine mice without a movie timescale; amendment S6 (12:50 UTC)
+
+About 270 rows into the restarted AI stage, all A1 runs for playback group 3 failed ("cannot convert float
+NaN to integer"). Cause: 9 mice have NaN bins per timescale on the movie (white share 0.97 to 1.0, so the
+timescale estimator has no signal), the group quantiles were therefore NaN, every mouse but 9 landed in
+group 0 (median 43.1 bins), and groups 1 to 3 had NaN medians. The two shards were stopped by pid; the
+A1 rows (195) set aside to `/tmp/s7/aside3/`, A4 rows (86) kept; the fixed mouse table moved aside and
+rebuilt. Amendment S6 (`SLOW.md`): those 9 mice are left out of the AI comparisons. New playback groups over
+49 mice: medians 13.6, 32.1, 55.4 and 130.8 bins per timescale. The 9 left out have fewer units and lower M1
+(median 0.49 against 0.59) than the 49 kept, so the AI comparisons are on the better-recorded mice.

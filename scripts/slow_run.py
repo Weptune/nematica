@@ -231,6 +231,11 @@ def mice_table(dry=False):
         for i, r in enumerate(rows):
             r["instance"], r["group"], r["rtype"] = r.get("rank", i) % 3, 0, "calcium"
         return rows, {0: float(np.median([r["profile"]["bins_per_tau"] for r in npx]))}
+    # amendment S6: a mouse whose timescale on the movie cannot be measured (the map study's instrument
+    # function returns NaN bins per timescale, with a white share of 0.97 to 1.0) has no instrument to match
+    # an AI to; it is left out of every AI comparison and reported
+    rows = [r for r in rows if r["profile"].get("bins_per_tau") is not None
+            and np.isfinite(r["profile"]["bins_per_tau"])]
     bpt = np.array([r["profile"]["bins_per_tau"] for r in rows])
     edges = np.quantile(bpt, np.linspace(0, 1, N_GROUPS + 1))
     for i, r in enumerate(rows):                       # instance from the fixed session order (finding 15)
