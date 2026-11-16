@@ -254,7 +254,13 @@ def _subsample(keep_idx, n, seed):
     return keep_idx
 
 
-def record_for_mouse(A, starts, length, r, rng_seed):
+def record_for_mouse_lite(A, starts, length, r, rng_seed):
+    """As record_for_mouse, without the half-clip M1 (operational, SLOW_LOG "Speed"): for the H2 controls and
+    the playback sensitivity, where the half-clip values are not reported."""
+    return record_for_mouse(A, starts, length, r, rng_seed, halves=False)
+
+
+def record_for_mouse(A, starts, length, r, rng_seed, halves=True):
     """One AI run at one mouse (amendment S4: streamed, `nematica.slow.stream.record_stream`): the mouse's
     number of repeats; silent units excluded; the spike model started from knobs set by the timescales and
     corrected on the recorded repeats until the instrument numbers are within tolerance of the mouse's; the
@@ -266,7 +272,7 @@ def record_for_mouse(A, starts, length, r, rng_seed):
     if sil.any():                                      # memory: copy only when something is removed
         A = A[:, ~sil]
     out = ST.record_stream(A, st, length, r["profile"], nb_mouse=int(r.get("bins", 1501)), R_mouse=R,
-                           n_units_mouse=int(r.get("units", A.shape[1])), seed=rng_seed)
+                           n_units_mouse=int(r.get("units", A.shape[1])), seed=rng_seed, halves=halves)
     if "error" in out:
         raise RuntimeError(out["error"])
     Yn = np.stack([np.asarray(A[s:s + length, :100]) for s in st])     # extras on 100 units (memory)
@@ -371,7 +377,7 @@ def sensitivity_families(rows, med):
                 continue
             R = max(m["repeats"] for m in ms)
             for mult in (0.5, 2.0):
-                yield ("A1-play", f"i{inst}-g{g}-x{mult}", ms, record_for_mouse,
+                yield ("A1-play", f"i{inst}-g{g}-x{mult}", ms, record_for_mouse_lite,
                        lambda R=R, mult=mult, inst=inst, g=g: a1_run(feat, R, inst, med[g], gain=PLAY_GAIN, mult=mult))
 
             def driven_rule(R=R, inst=inst, g=g):
@@ -379,17 +385,17 @@ def sensitivity_families(rows, med):
                 A, _, _ = I.driven_random_rnn(feat, R=2, n=480, gain=PLAY_GAIN,
                                               spf=I.steps_per_frame(a1_tau(inst), med[g]), seed=inst)
                 return a1_run(feat, R, inst, med[g], gain=PLAY_GAIN, tau=float(MM.tau_med(A)))
-            yield ("A1-play", f"i{inst}-g{g}-driven", ms, record_for_mouse, driven_rule)
+            yield ("A1-play", f"i{inst}-g{g}-driven", ms, record_for_mouse_lite, driven_rule)
             for share in SLOW_SHARES:
                 for frames in FAST_FRAMES:
                     def fast(R=R, inst=inst, g=g, share=share, frames=frames):
                         spf_ = I.steps_per_frame(a1_tau(inst), med[g])
                         A, st = _a1_base(inst, g, R, spf_)
                         return I.add_slow_drive(A, share, tau_steps=frames * spf_ / keep_for(spf_), seed=inst), st
-                    yield ("A1-fast", f"i{inst}-g{g}-share{share}-tau{frames}f", ms, record_for_mouse, fast)
+                    yield ("A1-fast", f"i{inst}-g{g}-share{share}-tau{frames}f", ms, record_for_mouse_lite, fast)
             for gain in NOISE_GAINS:
                 for noise in NOISES:
-                    yield ("A1-noise", f"i{inst}-g{g}-share{noise}-tau{gain}g", ms, record_for_mouse,
+                    yield ("A1-noise", f"i{inst}-g{g}-share{noise}-tau{gain}g", ms, record_for_mouse_lite,
                            lambda R=R, inst=inst, g=g, noise=noise, gain=gain: a1_run(feat, R, inst, med[g],
                                                                                      gain=gain, noise=noise))
 

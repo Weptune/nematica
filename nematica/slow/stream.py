@@ -110,12 +110,13 @@ class Recorder:
                 tot[:, pos] += y.astype(np.float32)
         return {"first17": first17, "total": total, "sd": np.sqrt(ss / (self.R * self.n)), "tot": tot}
 
-    def pass2(self, positions, sd, tot, max_lag):
+    def pass2(self, positions, sd, tot, max_lag, halves=True):
         """FFT sums for the analysed units: whole clip and each half; and the adaptation-trend sums."""
         n, R = self.n, self.R
         h = n // 2
-        spans = {"all": (0, n), "first": (0, h), "second": (h, n)}
+        spans = {"all": (0, n), "first": (0, h), "second": (h, n)} if halves else {"all": (0, n)}
         L = {"all": max_lag, "first": max(min(h // 4, 4000), 10), "second": max(min((n - h) // 4, 4000), 10)}
+        L = {key: L[key] for key in spans}
         nfft = {key: 1 << int(np.ceil(np.log2(2 * (b - a)))) for key, (a, b) in spans.items()}
         acc = {key: {"same": np.zeros(L[key] + 1), "all": np.zeros(L[key] + 1), "units": 0} for key in spans}
         trend = np.zeros((R, 5))                      # sum y, sum y^2, sum o, sum o^2, sum y o
@@ -161,18 +162,18 @@ class Recorder:
         return res, sim
 
 
-def measure_stream(rec, positions, tot, k0=2):
-    """The primary measures, the halves and the adaptation trend from a Recorder."""
+def measure_stream(rec, positions, tot, k0=2, halves=True):
+    """The primary measures, the halves (unless halves=False) and the adaptation trend from a Recorder."""
     from scipy.stats import spearmanr
     L = int(max(min(rec.n // 4, 4000), k0 + 8))
-    res, sim = rec.pass2(positions, None, tot, L)
+    res, sim = rec.pass2(positions, None, tot, L, halves=halves)
     out = {}
     for key, (same, cross, Lk) in res.items():
         out[key] = M.measures_from_autocov(same, cross, k0, Lk)
     prim = {x: out["all"][x] for x in ("M1", "M2", "ti", "tl", "int_ceiling", "lock_ceiling", "no_shared", "no_locked")}
     trend = float(spearmanr(np.arange(rec.R), sim)[0]) if rec.R >= 4 and np.isfinite(sim).all() else None
-    return {**prim, "max_lag": L, "M1_first_half": out["first"]["M1"], "M1_second_half": out["second"]["M1"],
-            "adapt_trend": trend}
+    return {**prim, "max_lag": L, "M1_first_half": out["first"]["M1"] if halves else None,
+            "M1_second_half": out["second"]["M1"] if halves else None, "adapt_trend": trend}
 
 
 def check_equivalence(seed=0):
@@ -210,7 +211,8 @@ def renormalise_hold(k):
     return k
 
 
-def record_stream(A, starts, length, prof, nb_mouse, R_mouse, n_units_mouse, seed, rounds=5, k_start=None):
+def record_stream(A, starts, length, prof, nb_mouse, R_mouse, n_units_mouse, seed, rounds=5, k_start=None,
+                  halves=True):
     """Amendment S4: the AI recording for one mouse, streamed. Starting knobs: `record.analytic_knobs` (or
     `k_start`); then up to `rounds` corrections judged on the instrument numbers of a fixed subset of units
     and repeats (as `record.record_checked`, best round kept); then the full recording in two passes; the
@@ -268,7 +270,7 @@ def record_stream(A, starts, length, prof, nb_mouse, R_mouse, n_units_mouse, see
         return {"error": "fewer than 2 units pass inclusion", "knobs": _plain(k), "reached": False}
     got = numbers(rec, inc)
     reached = Rc.within_tolerance(got, prof) and len(inc) >= n_units_mouse
-    meas = measure_stream(rec, inc, p1["tot"])
+    meas = measure_stream(rec, inc, p1["tot"], halves=halves)
     return {**meas, "recorded_bins": int(rec.n), "repeats_used": int(rec.R), "units_used": int(len(inc)),
             "bin_steps": float(k["bin_steps"] / k.get("hold", 1)), "knobs": _plain(k),
             "numbers_on_repeats": {x: got.get(x) for x in prof}, "reached": bool(reached)}

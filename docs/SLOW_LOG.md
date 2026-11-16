@@ -1383,3 +1383,12 @@ Pythia-1B beside the other shard. Downloads this study had left in the model cac
 fetched; Pythia-160m seed 1 and Mamba-130m from the probes) were removed with `drop_model_cache`. The
 language-model generations will be rerun alone, one process, after the A1 sensitivity families finish;
 the failed generations left no rows, so a rerun picks them up.
+
+### Speed (21:12 UTC)
+
+At 1,689 rows, about 890 remain (230 of them language-model recordings). The slowest-playback group's
+recordings are 30,000 to 63,000 bins per clip x 60 repeats, several minutes each, and the machine restarted
+twice (each time the stage resumed from its saved rows). Operational change: the half-clip M1 (reported for
+every system so far) is no longer computed for the H2 control families and the playback sensitivity
+(`record_for_mouse_lite`), which are not reported by clip half; this roughly halves their FFT work. The
+streaming check still passes (differences 4e-16 to 3e-15). Shards restarted by pid.
