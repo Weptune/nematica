@@ -1289,3 +1289,14 @@ Asked to decide, with the instruction to be ambitious, so all seven families sta
 study's spontaneous-activity cache `data/cache/allen/` (3.5 GB, 116 files, third-party Allen data cached
 locally by the map study; study 2 does not read it) was deleted. It is re-downloadable with
 `nematica.map.data.allen_vcn` if the map study ever needs to be rerun. Free disk afterwards: about 4.5 GB.
+
+### The AI stage started, crashed for memory, amendment S2 (10:41 UTC)
+
+The AI stage started at about 10:20 UTC (mouse table fixed in `docs/figures/slow_runs/mice_table.json`).
+After 5 recordings of the first A1 cell it was killed at 6.2 GB. Cause: with the mice's long timescales on
+the movie, the matched instrument holds each AI step many times, and the spike model built the held array
+(rows x hold x units). Profiling one recording (23 s) also showed most time in matching. Fix, amendment S2
+(operational; `SLOW.md`): the hold applied analytically (checked equal to the held construction to 5e-7),
+rate multipliers drawn once for all units, memory-sized unit blocks, and sharding. The 5 earlier rows were
+deleted (my own output). Throughput before the crash was about 2.4 minutes per recording, so the full stage
+is several days; sharding over the 2 CPUs halves that if memory allows.

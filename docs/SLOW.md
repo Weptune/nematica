@@ -344,3 +344,14 @@ caches only). Cause: review S-R3 of the frozen version (`SLOW_LOG.md`, "Review S
   commit and stored in tests.json. A mouse with fewer than 10 valid repeats is excluded. The slow drive is
   built in place (memory).
 - Compute: about 3,000 AI recordings, so the AI stage takes days, not 20 hours (F4 was an underestimate).
+
+### S2 (16 Nov 2026), operational, before any AI result was analysed
+
+Labelled **after the mice stage, before any AI-mouse comparison**. The first AI run was killed for memory
+at 6.2 GB: the mice's timescales on the movie are long (median 43 bins per timescale), so the instrument
+holds AI activity many times per native step, and the held array no longer fit. Changes, none of which
+changes what is computed: (1) the hold is applied analytically in `record.spikes_aligned` (checked equal to
+the held construction to 5e-7 at holds 1, 4 and 7); (2) rate multipliers are drawn once for all units, as a
+single call of the map study's function would (statistically the same as the earlier blocks of 100); (3)
+units are processed in blocks sized by memory; (4) the AI stage can run as shards, each writing its own file,
+read back together. The 5 AI rows written before the crash were deleted and are recomputed.

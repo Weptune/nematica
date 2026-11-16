@@ -56,44 +56,52 @@ def record_repeats(A, starts, length, prof, rtype="spikes", seed=0, group=None, 
     return cut_repeats(Y, starts, length, per), k
 
 
-def spikes_aligned(A, starts, length, k, rng):
+def spikes_aligned(A, starts, length, k, rng, block_bytes=4e8):
     """The map study's spike model (`recording.spikes`, exponential nonlinearity), applied to the whole run at
     once, with bins laid out from each repeat's own start (review S-R1 finding 14) WITHOUT re-standardising
-    per repeat (review S-R2 finding 1: per-repeat recording had erased between-repeat gain changes). Each
-    unit is standardised and rate-normalised once over the whole run, exactly as `recording.spikes` does for
-    a continuous recording; only the bin edges differ. Units are processed UNIT_BLOCK at a time with one
-    generator. Returns (R, n_bins, units)."""
+    per repeat (review S-R2 finding 1). Each unit is standardised and rate-normalised once over the whole run,
+    exactly as `recording.spikes` does for a continuous recording; only the bin edges differ.
+    Memory (amendment S2, operational): the hold is applied analytically. Holding repeats each native value
+    `hold` times, so the cumulative rate over held steps at held position x equals hold x (the native
+    cumulative rate, linearly interpolated at x / hold); bins are integrated from that without building the
+    held array. Rate multipliers are drawn once for all non-constant units (`recording.rate_multipliers`, the
+    same seeded set as a single call) and units are processed in blocks sized to `block_bytes`.
+    Returns (R, n_bins, units)."""
     hold = int(k.get("hold", 1))
     b = max(float(k["bin_steps"]), 1.0)
-    L = length * hold
-    n = int(np.floor(L / b + 1e-9))
+    n = int(np.floor(length * hold / b + 1e-9))
     assert n > 0, "the clip is shorter than one recorded bin"      # S-R2 finding 16
-    edges0 = np.arange(n + 1) * b
+    edges0 = np.arange(n + 1) * b                                  # in held steps, from a repeat's start
+    A = np.asarray(A)
+    sd = A.std(0)
+    cols = np.flatnonzero(sd > 1e-9)                               # `recording._std` drops constant units
+    mult = recording.rate_multipliers(len(cols), k.get("rate_log_sd", 0.0))
+    T = len(A)
+    reps_ok = [s_ for s_ in starts if s_ * hold + edges0[-1] <= T * hold]
+    assert reps_ok, "no repeat fits in the recording"
+    per = max(1, int(block_bytes / (8 * 3 * (T + 1))))
     out = []
-    for a in range(0, A.shape[1], UNIT_BLOCK):
-        H = recording.upsample(A[:, a:a + UNIT_BLOCK], hold)
-        Z = recording._std(H)
+    for a in range(0, len(cols), per):
+        c = cols[a:a + per]
+        Z = (np.asarray(A[:, c], float) - A[:, c].mean(0)) / sd[c]
         if recording.SPIKE_NONLINEARITY == "exp":
             Rr = np.exp(np.minimum(k["gain"] * Z, 50.0))
         else:
             Rr = recording.softplus(k["gain"] * Z)
-        Rr = Rr / (Rr.mean(0) + 1e-12) * k["mean_count"] * recording.rate_multipliers(Rr.shape[1],
-                                                                                        k.get("rate_log_sd", 0.0))
-        C = np.vstack([np.zeros((1, Rr.shape[1])), np.cumsum(Rr, 0)])
+        del Z
+        Rr *= (k["mean_count"] * mult[a:a + per] / (Rr.mean(0) + 1e-12))[None]
+        C = np.vstack([np.zeros((1, Rr.shape[1])), np.cumsum(Rr, 0)])   # native cumulative rate
+        del Rr
         reps = []
-        for s_ in starts:
-            e = s_ * hold + edges0
-            if e[-1] > len(Rr):
-                break
-            i0 = np.minimum(e.astype(int), len(Rr) - 1)
-            w = (e - i0)[:, None]
-            lam = np.diff(C[i0] * (1 - w) + C[i0 + 1] * w, axis=0)
+        for s_ in reps_ok:
+            x = (s_ * hold + edges0) / hold                         # native position of each edge
+            i0 = np.minimum(x.astype(int), T - 1)
+            w = (x - i0)[:, None]
+            cum = hold * (C[i0] * (1 - w) + C[i0 + 1] * w)
+            lam = np.diff(cum, axis=0)
             reps.append(rng.poisson(np.clip(lam, 0, None)).astype(np.float32))
-        assert reps, "no repeat fits in the recording"
         out.append(np.stack(reps))
-    m = min(len(o) for o in out)
-    assert m == len(starts) or m > 0
-    return np.concatenate([o[:m] for o in out], axis=2)
+    return np.concatenate(out, axis=2)
 
 
 TOL = {"bins_per_tau": 0.15, "count_per_bin": 0.15, "rate_log_sd": 0.20}   # relative; noise: 0.05 absolute
