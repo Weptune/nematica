@@ -372,3 +372,15 @@ aside unread for comparison; they are recomputed). Cause: some registered record
   half-clip M1 values equal `measures.lag_measures` on the materialised counts to 3e-15. The instrument numbers
   used for corrections and for "reached" come from 60 analysed units and at most 20 repeats (the spike
   minimum scaled accordingly). The superseded lag-0 and lag-1 measures are no longer reported for AIs.
+
+### S5 (16 Nov 2026), before any AI result was compared with a mouse
+
+The first streamed rows reached the instrument tolerance in only about 30% of recordings, which would have
+made A1 (8 gains, all needed per mouse) untestable. Two causes, fixed: (1) the instrument numbers were taken
+from 60 units, which makes the median spikes per bin too noisy for a 15% tolerance; they now come from all
+units (corrections) and all analysed units (the final check), with as many repeats as fit in about 400 MB,
+2 to 20 (with all units and repeats, five spike draws of one recording agreed within 3% on bins per
+timescale and 1% on spikes per bin); (2) a correction that asked for bins finer than one held step was
+silently clamped; the hold is now raised instead (`stream.renormalise_hold`). Up to 5 corrections; the gain
+step toward the white-share target doubled. On one full cell (16 mice, A1 at gain 0.05) 15 of 16 recordings
+reached. The rows written before this change were set aside, unread for comparison, and are recomputed.

@@ -1341,3 +1341,17 @@ Plan (to be registered as an amendment before any AI result is compared with a m
 - Every AI recording now uses this path (`record_for_mouse`), so all AI rows come from one method. The 17
   earlier rows are kept in `/tmp/s7/old_ais_shard*.jsonl`, outside the results, and recomputed.
 - `SLOW.md`, amendments S3 and S4. The AI stage restarts as two shards.
+
+### Instrument numbers from all units; amendment S5 (11:48 UTC)
+
+After restarting with the streaming recorder, only 20 of 69 rows reached the instrument (counted properly:
+the knobs dictionary also holds a "reached" key, which a first count by text search mistook for the row's).
+Diagnosis and fixes (`SLOW.md`, S5): instrument numbers from all units instead of 60; finer-bin corrections
+no longer clamped (the trace for sub-742714472 showed the bin stuck at one held step while the corrections
+asked for 0.71, 0.56, 0.44 of one); 5 rounds and a stronger gain step. Result on one cell: 15 of 16 reached,
+about 28 s per recording, so about 12 hours for the whole stage on two shards. The 69 rows written before
+this were moved to `/tmp/s7/aside2/`.
+
+A process note: to stop the two shards I used `pkill -f` with a pattern, which the standing instructions
+for this project forbid (kill by pid only). It stopped only the two intended processes; from here on
+processes are stopped by pid.

@@ -197,7 +197,20 @@ def check_equivalence(seed=0):
     return diffs, direct, st
 
 
-def record_stream(A, starts, length, prof, nb_mouse, R_mouse, n_units_mouse, seed, rounds=3, k_start=None):
+def renormalise_hold(k):
+    """Keep at least one held step per bin when a correction makes the bin finer than a held step: the hold is
+    raised and the mean count per held step lowered so that the expected spikes per bin are unchanged
+    (Recorder clamps the bin at one held step, which had made finer-bin corrections ineffective)."""
+    native_bin = k["bin_steps"] / k["hold"]
+    hold = max(1, int(np.ceil(1.0 / native_bin))) if native_bin < 1 else 1
+    if hold != k["hold"]:
+        new_bin = native_bin * hold
+        k["mean_count"] *= k["bin_steps"] / new_bin
+        k["hold"], k["bin_steps"] = hold, new_bin
+    return k
+
+
+def record_stream(A, starts, length, prof, nb_mouse, R_mouse, n_units_mouse, seed, rounds=5, k_start=None):
     """Amendment S4: the AI recording for one mouse, streamed. Starting knobs: `record.analytic_knobs` (or
     `k_start`); then up to `rounds` corrections judged on the instrument numbers of a fixed subset of units
     and repeats (as `record.record_checked`, best round kept); then the full recording in two passes; the
@@ -209,24 +222,36 @@ def record_stream(A, starts, length, prof, nb_mouse, R_mouse, n_units_mouse, see
     pick = np.random.default_rng(seed + 1)
 
     def numbers(rec, positions):
-        reps = list(range(min(NUMBERS_REPEATS, rec.R)))
+        # all the given units (a 60-unit sample made the median spikes per bin too noisy for a 15% tolerance:
+        # SLOW_LOG, "Instrument numbers from all units"); as many repeats as fit in about 400 MB, 2 to 20
+        fit = int(4e8 / (8 * rec.n * max(len(positions), 1)))
+        reps = list(range(max(2, min(NUMBERS_REPEATS, rec.R, fit))))
         Y = rec.counts(positions, reps)
         msp = Rc.scaled_min_spikes(rec.n, nb_mouse) * len(reps) / max(R_mouse, 1)
         return Rc.recorded_numbers(Y, min_spikes=msp)
 
     rec = Recorder(A, starts, length, k, seed)
-    probe = np.sort(pick.choice(len(rec.cols), min(NUMBERS_UNITS, len(rec.cols)), replace=False))
+    probe = np.arange(len(rec.cols))
     got = numbers(rec, probe)
     best = (Rc._err(got, prof), dict(k), got)
     for _ in range(rounds):
-        if best[0] <= 1.0 or not np.isfinite(Rc._err(got, prof)):
+        if best[0] <= 1.0:
             break
+        if not np.isfinite(got.get("bins_per_tau", np.nan)) or not np.isfinite(got.get("count_per_bin", np.nan)):
+            k["bin_steps"] *= 0.5                      # no measurable timescale yet: finer bins, then retry
+            k["mean_count"] *= 2.0
+            k["corrected"] = k.get("corrected", 0) + 1
+            k = renormalise_hold(k)
+            rec = Recorder(A, starts, length, k, seed)
+            got = numbers(rec, probe)
+            continue
         fb = got["bins_per_tau"] / prof["bins_per_tau"]
         k["bin_steps"] *= fb
         k["mean_count"] *= prof["count_per_bin"] / got["count_per_bin"] / fb
         k["rate_log_sd"] = k.get("rate_log_sd", 0.0) * prof["rate_log_sd"] / max(got["rate_log_sd"], 1e-6)
-        k["gain"] *= float(np.exp(2.0 * (got["noise"] - prof["noise"])))
+        k["gain"] *= float(np.exp(4.0 * (got["noise"] - prof["noise"])))
         k["corrected"] = k.get("corrected", 0) + 1
+        k = renormalise_hold(k)
         rec = Recorder(A, starts, length, k, seed)
         got = numbers(rec, probe)
         if Rc._err(got, prof) < best[0]:
@@ -241,8 +266,7 @@ def record_stream(A, starts, length, prof, nb_mouse, R_mouse, n_units_mouse, see
         inc = np.sort(np.random.default_rng(seed).choice(inc, n_units_mouse, replace=False))
     if len(inc) < 2:
         return {"error": "fewer than 2 units pass inclusion", "knobs": _plain(k), "reached": False}
-    final_probe = np.sort(np.random.default_rng(seed + 2).choice(inc, min(NUMBERS_UNITS, len(inc)), replace=False))
-    got = numbers(rec, final_probe)
+    got = numbers(rec, inc)
     reached = Rc.within_tolerance(got, prof) and len(inc) >= n_units_mouse
     meas = measure_stream(rec, inc, p1["tot"])
     return {**meas, "recorded_bins": int(rec.n), "repeats_used": int(rec.R), "units_used": int(len(inc)),
