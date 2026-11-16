@@ -1373,3 +1373,13 @@ Progress: 672 rows (A4 297 rows, all reached; A1 329 rows, 21 unreached). The un
 spread over gains (2.0: 6, 0.5: 4, 4.0: 3, 1.0: 3, others 1 to 2) and mice (up to 3 per mouse), and most are
 near misses. With the all-gains rule this would make A1 untestable, so amendment S7 adds one retry per
 unreached recording (10 corrections, new seed), run after the AI stage. Written before any comparison.
+
+### Language models: disk and memory (16:54 UTC)
+
+At 1,094 rows: the A1 and A4 grids, A2, A3 and A5 are done, and the A1-slow grid is running. Of the 18
+language-model generations only 4 ran (Pythia-14m seeds 1 and 3, 160m seed 3, 410m seed 3); the others
+stopped at the disk guard ("only 2.7 GB free"), and shard 1 was killed for memory (5.4 GB) while loading
+Pythia-1B beside the other shard. Downloads this study had left in the model cache (Pythia-1B, partly
+fetched; Pythia-160m seed 1 and Mamba-130m from the probes) were removed with `drop_model_cache`. The
+language-model generations will be rerun alone, one process, after the A1 sensitivity families finish;
+the failed generations left no rows, so a rerun picks them up.
