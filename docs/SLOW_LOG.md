@@ -1366,3 +1366,10 @@ A1 rows (195) set aside to `/tmp/s7/aside3/`, A4 rows (86) kept; the fixed mouse
 rebuilt. Amendment S6 (`SLOW.md`): those 9 mice are left out of the AI comparisons. New playback groups over
 49 mice: medians 13.6, 32.1, 55.4 and 130.8 bins per timescale. The 9 left out have fewer units and lower M1
 (median 0.49 against 0.59) than the 49 kept, so the AI comparisons are on the better-recorded mice.
+
+### A retry for unreached recordings; amendment S7 (14:49 UTC)
+
+Progress: 672 rows (A4 297 rows, all reached; A1 329 rows, 21 unreached). The unreached A1 recordings are
+spread over gains (2.0: 6, 0.5: 4, 4.0: 3, 1.0: 3, others 1 to 2) and mice (up to 3 per mouse), and most are
+near misses. With the all-gains rule this would make A1 untestable, so amendment S7 adds one retry per
+unreached recording (10 corrections, new seed), run after the AI stage. Written before any comparison.

@@ -395,3 +395,12 @@ fewer units (median 246 against 293), lower M1 (median 0.49 against 0.59) and hi
 0.69). The NaN values had also broken the playback groups (every mouse fell into one group with a NaN
 median), so the A1 rows written so far were set aside unread and are recomputed; A4 rows, which do not
 depend on groups, are kept.
+
+### S7 (16 Nov 2026), before any AI-mouse comparison
+
+About 6% of A1 recordings miss the instrument tolerance, mostly narrowly (bins per timescale 15 to 18% off,
+or white share 0.05 to 0.06 off). Because a pair counts only if every gain was reached at that mouse, 6% per
+recording would leave about 40% of mice without an A1 pair, and A1 "not testable" by the 25% rule. Change:
+after the AI stage, every unreached recording is recorded once more (`slow_run.py retry`), starting from its
+own best knobs, with up to 10 corrections and a new spike seed; the retry row replaces the original in the
+tests whatever its outcome (both kept on disk). The tolerances and the all-gains rule are unchanged.

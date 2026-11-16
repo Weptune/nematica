@@ -538,6 +538,59 @@ def fixed_mice_table(dry=False):
     return rows, med
 
 
+RETRY_ROUNDS = 10
+
+
+def stage_retry(only=None):
+    """Amendment S7: every AI recording that missed the instrument tolerance is recorded once more, starting
+    from its own best knobs, with up to RETRY_ROUNDS corrections and a new spike seed. The retry row replaces
+    the original in the tests (whatever its outcome); both are kept on disk."""
+    import os
+    from nematica.slow import stream as ST
+    rows, med = fixed_mice_table()
+    mice = {r["id"]: r for r in rows}
+    ais = [r for f in sorted(OUT.glob("ais*.jsonl")) if "_dry" not in f.name and "retry" not in f.name
+           for r in map(json.loads, f.read_text().splitlines()) if "error" not in r and r["id"] in mice]
+    have = done("ais_retry.jsonl", ("family", "run", "id"))
+    todo = {}
+    for r in ais:
+        if not r.get("reached") and (r["family"], r["run"], r["id"]) not in have:
+            todo.setdefault((r["family"], r["run"]), []).append(r)
+    shard = os.environ.get("SLOW_SHARD")
+    si, sn = (int(x) for x in shard.split("/")) if shard else (0, 1)
+    fams = itertools.chain(families(rows, med), slow_families(rows, med), sensitivity_families(rows, med))
+    for fam, run, ms, rec, gen in fams:
+        if (fam, run) not in todo or (only and fam not in only):
+            continue
+        if shard and zlib.crc32(f"{fam}|{run}".encode()) % sn != si:
+            continue
+        res = gen()
+        A, starts = res[0], res[1]
+        length = res[2] if len(res) > 2 else starts[1] - starts[0]
+        del res
+        for old in todo[(fam, run)]:
+            m = mice[old["id"]]
+            try:
+                Ax = A[:, ~M.silent_units(A)] if M.silent_units(A).any() else A
+                k0 = {x: v for x, v in old["knobs"].items() if x in ("hold", "bin_steps", "mean_count", "gain",
+                                                                      "rate_log_sd")}
+                out = ST.record_stream(Ax, starts[:m["repeats"]], length, m["profile"], nb_mouse=int(m.get("bins", 1501)),
+                                       R_mouse=m["repeats"], n_units_mouse=int(m["units"]),
+                                       seed=zlib.crc32(("retry" + run).encode()) % 2**31, rounds=RETRY_ROUNDS,
+                                       k_start=k0)
+                if "error" in out:
+                    raise RuntimeError(out["error"])
+                Yn = np.stack([np.asarray(Ax[s:s + length, :100]) for s in starts[:m["repeats"]]])
+                row = {"family": fam, "run": run, "id": m["id"], "instance": m["instance"],
+                       "group": m["group"] if fam in PLAYBACK_FAMS else None, "code": CODE_STATE, "retry": True,
+                       **out, "extras": M.unit_internal_shares(Yn), "method": "stream"}
+            except Exception as e:  # noqa: BLE001
+                row = {"family": fam, "run": run, "id": m["id"], "retry": True, "error": f"{type(e).__name__}: {e}"}
+            append("ais_retry.jsonl", row)
+            print("retry", fam, run, m["id"], row.get("reached"), row.get("error"), flush=True)
+        del A
+
+
 def stage_ais(only=None, dry=False):
     rows, med = fixed_mice_table(dry)
     # sharding (operational, results unchanged): SLOW_SHARD="i/n" runs only generator runs whose label
@@ -743,8 +796,14 @@ def _family_test(mice, ais, fam, meas, ruler, need=None, min_ai_m1=None):
 def stage_tests(dry=False):
     pre = CFG["prefix"]
     mice = {r["id"]: r for r in fixed_mice_table(dry)[0]}   # with instance and playback group
-    ais = [r for f in sorted(OUT.glob(pre + ("ais_dry" if dry else "ais") + "*.jsonl")) if dry or "_dry" not in f.name
+    ais = [r for f in sorted(OUT.glob(pre + ("ais_dry" if dry else "ais") + "*.jsonl"))
+           if (dry or "_dry" not in f.name) and "retry" not in f.name
            for r in map(json.loads, f.read_text().splitlines()) if "error" not in r and r["id"] in mice]
+    rf = OUT / (pre + "ais_retry.jsonl")                # amendment S7: a retry replaces its original
+    if rf.exists() and not dry:
+        rt = {(r["family"], r["run"], r["id"]): r for r in map(json.loads, rf.read_text().splitlines())}
+        ais = [rt.get((r["family"], r["run"], r["id"]), r) for r in ais]
+        ais = [r for r in ais if "error" not in r]
     ok_ais = [r for r in ais if r.get("reached", True)]  # amendment S1 (S-R3 N7): reached instruments only
     out = {"frozen": frozen(), "code": CODE_STATE, "n_mice": len(mice), "H1": {}, "H2": {}, "H3": {}}
     rulers = {meas: _ruler([_value(m, meas)[0] for m in mice.values()]) for meas in ("M1", "M2")}
@@ -911,7 +970,7 @@ def stage_tests(dry=False):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("stage", choices=["mice", "ais", "tests"])
+    p.add_argument("stage", choices=["mice", "ais", "retry", "tests"])
     p.add_argument("--arm", choices=list(ARMS), default="npx")
     p.add_argument("--dry", action="store_true")
     p.add_argument("--only", nargs="*")
@@ -923,6 +982,8 @@ def main():
         stage_mice_2p() if a.arm == "2p" else stage_mice(dry=a.dry)
     elif a.stage == "ais":
         stage_ais(only=a.only, dry=a.dry)
+    elif a.stage == "retry":
+        stage_retry(only=a.only)
     else:
         stage_tests(dry=a.dry)
 
