@@ -250,39 +250,22 @@ def _subsample(keep_idx, n, seed):
 
 
 def record_for_mouse(A, starts, length, r, rng_seed):
-    """One AI run at one mouse: the mouse's number of repeats; silent units excluded; its spike instrument,
-    corrected on the recorded repeats until their instrument numbers are within tolerance of the mouse's
-    (S-R2 finding 5); the mouse's unit inclusion rule; then the mouse's number of units (finding 10)."""
+    """One AI run at one mouse (amendment S4: streamed, `nematica.slow.stream.record_stream`): the mouse's
+    number of repeats; silent units excluded; the spike model started from knobs set by the timescales and
+    corrected on the recorded repeats until the instrument numbers are within tolerance of the mouse's; the
+    mouse's inclusion rule scaled to the clip; then the mouse's number of units."""
+    from nematica.slow import stream as ST
     R = r["repeats"]
     st = starts[:R]
     sil = M.silent_units(A)
     if sil.any():                                      # memory: copy only when something is removed
         A = A[:, ~sil]
-    rtype = r.get("rtype", "spikes")
-    if rtype == "spikes":
-        Y, k, got, reached = Rc.record_checked(A, st, length, r["profile"], seed=rng_seed,
-                                               nb_mouse=int(r.get("bins", 1501)))
-    else:
-        Y, k = Rc.record_repeats(A, st, length, r["profile"], rtype=rtype, seed=rng_seed)
-        got = Rc.recorded_numbers(Y, rtype)
-        reached = bool(abs(got["noise"] - r["profile"]["noise"]) <= 0.05)
-    R_, nb, N = Y.shape
-    msp = Rc.scaled_min_spikes(nb, int(r.get("bins", 1501)))
-    inc = keep_units(Y.reshape(R_ * nb, N), nb, msp) if rtype == "spikes" else Y.reshape(R_ * nb, N).std(0) > 1e-9
-    idx = _subsample(np.flatnonzero(inc), int(r.get("units", N)), rng_seed)
-    Y = Y[:, :, idx]
-    if rtype == "spikes":                              # numbers on the analysed subset (S-R3 N3); reached is
-        got = Rc.recorded_numbers(Y, min_spikes=msp)   # judged on them, as the mouse's were on its units
-        reached = Rc.within_tolerance(got, r["profile"])
-    if len(idx) < int(r.get("units", 0)):             # amendment S1 (S-R3 N3): fewer units than the mouse
-        reached = False
+    out = ST.record_stream(A, st, length, r["profile"], nb_mouse=int(r.get("bins", 1501)), R_mouse=R,
+                           n_units_mouse=int(r.get("units", A.shape[1])), seed=rng_seed)
+    if "error" in out:
+        raise RuntimeError(out["error"])
     Yn = np.stack([np.asarray(A[s:s + length, :100]) for s in st])     # extras on 100 units (memory)
-    knobs = {a: (float(v) if isinstance(v, (int, float, np.floating, np.integer)) and not isinstance(v, bool) else v)
-             for a, v in k.items() if isinstance(v, (int, float, bool, np.floating, np.integer, dict))}
-    return {**measures(Y), "recorded_bins": int(nb), "repeats_used": int(R_), "units_used": int(len(idx)),
-            "bin_steps": float(Rc.recording.per_sample(k, rtype)), "knobs": knobs,
-            "numbers_on_repeats": {x: got.get(x) for x in r["profile"]}, "reached": bool(reached),
-            "extras": M.unit_internal_shares(Yn)}
+    return {**out, "extras": M.unit_internal_shares(Yn), "method": "stream"}
 
 
 def lif_for_mouse(A, starts, length, r, rng_seed):

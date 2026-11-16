@@ -355,3 +355,20 @@ the held construction to 5e-7 at holds 1, 4 and 7); (2) rate multipliers are dra
 single call of the map study's function would (statistically the same as the earlier blocks of 100); (3)
 units are processed in blocks sized by memory; (4) the AI stage can run as shards, each writing its own file,
 read back together. The 5 AI rows written before the crash were deleted and are recomputed.
+
+### S3 and S4 (16 Nov 2026), operational, before any AI result was compared with a mouse
+
+Labelled **after the mice stage, before any AI-mouse comparison** (17 AI rows had been written and were set
+aside unread for comparison; they are recomputed). Cause: some registered recordings do not fit in memory
+(see `SLOW_LOG.md`, "The AI stage is paused"). Changes:
+- **S3:** every AI recording starts from knobs set by the timescales (`record.analytic_knobs`: bin width =
+  the AI's native timescale / the mouse's bins per timescale, via an integer hold; mean count from the mouse's
+  spikes per bin; gain 1; the mouse's rate spread) instead of the map study's matcher, whose held array could
+  not be built. The registered check on the recorded repeats then corrects the knobs and decides "reached",
+  as before.
+- **S4:** AI recordings are streamed (`nematica/slow/stream.py`): recorded and measured repeat by repeat and
+  in blocks of 16 units, with a seeded random stream per block and repeat so that two passes see identical
+  spikes. The measures are the same quantities: on a test system the streamed M1, M2, both times and both
+  half-clip M1 values equal `measures.lag_measures` on the materialised counts to 3e-15. The instrument numbers
+  used for corrections and for "reached" come from 60 analysed units and at most 20 repeats (the spike
+  minimum scaled accordingly). The superseded lag-0 and lag-1 measures are no longer reported for AIs.

@@ -1323,3 +1323,21 @@ Plan (to be registered as an amendment before any AI result is compared with a m
    fits in memory.
 3. The 17 rows already written are kept aside (`ais_shard*.jsonl`) and recomputed with the final code, so that
    every AI row comes from one method.
+
+### Streaming recorder, amendments S3 and S4 (11:21 UTC)
+
+`nematica/slow/stream.py` written and checked:
+- **Equivalence:** on a synthetic system (8 repeats, 40 units, hold 3, a constant unit), the streamed
+  measures equal `lag_measures` on the same counts materialised in memory: M1 4e-16, M2 2e-15, internal and
+  locked times 2e-15 and 3e-15, half-clip M1 3e-16 and 1e-16, population sum identical.
+- **The three cases from the crash** (A1, gain 0.25 or 0.5):
+
+| mouse | repeats | bins per timescale | AI recorded bins | units | reached | time | peak memory |
+|---|---|---|---|---|---|---|---|
+| sub-716813540 | 20 | 13.6 | 937 | 257 of 257 | yes | 12 s | 0.26 GB |
+| sub-760938794 (needed 103 GB) | 60 | 186.9 | 14,055 | 369 of 369 | yes | 99 s | 0.88 GB |
+| sub-742714472 (needed 13 GB) | 20 | 95.9 | 7,496 | 353 of 353 | no (count 0.071 against 0.089) | 22 s | 0.88 GB |
+
+- Every AI recording now uses this path (`record_for_mouse`), so all AI rows come from one method. The 17
+  earlier rows are kept in `/tmp/s7/old_ais_shard*.jsonl`, outside the results, and recomputed.
+- `SLOW.md`, amendments S3 and S4. The AI stage restarts as two shards.

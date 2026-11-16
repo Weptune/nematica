@@ -64,6 +64,12 @@ def lag_measures(Y, k0=2, max_lag=None, center="repeat"):
     T = Y.shape[1]
     L = int(max_lag or max(min(T // 4, 4000), k0 + 8))
     same, cross = repeat_autocov(Y, L, center=center)
+    return measures_from_autocov(same, cross, k0, L)
+
+
+def measures_from_autocov(same, cross, k0, L):
+    """The lag-k0 measures from (C_same, C_cross) up to lag L (shared by `lag_measures` and the streaming
+    recorder, `nematica.slow.stream`)."""
     inter = same - cross
     s0, c0, i0 = float(same[k0]), float(cross[k0]), float(inter[k0])
     out = {"k0": k0, "max_lag": L, "no_shared": bool(not s0 > 0), "no_locked": bool(not c0 > 0)}
