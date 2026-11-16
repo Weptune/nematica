@@ -1282,3 +1282,10 @@ Descriptive only; no hypothesis is tested until the AI stage is done. Percentile
     playback rule, a movie-driven AI therefore sees about one movie frame per native timescale or faster,
     and its instrument bins are fine relative to its own dynamics. The registered playback sensitivity
     (x0.5, x2, driven-timescale rule) is the check on how much this matters.
+
+### Disk freed for the language models (10:27 UTC)
+
+Asked to decide, with the instruction to be ambitious, so all seven families stay testable: the map
+study's spontaneous-activity cache `data/cache/allen/` (3.5 GB, 116 files, third-party Allen data cached
+locally by the map study; study 2 does not read it) was deleted. It is re-downloadable with
+`nematica.map.data.allen_vcn` if the map study ever needs to be rerun. Free disk afterwards: about 4.5 GB.
