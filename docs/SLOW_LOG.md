@@ -1300,3 +1300,26 @@ the movie, the matched instrument holds each AI step many times, and the spike m
 rate multipliers drawn once for all units, memory-sized unit blocks, and sharding. The 5 earlier rows were
 deleted (my own output). Throughput before the crash was about 2.4 minutes per recording, so the full stage
 is several days; sharding over the 2 CPUs halves that if memory allows.
+
+### The AI stage is paused: recordings too large for some mice (11:12 UTC)
+
+Both shards were killed for memory (6.2 GB) within half an hour, and two recordings failed asking for 13 GB
+and 103 GB. 17 rows had been written (A1, instance 0, fastest playback group). Diagnosis:
+- The mice's timescales on the movie are long (median 43 bins, up to about 130). The registered playback rule
+  then plays the movie very fast for A1 (for the slowest mice about 0.35 native steps per frame: the whole
+  clip in about 315 steps). The flickering input makes A1's own driven timescale short, so matching its
+  timescale to a mouse's 130 bins needs bins far finer than a native step: a recorded clip of tens of
+  thousands of bins, 60 repeats, hundreds of units. Neither the map study's matcher (which builds the held
+  array) nor an analytic starting instrument (tried: `record.analytic_knobs`, kept in the code, `MAX_HOLD`)
+  fits such a recording in memory.
+- So the obstacle is the size of the recordings the registration asks for, not a bug in one step.
+
+Plan (to be registered as an amendment before any AI result is compared with a mouse):
+1. A **streaming recorder**: record and measure an AI repeat by repeat and unit block by unit block, with a
+   seeded random stream per block so two passes give identical spikes (pass 1: each unit's within-repeat SD;
+   pass 2: the FFT sums the measures need, accumulated across repeats). Instrument numbers from a fixed
+   subset of units that fits in memory. Same quantities as now; memory independent of clip length.
+2. Before restarting, a check that streaming and in-memory recordings give identical measures on a case that
+   fits in memory.
+3. The 17 rows already written are kept aside (`ais_shard*.jsonl`) and recomputed with the final code, so that
+   every AI row comes from one method.

@@ -155,6 +155,31 @@ def within_tolerance(got, prof):
     return bool(_err(got, prof) <= 1.0)
 
 
+MAX_HOLD = 0          # amendment S3: every AI recording starts from the analytic knobs
+
+
+def analytic_knobs(A, prof, max_hold=MAX_HOLD):
+    """Amendment S3 (operational). The map study's matcher builds the held activity (rows x hold x units); for
+    mice with long movie timescales and AIs with short ones the hold reaches hundreds and the array no longer
+    fits in memory (the AI stage was killed twice). When the estimated hold exceeds `max_hold`, the starting
+    knobs are set directly instead: bin width = the AI's native timescale / the mouse's bins per timescale
+    (fractional, via an integer hold and a bin of at least one held step), mean count from the mouse's spikes
+    per bin, gain 1, the mouse's rate spread. The registered check on the recorded repeats (`record_checked`)
+    then corrects them and decides "reached" exactly as for matched recordings. Returns None when the
+    matcher can be used."""
+    from ..map.measures import tau_med
+    t0 = tau_med(np.asarray(A[:20000, :recording.MATCH_MIN_UNITS], float))
+    if not np.isfinite(t0) or t0 <= 0:
+        t0 = 1.0
+    bin_native = t0 / prof["bins_per_tau"]
+    hold = int(np.ceil(1.0 / bin_native)) if bin_native < 1 else 1
+    if max_hold and hold <= max_hold:
+        return None
+    return {"hold": hold, "bin_steps": bin_native * hold, "mean_count": prof["count_per_bin"] / (bin_native * hold),
+            "gain": 1.0, "rate_log_sd": prof["rate_log_sd"], "analytic": True, "native_tau": float(t0),
+            "reached": False, "achieved": {}}
+
+
 def record_checked(A, starts, length, prof, seed=0, rounds=3, nb_mouse=1501):
     """Spike recording with the matched knobs corrected on the recorded repeats themselves (review S-R2
     finding 5; amendment S1 for review S-R3 B1): after each recording the instrument numbers are measured on
@@ -162,7 +187,12 @@ def record_checked(A, starts, length, prof, seed=0, rounds=3, nb_mouse=1501):
     timescale error, the mean count by the count error divided by the bin change (count per bin is mean count
     x bin width), the rate spread by its error, and the gain toward the white-share target. At most `rounds`
     corrections; the best round is kept. Returns (repeats, knobs, numbers on those repeats, reached)."""
-    Y, k = record_repeats(A, starts, length, prof, seed=seed)
+    k0 = analytic_knobs(A, prof)
+    ph = 1 if k0 is not None else None
+    if k0 is not None:                                 # amendment S3: the matcher would need too much memory
+        Y, k = record_repeats(A, starts, length, prof, seed=seed, k=k0, prehold=1)
+    else:
+        Y, k = record_repeats(A, starts, length, prof, seed=seed)
     ms = lambda Y_: scaled_min_spikes(Y_.shape[1], nb_mouse)
     got = recorded_numbers(Y, min_spikes=ms(Y))
     best = (_err(got, prof), Y, k, got)
@@ -176,7 +206,7 @@ def record_checked(A, starts, length, prof, seed=0, rounds=3, nb_mouse=1501):
         k["rate_log_sd"] = k.get("rate_log_sd", 0.0) * prof["rate_log_sd"] / max(got["rate_log_sd"], 1e-6)
         k["gain"] *= float(np.exp(2.0 * (got["noise"] - prof["noise"])))   # more gain, less white share
         k["corrected"] = k.get("corrected", 0) + 1
-        Y, k = record_repeats(A, starts, length, prof, seed=seed, k=k)
+        Y, k = record_repeats(A, starts, length, prof, seed=seed, k=k, prehold=ph)
         got = recorded_numbers(Y, min_spikes=ms(Y))
         if _err(got, prof) < best[0]:
             best = (_err(got, prof), Y, k, got)
