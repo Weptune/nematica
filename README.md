@@ -4686,7 +4686,12 @@ agree about push responses is unlike worms in that respect too.
   internal state in mouse visual cortex and artificial neural networks"), written as a Claude Doc:
   https://claude.ai/artifact/SfyEeCsF5JuT7tnAspUTSY (private until shared). It packages the map study's
   instrument lesson and per-mouse result, Study 2's preregistered null and Study 3's failed calibrations.
-  Not submitted; needs figures, related work, authors and the project owner's go-ahead.
+  Not submitted. On 17 Nov it gained a related-work section (including the Stanford inter-animal-transform
+  work its core overlaps) and two figures (`docs/figures/map/permouse.png`,
+  `docs/figures/slow_paper/fig2_m1_by_family.png`, from `scripts/plot_slow_paper.py`). Still open: authors,
+  an independent read against the project record, and the project owner's go-ahead.
+- Preprint draft 1 gained (17 Nov) a related-findings paragraph citing Sourmpis et al. (eLife 2026, perturbation
+  generalization in mouse cortex) and the NeuroAI Turing test (Feather et al. 2025), with both references added.
 - **Draft email to the atlas authors** (`docs/outreach/atlas_authors_email_DRAFT.md`): the recovery
   curve and a request about the light-free experiment. Not sent; needs the project owner's go-ahead.
 
