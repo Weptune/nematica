@@ -90,7 +90,7 @@ choose the headline claim (at most two), written to M1 and M2. Prefetch of the 1
 - One fix to the draft from the dry run: R0 is counted whether or not its recordings reach the instrument,
   since synthetic systems rarely do.
 
-### Feasibility F3, and the pre-freeze review started (15:38 to 15:58 UTC)
+### Feasibility F3, and the pre-freeze review started (15:38 to 15:40 UTC)
 
 - **Independent review B-R1** of the draft and pipeline started at 15:38 (an agent that wrote none of the
   code; read-only; no statistic of the Barcoding spikes).
