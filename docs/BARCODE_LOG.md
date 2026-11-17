@@ -175,7 +175,7 @@ Two lessons for the record:
 - **This is the second time an idea passed my own drafting and failed a novelty check at review.** The
   novelty search belongs before drafting claims, as the strategy note says.
 
-### Study 4 stopped (16:00 UTC)
+### Study 4 stopped (16:37 UTC)
 
 The user chose to stop Study 4 ("Stop it, rethink") over fixing it or switching to the preprint. Record:
 - feasibility passed; calibration v4 made M1 and M2 eligible and the drive exponent ineligible;
