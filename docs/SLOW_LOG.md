@@ -1433,3 +1433,20 @@ entries above. No result changes.
 
 Correction (04:00 UTC): the two entries above first carried guessed times (03:30 to 04:05 and 04:20); they
 now carry the times read from the clock and the commit log.
+
+### AI stage complete; S7 retry for the non-language families (04:44 to 06:04 UTC)
+
+The language models finished at about 04:40 UTC with the S8 path: A6 196 rows (Pythia-14m, 160m and 410m
+at seeds 1 to 3 and Pythia-1B, each over the 49 mice split by instance), A7 98 rows (Mamba-130m and 370m).
+Recordings that missed the instrument were frequent for the larger Pythia models: per run, 14m 0 to 2 of
+16 or 17, 160m 1 to 6, 410m 4 to 8, 1B 1 to 8; Mamba 0 to 3. In all: 2,548 AI rows (not counting the 20
+dry-run rows), 200 unreached. Correction to the 02:47 entry: "A4 410" counted the 18 dry-run A4 rows in
+`ais_dry.jsonl`; the real A4 count is 392 (8 gains x 49 mice). The dry file is excluded from the tests
+and the retry stage, as designed.
+
+The S7 retry ran as two shards for the non-language families (both shards append to one file,
+`ais_retry.jsonl`; each row is one write of about 1.3 KB in append mode, so lines cannot interleave, and
+all 145 rows parse). Reached on retry: A1 23 of 30, A1-slow 36 of 39, A1-fast 29 of 33, A1-noise 25 of 28,
+A1-play 7 of 9, A3 3 of 4, A5 1 of 2: 124 of 145. The language-model retries (55 recordings, each model
+downloaded again and dropped after use) started at 06:04 UTC, alone. No comparison with the mice has been
+computed yet.
