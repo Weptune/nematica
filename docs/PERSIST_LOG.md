@@ -112,7 +112,7 @@ partitioning variability (Goris et al. 2014; Rupasinghe, Charles and Pillow, eLi
   beside it), on the fastest instrument. The likely peak is the instrument numbers
   (`record.recorded_numbers`) on the 13,000-bin recording. It was restarted with nothing else running.
 
-### Bin cap; chaos probe; NM3 frames; pipeline written and dry-run (09:15 to 09:58 UTC)
+### Bin cap; chaos probe; NM3 frames; pipeline written and dry-run (09:13 to 09:23 UTC)
 
 - **Cause of the memory kills found and capped.** The run that killed the single calibration process
   (6.3 GB) was the gain-type system at the fastest instrument. Its timescale could not be measured, so

@@ -112,7 +112,7 @@ median NM3 instrument (Study 2 used 1,500). Three instances each; instance = mou
 The K controls see NM3 features (computed exactly as Study 2's NM1 features) at movie gain 0.25, and before
 every repeat an interlude of 30 to 90 frames of a different movie (NM1), so the state entering each repeat
 differs, as the language models' contexts do (`nematica/persist/inputs.driven_rnn`). Why g 3.0 and gain
-0.25 for K1: a probe on random features (`PERSIST_LOG.md`, 09:40) showed that input suppresses chaos in the
+0.25 for K1: a probe on random features (`PERSIST_LOG.md`, 09:13 to 09:23 entry) showed that input suppresses chaos in the
 noise-free network, as Rajan et al. predict. At g 1.5 and Study 2's balanced gain 0.86, the internal part
 was gone by the last quarter of the clip. At g 3.0 and gain 0.25 it persisted (early 0.91, late 0.78 of the
 total). The controls play the movie at Study 2's playback rule; a network with no undriven timescale (K2)

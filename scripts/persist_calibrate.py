@@ -72,7 +72,7 @@ def run():
         A, starts = PS.system(rng, kind, T, R=R, N=N, env_kind=env, **par)
         out = ST.record_stream(A, starts, T, prof, nb_mouse=BINS, R_mouse=R,
                                n_units_mouse=min(ins[inst]["units"], 200), seed=seed + 11, halves=False,
-                               extra=lambda rec, inc: PM.windowed_stream(rec, inc, W=8))
+                               extra=lambda rec, inc: PM.windowed_stream(rec, inc, W=8), max_bins=4 * BINS)
         row = {"key": k, "instrument": inst, "mouse": ins[inst]["id"], "seed": seed, "kind": kind, **par,
                "env": env, "T": T, **{x: out.get(x) for x in ("M1", "M2", "reached", "recorded_bins",
                                                           "units_used", "numbers_on_repeats", "error")},

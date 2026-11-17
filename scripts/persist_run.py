@@ -34,7 +34,7 @@ _spec.loader.exec_module(SR)
 
 OUT = ROOT / "docs/figures/persist"
 CLIP_BINS = 6000                 # NM3: 120 s in 20 ms bins (registered clip length for the networks)
-MAX_BINS = 4 * CLIP_BINS         # corrections never make a recording longer than this (PERSIST_LOG, 09:15)
+MAX_BINS = 4 * CLIP_BINS         # corrections never make a recording longer than this (PERSIST_LOG, bin cap)
 W = 8                            # windows per repeat
 K0 = 2
 MIN_REPEATS = 8
@@ -43,7 +43,7 @@ MAX_UNITS = 480
 FIRST_REPEATS = 8                # the spike minimum is counted over the first 8 repeats (the fewest valid)
 MIN_SPIKES = int(round(200 * FIRST_REPEATS * 120.0 / (17 * 30.0)))   # Study 2's 200 per 510 s, same rate
 N_GROUPS = 4
-K_GAIN = 0.25                    # movie gain of the K controls (chaos survives it: PERSIST_LOG, 09:40)
+K_GAIN = 0.25                    # movie gain of the K controls (chaos survives it: PERSIST_LOG, chaos probe)
 CONTROLS = {"K1": {"g": 3.0, "noise": 0.0}, "K2": {"g": 0.8, "noise": 0.0}, "K3": {"g": 1.5, "noise": 0.1}}
 LMS = (("A6", "EleutherAI/pythia-14m-seed{s}"), ("A6", "EleutherAI/pythia-160m-seed{s}"),
        ("A6", "EleutherAI/pythia-410m-seed{s}"), ("A6", "EleutherAI/pythia-1b"),
