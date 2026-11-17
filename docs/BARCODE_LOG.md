@@ -174,3 +174,16 @@ Two lessons for the record:
   scaled rule was looser, not stricter, so it does not explain that study's low reach.
 - **This is the second time an idea passed my own drafting and failed a novelty check at review.** The
   novelty search belongs before drafting claims, as the strategy note says.
+
+### Study 4 stopped (16:00 UTC)
+
+The user chose to stop Study 4 ("Stop it, rethink") over fixing it or switching to the preprint. Record:
+- feasibility passed; calibration v4 made M1 and M2 eligible and the drive exponent ineligible;
+- the hierarchy claims were drafted;
+- review B-R1 blocked freezing; no Barcoding activity was measured.
+
+Kept, all local and git-ignored: the spike cache (345 MB) and the flicker sequence. The code stays in
+`nematica/barcode/` and `scripts/barcode_*.py`.
+
+Next: a literature check for a question whose answer is not already known and that this project's assets
+can answer, before any new registration.

@@ -1,4 +1,10 @@
-# Study 4: does internal state rise along the hierarchy, in mice and in networks? (draft v0.2, 17 Nov 2026, NOT frozen)
+# Study 4: does internal state rise along the hierarchy, in mice and in networks? (draft v0.2, 17 Nov 2026, NOT frozen; STOPPED)
+
+**Status (17 Nov, 16:00 UTC): stopped at the pre-freeze review, never frozen, no Barcoding activity
+measured.** Review B-R1 found blocking problems: an unrefutable H2, a miscalibrated equivalence rule, a
+stricter inclusion rule for networks, likely "not testable", a confound of M1 with response speed under the
+flicker, and claims that likely restate known facts. The user chose to stop and to run a literature check
+for an open question before drafting any new claim. See `BARCODE_LOG.md`.
 
 Strategy: `docs/STRATEGY_2026-11-17.md`. Notebook: `docs/BARCODE_LOG.md`. Order of work, each a stop point:
 feasibility (passed, 15:10 entry), **calibration before any claim (this draft)**, claims, review, freeze,

@@ -5201,6 +5201,17 @@ from gain-type variability only in bulk: not run by run, not in order, and not r
 This is a result about the measurement at this data size, not about brains. Readable account:
 `docs/PERSIST_SUMMARY.md`; record `docs/PERSIST.md` and `docs/PERSIST_LOG.md`.
 
+## Many repeats of a controlled stimulus (Study 4, drafted 17 Nov 2026; stopped at review)
+
+Following the strategy note (`docs/STRATEGY_2026-11-17.md`), Study 4 used the Allen OpenScope Barcoding
+dataset: 14 mice, each shown an 8 s flicker 90 times. Feasibility passed. Calibration made the internal-share
+and relative-timescale measures eligible, and the drive-scaling measure not. The claim drafted was a hierarchy
+profile: internal share rising from thalamus to hippocampus, and across network depth. **The independent
+pre-freeze review blocked it.** The headline test could never fail, and networks were filtered more
+strictly than mice. Under a fast flicker, the measure can reflect response speed rather than internal
+state. Both claims would likely restate known results. It was stopped before any Barcoding activity was
+measured. Record: `docs/BARCODE.md`, `docs/BARCODE_LOG.md`.
+
 ## Replay lab
 
 ```powershell
