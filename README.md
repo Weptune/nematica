@@ -4688,8 +4688,11 @@ agree about push responses is unlike worms in that respect too.
   instrument lesson and per-mouse result, Study 2's preregistered null and Study 3's failed calibrations.
   Not submitted. On 17 Nov it gained a related-work section (including the Stanford inter-animal-transform
   work its core overlaps) and two figures (`docs/figures/map/permouse.png`,
-  `docs/figures/slow_paper/fig2_m1_by_family.png`, from `scripts/plot_slow_paper.py`). Still open: authors,
-  an independent read against the project record, and the project owner's go-ahead.
+  `docs/figures/slow_paper/fig2_m1_by_family.png`, from `scripts/plot_slow_paper.py`). Later on 17 Nov an
+  independent check against the project record (review P-R1, `docs/PREPRINT2_REVIEW.md`) found 5 errors and
+  14 missing caveats or overstatements; all are corrected in the draft, and one carried back into
+  `docs/SLOW_SUMMARY.md`. Still open: authors, restyling Figure 1, confirming the repository is public, and
+  the project owner's go-ahead.
 - Preprint draft 1 gained (17 Nov) a related-findings paragraph citing Sourmpis et al. (eLife 2026, perturbation
   generalization in mouse cortex) and the NeuroAI Turing test (Feather et al. 2025), with both references added.
 - **Draft email to the atlas authors** (`docs/outreach/atlas_authors_email_DRAFT.md`): the recovery

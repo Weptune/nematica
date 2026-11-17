@@ -122,6 +122,9 @@ promising next questions:
   networks only carry what came before.
 - **Noise-like variability.** On M2, only networks with internal noise (the random RNN at higher gains, the
   more-noise control) come near the mice; every noise-free network's internal state is relatively slower.
+  [CORRECTED by review P-R1, 17 Nov: not every one. The task-trained RNN is noise-free and its internal state
+  is relatively faster than the mice's (M2 0.47 against 0.69), and Pythia (-0.72), Mamba (-0.84) and the task
+  RNN (+0.95) are all within about one ruler unit of the mice on log M2. The pattern is weak.]
 
 Either would need its own registration before it is tested.
 
