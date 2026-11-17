@@ -143,7 +143,7 @@ partitioning variability (Goris et al. 2014; Rupasinghe, Charles and Pillow, eLi
 - **Dry run of the mice stage** (synthetic stand-ins, nothing real read): 6 rows; c from -0.41 to 0.13
   and b about 0.7 for a generated synthetic system, consistent with calibration.
 
-### Full calibration: no index passes its criteria; by the v0.2 rule, claims 1 to 4 stop here (10:00 UTC)
+### Full calibration: no index passes its criteria; by the v0.2 rule, claims 1 to 4 stop here (09:58 UTC)
 
 120 runs, 73 of which reached the instrument (the criteria use reached runs only, as the data would).
 `docs/figures/persist/calibration.json`; `scripts/persist_calibrate.py --summary`.
