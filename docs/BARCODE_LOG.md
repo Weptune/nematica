@@ -106,3 +106,71 @@ choose the headline claim (at most two), written to M1 and M2. Prefetch of the 1
     goes to the review.
 - The model download for the check was removed afterwards (the disk had fallen to 1.8 GB free); 3.5 GB
   free now.
+
+### Review B-R1: not ready to freeze (report received 15:59 UTC)
+
+An independent reviewer (an agent that wrote none of the code; read-only; no Barcoding spike statistics, only
+unit areas and QC flags, the stimulus file, the calibration, F3 and the dry outputs; scratch simulations in
+`/tmp/br1/`, not kept) found six blocking problems. I checked B1 and B3 against the code myself; both are
+confirmed. The rest are recorded as the reviewer stated them.
+
+**Blocking**
+- **B1. H2 can never be refuted.** The per-instance Wilcoxon test returns NaN below 6 pairs
+  (`slow_run._wilcoxon`). With 12 eligible mice split 4/5/3 across instances, every per-instance p is NaN,
+  so "differs" is impossible. (Study 2 had about 16 mice per instance.) Confirmed.
+- **B2. The equivalence rule is miscalibrated.** With 3 clusters, the "90% interval" is about the range of
+  three instance medians. In the reviewer's simulation it declared equivalence 8 to 19% of the time at a
+  true offset equal to the margin (nominal at most 5%), and only 28% of the time when the true offset is 0.
+- **B3. The networks' inclusion rule is about 3.75 times stricter than the mice's.** Mice need 282 spikes
+  over all 90 repeats of 400 bins (about 0.0078 per bin). The recorder's scaled rule needs 200 x n/400
+  spikes in the first 17 repeats (about 0.029 per bin), because Study 2's scaling assumed a mouse minimum
+  counted over 17 repeats. This cuts low-rate units and pushes count per bin and rate spread out of
+  tolerance. It is the likely reason for 1 of 96 calibration recordings and 0 of 4 F3 recordings reaching
+  the instrument. Confirmed (`record.scaled_min_spikes`, `stream.record_stream`).
+- **B4. H2 is likely "not testable" as coded:** reached points are required at every level, which is
+  stricter than the draft's "at least 3"; and reach so far is near zero.
+- **B5. Under a fast flicker, M1 at lag 2 confounds internal share with how fast the locked response
+  decays.** The flicker's frame autocorrelation is 0.52 at 1 frame and 0.04 at 2. In the reviewer's
+  simulation at a true share of 0.25, M1 was 0.33, 0.48, 0.70 and 0.98 for locked timescales of 20, 2, 1
+  and 0.5 bins. Calibration v4 covered only slow locked parts, so it does not license M1 in this regime.
+- **B6. Both claims are likely to restate known facts.**
+  - H1 reads as "stimulus locking falls along the mouse visual hierarchy". Siegle et al. 2021 reported
+    this, and hippocampus is barely flicker-driven, so its M1 sits near 1.
+  - H2 reads as "language-model context sensitivity rises with depth" (Ethayarajh 2019). F3 already showed
+    such a rise at a stand-in instrument, and the stacked RNN rises by construction.
+  - Nothing in the design tells these explanations apart.
+
+**Major (summarised).**
+- M1: R0 is the configuration with the smallest instrument effect, and the effect depends on share.
+- M2: the 0.05 threshold is misderived; the largest range is 0.29, so about 0.10 per level.
+- M3: matching each depth to a level's instrument leaks brain properties into the networks.
+- M4: level 0 mixes LGd with LP, and level contents vary by mouse.
+- M5: mice cover different subsets of levels.
+- M6: the reliability check across mice fails when mice agree.
+- M7: M1 is set to 0 when there is no shared covariance.
+- M8: the clip pilot is weak (9 tokens; silent fallback).
+- M9: the bin cap is not applied to the starting knobs, so calibration recordings were 388 to 4,398 bins,
+  not about 400.
+- M10: memory and disk. Hooks keep full layer widths; the stacked RNN is out of memory at fast
+  instruments; models are not cached and need about 5 GB.
+- M11: missing-data gaps.
+- M12: "internal" means different things in mice and language models.
+- M13: instances are confounded with mouse subsets; Mamba's instances share weights.
+- M14: thalamic and hippocampal bursting and theta enter C_same(2).
+
+Minor items: layer rounding, "binary" flicker (it is continuous), area-parsing edge cases, an unpinned
+DANDI version, NaN handling, pilot timing, and running speed only in the behaviour removal.
+
+**My reading.** The study is not ready to freeze. B6 is the decisive point. By the strategy's own rule (a
+novelty check before a lead becomes a study), the hierarchy claim fails: its likely answer is known on
+both sides, and B5 means the measure may report response speed rather than internal state in this
+regime. Fixing B1 to B5 would take a new calibration (v5), new statistics and new controls, a day or more,
+to test a claim the literature probably already answers. The next step is the user's decision. No
+Barcoding activity has been measured; the cache stays local.
+
+Two lessons for the record:
+- **The inclusion-rule scaling (B3) is a trap shared with earlier work.** It is correct only when the
+  mouse minimum is counted over the same repeats as the AI's. For Study 3's calibration, a check shows the
+  scaled rule was looser, not stricter, so it does not explain that study's low reach.
+- **This is the second time an idea passed my own drafting and failed a novelty check at review.** The
+  novelty search belongs before drafting claims, as the strategy note says.
