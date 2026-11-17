@@ -1590,3 +1590,12 @@ Minor:
 18. 22 AI rows have M1 = 1 with no locked part; they enter the bracket at 1, consistent with section 3.
 19. Slips: the A1 gain-4 M2 "0.39" depends on the filter (0.42 with M1 at least 0.05); a code comment says
     M1 is about 0.35 at gain 0.25 (observed 0.70).
+
+### Working scripts archived (17 Nov, 08:25 UTC)
+
+Found while preparing Study 3: the scripts behind Study 2's feasibility and calibration (cited in this
+notebook as `/tmp/s7/<name>.py`) had never been committed, so the logged calibration numbers could not be
+traced to code in the repository. The 29 scripts still on disk were copied unchanged to
+`scripts/slow_scratch/`, with a README. Only their last versions survive. Earlier logged runs may have
+used earlier versions, and that cannot now be checked. From now on, calibration code is committed with
+its results (Study 3: `scripts/persist_calibrate.py`).

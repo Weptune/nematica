@@ -212,12 +212,14 @@ def renormalise_hold(k):
 
 
 def record_stream(A, starts, length, prof, nb_mouse, R_mouse, n_units_mouse, seed, rounds=5, k_start=None,
-                  halves=True):
+                  halves=True, extra=None):
     """Amendment S4: the AI recording for one mouse, streamed. Starting knobs: `record.analytic_knobs` (or
     `k_start`); then up to `rounds` corrections judged on the instrument numbers of a fixed subset of units
     and repeats (as `record.record_checked`, best round kept); then the full recording in two passes; the
     mouse's inclusion rule scaled to the clip; a seeded subset of the mouse's size; the measures.
-    Returns a dict of results (measures, numbers on the analysed units, reached, knobs, sizes)."""
+    Returns a dict of results (measures, numbers on the analysed units, reached, knobs, sizes).
+    `extra(rec, inc)`, if given (Study 3), returns a dict of further measures on the same recording and
+    analysed units, stored under "extra"; it does not change anything else."""
     from ..map import instrument as INS
     A = np.asarray(A)
     k = dict(k_start or Rc.analytic_knobs(A, prof, max_hold=0))
@@ -271,6 +273,8 @@ def record_stream(A, starts, length, prof, nb_mouse, R_mouse, n_units_mouse, see
     got = numbers(rec, inc)
     reached = Rc.within_tolerance(got, prof) and len(inc) >= n_units_mouse
     meas = measure_stream(rec, inc, p1["tot"], halves=halves)
+    if extra is not None:
+        meas["extra"] = extra(rec, inc)
     return {**meas, "recorded_bins": int(rec.n), "repeats_used": int(rec.R), "units_used": int(len(inc)),
             "bin_steps": float(k["bin_steps"] / k.get("hold", 1)), "knobs": _plain(k),
             "numbers_on_repeats": {x: got.get(x) for x in prof}, "reached": bool(reached)}

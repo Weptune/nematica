@@ -1,0 +1,249 @@
+[
+ {
+  "dandiset": "000021",
+  "session": "sub-699733573",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 1049940280,
+  "nm3_complete": 10,
+  "nm3_valid": 8,
+  "nm3_duration_s": 120.10032999999976,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-703279277",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 1100446168,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10030000000006,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-707296975",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 638376656,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10030000000006,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-716813540",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 751748000,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10032000000001,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-717038285",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 1040728368,
+  "nm3_complete": 10,
+  "nm3_valid": 8,
+  "nm3_duration_s": 120.10035499999981,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-718643564",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 804171712,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10030999999958,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-719817799",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 908168504,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10034500000052,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-719828686",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 616118144,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10032499999988,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-722882751",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 717718192,
+  "nm3_complete": 10,
+  "nm3_valid": 8,
+  "nm3_duration_s": 120.10033999999928,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-723627600",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 1004506728,
+  "nm3_complete": 10,
+  "nm3_valid": 9,
+  "nm3_duration_s": 120.10031500000014,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-726141242",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 1160378400,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10033000000021,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-726162193",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 1019236280,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10034500000052,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-726170927",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 941217160,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10033000000067,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-726298249",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 983244808,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10033500000031,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-730756767",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 807575288,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10034999999948,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-730760263",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 774052096,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10040499999968,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-732548371",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 1128042784,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10034499999938,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-733457986",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 1090267760,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10037499999999,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-734865729",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 940478144,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10039000000006,
+  "nm3_blocks": 2
+ }
+]
