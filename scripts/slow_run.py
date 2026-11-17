@@ -54,7 +54,6 @@ def _code_state():
         return {"head": None, "dirty": None}
 
 
-CODE_STATE = _code_state()
 PRIMARY = ("M1", "M2", "ti", "tl", "int_ceiling", "lock_ceiling", "no_shared", "no_locked")
 K0 = 2                                               # first lag used: 2 bins (40 ms), review S-R1 finding 1
 MIN_UNITS = 30                                       # a mouse with fewer included units is excluded
@@ -65,6 +64,9 @@ MAX_UNITS = 480                                      # and one with more keeps a
 def frozen():
     m = re.search(r"Frozen at commit ([0-9a-f]{7,40})", (ROOT / "docs/SLOW.md").read_text())
     return m.group(1) if m else None
+
+
+CODE_STATE = _code_state()                           # after frozen(): defined before it, every stamp was empty
 
 
 def append(name, row):

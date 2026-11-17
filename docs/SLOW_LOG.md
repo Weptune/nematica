@@ -1416,3 +1416,16 @@ layer, which the recorded units cannot depend on beyond, and run only the model 
 four models (two Pythia, two random Mamba at float32 and float16 checkpoint precision). Pythia-1B's peak
 is now 4.6 GB including the memory-mapped weights. The Pythia-1B weights downloaded before the kill are
 still in the model cache and will be reused. The stage was restarted alone.
+
+### The code stamp on every row was empty (04:20 UTC)
+
+Found while checking the language-model rows: every mice and AI row carries `"code": {"head": null,
+"dirty": null}`. Cause: in `scripts/slow_run.py`, `CODE_STATE = _code_state()` ran before `frozen()` was
+defined, so the stamp function hit a NameError, which its own try/except swallowed. The provision of
+review S-R2 finding 13 (and S-R3 N12) therefore never worked. Fixed by moving the line below `frozen()`;
+a test run now stamps head 34ff1d8, dirty, and the list of code files changed since the freeze. The
+running language-model process loaded the old file and will still write empty stamps; rows from the next
+process on carry the stamp. For the rows already written, the code that produced them is bracketed by the
+code commits and this notebook's timestamps: S2 at 10:41, S3/S4 at 11:21, S5 at 11:48, S6 at 12:50, S7 at
+14:49, the half-clip speed change at 21:12 (16 Nov) and S8 at 03:39 (17 Nov). Each stage restart in this
+notebook was from a committed tree, except edits recorded in the same entry. No result changes.
