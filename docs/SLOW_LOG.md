@@ -1404,10 +1404,10 @@ the error text, but the resume rule skips rows that carry an error, so the rerun
 language models (A6 and A7: 14 generations to run) were started at 02:47 UTC as a single process, nothing
 else running; disk 5.3 GB free, memory about 7 GB visible (the container limit is about 6.2 GB).
 
-### Pythia-1B killed for memory again; amendment S8 (03:30 to 04:05 UTC)
+### Pythia-1B killed for memory again; amendment S8 (03:36 to 03:40 UTC)
 
 Running alone, the language-model stage recorded Pythia-14m seed 2, 160m seeds 1 and 2 and 410m seeds 1
-and 2 (66 rows, all reached), then the kernel's memory controller killed it at 03:3x UTC while it loaded
+and 2 (66 rows, all reached), then the kernel's memory controller killed it between 03:26 and 03:36 UTC while it loaded
 Pythia-1B (anonymous memory 6.26 GB). A test in a fresh process put the peak of a whole-model float32 load
 at 6.18 GB with either loading route (direct float32, or float16 then cast), so the model cannot load
 reliably here at all. Fix (amendment S8, operational): keep only the layers up to the recorded middle
@@ -1417,7 +1417,7 @@ four models (two Pythia, two random Mamba at float32 and float16 checkpoint prec
 is now 4.6 GB including the memory-mapped weights. The Pythia-1B weights downloaded before the kill are
 still in the model cache and will be reused. The stage was restarted alone.
 
-### The code stamp on every row was empty (04:20 UTC)
+### The code stamp on every row was empty (03:55 UTC)
 
 Found while checking the language-model rows: every mice and AI row carries `"code": {"head": null,
 "dirty": null}`. Cause: in `scripts/slow_run.py`, `CODE_STATE = _code_state()` ran before `frozen()` was
@@ -1430,3 +1430,6 @@ code commits and this notebook's timestamps: S2 at 10:41, S3/S4 at 11:21, S5 at 
 14:49, the half-clip speed change at 21:12 (16 Nov) and S8 at 03:39 (17 Nov). Whether every restart ran
 from a clean tree cannot now be shown; the restarts and the code changes before them are logged in the
 entries above. No result changes.
+
+Correction (04:00 UTC): the two entries above first carried guessed times (03:30 to 04:05 and 04:20); they
+now carry the times read from the clock and the commit log.
