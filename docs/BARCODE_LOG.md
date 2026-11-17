@@ -107,7 +107,7 @@ choose the headline claim (at most two), written to M1 and M2. Prefetch of the 1
 - The model download for the check was removed afterwards (the disk had fallen to 1.8 GB free); 3.5 GB
   free now.
 
-### Review B-R1: not ready to freeze (report received 15:59 UTC)
+### Review B-R1: not ready to freeze (report received by 15:56 UTC)
 
 An independent reviewer (an agent that wrote none of the code; read-only; no Barcoding spike statistics, only
 unit areas and QC flags, the stimulus file, the calibration, F3 and the dry outputs; scratch simulations in
