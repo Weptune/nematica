@@ -1,4 +1,8 @@
-# Study 3: what kind of generator is cortex? (registration draft v0.3, 17 Nov 2026, NOT frozen)
+# Study 3: what kind of generator is cortex? (registration draft v0.3, 17 Nov 2026, NOT frozen; STOPPED)
+
+**Status (17 Nov, 13:44 UTC): stopped at calibration, never frozen, no held-out data measured.** v0.2's
+persistence claims failed their calibration (09:58 entry in `PERSIST_LOG.md`), and v0.3's generator claim
+failed C5a, C5b and C5c (13:44 entry). Readable account: `docs/PERSIST_SUMMARY.md`.
 
 **v0.3 (17 Nov, 12:57 UTC), after v0.2 stopped at calibration.** Under v0.2's own rule, the persistence
 claims (1 to 4 below) are dropped. No index for fading passed C1, C2 and C4 (`PERSIST_LOG.md`, 09:58 entry).

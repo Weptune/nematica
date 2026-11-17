@@ -5185,6 +5185,17 @@ number was reproduced by an independent review (S-R4).
 - **Limits:** one region, one stimulus, state within a repeat only (slower drift is not tested), networks
   seen through a simulated spike instrument, intervals resting on 3 instances.
 
+## Generated or carried? (Study 3, drafted 17 Nov 2026; stopped at calibration)
+
+Study 2's leads, seen after its data, were that mouse cortex keeps generating trial-to-trial variability
+along a clip while noise-free networks only carry it in from before. Study 3 was drafted to test this, and
+then (narrowed) what kind of generator cortex is: gain-type, additive noise or chaos. Its data was held
+out: natural movie three, 32 mice. **It stopped at calibration twice, before any held-out data was
+measured.** Fading indices were confounded by the drive's time course. The drive exponent told additive
+from gain-type variability only in bulk: not run by run, not in order, and not robustly to the drive.
+This is a result about the measurement at this data size, not about brains. Readable account:
+`docs/PERSIST_SUMMARY.md`; record `docs/PERSIST.md` and `docs/PERSIST_LOG.md`.
+
 ## Replay lab
 
 ```powershell

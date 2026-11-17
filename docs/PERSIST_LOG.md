@@ -188,3 +188,36 @@ show that v0.2's criteria were not met.
   them. The `white` option stays in `nematica/persist/synthetic.py` (default 0).
 - PERSIST.md v0.3: new header and section 8a (systems, C5a separation, C5b ordering, C5c envelope
   invariance, bias bound), committed before the calibration run.
+
+### v0.3 calibration: claim 5 fails its criteria; Study 3 stops before any held-out data (13:44 UTC)
+
+88 runs (`docs/figures/persist/calibration_v3.json`, `calibration_v3_runs.jsonl`); 35 reached the
+instrument (additive 30 of 40, gain-type 5 of 48). Criteria as written in section 8a, before the run:
+- **C5a, separation: fails** in 1 of 8 cells (median instrument, seed 0: smallest gain-type b 0.58, largest
+  additive b 0.64). It holds in the other 7.
+- **C5b, ordering: fails** at every instrument (Spearman of b with gain size 0.34 to 0.78, needed 0.8). Even
+  the smallest gain (log-SD 0.15) already gives b of 1.07 to 2.50, and larger gains do not raise it in order.
+- **C5c, envelope invariance: fails.** The gain-type b moves by up to 12.8 when the envelope is flattened or
+  reversed (tolerance 0.30). The additive b moves by at most 0.36.
+- On reached runs only, nothing can be assessed: too few gain-type runs reached.
+- Spread of b across all runs: additive -0.14 to 0.84 (median about 0.5); gain-type 0.58 to 5.95, mostly
+  above 1. So b does tell additive from gain-type variability in bulk, but not reliably run by run, not in
+  order of size, and not independently of the drive's time course. With 10 repeats and 8 windows, the
+  slow gain is sampled too sparsely, and the exponential spike model mixes additive and multiplicative
+  effects.
+
+**By the rule in section 8a, claim 5 stops here, and with it Study 3: no held-out activity (NM3, or NM1
+outside visual cortex) is measured.** It would be possible to look for a cruder criterion that passes, for
+example "b above 0.9 means gain-type". That would be a criterion chosen after seeing the calibration, so
+it is not done. The NM3 spike cache (897 MB) and frames (665 MB) stay local and git-ignored, available to
+a future, separately registered study.
+
+What Study 3 produced:
+- held-out data located and cached (natural movie three, 32 mice);
+- two calibrated negative results about measures: fading indices are confounded by the drive's time
+  course, and the drive exponent cannot classify kinds of variability through this instrument at 10
+  repeats;
+- infrastructure: windowed measures, the bin cap that ends a memory failure inherited from Study 2, noise
+  versions of the GRU and Pythia, generic movie-driven controls with interludes;
+- a probe confirming that input suppresses chaos in noise-free random networks;
+- Study 2's working scripts archived.
