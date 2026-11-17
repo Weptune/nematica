@@ -61,7 +61,7 @@ before the run.
 **By the eligibility rule, M1 and M2 can carry Study 4's claims, and the drive exponent cannot.** Next:
 choose the headline claim (at most two), written to M1 and M2. Prefetch of the 14 sessions is still running.
 
-### Headline claim chosen: the hierarchy profile; draft v0.2 (15:30 to 15:40 UTC)
+### Headline claim chosen: the hierarchy profile; draft v0.2 (15:30 to 15:31 UTC)
 
 - The user chose the hierarchy claim (internal share rising from thalamus to visual cortex to
   hippocampus, and whether networks show the same rise across depth).
@@ -74,3 +74,18 @@ choose the headline claim (at most two), written to M1 and M2. Prefetch of the 1
   network depth at the matching level's instrument.
 - `docs/BARCODE.md` v0.2 holds the claims H1 (premise) and H2 (headline), with decision rules. Next: the
   pipeline, a dry run, the clip pilot, then an independent review before freezing.
+
+### Pipeline written and dry-run end to end (15:35 to 16:05 UTC)
+
+- `nematica/barcode/inputs.py`: language models read at 4 depths in one pass (the nearest layers to 1/8,
+  3/8, 5/8 and 7/8 of the depth; Pythia-14m smoke test: layers 0, 2, 3, 5), and the stacked noisy RNN
+  reference.
+- The flicker sequence was read from the stimulus tables (metadata). It is identical in the 3 sessions
+  checked: 480 frames of luminance between -1 and 1. Saved locally as `data/derived/barcode_flicker.npy`.
+- `scripts/barcode_run.py` (stages mice, ais, tests; refuses real data until frozen). The dry run works:
+  - synthetic mice with internal shares rising by level gave M1 rising by level;
+  - the stacked RNN's M1 rose with depth (0.64 to 0.92 at one mouse);
+  - the tests stage produced H1 (holds on the synthetic rise) and H2 ("not testable", because dry
+    recordings never reach the instrument).
+- One fix to the draft from the dry run: R0 is counted whether or not its recordings reach the instrument,
+  since synthetic systems rarely do.

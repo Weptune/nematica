@@ -72,8 +72,10 @@ calibration v4. So a fixed synthetic system (additive internal share 0.4, timesc
 timescale, seed 0) is recorded at each mouse's level instruments, and its slope is the slope that the
 instruments alone would give.
 
-**Networks, recorded like a hierarchy:** Pythia-160M (released seeds 1 to 3), Pythia-1B and Mamba-370M,
-three instances each (instance = mouse rank mod 3). Units are taken at 4 depths, the layers nearest to 1/8,
+**Networks, recorded like a hierarchy:** Pythia-160M and Pythia-410M (released seeds 1 to 3 as the three
+instances) and Mamba-370M (three text positions), instance = mouse rank mod 3. (Pythia-1B was dropped
+before any run: reading 7/8 of its depth needs nearly the whole model in float32, which this machine's
+memory cannot hold, as Study 2's amendment S8 found.) Units are taken at 4 depths, the layers nearest to 1/8,
 3/8, 5/8 and 7/8 of the depth (Pythia: MLP activations; Mamba: gated SSM outputs; 480 units per depth,
 seeded). A text clip follows a different 256-token context on each of 90 repeats. It is sized so that it
 records as about 400 bins at the median visual-cortex instrument (pilot with the streamed recorder). **Depth

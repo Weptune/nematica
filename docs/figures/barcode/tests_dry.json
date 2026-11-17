@@ -1,0 +1,76 @@
+{
+ "frozen": null,
+ "n_mice": 6,
+ "reliability": {
+  "rho": -0.7142857142857143,
+  "reliable": false
+ },
+ "H1": {
+  "n": 6,
+  "median_d0": 0.14079915508472446,
+  "p": 0.015625,
+  "holds": true
+ },
+ "H2": {
+  "ruler": 0.039950961523809274,
+  "margin": 0.05,
+  "systems": {
+   "P160": {
+    "n_pairs": 0,
+    "missing": 6,
+    "verdict": "not testable"
+   },
+   "P410": {
+    "n_pairs": 0,
+    "missing": 6,
+    "verdict": "not testable"
+   },
+   "M370": {
+    "n_pairs": 0,
+    "missing": 6,
+    "verdict": "not testable"
+   },
+   "STACK": {
+    "n_pairs": 0,
+    "missing": 6,
+    "verdict": "not testable"
+   }
+  },
+  "holds": false,
+  "refuted": false
+ },
+ "H1_behaviour_removed": {
+  "n": 0,
+  "median_d0": NaN,
+  "p": NaN,
+  "holds": false
+ },
+ "H2_behaviour_removed": {
+  "ruler": NaN,
+  "margin": NaN,
+  "systems": {
+   "P160": {
+    "n_pairs": 0,
+    "missing": 6,
+    "verdict": "not testable"
+   },
+   "P410": {
+    "n_pairs": 0,
+    "missing": 6,
+    "verdict": "not testable"
+   },
+   "M370": {
+    "n_pairs": 0,
+    "missing": 6,
+    "verdict": "not testable"
+   },
+   "STACK": {
+    "n_pairs": 0,
+    "missing": 6,
+    "verdict": "not testable"
+   }
+  },
+  "holds": false,
+  "refuted": false
+ }
+}
