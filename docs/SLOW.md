@@ -415,3 +415,15 @@ change them, and widening float16 weights to float32 is exact. `scripts/slow_lm_
 new path with the old one on Pythia-14m, Pythia-70m and small random Mamba models saved in float32 and in
 float16: the recorded units are bit-for-bit identical in all four. Rows recorded before S8 are kept. Peak
 memory for Pythia-1B falls to about 4.6 GB including the memory-mapped weights file.
+
+### S9 (17 Nov 2026), after the data were seen and the tests run; no verdict changed
+
+Recorded after review S-R4. (1) **Deviation:** A2 clips recorded at a median 11,844 bins (827 to 105,944)
+instead of about 1,500 (section 4), and in 23 of 49 A2 recordings the maximum lag was capped at 4,000 bins,
+below a quarter clip (section 3). The A2 verdicts are kept as computed and reported with this deviation; a
+rerun at the registered length, if done, is an after-data sensitivity. (2) **Readings made explicit:** the
+playback nuisance used the median of paired shifts (a shift of the medians gives the same flags); the
+behaviour-removed tests recompute the ruler on the behaviour-removed mouse values; lock-ceiling censoring
+used "any run of the family at lock ceiling" (1 pair). (3) Interval scope: for families without playback
+groups and for H3, the cluster bootstrap has 3 clusters (the instances), so its interval describes agreement
+across instances.

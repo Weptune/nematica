@@ -1273,7 +1273,8 @@ Descriptive only; no hypothesis is tested until the AI stage is done. Percentile
   moves much less than the locked part. M1 rises on the shuffled movie (median 0.58 to 0.79). The formal
   check (with log M2 rising) runs in the tests stage.
 - **Two things to note now, before any AI is compared:**
-  - **M2 is below 1 in every one of the 58 mice** (90th percentile 0.96): in mouse visual cortex watching this
+  - **M2 is below 1 in every one of the 58 mice** (90th percentile 0.96) [CORRECTED by review S-R4, 17 Nov:
+    false; M2 is above 1 in 2 of 58 mice (1.01 and 1.23) and in 1 of the 49 analysed]: in mouse visual cortex watching this
     movie, what differs between repeats moves *faster* than what is locked to the movie, at lags of 40 ms and
     more. Claim 2 compares AIs with this; it does not require M2 above 1, but the plain-language picture of
     "slow internal state" from the map study does not describe these mice at this timescale.
@@ -1442,7 +1443,10 @@ Recordings that missed the instrument were frequent for the larger Pythia models
 16 or 17, 160m 1 to 6, 410m 4 to 8, 1B 1 to 8; Mamba 0 to 3. In all: 2,548 AI rows (not counting the 20
 dry-run rows), 200 unreached. Correction to the 02:47 entry: "A4 410" counted the 18 dry-run A4 rows in
 `ais_dry.jsonl`; the real A4 count is 392 (8 gains x 49 mice). The dry file is excluded from the tests
-and the retry stage, as designed.
+and the retry stage, as designed. [CORRECTED by review S-R4: this correction was itself wrong. The dry file
+holds 2 A1 rows. The 18 extra A4 rows are real rows for 4 of the mice left out by S6, written before S6;
+the tests drop them by mouse id. The A4 count over the 49 mice is 392, and the 2,548 above are the AI rows
+for the 49 mice; the 20 rows set apart are the 2 dry-run rows and these 18.]
 
 The S7 retry ran as two shards for the non-language families (both shards append to one file,
 `ais_retry.jsonl`; each row is one write of about 1.3 KB in append mode, so lines cannot interleave, and
@@ -1514,3 +1518,75 @@ less, two (the task RNN, Mamba) carry more, and the transformers bracket the mic
 scale. The mice's internal state is not slower relative to the input than the networks'; mouse M2 (0.69)
 is below that of every noise-free network except the task RNN. Every slow-drive setting leaves the
 network's internal state slower relative to the input than the mice's (M2 0.89 to 2.63 against 0.69).
+
+### Review S-R4: the registered tests and their reading (07:15 to 08:20 UTC, with a server restart)
+
+An independent reviewer (an agent that wrote none of the code) recomputed every registered result with
+its own code written from `SLOW.md`, without calling `slow_run.py`. The run was cut off by a server restart
+after about 8 minutes and resumed from its transcript. Scratch code stayed in `/tmp/sr4/` (local). Result:
+**every number in `tests.json` was reproduced** (rulers, all 14 H1 verdicts with medians, intervals, p
+values, missing counts and codes, the restricted M2 test, all behaviour-removed verdicts, C3, the shuffled
+check, the playback shifts, the H2 split, choices and intervals, H3). Data handling was confirmed sound:
+retry rows replace originals, error rows are dropped, there are no duplicates and no dry rows in the
+tests, instance and group agree with `mice_table.json`, and the S6 mice are filtered out. **No finding
+changes a verdict or claim.** Findings, with responses (all accepted):
+
+Major (how results are described):
+1. The bracket rule decides A1 before the data: its gain grid spans M1 0.11 to 0.98, so every mouse lies
+   inside and all 44 M1 pairs have d = 0. For A6, 22 of 40 mice lie inside the range of the four sizes and
+   18 above the largest. "Not decided" there means "the family's range contains the mouse". With A1 and A4
+   uncounted, claim 1 needed all five noise-free families confirmed. *Response:* stated in the write-up.
+2. In the noise-free networks the internal state is the trace of the preceding context in a short clip:
+   about 80 bins per token or character, so a 1,500-bin clip is about 17 to 20 tokens. Half-clip M1 (first
+   against second half): A3 0.21 and 0.01, A5 0.31 and -0.02, Pythia-14M 0.40 and 0.06, Pythia-1B 0.66 and
+   0.25, Mamba 0.88 to 0.90 and 0.59 to 0.70, A2 0.82 and 0.80, mice 0.58 and 0.66. Their M1 verdicts depend
+   on the registered clip length. *Response:* stated; the half-clip table goes in the write-up as
+   descriptive (it was reported, not tested). The contrast (mice's internal share holds along the clip,
+   context-driven networks' fades) is the clearest qualitative difference in the data, and it is
+   after-the-fact.
+3. Claim 2 is relative to a slow stimulus: mouse internal time about 26 bins (0.5 s), locked time about
+   39 bins (0.8 s). On the shuffled movie the locked time falls to the floor in 15 of 24 mice and median M2
+   is 32.7. The AIs' M2 is against their own inputs. *Response:* stated.
+4. On M2, A5, A6 and A7 are "not decided" but go the opposite way in all three instances, with intervals
+   excluding 0; they fail only the 2.12-ruler margin from the 0.5 log bias bound (A5 is refuted with
+   behaviour removed). *Response:* described as "if anything slower relative to the input, within the
+   known measurement bias", not as "no difference".
+5. Factual error: "M2 below 1 in every one of the 58 mice" is false (2 of 58; 1 of 49 analysed).
+   *Response:* corrected in place, marked. I had also repeated it to the user in chat; corrected there.
+6. A4 is recorded like a mouse, not matched (as registered), and sits far from the mouse instrument
+   (median bins per timescale 66% lower, rate spread 73% lower); its "reached" checks only the unit count.
+   *Response:* A4's confirmed M2 is quoted only with this caveat (it is uncounted).
+7. Cluster intervals for A2 to A7 and H3 rest on 3 clusters (the instances; 10 distinct resamples): they
+   show agreement across instances, not a population interval. *Response:* stated.
+8. H2 is built on A1 at group-median playback and inherits its playback sensitivity (about 1 ruler unit on
+   M1); and its grid cannot land on the mice on M2: fast drives give 0.13 to 0.36, the slowest-share slow
+   drive at 1 s already 0.89, mice 0.69 (the 1 s drive is slower than the mice's own internal time of about
+   0.5 s). *Response:* stated; the verdict is unaffected (slow-drive M2 -1.99 [-3.59, -0.62]).
+9. **Undocumented deviation:** A2 clips record at a median 11,844 bins (827 to 105,944), about 9 times the
+   registered 1,500, and in 23 of 49 rows the maximum lag is capped at 4,000 (below a quarter clip), outside
+   the C4 range. *Response:* amendment S9 (after data). Probable cause, not verified: the clip pilot
+   (`clip_units`) records with the pre-S3 recorder (`record.record_repeats`), whose bin width differs from
+   the streamed recorder's analytic knobs for the task network's 60-step trials. A2's half-clip M1 is flat
+   and no ceilings occur, so the verdict is unlikely to depend on it; a rerun at the registered length is
+   possible as a labelled after-data sensitivity.
+10. "Approaching with scale" overstates a non-monotone pattern (14M 0.33, 160M 0.51, 410M 0.46, 1B 0.60;
+    signed d 3.14 for 14M against 0.02 for 1B), and the 1B instances differ only in text, the others in
+    seed. *Response:* worded as "the largest is closest", not as a trend.
+
+Minor:
+11. My 04:44 correction about dry rows was wrong (corrected in place, marked).
+12. All 2,580 non-retry AI rows carry null code stamps (known); retry rows carry clean heads df81636 and
+    3a234d9; tests ran at c9a95f0, clean; `stage_tests` changed since the freeze only as documented.
+13. `_family_test` checks "every gain or size" by row count, not distinct runs; a duplicate would hide a
+    missing gain (none exist). To fix before any rerun.
+14. Lock-ceiling censoring fires if any run in the family is at lock ceiling, not only the nearer; the
+    registration is ambiguous; it affects 1 A1 pair.
+15. The playback nuisance was computed as the median of paired shifts; as a shift of medians: x0.5 1.05
+    (M1) and 0.20 (M2), x2 -1.04 and -1.13, driven 0.43 and 0.01. The flags are the same either way.
+16. With behaviour removed, the ruler is recomputed (M1 0.099 against 0.087): unspecified in the
+    registration.
+17. Missing pairs concentrate in slow-timescale mice (A6: 5 of 9 in group 3), which have slightly lower M1
+    (0.54 against 0.60, p = 0.53). No verdict changes.
+18. 22 AI rows have M1 = 1 with no locked part; they enter the bracket at 1, consistent with section 3.
+19. Slips: the A1 gain-4 M2 "0.39" depends on the filter (0.42 with M1 at least 0.05); a code comment says
+    M1 is about 0.35 at gain 0.25 (observed 0.70).
