@@ -75,7 +75,7 @@ choose the headline claim (at most two), written to M1 and M2. Prefetch of the 1
 - `docs/BARCODE.md` v0.2 holds the claims H1 (premise) and H2 (headline), with decision rules. Next: the
   pipeline, a dry run, the clip pilot, then an independent review before freezing.
 
-### Pipeline written and dry-run end to end (15:35 to 16:05 UTC)
+### Pipeline written and dry-run end to end (15:31 to 15:37 UTC)
 
 - `nematica/barcode/inputs.py`: language models read at 4 depths in one pass (the nearest layers to 1/8,
   3/8, 5/8 and 7/8 of the depth; Pythia-14m smoke test: layers 0, 2, 3, 5), and the stacked noisy RNN

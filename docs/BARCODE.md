@@ -70,7 +70,8 @@ ordinary least-squares slope of M1 on level index over the mouse's levels.
 **Instrument-only reference (R0).** M1 differs between instruments even for the same system: up to 0.16 in
 calibration v4. So a fixed synthetic system (additive internal share 0.4, timescale equal to the locked
 timescale, seed 0) is recorded at each mouse's level instruments, and its slope is the slope that the
-instruments alone would give.
+instruments alone would give. R0 counts whether or not its recordings reach the
+instrument tolerance, because synthetic systems rarely do (calibration v4: 1 of 96).
 
 **Networks, recorded like a hierarchy:** Pythia-160M and Pythia-410M (released seeds 1 to 3 as the three
 instances) and Mamba-370M (three text positions), instance = mouse rank mod 3. (Pythia-1B was dropped
