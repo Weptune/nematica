@@ -33,3 +33,12 @@ All 14 sessions read without error (`docs/figures/barcode/feasibility.json`, met
 The stop rule (fewer than 10 mice with at least 50 valid repeats) is not met: 14 of 14 have 90. Study 4 goes
 on to calibration. Next: cache the spikes of the repeated and unique flicker blocks (caching only, no
 statistic computed), then write the calibration criteria before any calibration run.
+
+### Calibration criteria written; prefetch running (15:10 to 15:12 UTC)
+
+- Prefetch (`scripts/barcode_prefetch.py`) started at 15:10: repeated and unique flicker spikes, all good
+  units with area and QC, running speed; caching only.
+- `docs/BARCODE.md` v0.1: calibration v4 criteria (K1 to K4) and the eligibility rule, committed before the
+  calibration run (`scripts/barcode_calibrate.py`). A caution is recorded in the draft: through the
+  exponential spike model, additive network activity becomes multiplicative firing, so "gain-type" is
+  defined on the network's own activity.
