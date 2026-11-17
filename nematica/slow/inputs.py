@@ -112,23 +112,34 @@ def lm_repeats(model_name, clip, contexts, keep=480, layer=None, seed=0, dtype="
     import torch
     from transformers import AutoModelForCausalLM
     torch.set_num_threads(2)
-    m = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=getattr(torch, dtype)).eval()
+    # Amendment S8 (operational, memory): load at the checkpoint's own precision, drop the layers after the
+    # recorded one and the output head, then cast to `dtype`. The recorded units sit in layer L of a causal,
+    # feed-forward-in-depth stack, so later layers and the head cannot change them, and widening float16 or
+    # bfloat16 weights to float32 is exact: the result equals loading the whole model in float32
+    # (checked in scripts/slow_lm_trunc_check.py). Loading Pythia-1B whole in float32 was killed for memory.
+    m = AutoModelForCausalLM.from_pretrained(model_name, dtype="auto").eval()
     C = len(clip)
     if "mamba" in model_name:
-        blocks = m.backbone.layers
-        L = layer if layer is not None else len(blocks) // 2
-        target = blocks[L].mixer.out_proj
+        body = m.backbone
+        L = layer if layer is not None else len(body.layers) // 2
+        target_of = lambda b: b.mixer.out_proj
         grab = lambda mod, inp, out: buf.append(inp[0][0, -C:].detach().float().numpy())
     else:
-        blocks = m.gpt_neox.layers
-        L = layer if layer is not None else len(blocks) // 2
-        target = blocks[L].mlp.act
+        body = m.gpt_neox
+        L = layer if layer is not None else len(body.layers) // 2
+        target_of = lambda b: b.mlp.act
         grab = lambda mod, inp, out: buf.append(out[0, -C:].detach().float().numpy())
+        m.embed_out = torch.nn.Identity()            # untied in Pythia; never called (only the body runs)
+    body.layers = body.layers[:L + 1]
+    m = m.to(getattr(torch, dtype))
+    import gc
+    gc.collect()
+    target = target_of(body.layers[L])
     buf = []
     h = target.register_forward_hook(grab)
     with torch.no_grad():
         for ctx in contexts:
-            m(torch.tensor(np.concatenate([ctx, clip])[None], dtype=torch.long))
+            body(torch.tensor(np.concatenate([ctx, clip])[None], dtype=torch.long), use_cache=False)
     h.remove()
     units = buf[0].shape[1]
     cols = np.sort(np.random.default_rng(seed).choice(units, min(keep, units), replace=False))

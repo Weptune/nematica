@@ -404,3 +404,14 @@ recording would leave about 40% of mice without an A1 pair, and A1 "not testable
 after the AI stage, every unreached recording is recorded once more (`slow_run.py retry`), starting from its
 own best knobs, with up to 10 corrections and a new spike seed; the retry row replaces the original in the
 tests whatever its outcome (both kept on disk). The tolerances and the all-gains rule are unchanged.
+
+### S8 (17 Nov 2026), operational, before any AI-mouse comparison
+
+Pythia-1B, loaded whole in float32, was killed for memory even with nothing else running (peak about
+6.2 GB against a limit of about 6.2 GB). Change to `lm_repeats`: the model is loaded at its checkpoint's own
+precision, the layers after the recorded one and the output head are dropped, the rest is cast to float32,
+and only the model body runs. The recorded units are in layer L of a causal stack, so later layers cannot
+change them, and widening float16 weights to float32 is exact. `scripts/slow_lm_trunc_check.py` compares the
+new path with the old one on Pythia-14m, Pythia-70m and small random Mamba models saved in float32 and in
+float16: the recorded units are bit-for-bit identical in all four. Rows recorded before S8 are kept. Peak
+memory for Pythia-1B falls to about 4.6 GB including the memory-mapped weights file.

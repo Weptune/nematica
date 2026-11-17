@@ -1392,3 +1392,27 @@ twice (each time the stage resumed from its saved rows). Operational change: the
 every system so far) is no longer computed for the H2 control families and the playback sensitivity
 (`record_for_mouse_lite`), which are not reported by clip half; this roughly halves their FFT work. The
 streaming check still passes (differences 4e-16 to 3e-15). Shards restarted by pid.
+
+### The A1 sensitivity families finish; language models start alone (02:47 UTC, 17 Nov)
+
+All non-language AI families are now recorded: A1 392 rows (8 gains x 49 mice), A4 410, A2, A3 and A5 49
+each, A1-slow 392, A1-fast 392, A1-noise 392 and A1-play 147 (3 settings x 49), 2,350 rows in all. No
+recording raised an error. Recordings that did not reach the instrument, by family: A1-slow 39, A1-fast 33,
+A1 30, A1-noise 28, A1-play 9, A6 7, A3 4, A5 2 (A4 and A2 none); these go to the S7 retry. Correction to
+the 16:54 entry: the failed language-model generations did leave rows, one per generation with id `*` and
+the error text, but the resume rule skips rows that carry an error, so the rerun still picks them up. The
+language models (A6 and A7: 14 generations to run) were started at 02:47 UTC as a single process, nothing
+else running; disk 5.3 GB free, memory about 7 GB visible (the container limit is about 6.2 GB).
+
+### Pythia-1B killed for memory again; amendment S8 (03:30 to 04:05 UTC)
+
+Running alone, the language-model stage recorded Pythia-14m seed 2, 160m seeds 1 and 2 and 410m seeds 1
+and 2 (66 rows, all reached), then the kernel's memory controller killed it at 03:3x UTC while it loaded
+Pythia-1B (anonymous memory 6.26 GB). A test in a fresh process put the peak of a whole-model float32 load
+at 6.18 GB with either loading route (direct float32, or float16 then cast), so the model cannot load
+reliably here at all. Fix (amendment S8, operational): keep only the layers up to the recorded middle
+layer, which the recorded units cannot depend on beyond, and run only the model body. The check script
+`scripts/slow_lm_trunc_check.py` shows the recorded units are bit-for-bit identical to the old path on
+four models (two Pythia, two random Mamba at float32 and float16 checkpoint precision). Pythia-1B's peak
+is now 4.6 GB including the memory-mapped weights. The Pythia-1B weights downloaded before the kill are
+still in the model cache and will be reused. The stage was restarted alone.
