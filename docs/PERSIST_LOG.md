@@ -28,7 +28,7 @@ spikes means downloading about that much per session again (Study 2's cache kept
 ### Windowed measures, and calibration started (08:25 UTC)
 
 - `nematica/persist/measures.py`: windowed lag-2 measures, streamed over the recorder's unit blocks. Check
-  (`/tmp/s7/wtest.py`, now kept as the first test below): with 2 windows they equal Study 2's half-clip M1
+  (`scripts/persist_window_check.py`): with 2 windows they equal Study 2's half-clip M1
   exactly (0.5549 and 0.5399 both ways), and the streamed and materialised versions of 8 windows agree to
   2e-16.
 - `nematica/slow/stream.record_stream` gained an optional `extra(rec, inc)` hook that measures further
