@@ -241,3 +241,30 @@ directly, which the atlas and our cheap measure cannot do) before it is more tha
 not sent); a perturbation dataset with repeated pokes of the same neurons at controlled intervals; and
 recordings long enough to measure slow hidden state from rest (our calibration says 16 minutes is too
 short).
+
+## Update, 17 Nov 2026: two studies across species and network families
+
+**The map study (12 to 15 Nov, `docs/MAP_SUMMARY.md`)** widened both sides. One difference was confirmed:
+recorded at each Allen mouse's own instrument, a random RNN has less slow memory than the mouse in 33 of
+35 mice, and a small slow drive brings it to the typical mouse (equivalence not shown). Most other
+registered tests were not testable, mainly because the instrument moves a network's values more than mice
+differ.
+
+**Study 2 (15 to 17 Nov, `docs/SLOW_SUMMARY.md`)** tested point 2 of the conclusion directly, in the form
+"real cortex carries more internal state, slower relative to its input, and a slow internal state closes
+the gap". It used a clock-free measure (the share of activity that differs between repeats of the same
+clip, within each 30 s repeat), 49 mice and seven network families recorded at each mouse's instrument.
+**None of the four registered claims held**, and an independent review reproduced every number:
+- GRU and CfC carry far less internal state than mouse visual cortex; a task-trained RNN and Mamba carry
+  more; the range of Pythia sizes contains the typical mouse, with the largest closest.
+- The mice's internal state changes faster than their response locked to this slow movie; most networks'
+  is relatively slower.
+- Adding a slow drive to a random RNN overshoots; the controls fail too.
+
+**What this changes in the conclusion.** Point 2 ("the difference is in what the system carries outside its
+units' activity") was a synthesis, not a test. Its most direct testable form, *more and slower internal
+state within a repeat*, does not separate mouse cortex from standard networks. Slower state across minutes
+(drifting rules) is not covered by Study 2 and stays a candidate. Two descriptive patterns, seen after the
+data and untested, are the current leads: the mice's internal share holds up along the clip while
+context-driven networks' share fades within about 20 tokens, and on the relative-slowness measure only
+networks with internal noise come near the mice.
