@@ -1427,5 +1427,6 @@ a test run now stamps head 34ff1d8, dirty, and the list of code files changed si
 running language-model process loaded the old file and will still write empty stamps; rows from the next
 process on carry the stamp. For the rows already written, the code that produced them is bracketed by the
 code commits and this notebook's timestamps: S2 at 10:41, S3/S4 at 11:21, S5 at 11:48, S6 at 12:50, S7 at
-14:49, the half-clip speed change at 21:12 (16 Nov) and S8 at 03:39 (17 Nov). Each stage restart in this
-notebook was from a committed tree, except edits recorded in the same entry. No result changes.
+14:49, the half-clip speed change at 21:12 (16 Nov) and S8 at 03:39 (17 Nov). Whether every restart ran
+from a clean tree cannot now be shown; the restarts and the code changes before them are logged in the
+entries above. No result changes.
