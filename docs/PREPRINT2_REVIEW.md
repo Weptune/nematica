@@ -68,8 +68,8 @@ says.
 | Envelope shift up to 0.64 (0.60 was the partial run); "1 of 8 cells" ambiguous. | Fixed. |
 | "Wrong in both directions" gives no specifics a reader can check. | Removed (the phrase is not in MAP_SUMMARY). |
 | Two citations without authors (Soni et al.; Chun et al.); Rupasinghe et al. is a reviewed preprint. | Fixed. |
-| Code list omitted `scripts/map_permouse.py` and `scripts/map_slowdrive.py`. | Fixed. Whether the repository is publicly reachable was not checked; it must be before sharing. |
-| Figure 1 is dark, Figure 2 light. | Open: restyle Figure 1 before sharing. |
+| Code list omitted `scripts/map_permouse.py` and `scripts/map_slowdrive.py`. | Fixed. Repository confirmed public through the GitHub API (17 Nov). |
+| Figure 1 is dark, Figure 2 light. | Fixed (17 Nov, later): Figure 1 redrawn in Figure 2's light style from the same data by `scripts/plot_map_paper.py` (`docs/figures/slow_paper/fig1_permouse.png`); counts recomputed: 33 of 35 lower, 31 of 31 higher. |
 | Gokce et al.: "asks whether" undersells that the paper answers. | Fixed: states its finding. |
 | "We do not apply generic Poisson noise" sits awkwardly with the draft's own Poisson spike model. | Reworded: "Rather than adding generic Poisson noise, we record ...". |
 
@@ -83,5 +83,4 @@ now marked "[CORRECTED by review P-R1, 17 Nov]" with the fix; the original words
 ## Still open before any sharing
 
 - Author list and affiliations.
-- Restyle Figure 1 to match Figure 2; confirm the repository is public.
 - The project owner's go-ahead. Nothing has been sent or shared.
