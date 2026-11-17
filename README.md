@@ -4695,6 +4695,10 @@ agree about push responses is unlike worms in that respect too.
   public. Still open: authors and the project owner's go-ahead.
 - Preprint draft 1 gained (17 Nov) a related-findings paragraph citing Sourmpis et al. (eLife 2026, perturbation
   generalization in mouse cortex) and the NeuroAI Turing test (Feather et al. 2025), with both references added.
+  An independent check of that paragraph (review P1-R1, `docs/PREPRINT1_RELATED_REVIEW.md`) found one error
+  ("has since been reported": the mouse work came first) and several overstatements; all are fixed, and the
+  Introduction and Result 4 now credit Feather et al., Sourmpis et al. and Randi et al. where they overlap.
+  Open: the Sourmpis citation format (eLife volume and article number).
 - **Draft email to the atlas authors** (`docs/outreach/atlas_authors_email_DRAFT.md`): the recovery
   curve and a request about the light-free experiment. Not sent; needs the project owner's go-ahead.
 
