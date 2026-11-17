@@ -9,6 +9,26 @@ v0.3 calibration criteria (section 8a) were written before any v0.3 calibration 
 run first, at a seed not used in the calibration; it is reported in `PERSIST_LOG.md`.
 The persistence index c is still computed and reported, descriptively only.
 
+**What v0.3 tests, in one place** (it overrides sections 2, 5 and 7 where they differ):
+- **Claim 5 only:** in mouse visual cortex watching NM3, internal variability grows with the drive (b)
+  more than in artificial networks that generate variability by chaos or by additive noise.
+- **Systems:** K1 (noise-free chaotic random RNN), K3 (noisy random RNN, Study 2's A1), N3 (GRU with
+  hidden-state noise) and N6 (Pythia-160M with residual-stream noise), 3 instances each, every mouse's NM3
+  instrument. K3 at x0.5 and x2 playback, as a sensitivity. The noise-free carriers (A2, A3, A5, A6, A7) and
+  K2 served claims 1 to 4 and are not run.
+- **Test:** for each of K1, K3, N3 and N6, d_b = mouse b minus system b, paired by mouse on reached
+  recordings. Confirmed if d_b exceeds the margin, with a one-sided Wilcoxon p < 0.05 overall and within each
+  of the 3 instances, and the lower end of the 90% cluster-bootstrap interval above 0. Refuted if the same
+  holds in the opposite direction. The margin is the larger of 0.5 ruler units (robust SD of the mice's b)
+  and the bias bound from 8a. A system with more than 25% missing pairs is "not testable". **Claim 5 holds**
+  if at least 3 of the 4 systems are confirmed and none is refuted.
+- **Checks:** reliability of the mice's b between odd and even repeats (Spearman at least 0.5, otherwise
+  "unreliable, not tested"). Behaviour regressed out: claim 5 reported with and without, and the stricter
+  reading is the one with behaviour removed. Playback: if K3 at x0.5 or x2 moves the median d_b by 0.5 ruler
+  units or more, K3 is reported but not counted (then claim 5 needs all 3 remaining systems confirmed).
+- **Reported beside it:** where the mice's b lies relative to the calibration's additive and gain-type
+  ranges at the nearest instrument; c (fading) for every system; whole-clip M1 and M2 on NM3.
+
 Status: draft. Nothing here is frozen. Feasibility, calibration and an independent review come before
 freezing (sections 8 and 9). Notebook: `docs/PERSIST_LOG.md`.
 

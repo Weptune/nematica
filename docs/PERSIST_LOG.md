@@ -175,7 +175,7 @@ re-registered attempt. The next step (a v0.3 with a calibration that can test ga
 study on claim 5 alone, or parking Study 3) is the user's decision. Whichever is chosen, the record should
 show that v0.2's criteria were not met.
 
-### The user chose the generator test only; v0.3 criteria written before any v0.3 run (12:51 to 13:00 UTC)
+### The user chose the generator test only; v0.3 criteria written before any v0.3 run (12:51 to 12:57 UTC)
 
 - Decision (user, in reply to a question): narrow Study 3 to claim 5, "what kind of generator is cortex";
   recalibrate it with the gain-type system fixed, criteria written first, then review before freezing.

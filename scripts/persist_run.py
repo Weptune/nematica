@@ -45,6 +45,7 @@ MIN_SPIKES = int(round(200 * FIRST_REPEATS * 120.0 / (17 * 30.0)))   # Study 2's
 N_GROUPS = 4
 K_GAIN = 0.25                    # movie gain of the K controls (chaos survives it: PERSIST_LOG, chaos probe)
 CONTROLS = {"K1": {"g": 3.0, "noise": 0.0}, "K2": {"g": 0.8, "noise": 0.0}, "K3": {"g": 1.5, "noise": 0.1}}
+V3_CONTROLS = ("K1", "K3")       # v0.3: claim 5 only
 LMS = (("A6", "EleutherAI/pythia-14m-seed{s}"), ("A6", "EleutherAI/pythia-160m-seed{s}"),
        ("A6", "EleutherAI/pythia-410m-seed{s}"), ("A6", "EleutherAI/pythia-1b"),
        ("A7", "state-spaces/mamba-130m-hf"), ("A7", "state-spaces/mamba-370m-hf"))
@@ -319,7 +320,7 @@ def families(rows, med, dry=False):
             ms = [r for r in rows if r["instance"] == inst and r["group"] == g]
             if not ms:
                 continue
-            for fam in CONTROLS:
+            for fam in V3_CONTROLS:
                 yield (fam, f"i{inst}-g{g}", ms, lambda ms=ms, g=g, inst=inst, fam=fam:
                        gen_k(fam, inst, med[g], Rmax(ms), feat, other))
             for mult in (0.5, 2.0):                   # playback sensitivity on K3
@@ -327,21 +328,17 @@ def families(rows, med, dry=False):
                        gen_k("K3", inst, med[g], Rmax(ms), feat, other, mult=mult))
     if dry:
         return
+    # v0.3: the generators only (the carriers served the dropped claims 1 to 4)
     for inst in range(3):
         ms = [r for r in rows if r["instance"] == inst]
-        yield ("A2", f"i{inst}", ms, lambda ms=ms, inst=inst: gen_a2(inst, prof, Rmax(ms)))
-        yield ("A3", f"i{inst}", ms, lambda ms=ms, inst=inst: gen_char("gru", inst, prof, Rmax(ms)))
-        yield ("A5", f"i{inst}", ms, lambda ms=ms, inst=inst: gen_char("cfc", inst, prof, Rmax(ms)))
         yield ("N3", f"i{inst}", ms, lambda ms=ms, inst=inst: gen_char("gru", inst, prof, Rmax(ms),
                                                                        noise_sd=noise_level("N3")))
-    for fam, model in LMS:
-        for inst in range(3):
-            ms = [r for r in rows if r["instance"] == inst]
-            label = f"{model.format(s=inst + 1).split('/')[-1]}-i{inst}"
-            yield (fam, label, ms, lambda ms=ms, inst=inst, model=model: gen_lm(model, inst, prof, Rmax(ms)))
-            if "pythia-160m" in model:
-                yield ("N6", label, ms, lambda ms=ms, inst=inst, model=model:
-                       gen_lm(model, inst, prof, Rmax(ms), noise_sd=noise_level("N6")))
+    for inst in range(3):
+        ms = [r for r in rows if r["instance"] == inst]
+        model = "EleutherAI/pythia-160m-seed{s}"
+        label = f"{model.format(s=inst + 1).split('/')[-1]}-i{inst}"
+        yield ("N6", label, ms, lambda ms=ms, inst=inst, model=model:
+               gen_lm(model, inst, prof, Rmax(ms), noise_sd=noise_level("N6")))
 
 
 def stage_ais(only=None, dry=False):
@@ -435,89 +432,54 @@ def family_test(mice, ai_rows, meas, margin, band, beh=False, n_boot=4000, seed=
 
 
 def stage_tests(dry=False):
+    """v0.3 (PERSIST.md header): claim 5, its checks, and descriptive c."""
+    from scipy.stats import spearmanr
     mice = {r["id"]: r for r in map(json.loads, (OUT / ("mice_dry.jsonl" if dry else "mice.jsonl")).read_text()
                                     .splitlines()) if "error" not in r}
     rows, _ = mice_table(dry)
     mice = {r["id"]: {**mice[r["id"]], **r} for r in rows}
     ais = [r for r in map(json.loads, (OUT / ("ais_dry.jsonl" if dry else "ais.jsonl")).read_text().splitlines())
            if "error" not in r and r["id"] in mice]
-    cal = json.loads((OUT / "calibration.json").read_text())
+    cal = json.loads((OUT / "calibration_v3.json").read_text())
     out = {"frozen": frozen(), "n_mice": len(mice)}
-    rul = {m: ruler([value(x, m) for x in mice.values()]) for m in ("c", "b")}
-    bias = {"c": cal.get("bias_bound_c", 0.0), "b": cal.get("bias_bound_b", 0.0)}
-    marg = {m: max(0.5 * rul[m], bias[m]) for m in rul}
-    out.update({"rulers": rul, "bias_bounds": bias, "margins": marg})
-    band = {m: 0.5 * rul[m] for m in rul}               # equivalence: the 90% interval within +-0.5 ruler units
-
-    def by_run(fam):
-        runs = {}
-        for r in ais:
-            if r["family"] == fam:
-                runs.setdefault(r["run"].split("-i")[0] if fam in ("A6", "A7", "N6") else "all", []).append(r)
-        return runs
-
-    # claim 1: non-inferiority of the mice's c
-    c = np.array([value(m, "c") for m in mice.values()])
-    c = c[np.isfinite(c)]
-    rng = np.random.default_rng(2026)
-    boot = [np.median(rng.choice(c, len(c))) for _ in range(4000)]
-    out["claim1"] = {"median_c": float(np.median(c)), "ci90": [float(np.quantile(boot, 0.05)),
-                                                             float(np.quantile(boot, 0.95))],
-                     "p": SR._wilcoxon(c + marg["c"], "greater")}
-    out["claim1"]["holds"] = bool(out["claim1"]["ci90"][0] > -marg["c"] and out["claim1"]["p"] < 0.05)
-    # claim 2: carriers
-    res = {}
-    for fam in ("A2", "A3", "A5", "A6", "A7"):
-        res[fam] = {k: family_test(mice, v, "c", marg["c"], band["c"]) for k, v in by_run(fam).items()}
-    def fam_ok(fam):
-        v = [x["verdict"] for x in res[fam].values()]
-        need = 3 if fam == "A6" else len(v)
-        return sum(x == "confirmed" for x in v) >= need, any(x == "refuted" for x in v)
-    ok = {f: fam_ok(f) for f in res}
-    out["claim2"] = {"families": res, "holds": bool(sum(o[0] for o in ok.values()) >= 4 and
-                                                    not any(o[1] for o in ok.values()))}
-    # claim 3: generators close the gap
-    eq = {}
-    for fam, base, size in (("N3", "A3", "all"), ("N6", "A6", "pythia-160m")):
-        t = {k: family_test(mice, v, "c", marg["c"], band["c"]) for k, v in by_run(fam).items()}
-        eq[fam] = {"test": t, "equivalent": all(x.get("equivalent") for x in t.values()),
-                   "noise_free_confirmed": res[base].get(size, {}).get("verdict") == "confirmed"}
-    out["claim3"] = {**eq, "holds": all(v["equivalent"] and v["noise_free_confirmed"] for v in eq.values())}
-    # claim 4: controls
-    kt = {fam: family_test(mice, [r for r in ais if r["family"] == fam], "c", marg["c"], band["c"]) for fam in CONTROLS}
-    out["claim4"] = {"tests": kt, "as_expected": kt["K2"]["verdict"] == "confirmed" and
-                     kt["K1"]["verdict"] != "confirmed" and kt["K3"]["verdict"] != "confirmed"}
-    # claim 5: kind of generator
-    gt = {fam: family_test(mice, [r for r in ais if r["family"] == fam], "b", marg["b"], band["b"]) for fam in ("K1", "K3", "N3", "N6")}
-    out["claim5"] = {"tests": gt, "holds": bool(sum(v["verdict"] == "confirmed" for v in gt.values()) >= 3 and
-                                                 not any(v["verdict"] == "refuted" for v in gt.values()))}
-    # behaviour removed (claims 1, 2, 5)
-    out["behaviour_removed"] = {
-        "claim2": {fam: {k: family_test(mice, v, "c", marg["c"], band["c"], beh=True)["verdict"] for k, v in by_run(fam).items()}
-                   for fam in res},
-        "claim5": {fam: family_test(mice, [r for r in ais if r["family"] == fam], "b", marg["b"], band["b"], beh=True)["verdict"]
-                   for fam in gt}}
-    # reliability (odd and even repeats)
-    from scipy.stats import spearmanr
-    rel = {}
-    for meas in ("c", "b"):
-        a = [value({"windows": m["split"]["odd"]}, meas) for m in mice.values()]
-        b_ = [value({"windows": m["split"]["even"]}, meas) for m in mice.values()]
-        ok_ = np.isfinite(a) & np.isfinite(b_)
-        rel[meas] = float(spearmanr(np.array(a)[ok_], np.array(b_)[ok_])[0]) if ok_.sum() > 5 else np.nan
-    out["reliability"] = rel
-    # playback sensitivity (K3)
+    # reliability of b (odd against even repeats)
+    a = np.array([value({"windows": m["split"]["odd"]}, "b") for m in mice.values()])
+    e = np.array([value({"windows": m["split"]["even"]}, "b") for m in mice.values()])
+    ok = np.isfinite(a) & np.isfinite(e)
+    rho = float(spearmanr(a[ok], e[ok])[0]) if ok.sum() > 5 else np.nan
+    out["reliability_b"] = {"rho": rho, "n": int(ok.sum()), "reliable": bool(rho >= 0.5)}
+    rul = ruler([value(x, "b") for x in mice.values()])
+    bias = float(cal["all"]["bias_bound_b"])
+    marg = max(0.5 * rul, bias)
+    band = 0.5 * rul
+    out.update({"ruler_b": rul, "bias_bound_b": bias, "margin_b": marg})
     pb = {}
     k3 = {r["id"]: r for r in ais if r["family"] == "K3"}
     for mult in ("x0.5", "x2.0"):
-        sh = [value(r, "c") - value(k3[r["id"]], "c") for r in ais if r["family"] == "K3-play"
+        sh = [value(r, "b") - value(k3[r["id"]], "b") for r in ais if r["family"] == "K3-play"
               and r["run"].endswith(mult) and r["id"] in k3 and r.get("reached") and k3[r["id"]].get("reached")]
-        pb[mult] = float(np.nanmedian(sh) / rul["c"]) if sh else np.nan
-    out["playback_shift_ruler"] = pb
+        pb[mult] = float(np.nanmedian(sh) / rul) if sh else np.nan
+    k3_counted = all(np.isfinite(v) and abs(v) < 0.5 for v in pb.values())
+    out["playback_shift_ruler"] = {**pb, "K3_counted": k3_counted}
+    systems = ("K1", "K3", "N3", "N6") if k3_counted else ("K1", "N3", "N6")
+    for beh in (False, True):
+        t = {fam: family_test(mice, [r for r in ais if r["family"] == fam], "b", marg, band, beh=beh)
+             for fam in ("K1", "K3", "N3", "N6")}
+        n_conf = sum(t[f]["verdict"] == "confirmed" for f in systems)
+        holds = (n_conf >= 3 if k3_counted else n_conf == 3) and not any(t[f]["verdict"] == "refuted" for f in systems)
+        out["claim5_behaviour_removed" if beh else "claim5"] = {"tests": t, "counted": list(systems),
+                                                                 "holds": bool(holds and out["reliability_b"]["reliable"])}
+    mb = np.array([value(m, "b") for m in mice.values()])
+    out["mice_b"] = {"median": float(np.nanmedian(mb)), "q25": float(np.nanquantile(mb, 0.25)),
+                     "q75": float(np.nanquantile(mb, 0.75))}
+    out["descriptive_c"] = {"mice": float(np.nanmedian([value(m, "c") for m in mice.values()])),
+                            **{fam: float(np.nanmedian([value(r, "c") for r in ais if r["family"] == fam
+                                                        and r.get("reached")] or [np.nan]))
+                               for fam in ("K1", "K3", "N3", "N6")}}
     name = "tests_dry.json" if dry else "tests.json"
     (OUT / name).write_text(json.dumps(out, indent=1, default=float))
-    print(json.dumps({k: out[k].get("holds", out[k].get("as_expected")) for k in
-                      ("claim1", "claim2", "claim3", "claim4", "claim5")}), flush=True)
+    print(json.dumps({"claim5": out["claim5"]["holds"], "with_behaviour_removed": out["claim5_behaviour_removed"]["holds"],
+                      "reliability_b": out["reliability_b"]}), flush=True)
 
 
 def main():
