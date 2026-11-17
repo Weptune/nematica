@@ -42,3 +42,21 @@ statistic computed), then write the calibration criteria before any calibration 
   calibration run (`scripts/barcode_calibrate.py`). A caution is recorded in the draft: through the
   exponential spike model, additive network activity becomes multiplicative firing, so "gain-type" is
   defined on the network's own activity.
+
+### Calibration v4: M1 and M2 are eligible, the drive exponent is not (15:29 UTC)
+
+96 runs (`docs/figures/barcode/calibration.json`, `calibration_runs.jsonl`); criteria as written in v0.1
+before the run.
+- **K1 passes** at every instrument: Spearman of M1 with the true internal share 0.97, 0.97, 0.97 and 0.92
+  (median, fastest, slowest, noisiest).
+- **K2 passes** at every instrument: M2 higher at the slower internal timescale in 8 of 8 pairs everywhere.
+- **K3 and K4 fail.** The drive exponent b could not be estimated in 33 of 96 runs. Where it could, additive
+  systems gave values up to 244, and its ordering with gain size was negative (Spearman -0.88 to -0.24).
+  Cause: the 20 windows are 20 bins each, shorter than the internal timescale, and centring within each
+  window removes the slow internal part. This was a design error in the criteria; it is not repaired here,
+  because a repair chosen after the result would be a forking path. b is not eligible.
+- Only 1 of 96 synthetic recordings reached the instrument tolerance (as registered, reach was reported,
+  not required).
+
+**By the eligibility rule, M1 and M2 can carry Study 4's claims, and the drive exponent cannot.** Next:
+choose the headline claim (at most two), written to M1 and M2. Prefetch of the 14 sessions is still running.

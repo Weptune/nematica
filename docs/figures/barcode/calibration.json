@@ -1,0 +1,118 @@
+{
+ "n_runs": 96,
+ "n_reached": 1,
+ "K1": {
+  "fastest": {
+   "rho": 0.9701425001453319,
+   "n": 16,
+   "passes": true
+  },
+  "median": {
+   "rho": 0.9701425001453319,
+   "n": 16,
+   "passes": true
+  },
+  "noisiest": {
+   "rho": 0.9216353751380653,
+   "n": 16,
+   "passes": true
+  },
+  "slowest": {
+   "rho": 0.9701425001453319,
+   "n": 16,
+   "passes": true
+  }
+ },
+ "K2": {
+  "fastest": {
+   "pairs": 8,
+   "higher": 8,
+   "passes": true
+  },
+  "median": {
+   "pairs": 8,
+   "higher": 8,
+   "passes": true
+  },
+  "noisiest": {
+   "pairs": 8,
+   "higher": 8,
+   "passes": true
+  },
+  "slowest": {
+   "pairs": 8,
+   "higher": 8,
+   "passes": true
+  }
+ },
+ "K3": {
+  "fastest|0": {
+   "additive_max": 204.41696916199305,
+   "gain_min": 0.9629073476660808,
+   "passes": false
+  },
+  "fastest|1": {
+   "additive_max": 9.29519004958921,
+   "gain_min": 0.7237216242669335,
+   "passes": false
+  },
+  "median|0": {
+   "additive_max": 20.081451393256707,
+   "gain_min": 0.38759823049255376,
+   "passes": false
+  },
+  "noisiest|0": {
+   "additive_max": 244.41274307787887,
+   "gain_min": 0.9114519769042092,
+   "passes": false
+  },
+  "noisiest|1": {
+   "additive_max": 214.68916183806365,
+   "gain_min": 0.5406227259601512,
+   "passes": false
+  },
+  "slowest|0": {
+   "additive_max": 26.69677370409798,
+   "gain_min": 0.9209906443713307,
+   "passes": false
+  },
+  "slowest|1": {
+   "additive_max": 202.6651380712098,
+   "gain_min": 0.7028582225155787,
+   "passes": false
+  }
+ },
+ "K4": {
+  "fastest": {
+   "rho": -0.23862250691966458,
+   "n": 7,
+   "passes": false
+  },
+  "median": {
+   "rho": -0.8827348295047495,
+   "n": 6,
+   "passes": false
+  },
+  "noisiest": {
+   "rho": -0.43915503282683993,
+   "n": 8,
+   "passes": false
+  },
+  "slowest": {
+   "rho": -0.29277002188455997,
+   "n": 8,
+   "passes": false
+  }
+ },
+ "passes": {
+  "K1": true,
+  "K2": true,
+  "K3": false,
+  "K4": false
+ },
+ "eligible": {
+  "M1": true,
+  "M2": true,
+  "b": false
+ }
+}
