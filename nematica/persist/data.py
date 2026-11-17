@@ -79,3 +79,52 @@ def nm3_cache(a, max_units=mdata.ALLEN_MAX_UNITS):
                         rep=np.concatenate(rep) if rep else np.zeros(0, np.uint8), ptr=np.asarray(ptr, np.int64),
                         starts=starts, stops=stops, dropped=dropped, units=good, n_good=n_good)
     return np.load(f, allow_pickle=False)
+
+
+def behaviour_nm3(a, starts, n_bins):
+    """Running speed and pupil area in 20 ms bins aligned to each NM3 repeat, as
+    `nematica.slow.data.behaviour` does for NM1 (same signals, same interpolation), cached separately."""
+    import h5py
+    f = CACHE / (a["path"].split("/")[0] + "_behaviour.npz")
+    if f.exists():
+        return np.load(f, allow_pickle=False)["B"]
+    CACHE.mkdir(parents=True, exist_ok=True)
+    with h5py.File(mdata.open_url(f"{mdata.DANDI}/assets/{a['asset_id']}/download/"), "r") as h:
+        rs = h["processing/running/running_speed"]
+        sig = [(np.asarray(rs["timestamps"][:]), np.asarray(rs["data"][:], float))]
+        pp = "processing/filtered_gaze_mapping/pupil_area"
+        if pp in h:
+            sig.append((np.asarray(h[pp]["timestamps"][:]), np.asarray(h[pp]["data"][:], float)))
+    B = np.full((len(starts), n_bins, len(sig)), np.nan)
+    for j, (t, x) in enumerate(sig):
+        ok = np.isfinite(x)
+        if ok.sum() < 2:
+            continue
+        t, x = t[ok], x[ok]
+        for r, s0 in enumerate(starts):
+            centres = s0 + (np.arange(n_bins) + 0.5) * 0.02
+            B[r, :, j] = np.interp(centres, t, x)
+    np.savez(f, B=B)
+    return B
+
+
+def nm3_features(d=64, ds=8):
+    """NM3 frames -> (3600, d) features exactly as `nematica.slow.inputs.movie_features` does for NM1 (block
+    average by 8, centre per pixel, top 64 principal components, unit variance); cached in data/derived."""
+    root = Path(__file__).resolve().parents[2]
+    out = root / "data/derived" / f"movie3_pca{d}_ds{ds}.npy"
+    if out.exists():
+        return np.load(out)
+    F = np.load(root / "data/external/allen_nm3/natural_movie_3.h5", mmap_mode="r", allow_pickle=False)
+    n, h, w = F.shape
+    h2, w2 = h // ds, w // ds
+    X = np.empty((n, h2 * w2), np.float32)
+    for i in range(n):
+        X[i] = np.asarray(F[i, :h2 * ds, :w2 * ds], np.float32).reshape(h2, ds, w2, ds).mean((1, 3)).ravel()
+    X -= X.mean(0)
+    U, s, _ = np.linalg.svd(X, full_matrices=False)
+    Z = (U[:, :d] * s[:d]).astype(np.float32)
+    Z /= Z.std(0)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    np.save(out, Z)
+    return Z

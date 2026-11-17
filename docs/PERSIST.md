@@ -103,23 +103,37 @@ median NM3 instrument (Study 2 used 1,500). Three instances each; instance = mou
 | A3 GRU, A5 CfC | Study 2's character networks | preceding text | carrier |
 | A6 Pythia | 14M, 160M, 410M (seeds 1 to 3), 1B | preceding context | carrier |
 | A7 Mamba | 130M, 370M | preceding context | carrier |
-| N3 GRU + noise | A3 with Gaussian noise added to the hidden state at every step (share of variance set in calibration, then fixed) | noise | claim 3 |
-| N6 Pythia-160M + noise | A6 160M with Gaussian noise added to the residual stream at every layer and token | noise | claim 3 |
-| K1 chaotic random RNN | A1 (g 1.5) with **no noise**, movie-driven at balanced gain | chaos | control, claim 4 |
-| K2 stable random RNN | A1 with g 0.8 and no noise, movie-driven | preceding movie | control, claim 4 |
-| K3 noisy random RNN | A1 as in Study 2 (g 1.5, noise 0.1), balanced gain | noise and chaos | reference generator |
+| N3 GRU + noise | A3 with Gaussian noise added to the hidden state at every step (level set in section 8, then fixed) | noise | claims 3 and 5 |
+| N6 Pythia-160M + noise | A6 160M with Gaussian noise added to the residual stream after every layer up to the recorded one, and to the recorded layer's MLP input, at every token | noise | claims 3 and 5 |
+| K1 chaotic random RNN | Study 2's movie-driven random RNN with g 3.0 and **no noise** | chaos | control (claim 4), claim 5 |
+| K2 stable random RNN | the same with g 0.8 and no noise | preceding input | control (claim 4) |
+| K3 noisy random RNN | Study 2's A1 (g 1.5, noise 0.1) | noise and chaos | reference generator, claim 5 |
 
-Noise-free deterministic families get a different preceding context before each repeat (as in Study 2);
-the movie-driven ones run continuously through back-to-back repeats, in two blocks, as the mice watch them. Playback speed for movie-driven systems follows
-Study 2's rule; the playback sensitivity is repeated (section 7).
+The K controls see NM3 features (computed exactly as Study 2's NM1 features) at movie gain 0.25, and before
+every repeat an interlude of 30 to 90 frames of a different movie (NM1), so the state entering each repeat
+differs, as the language models' contexts do (`nematica/persist/inputs.driven_rnn`). Why g 3.0 and gain
+0.25 for K1: a probe on random features (`PERSIST_LOG.md`, 09:40) showed that input suppresses chaos in the
+noise-free network, as Rajan et al. predict. At g 1.5 and Study 2's balanced gain 0.86, the internal part
+was gone by the last quarter of the clip. At g 3.0 and gain 0.25 it persisted (early 0.91, late 0.78 of the
+total). The controls play the movie at Study 2's playback rule; a network with no undriven timescale (K2)
+uses K3's.
+
+Text and task networks get a different preceding context before each repeat, as in Study 2. The playback
+sensitivity is repeated on K3 at x0.5 and x2 (section 7).
 
 ## 6. Instruments
 
 As Study 2: every network is recorded through the spike model at each mouse's numbers
-measured on that mouse's NM3 repeats, checked on the recorded repeats (up to 5 corrections, one retry of
-10), unreached recordings excluded and counted. Known issue carried over and fixed before use: the clip
-pilot used the pre-S3 recorder and made A2's clips about 9 times too long (`SLOW.md` S9); the pilot will use
-the streaming recorder.
+measured on that mouse's NM3 repeats, checked on the recorded repeats (up to 5 corrections), unreached
+recordings excluded and counted. Changes from Study 2, both found while preparing this study:
+- The clip pilot records with the same streaming recorder as the real recordings (Study 2's used the
+  pre-S3 recorder and made A2's clips about 9 times too long: `SLOW.md` S9).
+- A correction never makes a recording longer than 4 x 6,000 bins (`max_bins`). Study 2's rule for a
+  recording with no measurable timescale halves the bin width each round. That produced the 44.6 GiB
+  MemoryError in Study 2's retry, and three memory kills in this study's calibration.
+No retry stage: an unreached recording is excluded and counted.
+Mouse inclusion: Study 2's rule, with the spike minimum counted over the first 8 repeats and scaled to
+the same rate (200 spikes per 510 s of movie, so 376 over 960 s).
 
 ## 7. Hypotheses and decision rules (to be frozen)
 
@@ -134,8 +148,8 @@ caveat that 3 clusters show agreement across instances, not a population interva
 - **H2 (carriers fade more than cortex), per noise-free family A2, A3, A5, A6, A7:** confirmed if d exceeds
   the margin with p < 0.05 overall and within each instance and the cluster interval above 0; refuted the
   other way; otherwise not decided. For A6 and A7, every size is tested separately (no bracket rule: S-R4
-  showed it decides families with a wide range by construction). **Claim 2 holds** if at least 4 of the 5
-  families have every size confirmed or at least 2 of 3 sizes confirmed for A6, and none is refuted.
+  showed it decides families with a wide range by construction). A family counts as confirmed if every size is confirmed (A7: both), except A6, which needs 3 of its 4.
+  **Claim 2 holds** if at least 4 of the 5 families are confirmed and none has a refuted size.
 - **H3 (a generator closes the gap):** N3 and N6 are each equivalent to the mice (90% cluster interval of
   the median d inside plus or minus 0.5 ruler units), and their noise-free versions (A3, A6 160M) are
   confirmed under H2. **Claim 3 holds** if both pairs behave so.

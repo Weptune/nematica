@@ -102,3 +102,43 @@ can only be carried in from the context. Claim 5, which asks what kind of variab
 and compares it with networks that generate variability in different ways, is the part with more
 potential to say something new on the networks' side. The brain side alone overlaps recent work on
 partitioning variability (Goris et al. 2014; Rupasinghe, Charles and Pillow, eLife 2026).
+
+### NM3 prefetch complete; calibration killed again, rerun alone (09:13 UTC)
+
+- All 32 NM3 sessions cached (`data/cache/allen_nm3`, 897 MB, git-ignored). Repeats per session equal F1's
+  valid counts; 1,400 to 2,200 cached units per session (all good units, the map study's subset; area and
+  QC selection happen at measurement). No statistic of NM3 activity has been computed.
+- The single calibration process was killed for memory again (4.8 GB anonymous, with the prefetch's 0.6 GB
+  beside it), on the fastest instrument. The likely peak is the instrument numbers
+  (`record.recorded_numbers`) on the 13,000-bin recording. It was restarted with nothing else running.
+
+### Bin cap; chaos probe; NM3 frames; pipeline written and dry-run (09:15 to 09:58 UTC)
+
+- **Cause of the memory kills found and capped.** The run that killed the single calibration process
+  (6.3 GB) was the gain-type system at the fastest instrument. Its timescale could not be measured, so
+  Study 2's correction rule halved the bin width in every round and the recording doubled each time. This is
+  the same mechanism as Study 2's 44.6 GiB retry error. `record_stream` gained `max_bins`: a correction that
+  would make the recording longer is not made, and the best round so far is kept (flag
+  `stopped_at_max_bins`). The default is None, so Study 2's behaviour is unchanged; the S4 equivalence
+  check still passes (3e-15). Study 3 uses 4 x 6,000 bins. Calibration restarted at 09:15 and is running.
+- **NM3 frames** downloaded from Allen's public bucket (`natural_movie_3.h5`, 665,395,296 bytes, shape
+  3600 x 304 x 608, uint8; local only, `data/external/allen_nm3/`, git-ignored). Read with
+  `allow_pickle=False`, from a Python run started outside the download directory.
+- **Chaos probe** (random input features, 200 units, noise-free, before any choice was fixed). Internal
+  share in the first and last quarter of the clip, against movie gain:
+
+  | g | gain 0.1 | 0.25 | 0.5 | 0.86 |
+  |---|---|---|---|---|
+  | 1.5 | 0.52 / 0.87 | 0.89 / 0.32 | 0.63 / 0.01 | 0.14 / 0.00 |
+  | 2.0 | 0.85 / 0.73 | 0.59 / 0.76 | 0.76 / 0.27 | 0.51 / 0.00 |
+  | 3.0 | 0.58 / 0.53 | 0.91 / 0.78 | 0.92 / 0.78 | 0.75 / 0.32 |
+
+  Input suppresses chaos (Rajan et al. 2010). At Study 2's settings (g 1.5, gain 0.86) a noise-free random
+  network is a carrier, not a generator. K1 is therefore g 3.0 at gain 0.25, and all K controls use gain
+  0.25. The draft's section 5 records this.
+- **Pipeline** `scripts/persist_run.py` (stages mice, other, ais, tests). It refuses real data until
+  PERSIST.md is frozen and imports Study 2's shared code unchanged. `nematica/persist/inputs.driven_rnn`
+  builds the K controls: any clip length, an interlude of 30 to 90 frames of NM1 before each repeat.
+  `nematica/persist/data.py` holds the NM3 behaviour and features.
+- **Dry run of the mice stage** (synthetic stand-ins, nothing real read): 6 rows; c from -0.41 to 0.13
+  and b about 0.7 for a generated synthetic system, consistent with calibration.

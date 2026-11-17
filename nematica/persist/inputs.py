@@ -85,3 +85,55 @@ def lm_repeats_noisy(model_name, clip, contexts, keep=480, layer=None, seed=0, d
     return A, [r * C for r in range(len(contexts))], {"model": model_name, "layer": int(L), "clip": C,
                                                      "context": len(contexts[0]), "units_total": int(units),
                                                      "noise_sd": float(noise_sd)}
+
+
+def driven_rnn(feat, other, R=10, n=480, g=1.5, alpha=0.2, noise=0.1, gain=0.86, spf=3.0, seed=0, burn=2000,
+               interlude=(30, 90), keep_every=1):
+    """Controls K1 to K3 (docs/PERSIST.md section 5): Study 2's movie-driven random RNN
+    (`nematica.slow.inputs.driven_random_rnn`, same update and weights for a given seed), generalised to a
+    clip of any length (NM3: 3,600 frames) and with an interlude before every repeat: a random stretch of
+    30 to 90 frames of a different movie (`other`, NM1 features), so the state entering each repeat differs,
+    as the language models' contexts do. K1: g 1.5, noise 0 (chaotic, noise-free). K2: g 0.8, noise 0
+    (stable, noise-free). K3: g 1.5, noise 0.1 (Study 2's A1). Returns (A, starts) in kept samples."""
+    rng = np.random.default_rng(seed)
+    d = feat.shape[1]
+    W = rng.normal(0, 1 / np.sqrt(n), (n, n))
+    B = rng.normal(0, 1 / np.sqrt(d), (n, d))
+    drive = gain * (feat @ B.T)
+    drive_o = gain * (other @ B.T)
+    nf = len(feat)
+    L = int(round(nf * spf))
+    fi = np.minimum((np.arange(L) / spf).astype(int), nf - 1)
+    ri = np.random.default_rng(90_000 + seed)
+    x = rng.normal(0, 1, n)
+    for _ in range(burn):
+        x = (1 - alpha) * x + alpha * np.tanh(g * W @ x) + noise * rng.standard_normal(n)
+    k = int(keep_every)
+    out, starts, acc, cnt, kept = [], [], np.zeros(n), 0, 0
+
+    def step(u):
+        nonlocal x, acc, cnt, kept
+        x = (1 - alpha) * x + alpha * np.tanh(g * W @ x + u) + noise * rng.standard_normal(n)
+        acc += x
+        cnt += 1
+        if cnt == k:
+            out.append((acc / k).astype(np.float32))
+            acc[:] = 0
+            cnt = 0
+            kept += 1
+
+    for r in range(R):
+        m = int(ri.integers(interlude[0], interlude[1] + 1))
+        a = int(ri.integers(0, len(other) - m))
+        Li = int(round(m * spf))
+        fo = a + np.minimum((np.arange(Li) / spf).astype(int), m - 1)
+        for t in range(Li):
+            step(drive_o[fo[t]])
+        if cnt:                                     # align the repeat's start to a kept sample
+            acc[:] = 0
+            cnt = 0
+        starts.append(kept)
+        for t in range(L):
+            step(drive[fi[t]])
+    return np.stack(out), starts, {"g": g, "noise": noise, "gain": gain, "spf": spf, "keep_every": k,
+                                   "clip_kept": L // k}

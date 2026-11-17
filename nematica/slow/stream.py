@@ -212,14 +212,16 @@ def renormalise_hold(k):
 
 
 def record_stream(A, starts, length, prof, nb_mouse, R_mouse, n_units_mouse, seed, rounds=5, k_start=None,
-                  halves=True, extra=None):
+                  halves=True, extra=None, max_bins=None):
     """Amendment S4: the AI recording for one mouse, streamed. Starting knobs: `record.analytic_knobs` (or
     `k_start`); then up to `rounds` corrections judged on the instrument numbers of a fixed subset of units
     and repeats (as `record.record_checked`, best round kept); then the full recording in two passes; the
     mouse's inclusion rule scaled to the clip; a seeded subset of the mouse's size; the measures.
     Returns a dict of results (measures, numbers on the analysed units, reached, knobs, sizes).
     `extra(rec, inc)`, if given (Study 3), returns a dict of further measures on the same recording and
-    analysed units, stored under "extra"; it does not change anything else."""
+    analysed units, stored under "extra"; it does not change anything else. `max_bins` (Study 3): a correction
+    that would make the recording longer than this many bins is not made (the corrections stop there and the
+    best round so far is kept); None (Study 2) means no limit."""
     from ..map import instrument as INS
     A = np.asarray(A)
     k = dict(k_start or Rc.analytic_knobs(A, prof, max_hold=0))
@@ -238,6 +240,7 @@ def record_stream(A, starts, length, prof, nb_mouse, R_mouse, n_units_mouse, see
     probe = np.arange(len(rec.cols))
     got = numbers(rec, probe)
     best = (Rc._err(got, prof), dict(k), got)
+    too_long = lambda kk: max_bins is not None and np.floor(length * kk.get("hold", 1) / max(kk["bin_steps"], 1.0)) > max_bins
     for _ in range(rounds):
         if best[0] <= 1.0:
             break
@@ -246,6 +249,11 @@ def record_stream(A, starts, length, prof, nb_mouse, R_mouse, n_units_mouse, see
             k["mean_count"] *= 2.0
             k["corrected"] = k.get("corrected", 0) + 1
             k = renormalise_hold(k)
+            if too_long(k):
+                k = dict(best[1])
+                k["stopped_at_max_bins"] = True
+                best = (best[0], dict(k), best[2])
+                break
             rec = Recorder(A, starts, length, k, seed)
             got = numbers(rec, probe)
             continue
@@ -256,6 +264,9 @@ def record_stream(A, starts, length, prof, nb_mouse, R_mouse, n_units_mouse, see
         k["gain"] *= float(np.exp(4.0 * (got["noise"] - prof["noise"])))
         k["corrected"] = k.get("corrected", 0) + 1
         k = renormalise_hold(k)
+        if too_long(k):
+            best[1]["stopped_at_max_bins"] = True
+            break
         rec = Recorder(A, starts, length, k, seed)
         got = numbers(rec, probe)
         if Rc._err(got, prof) < best[0]:
