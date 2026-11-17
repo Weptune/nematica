@@ -89,3 +89,20 @@ choose the headline claim (at most two), written to M1 and M2. Prefetch of the 1
     recordings never reach the instrument).
 - One fix to the draft from the dry run: R0 is counted whether or not its recordings reach the instrument,
   since synthetic systems rarely do.
+
+### Feasibility F3, and the pre-freeze review started (15:38 to 15:58 UTC)
+
+- **Independent review B-R1** of the draft and pipeline started at 15:38 (an agent that wrote none of the
+  code; read-only; no statistic of the Barcoding spikes).
+- **F3, one language model, end to end** (`scripts/barcode_lm_check.py`; Study 2's median NM1 instrument as
+  a stand-in, no Barcoding activity):
+  - Pythia-410M seed 1, 90 contexts; the clip pilot gave 9 tokens. Generation took 79 s; recording 4 depths
+    took 25 s.
+  - Peak memory was 5.6 GB, close to the machine's limit, so language models must run alone.
+  - M1 by depth was 0.64, 0.75, 0.76 and 0.89. This is an AI result at a stand-in instrument, not a
+    finding, and it is noted here only because the draft's claims concern depth.
+  - **None of the 4 recordings reached the instrument tolerance** (recorded bins 663 to 853 against 400). If
+    that repeats at the Barcoding instruments, H2 will be "not testable" under the 25% missing rule. This
+    goes to the review.
+- The model download for the check was removed afterwards (the disk had fallen to 1.8 GB free); 3.5 GB
+  free now.
