@@ -142,3 +142,35 @@ partitioning variability (Goris et al. 2014; Rupasinghe, Charles and Pillow, eLi
   `nematica/persist/data.py` holds the NM3 behaviour and features.
 - **Dry run of the mice stage** (synthetic stand-ins, nothing real read): 6 rows; c from -0.41 to 0.13
   and b about 0.7 for a generated synthetic system, consistent with calibration.
+
+### Full calibration: no index passes its criteria; by the v0.2 rule, claims 1 to 4 stop here (10:00 UTC)
+
+120 runs, 73 of which reached the instrument (the criteria use reached runs only, as the data would).
+`docs/figures/persist/calibration.json`; `scripts/persist_calibrate.py --summary`.
+
+| index | C1 separation | C2 envelope invariance | C4 gain-type counts as generated |
+|---|---|---|---|
+| P_share | fails (noisiest seed 1, slowest seed 1) | fails (generated shifts up to 0.64, tolerance 0.105) | passes (1 cell) |
+| P_amp | passes | fails (shifts up to 1.01, tolerance 0.29) | fails (1 cell) |
+| fitted c | passes (all 8 cells) | fails only on carried systems at the fastest instrument (-1.82, -1.63; tolerance 1.47) | fails (1 cell: c -1.93) |
+| log-linear c | fails (slowest seed 0: a carried run at +1.47) | fails (fastest, carried, -2.33) | passes (1 cell) |
+
+- **By the selection rule written in v0.2 before the full calibration, no index passes C1, C2 and C4, so
+  the persistence claims (1 to 4) are dropped before any held-out data is read.** The rule is applied as
+  written. The fitted c comes closest: it separates every cell, and its C2 failures are carried systems
+  moving further from the generated ones, which would not have changed a classification. But the
+  criterion as written covers both kinds, and changing it now, after seeing the result, is exactly the
+  kind of change the rule exists to prevent.
+- **Claim 5's calibration is too thin.** C5 passes (generated b at most 0.49 against gain-type 2.03), but on
+  1 cell of 8. The gain-type synthetic system reached the instrument in only 1 of 8 runs: it has no fast
+  component, so its white share falls far below the mice's (0.0 to 0.70 against 0.88 to 1.0). C4 rests on
+  the same single run.
+- Reach rates by instrument: median 22 of 30, fastest 19 of 30, slowest 18 of 30, noisiest 14 of 30.
+- Drive exponent b across reached runs: generated -0.14 to 0.60 (median 0.37); carried median 1.09 (wide);
+  gain-type 2.03 (one run).
+
+**Status:** Study 3 v0.2 stops at calibration for claims 1 to 4, and claim 5 cannot go ahead on this
+calibration. No NM3 activity has been measured; the NM3 spike cache (local, 897 MB) stays for any later,
+re-registered attempt. The next step (a v0.3 with a calibration that can test gain-type systems, a narrower
+study on claim 5 alone, or parking Study 3) is the user's decision. Whichever is chosen, the record should
+show that v0.2's criteria were not met.

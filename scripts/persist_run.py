@@ -266,7 +266,7 @@ def gen_char(kind, inst, prof, R, noise_sd=0.0):
     split = len(data) - 200_000
     mk = lambda c, r: PI.char_repeats_noisy(model, data, split, clip_len=c, R=r, seed=inst, noise_sd=noise_sd,
                                             noise_seed=inst)
-    n = clip_units_stream(mk, prof, 2400)
+    n = clip_units_stream(mk, prof, 80)             # Study 2: about 80 bins per character at 1,500 bins
     return (*mk(n, R), n)
 
 
@@ -283,7 +283,7 @@ def gen_lm(model, inst, prof, R, noise_sd=0.0):
                                               noise_sd=noise_sd, noise_seed=inst)[:2]
     if shutil.disk_usage(ROOT).free / 1e9 < 3.0:
         raise RuntimeError("under 3 GB free; a language model needs up to about 3 GB")
-    n = clip_units_stream(mk, prof, 1200)
+    n = clip_units_stream(mk, prof, 80)             # about 80 bins per token (review S-R4)
     return (*mk(n, R), n)
 
 
