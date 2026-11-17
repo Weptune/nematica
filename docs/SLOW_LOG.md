@@ -1450,3 +1450,67 @@ all 145 rows parse). Reached on retry: A1 23 of 30, A1-slow 36 of 39, A1-fast 29
 A1-play 7 of 9, A3 3 of 4, A5 1 of 2: 124 of 145. The language-model retries (55 recordings, each model
 downloaded again and dropped after use) started at 06:04 UTC, alone. No comparison with the mice has been
 computed yet.
+
+### Language-model retries; the registered tests run (06:04 to 07:10 UTC)
+
+**Retry, language models.** 55 recordings: Pythia 35 of 46 reached, Mamba 6 of 9; one Pythia-1B retry
+(instance 0, sub-760938794) ended in a MemoryError (a 44.6 GiB array). That recording's timescale was not
+measurable (bins per timescale NaN: the recorded signal was close to white), and the correction rule for
+that case (S5) halves the bin width each round; with S7's 10 rounds instead of 5 this reached 6.2 million
+bins. The error was caught; by S7 the retry replaces its original, and the tests drop rows with an error,
+so this pair is missing rather than unreached. Either way it does not count. No code was changed. In all,
+165 of 200 unreached recordings reached the instrument on retry.
+
+**Tests.** `python3 scripts/slow_run.py tests` ran once at 07:0x UTC on a clean tree (head c9a95f0, frozen
+8df8c650b0e0) and wrote `docs/figures/slow_runs/tests.json`. 49 mice. Rulers (robust SD across mice): M1
+0.087, log M2 0.235; so the margins are 1.15 ruler units on M1 (the 0.10 bias bound) and 2.12 on log M2
+(the 0.5 bound).
+
+Checks first, as registered:
+- C3 reliability: M1 rho 0.959, log M2 rho 0.830 (both above 0.5; both measures tested).
+- Shuffled-movie validity check of M2 (24 mice with a valid shuffled block): locked time falls (p = 6e-8,
+  median log change -3.61), log M2 rises (p = 6e-8), internal time moves less (+0.27). Passes.
+- Playback nuisance (A1 at gain 0.25): x0.5 moves the median M1 by 1.07 ruler units and log M2 by 0.71,
+  x2 by -0.97 and -0.70, the driven-timescale rule by 0.53 and 0.32. All above 0.5 on M1, so by section 6
+  the movie-driven families (A1, A4) are reported but not counted, on both measures.
+
+H1, per family (d = mouse minus AI, ruler units; median d and 90% cluster interval; pairs, missing):
+
+| family | M1 verdict | M1 median d [90% CI] | M2 verdict | M2 median d [90% CI] | pairs (missing) | counted |
+|---|---|---|---|---|---|---|
+| A1 random RNN (gain grid) | not decided | 0 [0, 0] | not decided | 0 [0, 0] | 44 (5) | no (playback) |
+| A4 spiking (gain grid) | not decided | 0.46 [0.02, 1.28] | confirmed | 8.30 [8.09, 8.44] | 49 (0) | no (playback) |
+| A2 task RNN | **refuted** | -2.49 [-2.54, -2.30] | not decided | 0.95 [-0.79, 3.31] | 49 (0) | yes |
+| A3 GRU | **confirmed** | 5.20 [5.00, 5.34] | **refuted** | -2.44 [-2.54, -2.35] | 48 (1) | yes |
+| A5 CfC | **confirmed** | 4.95 [4.81, 5.20] | not decided | -1.57 [-1.75, -1.33] | 48 (1) | yes |
+| A6 Pythia (14M to 1B) | not decided | 0 [0, 0.01] | not decided | -0.72 [-0.98, -0.59] | 40 (9) | yes |
+| A7 Mamba (130M, 370M) | **refuted** | -2.72 [-3.12, -2.36] | not decided | -0.84 [-1.06, -0.67] | 46 (3) | yes |
+
+The M2 test restricted to AI runs with M1 of at least 0.2 (reported, not counted) agrees where it can be
+run; for A3 and A5 it has too few pairs (their M1 is below 0.2 at almost every mouse).
+
+Claims (each as registered):
+1. **More internal state: does not hold.** Confirmed on M1: A3, A5. Refuted: A2, A7. Needs at least 5 of 7
+   confirmed and none refuted. Same with behaviour removed.
+2. **Slower relative to the input: does not hold.** Validity check passed; testable M2 verdicts in A2, A3,
+   A5, A6, A7; none confirmed, A3 refuted. Same with behaviour removed (where A3 and A5 are both refuted).
+3. **Slow drive closes the gap, controls do not: does not hold.** Tuned on 6 generator cells, tested on the
+   other mice. Slow drive (chosen share 0.5, tau 1 s): M1 median d -1.39 [-2.11, -0.80], log M2 -1.99
+   [-3.59, -0.62], not equivalent. Fast drive (0.5, 2 frames): M1 -1.22, log M2 +5.56, not equivalent.
+   More noise (0.2 at gain 0.25): M1 -4.13, log M2 -0.16 [-0.80, 0.77], not equivalent.
+4. **Scale does not close the gap: does not hold.** Pythia-1B is closer to the mice than Pythia-14M on M1
+   by a median 1.95 ruler units [1.37, 3.19] (44 pairs); the claim needed the upper end below 0.5.
+
+Descriptive medians (reached recordings, not a test): mice M1 0.59 and M2 0.69. A2 0.80 and 0.47; A3 0.13
+and 1.16; A5 0.17 and 1.00; Pythia 14M 0.33, 160M 0.51, 410M 0.46, 1B 0.60, with M2 0.89 to 0.99; Mamba
+0.85 to 0.86, M2 0.83 to 0.88. A1 runs from M1 0.98 (gain 0.05) to 0.11 (gain 4) and M2 1.40 to 0.39. A4
+runs from M1 0.56 (gain 0.05) to about 0 (gain 0.5 and above), M2 about 0.09 throughout. Slow drives give
+M1 0.34 to 0.67 with M2 0.89 to 2.63; fast drives M1 0.31 to 0.67 with M2 0.13 to 0.36.
+
+Plain reading, to be checked by an independent review before it goes anywhere else: on this clock-free
+measure, the thesis that drove the study is not supported in any of its four parts. Standard networks do
+not uniformly carry less within-repeat internal state than mouse visual cortex: two (GRU, CfC) carry far
+less, two (the task RNN, Mamba) carry more, and the transformers bracket the mice, approaching them with
+scale. The mice's internal state is not slower relative to the input than the networks'; mouse M2 (0.69)
+is below that of every noise-free network except the task RNN. Adding a slow drive overshoots on both
+measures at every setting that gets M1 near the mice.
