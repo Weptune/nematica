@@ -4682,6 +4682,11 @@ agree about push responses is unlike worms in that respect too.
   agrees better for 49 of 54 neuron classes, median 0.38 against 0.07), and the result figures
   (`scripts/plot_showcase.py`). It embeds derived atlas data (CC BY 4.0, attributed), so the built page is not
   committed. Videos for the write-up: `scripts/render_videos.py`.
+- **Second preprint draft** (17 Nov 2026; "Recording networks like brains: an animal-by-animal comparison of
+  internal state in mouse visual cortex and artificial neural networks"), written as a Claude Doc:
+  https://claude.ai/artifact/SfyEeCsF5JuT7tnAspUTSY (private until shared). It packages the map study's
+  instrument lesson and per-mouse result, Study 2's preregistered null and Study 3's failed calibrations.
+  Not submitted; needs figures, related work, authors and the project owner's go-ahead.
 - **Draft email to the atlas authors** (`docs/outreach/atlas_authors_email_DRAFT.md`): the recovery
   curve and a request about the light-free experiment. Not sent; needs the project owner's go-ahead.
 
