@@ -245,5 +245,408 @@
   "nm3_valid": 10,
   "nm3_duration_s": 120.10039000000006,
   "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-735109599",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 809746776,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10035500000049,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-738651046",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 1068627944,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10033999999996,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-739783158",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 680628640,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10037000000011,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-740268983",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 633768344,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10033999999996,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-742602884",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 880294128,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10034500000006,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-742714472",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 959222704,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10035500000004,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-744915196",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 659710944,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10034999999925,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-745276220",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 1055929448,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10035499999981,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-757329617",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 651743328,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10037000000011,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-769360771",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 824040832,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10038000000054,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-772616820",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 1004077648,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10039000000029,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-775876808",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 1033595672,
+  "nm3_complete": 10,
+  "nm3_valid": 10,
+  "nm3_duration_s": 120.10039000000006,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000021",
+  "session": "sub-776061236",
+  "movie_tables": [
+   "natural_movie_one_presentations",
+   "natural_movie_three_presentations"
+  ],
+  "spike_time_bytes": 920686560,
+  "nm3_complete": 10,
+  "nm3_valid": 9,
+  "nm3_duration_s": 120.10041000000001,
+  "nm3_blocks": 2
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-744912845",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 998032840
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-753795604",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 904865808
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-754477355",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 1067402320
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-754488976",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 949458384
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-756578432",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 880000048
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-759674767",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 1059438336
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-759711149",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 746058064
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-760938794",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 1021747432
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-760946810",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 867467984
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-760960650",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 894207312
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-763236006",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 922881504
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-763808588",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 673051232
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-763884096",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 833074120
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-769319621",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 919190592
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-774672354",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 877650112
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-791857600",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 869374840
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-795770029",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 952539736
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-800249582",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 830674264
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-800250054",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 670868064
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-803390283",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 723077008
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-811322604",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 527454672
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-813701555",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 675133552
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-817060743",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 1017029040
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-820866111",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 1043465760
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-821469659",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 645197960
+ },
+ {
+  "dandiset": "000022",
+  "session": "sub-827809879",
+  "movie_tables": [
+   "natural_movie_one_more_repeats_presentations",
+   "natural_movie_one_shuffled_presentations"
+  ],
+  "spike_time_bytes": 941390200
  }
 ]

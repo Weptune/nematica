@@ -49,14 +49,14 @@ spikes means downloading about that much per session again (Study 2's cache kept
   `docs/figures/persist/calibration_runs.jsonl`.
 - Study 2's working scripts were found uncommitted and are archived (`SLOW_LOG.md`, same time).
 
-### Feasibility F1 done; prefetch started; a calibration shard killed for memory (08:50 UTC)
+### Feasibility F1 done; prefetch started; a calibration shard killed for memory (08:43 UTC)
 
 - **F1 (metadata only):** all 58 sessions read without error. NM3 is in all 32 DANDI 000021 sessions and
   in none of the 26 000022 sessions. Valid repeats after Allen's invalid intervals: 10 in 27 sessions, 9 in
   2, 8 in 3. All have 2 blocks of 5. The spike-time arrays to download total 28.7 GB (0.6 to 1.1 GB per
   session). Summary: `docs/figures/persist/feasibility.json`.
 - **F2:** `nematica/persist/data.py` caches NM3 spikes like Study 2's cache, with uint32 millisecond offsets
-  (`scripts/persist_prefetch.py`). It started at about 08:49 UTC. Caching only: no statistic of NM3
+  (`scripts/persist_prefetch.py`). It started at 08:43 UTC. Caching only: no statistic of NM3
   activity is computed before freezing.
 - **Noise systems** (`nematica/persist/inputs.py`): with noise 0, the GRU and Pythia functions equal Study
   2's exactly; with noise, repeats with identical contexts differ (`scripts/persist_noise_check.py`).
@@ -64,7 +64,7 @@ spikes means downloading about that much per session again (Study 2's cache kept
   synthetic clip is 12,840 native steps; the prefetch was not yet running. Shard 1 continues. Shard 0 will
   be rerun alone afterwards (the run is resumable).
 
-### Partial calibration: the simple indices fail; draft v0.2 (09:30 to 09:55 UTC)
+### Partial calibration: the simple indices fail; draft v0.2 (08:43 to 08:54 UTC)
 
 Both calibration shards were killed for memory on the fastest instrument (4.7 and 4.9 GB anonymous; the
 synthetic clip there is 12,840 native steps of 300 units). 41 runs survived (30 median, 11 fastest). The
