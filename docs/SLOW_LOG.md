@@ -1519,7 +1519,7 @@ scale. The mice's internal state is not slower relative to the input than the ne
 is below that of every noise-free network except the task RNN. Every slow-drive setting leaves the
 network's internal state slower relative to the input than the mice's (M2 0.89 to 2.63 against 0.69).
 
-### Review S-R4: the registered tests and their reading (07:15 to 08:20 UTC, with a server restart)
+### Review S-R4: the registered tests and their reading (07:15 to 08:05 UTC, with a server restart)
 
 An independent reviewer (an agent that wrote none of the code) recomputed every registered result with
 its own code written from `SLOW.md`, without calling `slow_run.py`. The run was cut off by a server restart
