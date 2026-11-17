@@ -1461,7 +1461,7 @@ bins. The error was caught; by S7 the retry replaces its original, and the tests
 so this pair is missing rather than unreached. Either way it does not count. No code was changed. In all,
 165 of 200 unreached recordings reached the instrument on retry.
 
-**Tests.** `python3 scripts/slow_run.py tests` ran once at 07:0x UTC on a clean tree (head c9a95f0, frozen
+**Tests.** `python3 scripts/slow_run.py tests` ran once, starting about 07:02 UTC, on a clean tree (head c9a95f0, frozen
 8df8c650b0e0) and wrote `docs/figures/slow_runs/tests.json`. 49 mice. Rulers (robust SD across mice): M1
 0.087, log M2 0.235; so the margins are 1.15 ruler units on M1 (the 0.10 bias bound) and 2.12 on log M2
 (the 0.5 bound).
@@ -1512,5 +1512,5 @@ measure, the thesis that drove the study is not supported in any of its four par
 not uniformly carry less within-repeat internal state than mouse visual cortex: two (GRU, CfC) carry far
 less, two (the task RNN, Mamba) carry more, and the transformers bracket the mice, approaching them with
 scale. The mice's internal state is not slower relative to the input than the networks'; mouse M2 (0.69)
-is below that of every noise-free network except the task RNN. Adding a slow drive overshoots on both
-measures at every setting that gets M1 near the mice.
+is below that of every noise-free network except the task RNN. Every slow-drive setting leaves the
+network's internal state slower relative to the input than the mice's (M2 0.89 to 2.63 against 0.69).
