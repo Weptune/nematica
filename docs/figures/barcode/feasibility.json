@@ -1,0 +1,366 @@
+[
+ {
+  "session": "sub-681446",
+  "repeats": 90,
+  "frames_per_repeat": [
+   480
+  ],
+  "repeat_s_median": 8.006719999999973,
+  "start_gap_s": [
+   8.006579999999985,
+   8.00681000000003
+  ],
+  "identical_sequence": true,
+  "blocks": [
+   1.0
+  ],
+  "repeats_valid": 90,
+  "units_good": 1863,
+  "units_qc": 770,
+  "qc_by_group": {
+   "other": 137,
+   "thalamus": 65,
+   "hippocampus": 136,
+   "visual_cortex": 432
+  },
+  "spike_time_bytes": 775489312
+ },
+ {
+  "session": "sub-682745",
+  "repeats": 90,
+  "frames_per_repeat": [
+   480
+  ],
+  "repeat_s_median": 8.006719999999973,
+  "start_gap_s": [
+   8.006619999999998,
+   8.006839999999983
+  ],
+  "identical_sequence": true,
+  "blocks": [
+   1.0
+  ],
+  "repeats_valid": 90,
+  "units_good": 2338,
+  "units_qc": 985,
+  "qc_by_group": {
+   "other": 231,
+   "hippocampus": 235,
+   "visual_cortex": 370,
+   "thalamus": 149
+  },
+  "spike_time_bytes": 1103345592
+ },
+ {
+  "session": "sub-685263",
+  "repeats": 90,
+  "frames_per_repeat": [
+   480
+  ],
+  "repeat_s_median": 8.006719999999973,
+  "start_gap_s": [
+   8.006649999999922,
+   8.006780000000049
+  ],
+  "identical_sequence": true,
+  "blocks": [
+   1.0
+  ],
+  "repeats_valid": 90,
+  "units_good": 2207,
+  "units_qc": 953,
+  "qc_by_group": {
+   "other": 237,
+   "hippocampus": 174,
+   "visual_cortex": 396,
+   "thalamus": 146
+  },
+  "spike_time_bytes": 773737456
+ },
+ {
+  "session": "sub-688546",
+  "repeats": 90,
+  "frames_per_repeat": [
+   480
+  ],
+  "repeat_s_median": 8.006719999999973,
+  "start_gap_s": [
+   8.006629999999973,
+   8.006809999999973
+  ],
+  "identical_sequence": true,
+  "blocks": [
+   1.0
+  ],
+  "repeats_valid": 90,
+  "units_good": 2450,
+  "units_qc": 1158,
+  "qc_by_group": {
+   "other": 139,
+   "hippocampus": 357,
+   "visual_cortex": 554,
+   "thalamus": 108
+  },
+  "spike_time_bytes": 991527808
+ },
+ {
+  "session": "sub-691524",
+  "repeats": 90,
+  "frames_per_repeat": [
+   480
+  ],
+  "repeat_s_median": 8.006719999999973,
+  "start_gap_s": [
+   8.00664999999998,
+   8.006779999999935
+  ],
+  "identical_sequence": true,
+  "blocks": [
+   1.0
+  ],
+  "repeats_valid": 90,
+  "units_good": 1913,
+  "units_qc": 821,
+  "qc_by_group": {
+   "other": 76,
+   "thalamus": 165,
+   "hippocampus": 239,
+   "visual_cortex": 341
+  },
+  "spike_time_bytes": 896453384
+ },
+ {
+  "session": "sub-692360",
+  "repeats": 90,
+  "frames_per_repeat": [
+   480
+  ],
+  "repeat_s_median": 8.006709999999998,
+  "start_gap_s": [
+   8.006550000000004,
+   8.023390000000006
+  ],
+  "identical_sequence": true,
+  "blocks": [
+   1.0
+  ],
+  "repeats_valid": 90,
+  "units_good": 2318,
+  "units_qc": 1035,
+  "qc_by_group": {
+   "other": 556,
+   "hippocampus": 183,
+   "visual_cortex": 108,
+   "thalamus": 188
+  },
+  "spike_time_bytes": 1069288928
+ },
+ {
+  "session": "sub-692984",
+  "repeats": 90,
+  "frames_per_repeat": [
+   480
+  ],
+  "repeat_s_median": 8.006709999999998,
+  "start_gap_s": [
+   8.006579999999985,
+   8.040059999999983
+  ],
+  "identical_sequence": true,
+  "blocks": [
+   1.0
+  ],
+  "repeats_valid": 90,
+  "units_good": 2353,
+  "units_qc": 901,
+  "qc_by_group": {
+   "other": 571,
+   "hippocampus": 71,
+   "visual_cortex": 51,
+   "thalamus": 208
+  },
+  "spike_time_bytes": 974848032
+ },
+ {
+  "session": "sub-692990",
+  "repeats": 90,
+  "frames_per_repeat": [
+   480
+  ],
+  "repeat_s_median": 8.006700000000023,
+  "start_gap_s": [
+   8.006629999999973,
+   8.023410000000013
+  ],
+  "identical_sequence": true,
+  "blocks": [
+   1.0
+  ],
+  "repeats_valid": 90,
+  "units_good": 2666,
+  "units_qc": 854,
+  "qc_by_group": {
+   "other": 522,
+   "hippocampus": 114,
+   "thalamus": 92,
+   "visual_cortex": 126
+  },
+  "spike_time_bytes": 956140056
+ },
+ {
+  "session": "sub-692991",
+  "repeats": 90,
+  "frames_per_repeat": [
+   480
+  ],
+  "repeat_s_median": 8.006709999999998,
+  "start_gap_s": [
+   8.006650000000036,
+   8.023390000000063
+  ],
+  "identical_sequence": true,
+  "blocks": [
+   1.0
+  ],
+  "repeats_valid": 90,
+  "units_good": 2035,
+  "units_qc": 751,
+  "qc_by_group": {
+   "other": 538,
+   "hippocampus": 66,
+   "thalamus": 78,
+   "visual_cortex": 69
+  },
+  "spike_time_bytes": 898977168
+ },
+ {
+  "session": "sub-697302",
+  "repeats": 90,
+  "frames_per_repeat": [
+   480
+  ],
+  "repeat_s_median": 8.006709999999998,
+  "start_gap_s": [
+   8.006619999999998,
+   8.006799999999998
+  ],
+  "identical_sequence": true,
+  "blocks": [
+   1.0
+  ],
+  "repeats_valid": 90,
+  "units_good": 2349,
+  "units_qc": 1001,
+  "qc_by_group": {
+   "other": 615,
+   "hippocampus": 150,
+   "thalamus": 140,
+   "visual_cortex": 96
+  },
+  "spike_time_bytes": 980371224
+ },
+ {
+  "session": "sub-697303",
+  "repeats": 90,
+  "frames_per_repeat": [
+   480
+  ],
+  "repeat_s_median": 8.006709999999998,
+  "start_gap_s": [
+   8.006650000000008,
+   8.023439999999994
+  ],
+  "identical_sequence": true,
+  "blocks": [
+   1.0
+  ],
+  "repeats_valid": 90,
+  "units_good": 2799,
+  "units_qc": 1156,
+  "qc_by_group": {
+   "other": 619,
+   "hippocampus": 120,
+   "visual_cortex": 242,
+   "thalamus": 175
+  },
+  "spike_time_bytes": 953953208
+ },
+ {
+  "session": "sub-698259",
+  "repeats": 90,
+  "frames_per_repeat": [
+   480
+  ],
+  "repeat_s_median": 8.006709999999657,
+  "start_gap_s": [
+   8.006580000000213,
+   8.040089999999509
+  ],
+  "identical_sequence": true,
+  "blocks": [
+   1.0
+  ],
+  "repeats_valid": 90,
+  "units_good": 2275,
+  "units_qc": 951,
+  "qc_by_group": {
+   "other": 582,
+   "hippocampus": 162,
+   "thalamus": 166,
+   "visual_cortex": 41
+  },
+  "spike_time_bytes": 1836628632
+ },
+ {
+  "session": "sub-699241",
+  "repeats": 90,
+  "frames_per_repeat": [
+   480
+  ],
+  "repeat_s_median": 8.006709999999998,
+  "start_gap_s": [
+   8.006650000000036,
+   8.006750000000011
+  ],
+  "identical_sequence": true,
+  "blocks": [
+   1.0
+  ],
+  "repeats_valid": 90,
+  "units_good": 1892,
+  "units_qc": 871,
+  "qc_by_group": {
+   "other": 306,
+   "hippocampus": 125,
+   "thalamus": 317,
+   "visual_cortex": 123
+  },
+  "spike_time_bytes": 973038904
+ },
+ {
+  "session": "sub-699846",
+  "repeats": 90,
+  "frames_per_repeat": [
+   480
+  ],
+  "repeat_s_median": 8.006709999999998,
+  "start_gap_s": [
+   8.006640000000004,
+   8.023360000000025
+  ],
+  "identical_sequence": true,
+  "blocks": [
+   1.0
+  ],
+  "repeats_valid": 90,
+  "units_good": 2273,
+  "units_qc": 901,
+  "qc_by_group": {
+   "other": 424,
+   "thalamus": 187,
+   "hippocampus": 111,
+   "visual_cortex": 179
+  },
+  "spike_time_bytes": 994683024
+ }
+]
