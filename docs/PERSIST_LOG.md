@@ -174,3 +174,17 @@ calibration. No NM3 activity has been measured; the NM3 spike cache (local, 897 
 re-registered attempt. The next step (a v0.3 with a calibration that can test gain-type systems, a narrower
 study on claim 5 alone, or parking Study 3) is the user's decision. Whichever is chosen, the record should
 show that v0.2's criteria were not met.
+
+### The user chose the generator test only; v0.3 criteria written before any v0.3 run (12:51 to 13:00 UTC)
+
+- Decision (user, in reply to a question): narrow Study 3 to claim 5, "what kind of generator is cortex";
+  recalibrate it with the gain-type system fixed, criteria written first, then review before freezing.
+- **Design probe** (`scripts/persist_white_pilot.py`, seed 5, not a calibration seed; median and noisiest
+  instruments): adding a private white component (share 0.3 or 0.6) to the synthetic systems did not let
+  them reach the mice's white share (recorded 0.48 to 0.83 against targets 0.94 and 1.0; 0 of 12 reached).
+  It also lowered the gain-type b (2.19, 1.58, 0.91 at white 0, 0.3, 0.6 on the median instrument), while
+  the additive b stayed at 0.31 to 0.58. So v0.3 uses no white component, and its criteria use every run
+  that yields a fit (each run's instrument numbers stored), with reached-only results reported beside
+  them. The `white` option stays in `nematica/persist/synthetic.py` (default 0).
+- PERSIST.md v0.3: new header and section 8a (systems, C5a separation, C5b ordering, C5c envelope
+  invariance, bias bound), committed before the calibration run.

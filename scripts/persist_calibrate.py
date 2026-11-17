@@ -83,7 +83,7 @@ def run():
         print(k, out.get("reached"), out.get("recorded_bins"), w.get("P_share"), w.get("P_amp"), flush=True)
 
 
-if __name__ == "__main__" and "--summary" not in sys.argv:
+if __name__ == "__main__" and "--summary" not in sys.argv and "--v3" not in sys.argv:
     run()
 
 
@@ -170,5 +170,111 @@ def summary():
     print(json.dumps({ix: out["indices"][ix]["passes"] for ix in out["indices"]}), json.dumps(out["b_drive"]), "C5", out["C5"]["passes"])
 
 
-if __name__ == "__main__" and "--summary" in sys.argv:
+if __name__ == "__main__" and "--summary" in sys.argv and "--v3" not in sys.argv:
     summary()
+
+
+# ------------------------------------------------------------------------------------------------ v0.3
+RUNS3 = OUT / "calibration_v3_runs.jsonl"
+
+
+def grid3():
+    for inst in ("median", "fastest", "slowest", "noisiest"):
+        for seed in SEEDS:
+            for ti in (0.25, 1.0, 2.5):
+                yield inst, seed, "generated", {"tau_int": ti * TAU_L}, "normal"
+            for sd in (0.15, 0.3, 0.6):
+                yield inst, seed, "gain", {"gain_sd": sd}, "normal"
+            yield inst, seed, "gain", {"gain_sd": 0.3, "gain_tau": TAU_L}, "normal"
+            for env in ("flat", "reversed"):
+                yield inst, seed, "generated", {"tau_int": TAU_L}, env
+                yield inst, seed, "gain", {"gain_sd": 0.3}, env
+
+
+def run3():
+    OUT.mkdir(parents=True, exist_ok=True)
+    have = {json.loads(l)["key"] for l in open(RUNS3)} if RUNS3.exists() else set()
+    ins = instruments()
+    for inst, seed, kind, par, env in grid3():
+        k = key(inst, seed, kind, par, env)
+        if k in have:
+            continue
+        prof = ins[inst]["profile"]
+        T = int(np.clip(round(BINS * TAU_L / prof["bins_per_tau"]), 300, 40000))
+        rng = np.random.default_rng([seed, zlib.crc32(f"{kind}{par}".encode())])
+        A, starts = PS.system(rng, kind, T, R=R, N=N, env_kind=env, **par)
+        out = ST.record_stream(A, starts, T, prof, nb_mouse=BINS, R_mouse=R,
+                               n_units_mouse=min(ins[inst]["units"], 200), seed=seed + 11, halves=False,
+                               extra=lambda rec, inc: PM.windowed_stream(rec, inc, W=8), max_bins=4 * BINS)
+        row = {"key": k, "instrument": inst, "mouse": ins[inst]["id"], "seed": seed, "kind": kind, **par,
+               "env": env, "T": T, **{x: out.get(x) for x in ("M1", "M2", "reached", "recorded_bins",
+                                                          "units_used", "numbers_on_repeats", "error")},
+               "windows": out.get("extra")}
+        with open(RUNS3, "a") as f:
+            f.write(json.dumps(row, default=float) + "\n")
+        w = out.get("extra") or {}
+        print(k, out.get("reached"), w.get("b_drive"), flush=True)
+
+
+def summary3():
+    from scipy.stats import spearmanr
+    rows = [json.loads(l) for l in open(RUNS3)]
+    out = {"n_runs": len(rows)}
+    for label, use in (("all", lambda r: True), ("reached", lambda r: bool(r.get("reached")))):
+        rr = [r for r in rows if use(r) and r.get("windows") and np.isfinite(r["windows"].get("b_drive", np.nan))
+              and r["windows"]["fit"]["n_windows"] >= 4]
+        b = lambda r: r["windows"]["b_drive"]
+        res = {"n": len(rr), "C5a": {}, "C5b": {}, "C5c": {}}
+        gaps = []
+        for inst in sorted({r["instrument"] for r in rr}):
+            for seed in SEEDS:
+                cell = [r for r in rr if r["instrument"] == inst and r["seed"] == seed and r["env"] == "normal"]
+                add = [b(r) for r in cell if r["kind"] == "generated"]
+                gn = [b(r) for r in cell if r["kind"] == "gain" and r.get("gain_sd", 0) >= 0.3]
+                if add and gn:
+                    res["C5a"][f"{inst}|{seed}"] = {"additive_max": max(add), "gain_min": min(gn),
+                                                    "separated": bool(max(add) < min(gn))}
+                a1 = [b(r) for r in cell if r["kind"] == "generated" and r.get("tau_int") == TAU_L]
+                g3 = [b(r) for r in cell if r["kind"] == "gain" and r.get("gain_sd") == 0.3 and "gain_tau" not in r]
+                if a1 and g3:
+                    gaps.append(g3[0] - a1[0])
+            xs, ys = [], []
+            for r in rr:
+                if r["instrument"] != inst or r["env"] != "normal":
+                    continue
+                if r["kind"] == "generated" and r.get("tau_int") == TAU_L:
+                    xs.append(0.0); ys.append(b(r))
+                elif r["kind"] == "gain" and "gain_tau" not in r:
+                    xs.append(r["gain_sd"]); ys.append(b(r))
+            if len(set(xs)) >= 3:
+                rho = float(spearmanr(xs, ys)[0])
+                res["C5b"][inst] = {"rho": rho, "n": len(xs), "passes": bool(rho >= 0.8)}
+        gap = float(np.median(gaps)) if gaps else np.nan
+        tol = abs(gap) / 4
+        for r in rr:
+            if r["env"] == "normal":
+                continue
+            base = [x for x in rr if x["instrument"] == r["instrument"] and x["seed"] == r["seed"] and
+                    x["kind"] == r["kind"] and x["env"] == "normal" and x.get("tau_int") == r.get("tau_int") and
+                    x.get("gain_sd") == r.get("gain_sd") and "gain_tau" not in x]
+            if base:
+                sh = b(r) - b(base[0])
+                res["C5c"][r["key"]] = {"shift": sh, "within": bool(abs(sh) <= tol)}
+        meds = {}
+        for inst in sorted({r["instrument"] for r in rr}):
+            v = [b(r) for r in rr if r["instrument"] == inst and r["kind"] == "generated" and r.get("tau_int") == TAU_L
+                 and r["env"] == "normal"]
+            if v:
+                meds[inst] = float(np.median(v))
+        res["bias_bound_b"] = float(max(meds.values()) - min(meds.values())) if meds else np.nan
+        res["gap"], res["tol"] = gap, tol
+        res["passes"] = {k: bool(res[k]) and all(v.get("separated", v.get("passes", v.get("within", True)))
+                                                 for v in res[k].values()) for k in ("C5a", "C5b", "C5c")}
+        out[label] = res
+    (OUT / "calibration_v3.json").write_text(json.dumps(out, indent=1, default=float))
+    print(json.dumps({k: out[k]["passes"] for k in ("all", "reached")}), "bias_bound_b",
+          out["all"]["bias_bound_b"])
+
+
+if __name__ == "__main__" and "--v3" in sys.argv:
+    summary3() if "--summary" in sys.argv else run3()

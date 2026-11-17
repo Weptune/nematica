@@ -1,4 +1,13 @@
-# Study 3: generated or carried? (registration draft v0.2, 17 Nov 2026, NOT frozen)
+# Study 3: what kind of generator is cortex? (registration draft v0.3, 17 Nov 2026, NOT frozen)
+
+**v0.3 (17 Nov, 12:57 UTC), after v0.2 stopped at calibration.** Under v0.2's own rule, the persistence
+claims (1 to 4 below) are dropped. No index for fading passed C1, C2 and C4 (`PERSIST_LOG.md`, 09:58 entry).
+They are kept in the text for the record but are not tested. The user chose to narrow the study to claim 5:
+**what kind of generator is cortex**. A redo of claim 5's calibration was needed, because the
+gain-type synthetic system reached the instrument in only 1 of 8 runs. This redo is labelled as such. The
+v0.3 calibration criteria (section 8a) were written before any v0.3 calibration run. One design probe was
+run first, at a seed not used in the calibration; it is reported in `PERSIST_LOG.md`.
+The persistence index c is still computed and reported, descriptively only.
 
 Status: draft. Nothing here is frozen. Feasibility, calibration and an independent review come before
 freezing (sections 8 and 9). Notebook: `docs/PERSIST_LOG.md`.
@@ -167,6 +176,29 @@ caveat that 3 clusters show agreement across instances, not a population interva
   more, the movie-driven controls are reported but not used for claim 4.
 - **Secondary:** NM1 outside visual cortex, the mice's P per region group (thalamus, hippocampus, other),
   reported with intervals; the discovery set reported as such.
+
+## 8a. Calibration v0.3, for claim 5 (written before any v0.3 run)
+
+Code: `scripts/persist_calibrate.py --v3` (runs saved to `docs/figures/persist/calibration_v3_runs.jsonl`).
+Instruments, clip, repeats and envelope are as in section 8. Seeds 0 and 1. Systems:
+- additive generated, internal timescale 0.25, 1 and 2.5 times the locked timescale (share 0.4);
+- gain-type, slow (gain timescale a quarter of the clip), log-SD 0.15, 0.3 and 0.6;
+- gain-type, fast (gain timescale equal to the locked timescale), log-SD 0.3;
+- envelope variants (flattened, reversed) for additive at timescale 1 and slow gain-type at log-SD 0.3.
+
+Every run that yields a fit is used (at least 4 windows, finite b). Each run's instrument numbers are
+stored, and the criteria are also reported on reached runs only. Reason: synthetic systems rarely reach the
+mice's white share (the v0.3 probe: 0 of 12; adding a private white component did not help and lowered
+the gain-type b). The question here is whether b separates kinds of variability across instrument
+conditions, so the full range of conditions is used.
+- **C5a, separation:** at each instrument and seed, the largest b among additive runs is below the smallest
+  b among gain-type runs of log-SD 0.3 or more (slow and fast).
+- **C5b, ordering:** pooled per instrument over seeds, Spearman of b with gain log-SD (additive at timescale 1
+  counted as 0; then 0.15, 0.3, 0.6) at least 0.8.
+- **C5c, envelope invariance:** each envelope variant moves b by at most a quarter of the median (over
+  instruments and seeds) gap between slow gain-type 0.3 and additive timescale 1.
+- **Bias bound for b:** the range across instruments of the median b of additive timescale 1.
+If C5a, C5b or C5c fails, the study stops before any held-out data is read.
 
 ## 8. Calibration (before freezing; no held-out activity read)
 
