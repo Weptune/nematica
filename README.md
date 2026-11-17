@@ -5157,6 +5157,34 @@ amendments, 7 independent reviews). Figures: `docs/figures/map/permouse.png`, `a
   - every other registered test was not testable.
 - **Exploratory, worms:** none of 14 AIs is worm-like.
 
+## Is the difference slow internal state? (Study 2, pre-registered 15 Nov 2026)
+
+**Why.** Every difference that held up so far (the worm emulator, the watching limit, the map study's random
+RNN) pointed at slow internal state: activity not set by the current input. Study 2 tested that directly
+across standard network families with a clock-free measure: show a system the same clip many times; what
+differs between repeats (within each 30 s repeat) is internal state. M1 is its share; M2 is how long it lasts
+compared with the input-locked part.
+
+**Design.** 49 Allen Neuropixels mice (visual cortex, natural movie one) against a random RNN, a task RNN, a
+GRU, a CfC, a spiking network, Pythia 14M to 1B and Mamba 130M and 370M, three instances each. Every network
+was recorded at each mouse's own spike instrument and compared mouse by mouse, on a ruler equal to the
+spread between mice. Four claims with their own verdicts, all rules frozen before data
+(`docs/SLOW.md`, 9 dated amendments; notebook `docs/SLOW_LOG.md`).
+
+**Outcome (17 Nov 2026): none of the four claims held.** Readable account: `docs/SLOW_SUMMARY.md`. Every
+number was reproduced by an independent review (S-R4).
+- **More internal state:** no. GRU and CfC carry far less than the mice, the task RNN and Mamba carry more,
+  and the range of Pythia sizes contains the typical mouse.
+- **Slower relative to the input:** no. The mice's internal state changes faster (about 0.5 s) than their
+  response locked to this slow movie (about 0.8 s); most networks' internal state is relatively slower.
+- **A slow drive closes the gap:** no. It overshoots, and the fast-drive and more-noise controls fail too.
+- **Scale does not help:** no. Pythia-1B is about 2 ruler units closer to the mice than Pythia-14M.
+- **Leads, seen after the data (untested):** the mice's internal share holds up along the clip, while the
+  context-driven networks' share fades within about 20 tokens; and on M2 only networks with internal noise
+  come near the mice.
+- **Limits:** one region, one stimulus, state within a repeat only (slower drift is not tested), networks
+  seen through a simulated spike instrument, intervals resting on 3 instances.
+
 ## Replay lab
 
 ```powershell
