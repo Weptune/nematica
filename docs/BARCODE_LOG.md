@@ -60,3 +60,17 @@ before the run.
 
 **By the eligibility rule, M1 and M2 can carry Study 4's claims, and the drive exponent cannot.** Next:
 choose the headline claim (at most two), written to M1 and M2. Prefetch of the 14 sessions is still running.
+
+### Headline claim chosen: the hierarchy profile; draft v0.2 (15:30 to 15:40 UTC)
+
+- The user chose the hierarchy claim (internal share rising from thalamus to visual cortex to
+  hippocampus, and whether networks show the same rise across depth).
+- Metadata only: area names carry cortical-layer suffixes (`VISp5`, `VISpm2/3`), which are now removed
+  before assigning levels. QC units per level, before the inclusion rule: visual thalamus 30 or more in 10
+  mice, VISp in 9, higher VIS in 12, hippocampus in 14. Mice with 4 levels: 5; 3 levels: 7; 2 levels: 2.
+- From calibration v4, the M1 range across the four instruments for the same synthetic system is 0.03 to
+  0.29 (0.16 at share 0.4, slow internal state). So a rise across brain regions could partly be an
+  instrument effect, and the draft adds two controls: an instrument-only reference R0, and recording each
+  network depth at the matching level's instrument.
+- `docs/BARCODE.md` v0.2 holds the claims H1 (premise) and H2 (headline), with decision rules. Next: the
+  pipeline, a dry run, the clip pilot, then an independent review before freezing.

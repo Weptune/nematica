@@ -1,4 +1,4 @@
-# Study 4: many repeats of a controlled stimulus (draft v0.1, 17 Nov 2026, NOT frozen)
+# Study 4: does internal state rise along the hierarchy, in mice and in networks? (draft v0.2, 17 Nov 2026, NOT frozen)
 
 Strategy: `docs/STRATEGY_2026-11-17.md`. Notebook: `docs/BARCODE_LOG.md`. Order of work, each a stop point:
 feasibility (passed, 15:10 entry), **calibration before any claim (this draft)**, claims, review, freeze,
@@ -49,3 +49,59 @@ A caution recorded before running: through the exponential spike model, an addit
 unit's activity becomes a multiplicative change of its firing rate. "Gain-type" here therefore means a
 gain on the network's own activity (before the instrument). Whether that matches what "gain fluctuations"
 means in a mouse's spikes (Goris et al. 2014) is a question for the claims, not settled by this calibration.
+
+
+## Claims (v0.2, 17 Nov 2026, written after calibration v4; the user chose the hierarchy claim)
+
+Eligible measures (calibration v4): M1 (internal share) and M2 (relative timescale). The drive exponent is
+not eligible. **One headline claim (H2) and its premise (H1); M2 is reported, not tested.**
+
+**Levels** (from each unit's area, its peak channel's location, with the cortical layer suffix removed):
+0 visual thalamus (LGd, LGv, LP); 1 primary visual cortex (VISp); 2 higher visual cortex (other VIS areas);
+3 hippocampal formation (CA1 to CA3, DG, SUB, ProS, PoST, PRE, POST). A level counts for a mouse if at least
+30 QC units pass Study 2's inclusion rule (rate at least 0.05 Hz; at least 200 spikes per 510 s of
+stimulus, so 282 over the 90 repeats' 720 s); at most 480 units per level, seeded. A mouse enters if it has
+at least 3 levels. Metadata counts before inclusion: 4 levels in 5 mice, 3 in 7 and 2 in 2.
+
+**Per mouse:** M1 at each of its levels, from its 90 repeats, with units centred within each repeat; each
+level's instrument numbers measured on the repeats (Study 2's instrument function). The **slope** is the
+ordinary least-squares slope of M1 on level index over the mouse's levels.
+
+**Instrument-only reference (R0).** M1 differs between instruments even for the same system: up to 0.16 in
+calibration v4. So a fixed synthetic system (additive internal share 0.4, timescale equal to the locked
+timescale, seed 0) is recorded at each mouse's level instruments, and its slope is the slope that the
+instruments alone would give.
+
+**Networks, recorded like a hierarchy:** Pythia-160M (released seeds 1 to 3), Pythia-1B and Mamba-370M,
+three instances each (instance = mouse rank mod 3). Units are taken at 4 depths, the layers nearest to 1/8,
+3/8, 5/8 and 7/8 of the depth (Pythia: MLP activations; Mamba: gated SSM outputs; 480 units per depth,
+seeded). A text clip follows a different 256-token context on each of 90 repeats. It is sized so that it
+records as about 400 bins at the median visual-cortex instrument (pilot with the streamed recorder). **Depth
+point k is recorded at the same mouse's level-k instrument**, so that network and mouse profiles pass
+through the same instruments. Points are skipped where the mouse has no level k. The network's slope for
+that mouse is the least-squares slope over the same levels as the mouse's.
+
+**Reference, not counted:** a 4-layer stacked noisy random RNN driven by the flicker (layer 1 by the
+flicker, each later layer by the one before; g 1.5, noise 0.1 per layer). Its internal share should
+accumulate with depth by construction.
+
+- **H1 (premise): internal share rises along the mouse hierarchy beyond what the instruments explain.**
+  Per mouse, d0 = mouse slope minus R0 slope. H1 holds if the median d0 > 0.05 per level, with a one-sided
+  Wilcoxon p < 0.05 over mice. (0.05 per level is the calibration's largest instrument range, 0.16, spread
+  over 3 level steps.) If H1 fails, H2 is reported but cannot be read as "reproducing a rise".
+- **H2 (headline): transformers and state-space models reproduce the brain's rise across their depth.** Per
+  network and mouse, d = mouse slope minus network slope. The ruler is the robust SD of the mice's slopes.
+  A network is **equivalent** if the 90% cluster-bootstrap interval (clusters: instances) of the median d lies
+  within plus or minus 0.5 ruler units. It **differs** if the median |d| exceeds the larger of 0.5 ruler
+  units and 0.05, with one-sided Wilcoxon p < 0.05 overall and within each instance, and the interval
+  excluding 0; the direction is reported. **Claim H2 holds** if at least 2 of the 3 networks are equivalent
+  and none differs. **H2 is refuted** if at least 2 of the 3 differ.
+- Behaviour: running speed regressed out (Study 2's method); H1 and H2 reported with and without.
+- Reliability check: odd against even repeats, Spearman across mice of the mice's slopes at least 0.5;
+  otherwise "unreliable, not tested".
+- Missing: a network recording that does not reach the instrument is excluded and counted. A mouse with
+  fewer than 3 usable network points for a network is missing for that network. More than 25% missing gives
+  "not testable".
+
+Before freezing: an independent review of this draft and of the pipeline (`scripts/barcode_run.py`, to be
+written), a dry run on synthetic stand-ins, and the clip pilot.
