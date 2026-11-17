@@ -4698,7 +4698,7 @@ agree about push responses is unlike worms in that respect too.
   An independent check of that paragraph (review P1-R1, `docs/PREPRINT1_RELATED_REVIEW.md`) found one error
   ("has since been reported": the mouse work came first) and several overstatements; all are fixed, and the
   Introduction and Result 4 now credit Feather et al., Sourmpis et al. and Randi et al. where they overlap.
-  Open: the Sourmpis citation format (eLife volume and article number).
+  The Sourmpis reference now reads eLife 15:RP106827 (2026); confirm the volume at submission.
 - **Draft email to the atlas authors** (`docs/outreach/atlas_authors_email_DRAFT.md`): the recovery
   curve and a request about the light-free experiment. Not sent; needs the project owner's go-ahead.
 
