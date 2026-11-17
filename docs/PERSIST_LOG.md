@@ -48,3 +48,57 @@ spikes means downloading about that much per session again (Study 2's cache kept
 - 120 calibration runs started in 2 shards (`scripts/persist_calibrate.py`), writing
   `docs/figures/persist/calibration_runs.jsonl`.
 - Study 2's working scripts were found uncommitted and are archived (`SLOW_LOG.md`, same time).
+
+### Feasibility F1 done; prefetch started; a calibration shard killed for memory (08:50 UTC)
+
+- **F1 (metadata only):** all 58 sessions read without error. NM3 is in all 32 DANDI 000021 sessions and
+  in none of the 26 000022 sessions. Valid repeats after Allen's invalid intervals: 10 in 27 sessions, 9 in
+  2, 8 in 3. All have 2 blocks of 5. The spike-time arrays to download total 28.7 GB (0.6 to 1.1 GB per
+  session). Summary: `docs/figures/persist/feasibility.json`.
+- **F2:** `nematica/persist/data.py` caches NM3 spikes like Study 2's cache, with uint32 millisecond offsets
+  (`scripts/persist_prefetch.py`). It started at about 08:49 UTC. Caching only: no statistic of NM3
+  activity is computed before freezing.
+- **Noise systems** (`nematica/persist/inputs.py`): with noise 0, the GRU and Pythia functions equal Study
+  2's exactly; with noise, repeats with identical contexts differ (`scripts/persist_noise_check.py`).
+- **Calibration shard 0 was killed for memory** (4.9 GB anonymous) on a fastest-instrument run, whose
+  synthetic clip is 12,840 native steps; the prefetch was not yet running. Shard 1 continues. Shard 0 will
+  be rerun alone afterwards (the run is resumable).
+
+### Partial calibration: the simple indices fail; draft v0.2 (09:30 to 09:55 UTC)
+
+Both calibration shards were killed for memory on the fastest instrument (4.7 and 4.9 GB anonymous; the
+synthetic clip there is 12,840 native steps of 300 units). 41 runs survived (30 median, 11 fastest). The
+calibration was restarted as a single process, which resumes from the saved rows.
+
+What the 41 runs show (`scripts/persist_calibrate.py --summary` on partial data; synthetic systems only, no
+mouse activity):
+- **P_share and P_amp separate generated from carried systems only for a fixed envelope (C1 passes, C2
+  fails).** Flattening or reversing the locked envelope of the same generated system moved P_share by up
+  to 0.60, against a generated-carried gap of 0.48. P_amp failed the same way. Mouse and network locked
+  responses to one movie differ in envelope, so these indices would confound drive with fading.
+- **A fit that controls for the drive works on the same runs.** Across windows, internal amplitude
+  I_w = a x L_w^b x exp(c x t_w), with L_w the locked amplitude. Log-linear version: c for generated systems
+  -0.44 to +0.31; for carried systems with decay of 0.1 to 0.5 clip lengths, -7.4 to -0.4; under envelope
+  changes, generated c stays within about 0.3. The least-squares version separates more strongly, but for
+  fast-fading carried systems it gives very large values (to -199), so it is clipped to [-6, 6].
+- **The drive exponent b separates additive from gain-type variability** (generated runs 0.26 to 0.60,
+  gain-type 2.0, carried about 1), which opens a better question than fading alone (below).
+- One run (median instrument, seed 1, generated system, squared envelope) did not reach the instrument
+  (white share 0.996, almost no signal). Its indices were nonsense (P_share -1.38, b 14.8). The criteria
+  are now evaluated on reached runs only, as in the data.
+
+**Draft v0.2** (`PERSIST.md`):
+- primary measure: the drive-time fit (c for fading at fixed drive, b for drive dependence);
+- a fifth claim: what kind of generator cortex is. Mice: gain-type, growing with drive (Goris et al. 2014).
+  Networks: additive noise or chaos, which input suppresses (Rajan et al. 2010);
+- a selection rule for the index, plus C5 for b.
+
+Labelled honestly: these choices were made after seeing partial calibration results on synthetic systems.
+No held-out (NM3) activity has been measured; the NM3 prefetch only caches spikes.
+
+A wider concern, to raise with the user: as first drafted, claims 1 to 3 come close to a known fact.
+Brains are noisy. Standard networks at inference are deterministic, so their trial-to-trial variability
+can only be carried in from the context. Claim 5, which asks what kind of variability cortex generates
+and compares it with networks that generate variability in different ways, is the part with more
+potential to say something new on the networks' side. The brain side alone overlaps recent work on
+partitioning variability (Goris et al. 2014; Rupasinghe, Charles and Pillow, eLife 2026).

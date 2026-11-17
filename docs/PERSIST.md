@@ -1,4 +1,4 @@
-# Study 3: generated or carried? (registration draft v0.1, 17 Nov 2026, NOT frozen)
+# Study 3: generated or carried? (registration draft v0.2, 17 Nov 2026, NOT frozen)
 
 Status: draft. Nothing here is frozen. Feasibility, calibration and an independent review come before
 freezing (sections 8 and 9). Notebook: `docs/PERSIST_LOG.md`.
@@ -39,6 +39,9 @@ artificial result of Study 2 (all recorded on clips of about 1,500 bins).
    on this axis; the same network without noise does not.
 4. **Known controls behave as known** (a check of the measure on real conditions, not a finding): a
    noise-free *chaotic* random network generates; a noise-free *stable* random network carries.
+5. **What kind of generator** (added in v0.2): in cortex, internal variability grows with the drive, as
+   gain fluctuations do (Goris, Movshon and Simoncelli 2014), more than in networks whose variability is
+   additive noise or chaos (which input suppresses: Rajan, Abbott and Sompolinsky 2010).
 
 ## 3. Data
 
@@ -64,22 +67,29 @@ a later, separate registration (`SLOW.md` section 4 explains the calcium problem
 
 Each repeat of the clip is cut into **8 equal windows** (NM3: 15 s, 750 bins of 20 ms). In window w, the
 lag-2 same-repeat and cross-repeat covariances are computed over bin pairs inside the window, with units
-centred within each repeat as in Study 2 (`measures.lag_measures`). From these, two candidate indices; the
-calibration (section 8) chooses one before freezing, by a rule fixed here:
-- **P_share** = mean M1 over windows 7 and 8 minus mean M1 over windows 1 and 2 (M1 bounded to [-1, 1]).
-- **P_amp** = (I_late - I_early) / (|I_late| + |I_early|), where I is the internal lag-2 covariance
-  (each unit normalised by its whole-clip within-repeat variance, averaged over units) in windows 7 and 8
-  (late) and 1 and 2 (early). Bounded in [-1, 1]. (Draft v0.1 used a log ratio, which is undefined when a
-  faded internal part is estimated at or below 0; changed before any calibration run was kept.)
+centred within each repeat as in Study 2 (`measures.lag_measures`; with 2 windows the code reproduces
+Study 2's half-clip M1 exactly). Two amplitudes per window, each unit normalised by its whole-clip
+within-repeat variance and averaged over units: the internal amplitude I_w (same minus cross) and the locked
+amplitude L_w (cross).
 
-Selection rule: the index that passes C1 and C2 below; if both pass, P_share (continuity with Study 2); if
-neither passes, the study stops before any held-out data is read.
+**Primary (v0.2): the drive-time fit.** Across windows, I_w = a x L_w^b x exp(c x t_w), with t_w the
+window's centre as a fraction of the clip, fitted by least squares on I_w (windows with L_w <= 0 left out;
+at least 4 windows):
+- **c, the fade at fixed drive**, per clip length, clipped to [-6, 6]: below 0 the internal part fades along
+  the clip whatever the drive does (carried); near 0 it is renewed (generated).
+- **b, the drive exponent**: about 0 to 0.6 for an additive internal part seen through the spike instrument,
+  above 1 for gain-type variability, lower if drive suppresses internal variability.
 
-Also reported (not tested): the full 8-window profile of M1, the internal and locked covariances, and
-whole-clip M1 and M2 on NM3 (for L2).
+**Why v0.1's indices were replaced.** In the first calibration runs (section 8), the simple late-minus-early
+indices (P_share, P_amp) separated generated from carried systems only for one fixed envelope of the locked
+drive. When the same system's envelope was flattened or reversed, a generated system's index moved by up to
+0.6, as far as the generated-carried gap. Mouse and network locked responses to the same movie differ in
+envelope, so those indices would confound drive with fading. The fit controls for the drive in each window.
+This was decided on synthetic systems only, after seeing partial calibration results (`PERSIST_LOG.md`).
+P_share and P_amp are still computed and reported.
 
-A fading system has P below 0. A system whose internal part is generated at a steady rate has P near 0
-(it can be above 0 if stimulus onset quenches variability, as Churchland et al. found).
+Also reported (not tested): the 8-window profiles of M1 and of both amplitudes, the log-linear version of
+the fit, and whole-clip M1 and M2 on NM3 (for L2).
 
 ## 5. Systems
 
@@ -113,13 +123,13 @@ the streaming recorder.
 
 ## 7. Hypotheses and decision rules (to be frozen)
 
-Paired, mouse by mouse, d = mouse minus network, on the chosen P index. Ruler: robust SD of the mice's P.
+Paired, mouse by mouse, d = mouse minus network, on c (claims 1 to 4) and on b (claim 5). Rulers: robust SDs of the mice's c and b.
 Margin: the larger of 0.5 ruler units and the bias bound from calibration C3. Per-instance one-sided
 Wilcoxon tests (all 3 instances) and a cluster bootstrap over generator cells, as in Study 2, with the S-R4
 caveat that 3 clusters show agreement across instances, not a population interval. A family with more than
 25% missing pairs is "not testable".
 
-- **H1 (cortex generates):** the mice's median P is above minus the margin, tested one-sided
+- **H1 (cortex generates):** the mice's median c is above minus the margin, tested one-sided
   (non-inferiority) with the lower end of the 90% bootstrap interval over mice above minus the margin.
 - **H2 (carriers fade more than cortex), per noise-free family A2, A3, A5, A6, A7:** confirmed if d exceeds
   the margin with p < 0.05 overall and within each instance and the cluster interval above 0; refuted the
@@ -132,7 +142,13 @@ caveat that 3 clusters show agreement across instances, not a population interva
 - **H4 (controls):** K1 and K3 not confirmed under H2; K2 confirmed. Reported as a check on the measure;
   if K2 is not confirmed or K1 is, every claim is reported with "the measure did not separate the known
   controls".
-- **Behaviour:** running and pupil regressed out as in Study 2; claims 1 and 2 reported with and without.
+- **H5 (what kind of generator):** d_b = mouse b minus network b, per generator system (K1, K3, N3, N6),
+  confirmed if d_b exceeds the margin with p < 0.05 overall and within each instance and the cluster
+  interval above 0. **Claim 5 holds** if at least 3 of the 4 are confirmed and none refuted. Reported beside
+  it: where the mice's b lies relative to the calibration's additive and gain-type ranges.
+- **Behaviour:** running and pupil regressed out as in Study 2; claims 1, 2 and 5 reported with and without.
+  (Running and arousal are a known source of gain-type variability, so claim 5 with behaviour removed is the
+  stricter reading.)
 - **Playback:** K3 at x0.5 and x2 playback; if either moves the mice-to-K3 median d by 0.5 ruler units or
   more, the movie-driven controls are reported but not used for claim 4.
 - **Secondary:** NM1 outside visual cortex, the mice's P per region group (thalamus, hippocampus, other),
@@ -152,7 +168,8 @@ amplitude a slow random process, SD 0.5); internal share 0.4. Internal parts:
   lengths, no new variability (as in a deterministic network given a different preceding context);
 - **gain-type**: no additive internal part; a slow random gain multiplies the locked part (log-SD 0.3).
 
-Criteria, per index (P_share and P_amp):
+Criteria, per index (c from the least-squares fit, c from the log-linear fit, P_share, P_amp), evaluated on
+recordings that reached the instrument, as in the data:
 - **C1, separation:** at every instrument and seed, every generated run has a higher P than every carried run
   with decay 0.1 to 0.5 clip lengths. (Decay over 2 clip lengths is reported; it must lie below the generated
   median.)
@@ -163,6 +180,13 @@ Criteria, per index (P_share and P_amp):
   system; becomes the bias bound in section 7.
 - **C4, gain-type variability** counts as generated: its P lies within the range of the generated runs at
   that instrument, widened by the C2 tolerance.
+- **C5, drive exponent:** at every instrument and seed, b of every additive generated run is below b of the
+  gain-type run.
+
+Selection rule (v0.2, set after the partial results described in section 4): the first index in the order
+fitted c, log-linear c, P_share, P_amp that passes C1, C2 and C4 on the full calibration. If none passes,
+the persistence claims (1 to 4) are dropped before any held-out data is read. Claim 5 needs C5; if C5 fails,
+claim 5 is dropped.
 
 Noise levels for N3 and N6 are set after calibration and before any mouse comparison: the noise variance
 that brings the network's whole-clip M1 at the median instrument within 0.05 of its noise-free value is not

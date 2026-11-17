@@ -23,6 +23,7 @@ R = 10
 N = 300
 TAU_L = 10.0
 SEEDS = (0, 1)
+C_CLIP = 6.0                 # drive-time index c clipped to [-6, 6] per clip (an end/start ratio of 0.0025 to 400)
 
 
 def instruments():
@@ -82,5 +83,92 @@ def run():
         print(k, out.get("reached"), out.get("recorded_bins"), w.get("P_share"), w.get("P_amp"), flush=True)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" and "--summary" not in sys.argv:
     run()
+
+
+def summary():
+    """C1 to C4 of docs/PERSIST.md section 8, per index; writes docs/figures/persist/calibration.json."""
+    from nematica.persist.measures import drive_time_fit
+    rows = [json.loads(l) for l in open(RUNS)]
+    n_all = len(rows)
+    rows = [r for r in rows if r.get("windows") and r.get("reached")]     # as in the data: reached only
+    for r in rows:                                                        # recompute with the current fit
+        w = r["windows"]
+        I, S = np.array(w["int_amp_w"]), np.array(w["same_amp_w"])
+        f = drive_time_fit(I, S - I)
+        w["c_time"] = float(np.clip(f["c"], -C_CLIP, C_CLIP)) if np.isfinite(f["c"]) else np.nan
+        w["c_log"] = float(np.clip(f.get("c_loglinear", np.nan), -C_CLIP, C_CLIP))
+        w["b_drive"] = f["b"]
+    out = {"n_runs": n_all, "n_reached": len(rows), "c_clip": C_CLIP, "indices": {}}
+    insts = sorted({r["instrument"] for r in rows})
+    for ix in ("P_share", "P_amp", "c_time", "c_log"):
+        res = {"C1": {}, "C2": {}, "C3": {}, "C4": {}}
+        v = lambda r: r["windows"][ix]
+        med_gap = []
+        for inst in insts:
+            for seed in SEEDS:
+                g = [v(r) for r in rows if r["instrument"] == inst and r["seed"] == seed and r["kind"] == "generated"
+                     and r["env"] == "normal"]
+                c = [v(r) for r in rows if r["instrument"] == inst and r["seed"] == seed and r["kind"] == "carried"
+                     and r["env"] == "normal" and r["tau_c"] <= 0.5]
+                c2 = [v(r) for r in rows if r["instrument"] == inst and r["seed"] == seed and r["kind"] == "carried"
+                      and r["env"] == "normal" and r["tau_c"] == 2.0]
+                if not g or not c:
+                    continue
+                res["C1"][f"{inst}|{seed}"] = {"generated_min": min(g), "generated_median": float(np.median(g)),
+                                               "carried_max": max(c), "separated": bool(min(g) > max(c)),
+                                               "carried_2clip": c2[0] if c2 else None,
+                                               "carried_2clip_below_gen_median": bool(c2 and c2[0] < np.median(g))}
+                med_gap.append(float(np.median(g)) - float(np.median(c)))
+        gap = float(np.median(med_gap)) if med_gap else np.nan
+        tol = abs(gap) / 4
+        for inst in insts:
+            for seed in SEEDS:
+                for kind, par in (("generated", ("tau_int", TAU_L)), ("carried", ("tau_c", 0.5))):
+                    base = [v(r) for r in rows if r["instrument"] == inst and r["seed"] == seed and r["kind"] == kind
+                            and r.get(par[0]) == par[1] and r["env"] == "normal"]
+                    for env in ("flat", "reversed", "squared"):
+                        x = [v(r) for r in rows if r["instrument"] == inst and r["seed"] == seed and r["kind"] == kind
+                             and r.get(par[0]) == par[1] and r["env"] == env]
+                        if base and x:
+                            res["C2"][f"{inst}|{seed}|{kind}|{env}"] = {"shift": x[0] - base[0],
+                                                                        "within": bool(abs(x[0] - base[0]) <= tol)}
+        for kind, par in (("generated", ("tau_int", TAU_L)), ("carried", ("tau_c", 0.5))):
+            meds = {inst: float(np.median([v(r) for r in rows if r["instrument"] == inst and r["kind"] == kind
+                                           and r.get(par[0]) == par[1] and r["env"] == "normal"] or [np.nan]))
+                    for inst in insts}
+            res["C3"][kind] = {"medians": meds, "range": float(np.nanmax(list(meds.values())) - np.nanmin(list(meds.values())))}
+        for inst in insts:
+            for seed in SEEDS:
+                g = [v(r) for r in rows if r["instrument"] == inst and r["seed"] == seed and r["kind"] == "generated"
+                     and r["env"] == "normal"]
+                gn = [v(r) for r in rows if r["instrument"] == inst and r["seed"] == seed and r["kind"] == "gain"]
+                if g and gn:
+                    res["C4"][f"{inst}|{seed}"] = {"gain": gn[0], "within": bool(min(g) - tol <= gn[0] <= max(g) + tol)}
+        res["gap_generated_minus_carried"] = gap
+        res["C2_tolerance"] = tol
+        res["passes"] = {k: bool(res[k]) and all(x.get("separated", x.get("within", True)) for x in res[k].values())
+                         for k in ("C1", "C2", "C4")}
+        out["indices"][ix] = res
+    (OUT / "calibration.json").write_text(json.dumps(out, indent=1, default=float))
+    b = {kind: [r["windows"]["b_drive"] for r in rows if r["kind"] == kind and r["env"] == "normal"]
+         for kind in ("generated", "carried", "gain")}
+    c5 = {}
+    for inst in insts:
+        for seed in SEEDS:
+            g = [r["windows"]["b_drive"] for r in rows if r["instrument"] == inst and r["seed"] == seed
+                 and r["kind"] == "generated" and r["env"] == "normal"]
+            gn = [r["windows"]["b_drive"] for r in rows if r["instrument"] == inst and r["seed"] == seed
+                  and r["kind"] == "gain"]
+            if g and gn:
+                c5[f"{inst}|{seed}"] = {"generated_max": max(g), "gain": gn[0], "separated": bool(max(g) < gn[0])}
+    out["C5"] = {"cells": c5, "passes": bool(c5) and all(x["separated"] for x in c5.values())}
+    out["b_drive"] = {k: {"median": float(np.nanmedian(v_)), "min": float(np.nanmin(v_)), "max": float(np.nanmax(v_))}
+                      for k, v_ in b.items() if v_}
+    (OUT / "calibration.json").write_text(json.dumps(out, indent=1, default=float))
+    print(json.dumps({ix: out["indices"][ix]["passes"] for ix in out["indices"]}), json.dumps(out["b_drive"]), "C5", out["C5"]["passes"])
+
+
+if __name__ == "__main__" and "--summary" in sys.argv:
+    summary()

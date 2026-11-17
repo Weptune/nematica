@@ -77,7 +77,9 @@ def _finish(acc, edges, k0):
     ie, il = ia[early].mean(), ia[late].mean()
     # bounded in [-1, 1]; a log ratio was undefined when a faded internal part estimated at or below 0
     p_amp = float((il - ie) / (abs(il) + abs(ie))) if (abs(il) + abs(ie)) > 0 else np.nan
+    fit = drive_time_fit(ia, sa - ia)
     return {"W": W, "k0": k0, "edges": [int(x) for x in edges], "M1_w": m1.tolist(), "same_w": same.tolist(),
+            "c_time": fit["c"], "b_drive": fit["b"], "fit": fit,
             "cross_w": cross.tolist(), "int_amp_w": ia.tolist(), "same_amp_w": sa.tolist(),
             "P_share": p_share, "P_amp": p_amp, "amp_nonpositive": bool(not (ie > 0 and il > 0))}
 
@@ -103,3 +105,35 @@ def windowed_stream(rec, positions, W=8, k0=2):
         ys = [rec._repeat(C, r, bid)[:, sel] for r in range(rec.R)]
         _accumulate(acc, ys, edges, k0)
     return _finish(acc, edges, k0)
+
+
+def drive_time_fit(I, L):
+    """Draft v0.2 primary (docs/PERSIST.md section 4): across windows, internal amplitude I_w modelled as
+    a * L_w^b * exp(c * t_w), with L_w the locked (cross-repeat) amplitude in the window and t_w the window's
+    centre as a fraction of the clip. c: change of internal amplitude per clip length at fixed drive (below 0:
+    the internal part fades; a carried state). b: how internal amplitude scales with drive (about 0 for an
+    additive internal part, about 1 or more for gain-type variability, below 0 if drive suppresses it).
+    Fitted by least squares on I itself (no logarithm, so windows whose internal amplitude is estimated at
+    or below 0 need no floor), started from a log-linear fit; windows with L_w <= 0 are left out."""
+    from scipy.optimize import least_squares
+    I = np.asarray(I, float)
+    L = np.asarray(L, float)
+    W = len(I)
+    t = (np.arange(W) + 0.5) / W
+    ok = L > 0
+    out = {"n_windows": int(ok.sum()), "b": np.nan, "c": np.nan, "converged": False}
+    if ok.sum() < 4 or not np.any(I[ok] > 0):
+        return out
+    It, Lt, tt = I[ok], L[ok], t[ok]
+    eps = 1e-3 * np.abs(It).max()
+    X = np.c_[np.ones(len(tt)), np.log(Lt), tt]
+    p0 = np.linalg.lstsq(X, np.log(np.clip(It, eps, None)), rcond=None)[0]
+    scale = np.abs(It).mean() + 1e-15
+    res = lambda p: (It - np.exp(p[0] + p[1] * np.log(Lt) + p[2] * tt)) / scale
+    try:
+        r = least_squares(res, p0, method="lm", max_nfev=2000)
+        out.update({"b": float(r.x[1]), "c": float(r.x[2]), "converged": bool(r.success),
+                    "b_loglinear": float(p0[1]), "c_loglinear": float(p0[2])})
+    except Exception as e:  # noqa: BLE001
+        out.update({"error": f"{type(e).__name__}: {e}", "b_loglinear": float(p0[1]), "c_loglinear": float(p0[2])})
+    return out
