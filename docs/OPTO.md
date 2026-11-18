@@ -1,6 +1,6 @@
 # Study O: the stimulation test in mouse cortex (Allen optotagging)
 
-Status: **feasibility (metadata only)**. Written 17 Nov 2026 (UTC) before any optogenetic table or
+Status: **feasibility passed (metadata only), narrowly; registration not yet written**. Written 17 Nov 2026 (UTC) before any optogenetic table or
 response was opened. Context: `docs/STRATEGY_2026-11-17.md` and `docs/EMU_R.md` (the worm stimulation data
 is exhausted; no public second worm dataset passes; plans must not depend on replies from other labs).
 
@@ -35,3 +35,24 @@ measures, models, calibration systems and claims are written next, reviewed, and
 response is read.
 
 ## Feasibility log
+
+18 Nov 2026, 06:29 UTC. `scripts/opto_feasibility.py`, output `docs/figures/opto/feasibility.jsonl`
+(metadata only: genotype, optogenetic table columns and counts, spontaneous block lengths; no responses).
+
+- All 58 sessions read without error. Every session with a Cre line has an optogenetic table at
+  `processing/optotagging/optogenetic_stimulation` with three conditions: single square pulses (5 ms and
+  10 ms), a 1 s train of 2.5 ms pulses at 10 Hz, and a 1 s half-cosine, each at three light levels.
+- Cre mice with a table: 28 (Pvalb 8, Sst 12, Vip 8). 26 wild-type (no ChR2) mice also received the light,
+  which gives a **light-only control** (heating, photoelectric artefact, visual response to the light).
+- Trials per condition: 45 in 15 Cre mice, 75 in 12, about 150 in 1. **Rule 1** (at least 12 mice with at
+  least 50 trials of one fixed condition): **13 mice pass** (Vip 5, Pvalb 4, Sst 4; 10 from 000022, 3 from
+  000021). Passes, narrowly. Six wild-type mice also have at least 50 trials per condition.
+- **Rule 2** (at least 10 minutes outside stimulus blocks): the shortest spontaneous total among Cre mice
+  is 1237 s. Passes.
+- **Rule 3** (at least two Cre lines): three lines. Passes as written, but with 4 or 5 mice per line the
+  interneuron type will be a large factor; the registration must treat it explicitly.
+- **Rule 4** (trials at least 1 s apart): the smallest gap is 1.68 s. Passes; a 1 s train or half-cosine
+  leaves under 0.7 s before the next trial, so response windows must be chosen with that in mind.
+
+**Outcome: usable, narrowly.** Next: the question, measures, models, calibration systems and claims,
+written and reviewed before any response is read. Status line updated.
