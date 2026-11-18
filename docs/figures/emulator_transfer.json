@@ -1,0 +1,472 @@
+{
+ "note": "Emulator recipe (spec hybrid_kernels_slow6d_indivslow1_hp_memfix_diag_hsd1, corrected readout) and controls, per noise seed: activity levels passing (of 6; a level passes if inside in at least 2 of 3 pools) and poke levels passing (of 3). Rule: rest >= 5 and pokes 3 of 3. Sources: results/scores/reference/emulator.json (atlas), results/emulator_unc31 and results/emulator_atanas (local caches); README 'Testing the emulator recipe on data it was not built on'. Atanas worms have no optogenetic pokes, so only the activity half is scored there (scored with the mem readout, which does not touch the activity levels).",
+ "atlas_cv3": [
+  {
+   "seed": 0,
+   "rest": 5,
+   "poke": 3,
+   "pass": true
+  },
+  {
+   "seed": 1,
+   "rest": 5,
+   "poke": 3,
+   "pass": true
+  },
+  {
+   "seed": 2,
+   "rest": 5,
+   "poke": 3,
+   "pass": true
+  },
+  {
+   "seed": 3,
+   "rest": 6,
+   "poke": 3,
+   "pass": true
+  },
+  {
+   "seed": 4,
+   "rest": 6,
+   "poke": 3,
+   "pass": true
+  }
+ ],
+ "atlas_blocks1": [
+  {
+   "seed": 0,
+   "rest": 6,
+   "poke": 3,
+   "pass": true
+  },
+  {
+   "seed": 1,
+   "rest": 6,
+   "poke": 3,
+   "pass": true
+  },
+  {
+   "seed": 2,
+   "rest": 6,
+   "poke": 3,
+   "pass": true
+  },
+  {
+   "seed": 3,
+   "rest": 5,
+   "poke": 3,
+   "pass": true
+  },
+  {
+   "seed": 4,
+   "rest": 6,
+   "poke": 3,
+   "pass": true
+  }
+ ],
+ "unc31": [
+  {
+   "seed": 0,
+   "rest": 4,
+   "poke": 3,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "IIO",
+    "L1.timescale": "III",
+    "L2.correlation": "OIT",
+    "L2.dimension": "III",
+    "L4.leadlag": "III",
+    "L4.dwell": "OIT",
+    "C1.pattern": "III",
+    "C2.magnitude": "III",
+    "P2.spread": "III"
+   }
+  },
+  {
+   "seed": 1,
+   "rest": 5,
+   "poke": 3,
+   "pass": true,
+   "letters": {
+    "L1.distribution": "IIO",
+    "L1.timescale": "III",
+    "L2.correlation": "OII",
+    "L2.dimension": "III",
+    "L4.leadlag": "III",
+    "L4.dwell": "OTT",
+    "C1.pattern": "III",
+    "C2.magnitude": "III",
+    "P2.spread": "III"
+   }
+  },
+  {
+   "seed": 2,
+   "rest": 5,
+   "poke": 3,
+   "pass": true,
+   "letters": {
+    "L1.distribution": "IIO",
+    "L1.timescale": "III",
+    "L2.correlation": "OII",
+    "L2.dimension": "III",
+    "L4.leadlag": "III",
+    "L4.dwell": "OIT",
+    "C1.pattern": "III",
+    "C2.magnitude": "III",
+    "P2.spread": "III"
+   }
+  },
+  {
+   "seed": 3,
+   "rest": 5,
+   "poke": 3,
+   "pass": true,
+   "letters": {
+    "L1.distribution": "IIO",
+    "L1.timescale": "III",
+    "L2.correlation": "OII",
+    "L2.dimension": "III",
+    "L4.leadlag": "III",
+    "L4.dwell": "OIT",
+    "C1.pattern": "III",
+    "C2.magnitude": "III",
+    "P2.spread": "III"
+   }
+  },
+  {
+   "seed": 4,
+   "rest": 4,
+   "poke": 3,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "IIO",
+    "L1.timescale": "III",
+    "L2.correlation": "OIT",
+    "L2.dimension": "III",
+    "L4.leadlag": "III",
+    "L4.dwell": "OIT",
+    "C1.pattern": "III",
+    "C2.magnitude": "III",
+    "P2.spread": "III"
+   }
+  }
+ ],
+ "unc31_control_rest": [
+  {
+   "seed": 0,
+   "rest": 2,
+   "poke": 2,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "IOO",
+    "L1.timescale": "III",
+    "L2.correlation": "OOO",
+    "L2.dimension": "IOT",
+    "L4.leadlag": "IIO",
+    "L4.dwell": "OIO",
+    "C1.pattern": "IIO",
+    "C2.magnitude": "IOI",
+    "P2.spread": "IOO"
+   }
+  },
+  {
+   "seed": 1,
+   "rest": 3,
+   "poke": 1,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "IIO",
+    "L1.timescale": "IIT",
+    "L2.correlation": "OOI",
+    "L2.dimension": "IOT",
+    "L4.leadlag": "III",
+    "L4.dwell": "OIT",
+    "C1.pattern": "IIO",
+    "C2.magnitude": "IOO",
+    "P2.spread": "IOO"
+   }
+  },
+  {
+   "seed": 2,
+   "rest": 4,
+   "poke": 0,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "IIO",
+    "L1.timescale": "IIT",
+    "L2.correlation": "OOO",
+    "L2.dimension": "IOI",
+    "L4.leadlag": "IIO",
+    "L4.dwell": "OIT",
+    "C1.pattern": "OIO",
+    "C2.magnitude": "IOO",
+    "P2.spread": "IOO"
+   }
+  },
+  {
+   "seed": 3,
+   "rest": 4,
+   "poke": 2,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "IIO",
+    "L1.timescale": "IIT",
+    "L2.correlation": "OOI",
+    "L2.dimension": "IOI",
+    "L4.leadlag": "III",
+    "L4.dwell": "OIO",
+    "C1.pattern": "IIO",
+    "C2.magnitude": "IOI",
+    "P2.spread": "IOO"
+   }
+  },
+  {
+   "seed": 4,
+   "rest": 2,
+   "poke": 1,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "IOO",
+    "L1.timescale": "IIT",
+    "L2.correlation": "OOI",
+    "L2.dimension": "IOT",
+    "L4.leadlag": "III",
+    "L4.dwell": "OIT",
+    "C1.pattern": "IIO",
+    "C2.magnitude": "IOO",
+    "P2.spread": "IOO"
+   }
+  }
+ ],
+ "unc31_control_hybrid": [
+  {
+   "seed": 0,
+   "rest": 5,
+   "poke": 1,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "III",
+    "L1.timescale": "III",
+    "L2.correlation": "IOI",
+    "L2.dimension": "III",
+    "L4.leadlag": "III",
+    "L4.dwell": "OIT",
+    "C1.pattern": "III",
+    "C2.magnitude": "IOO",
+    "P2.spread": "IOO"
+   }
+  },
+  {
+   "seed": 1,
+   "rest": 5,
+   "poke": 1,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "IIO",
+    "L1.timescale": "III",
+    "L2.correlation": "IOI",
+    "L2.dimension": "III",
+    "L4.leadlag": "III",
+    "L4.dwell": "OIT",
+    "C1.pattern": "IIO",
+    "C2.magnitude": "IOO",
+    "P2.spread": "IOO"
+   }
+  },
+  {
+   "seed": 2,
+   "rest": 4,
+   "poke": 1,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "IIO",
+    "L1.timescale": "OII",
+    "L2.correlation": "OOI",
+    "L2.dimension": "IOI",
+    "L4.leadlag": "III",
+    "L4.dwell": "OIT",
+    "C1.pattern": "III",
+    "C2.magnitude": "IOO",
+    "P2.spread": "IOO"
+   }
+  },
+  {
+   "seed": 3,
+   "rest": 4,
+   "poke": 1,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "III",
+    "L1.timescale": "III",
+    "L2.correlation": "OOI",
+    "L2.dimension": "IOI",
+    "L4.leadlag": "III",
+    "L4.dwell": "OIT",
+    "C1.pattern": "III",
+    "C2.magnitude": "IOO",
+    "P2.spread": "IOO"
+   }
+  },
+  {
+   "seed": 4,
+   "rest": 5,
+   "poke": 1,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "III",
+    "L1.timescale": "III",
+    "L2.correlation": "IOI",
+    "L2.dimension": "III",
+    "L4.leadlag": "III",
+    "L4.dwell": "OIT",
+    "C1.pattern": "III",
+    "C2.magnitude": "IOO",
+    "P2.spread": "IOO"
+   }
+  }
+ ],
+ "atanas": [
+  {
+   "seed": 0,
+   "rest": 1,
+   "poke": null,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "OOO",
+    "L1.timescale": "OOO",
+    "L2.correlation": "IOO",
+    "L2.dimension": "IOO",
+    "L4.leadlag": "OOO",
+    "L4.dwell": "IOI"
+   }
+  },
+  {
+   "seed": 1,
+   "rest": 1,
+   "poke": null,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "OOO",
+    "L1.timescale": "OIO",
+    "L2.correlation": "OOO",
+    "L2.dimension": "OOI",
+    "L4.leadlag": "OOO",
+    "L4.dwell": "IOI"
+   }
+  },
+  {
+   "seed": 2,
+   "rest": 1,
+   "poke": null,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "OOO",
+    "L1.timescale": "OOO",
+    "L2.correlation": "OOO",
+    "L2.dimension": "OOO",
+    "L4.leadlag": "OOO",
+    "L4.dwell": "IOI"
+   }
+  },
+  {
+   "seed": 3,
+   "rest": 1,
+   "poke": null,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "OOO",
+    "L1.timescale": "OIO",
+    "L2.correlation": "OOO",
+    "L2.dimension": "IOO",
+    "L4.leadlag": "OOO",
+    "L4.dwell": "IOI"
+   }
+  },
+  {
+   "seed": 4,
+   "rest": 1,
+   "poke": null,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "OOO",
+    "L1.timescale": "OOO",
+    "L2.correlation": "OOO",
+    "L2.dimension": "IOO",
+    "L4.leadlag": "OOO",
+    "L4.dwell": "IOI"
+   }
+  }
+ ],
+ "atanas_control_rest": [
+  {
+   "seed": 0,
+   "rest": 3,
+   "poke": null,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "OOO",
+    "L1.timescale": "III",
+    "L2.correlation": "TTT",
+    "L2.dimension": "OOO",
+    "L4.leadlag": "III",
+    "L4.dwell": "IOI"
+   }
+  },
+  {
+   "seed": 1,
+   "rest": 3,
+   "poke": null,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "OOO",
+    "L1.timescale": "OII",
+    "L2.correlation": "TTT",
+    "L2.dimension": "OOO",
+    "L4.leadlag": "III",
+    "L4.dwell": "IOI"
+   }
+  },
+  {
+   "seed": 2,
+   "rest": 3,
+   "poke": null,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "OOO",
+    "L1.timescale": "OII",
+    "L2.correlation": "ITT",
+    "L2.dimension": "OOO",
+    "L4.leadlag": "III",
+    "L4.dwell": "IOI"
+   }
+  },
+  {
+   "seed": 3,
+   "rest": 3,
+   "poke": null,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "OOO",
+    "L1.timescale": "III",
+    "L2.correlation": "TTT",
+    "L2.dimension": "OOO",
+    "L4.leadlag": "III",
+    "L4.dwell": "IOI"
+   }
+  },
+  {
+   "seed": 4,
+   "rest": 3,
+   "poke": null,
+   "pass": false,
+   "letters": {
+    "L1.distribution": "OOO",
+    "L1.timescale": "OII",
+    "L2.correlation": "TTT",
+    "L2.dimension": "OOO",
+    "L4.leadlag": "III",
+    "L4.dwell": "IOI"
+   }
+  }
+ ]
+}

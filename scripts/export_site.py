@@ -135,6 +135,164 @@ def results() -> dict:
     return out
 
 
+def _q(a):
+    a = np.asarray([v for v in a if v is not None and np.isfinite(v)], float)
+    return [round(float(np.percentile(a, p)), 4) for p in (25, 50, 75)] if a.size else None
+
+
+def beyond() -> dict:
+    """Chapters beyond the first worm results (added 18 Nov 2026). Summary numbers only, all from committed
+    files: the map study's per-mouse test (docs/figures/map_permouse.json), Study 2 (docs/figures/slow_runs),
+    the emulator's transfer tests (docs/figures/emulator_transfer.json)."""
+    out = {}
+    # map study, amendment 27: each mouse against the random RNN recorded at that mouse's own instrument
+    pm = json.loads((FIG / "map_permouse.json").read_text())
+    slow = {p["mouse"]: p["ai_value"] for p in pm["pairs"]["A1-slow"]}
+    mice = sorted(({"m": round(p["mouse_value"], 4), "rnn": round(p["ai_value"], 4),
+                    "slow": (round(slow[p["mouse"]], 4) if slow.get(p["mouse"]) is not None and np.isfinite(slow[p["mouse"]]) else None)}
+                   for p in pm["pairs"]["A1"]), key=lambda d: d["m"])
+    tb, td = pm["tests"]["B' per-mouse slow memory"], pm["tests"]["D' per-mouse slow drives"]
+    out["permouse"] = {"mice": mice, "rulerSD": round(pm["ruler_sd"], 4),
+                       "lower": sum(d["rnn"] < d["m"] for d in mice), "n": len(mice),
+                       "slowHigher": sum(d["slow"] is not None and d["slow"] > d["m"] for d in mice),
+                       "nSlow": sum(d["slow"] is not None for d in mice),
+                       "medianSD": round(tb["median_diff_ruler"], 2), "ci90SD": [round(v, 2) for v in tb["ci90_ruler"]],
+                       "p": tb["p_mouse_above"], "slowSD": round(td["median_diff_ruler"], 2)}
+    # Study 2: internal share (M1) and relative slowness (M2) per network family, against 49 mice
+    R = FIG / "slow_runs"
+    ids = set(json.loads((R / "mice_table.json").read_text())["rows"])
+    mrows = [json.loads(l) for l in (R / "mice.jsonl").open()]
+    mm = [m for m in mrows if m["id"] in ids]
+    ai = {}
+    for f in sorted(R.glob("ais*.jsonl")):
+        if "dry" in f.name or "retry" in f.name:
+            continue
+        for l in f.open():
+            r = json.loads(l)
+            ai[(r["family"], r["run"], r.get("id"), r.get("instance"))] = r
+    for l in (R / "ais_retry.jsonl").open():
+        r = json.loads(l)
+        ai[(r["family"], r["run"], r.get("id"), r.get("instance"))] = r
+    rows_ = [r for r in ai.values() if "error" not in r and r.get("reached") and r.get("id") in ids]
+    tests = json.loads((R / "tests.json").read_text())
+    FAM = {"A2": "Task-trained RNN", "A3": "GRU", "A5": "CfC", "A6": "Pythia", "A7": "Mamba", "A1": "Random RNN", "A4": "Spiking network"}
+    groups = defaultdict(list)
+    for r in rows_:
+        fam, run = r["family"], r["run"]
+        if fam in ("A2", "A3", "A5"):
+            key = (fam, "")
+        elif fam == "A6":
+            key = (fam, run.split("pythia-")[1].split("-")[0].upper())
+        elif fam == "A7":
+            key = (fam, run.split("mamba-")[1].split("-")[0].upper())
+        elif fam in ("A1", "A4"):
+            key = (fam, "gain " + run.split("gain")[1])
+        else:
+            continue
+        groups[key].append(r)
+    fams = []
+    for fam in ("A2", "A3", "A5", "A6", "A7", "A1", "A4"):
+        h = tests["H1"].get(fam, {})
+        entry = {"id": fam, "name": FAM[fam], "counted": h.get("M1", {}).get("counted", True) is not False,
+                 "M1": {"verdict": h.get("M1", {}).get("verdict"), "d": num(h.get("M1", {}).get("median_d_ruler"))},
+                 "M2": {"verdict": h.get("M2", {}).get("verdict"), "d": num(h.get("M2", {}).get("median_d_ruler"))},
+                 "members": []}
+        for (f, sub), rs in sorted(groups.items(), key=lambda kv: kv[0][1]):
+            if f != fam:
+                continue
+            entry["members"].append({"label": sub, "n": len(rs), "M1": _q([r["M1"] for r in rs]), "M2": _q([r["M2"] for r in rs])})
+        if fam in ("A6", "A7"):
+            order = {"14M": 0, "160M": 1, "410M": 2, "1B": 3, "130M": 0, "370M": 1}
+            entry["members"].sort(key=lambda m: order.get(m["label"], 9))
+        if fam in ("A1", "A4"):
+            entry["members"].sort(key=lambda m: float(m["label"].split()[1]))
+        fams.append(entry)
+    out["slowStudy"] = {"mice": {"n": len(mm), "M1": _q([m["M1"] for m in mm]), "M2": _q([m["M2"] for m in mm]),
+                                 "M1all": sorted(round(m["M1"], 3) for m in mm if m["M1"] is not None),
+                                 "M2all": sorted(round(m["M2"], 3) for m in mm if m["M2"] is not None)},
+                        "rulers": tests["rulers"], "families": fams,
+                        "claims": {k: v.get("holds") for k, v in tests["claims"].items()}}
+    # where the answer stands: each measured difference and what closed it (home page). Constants are from the
+    # record (README sections named in each comment); the rest is computed above.
+    counted = [mb["M1"][1] for f in fams if f["counted"] for mb in f["members"]]
+    em = json.loads((FIG / "emulator_transfer.json").read_text())
+    out["gaps"] = [
+        {  # README headline and "Arc 4: the causal Turing test" (repaired data, six held-out pools)
+            "title": "Answering a single-neuron poke", "where": "Worm, 113 animals (signal-propagation atlas)",
+            "scale": "Echo agreement with real worms", "domain": [0, 0.14], "ticks": [0, 0.05, 0.1], "dp": 2,
+            "band": [0.087, 0.121], "bandLabel": "real worms with each other",
+            "plain": {"range": [0.004, 0.014], "label": "copy fitted by watching"},
+            "fixed": {"range": [0.088, 0.113], "value": 0.1, "label": "copy that also learned from pokes", "below": True},
+            "status": {"kind": "closed", "text": "Closed by learning from pokes",
+                       "sub": "Pattern shown equivalent in 6 of 6 held-out groups; size and ongoing activity match less well"},
+            "tip": [["Copy fitted by watching", "0.004 to 0.014"], ["Real worms with each other", "0.087 to 0.121"],
+                    ["Copy that also learned from pokes", "0.088 to 0.113"]],
+            "note": "Watching passes 3 to 5 of 6 activity tests in each group, yet misses the echo."},
+        {  # README "Arc 1: forecasting is not fidelity" (not pre-registered)
+            "title": "Being an individual", "where": "Worm, 27 freely moving animals (copper set)",
+            "scale": "Individuality (1 = as distinct as real worms are)", "domain": [0.6, 1.1], "ticks": [0.6, 0.8, 1.0], "dp": 1,
+            "band": [0.99, 1.01], "bandLabel": "real worms",
+            "plain": {"value": 0.78, "label": "tuned to forecast best"},
+            "fixed": {"value": 0.99, "ok": True, "label": "keeps each worm's own dynamics", "below": True},
+            "status": {"kind": "closed", "text": "Closed by keeping individuals",
+                       "sub": "Costs 0.009 of forecasting skill; 7 of 8 tests inside in a nested check"},
+            "tip": [["Best forecaster", "too typical on correlations and behaviour encoding"], ["Individuality", "0.78 against 0.99"]],
+            "note": "Not pre-registered; one lab's worms."},
+        {  # docs/MAP.md amendments 27 and 28
+            "title": "Slow memory at rest", "where": f"Mouse visual cortex, {out['permouse']['n']} animals (Allen Neuropixels)",
+            "scale": "Network minus mouse, in between-mouse SDs", "domain": [-2, 1], "ticks": [-2, -1, 0, 1], "dp": 0,
+            "band": [-0.5, 0.5], "bandLabel": "within half an SD",
+            "plain": {"value": -out["permouse"]["medianSD"], "label": "random network"},
+            "fixed": {"value": -0.03, "range": [-0.73, 0.08], "label": "with a slow drive, 18 held-out mice", "below": True},
+            "status": {"kind": "closed", "text": "Closed by a slow drive",
+                       "sub": "About 6% of each unit's variance; interval too wide to show equivalence"},
+            "tip": [["Random network lower in", f"{out['permouse']['lower']} of {out['permouse']['n']} mice"],
+                    ["Mouse minus network", f"{out['permouse']['medianSD']} SDs [{out['permouse']['ci90SD'][0]} to {out['permouse']['ci90SD'][1]}]"],
+                    ["With a slow drive, held-out mice", "+0.03 SDs [−0.08 to +0.73]"]],
+            "note": "Each network is recorded through that mouse's own simulated instrument. The per-mouse rule was set after the mouse values were known."},
+        {  # docs/SLOW_SUMMARY.md, tests.json
+            "title": "Internal state during a movie", "where": f"Mouse visual cortex, {out['slowStudy']['mice']['n']} animals; five network families counted",
+            "scale": "Share of state that is internal, not locked to the input", "domain": [0, 1], "ticks": [0, 0.5, 1], "dp": 1,
+            "band": [out["slowStudy"]["mice"]["M1"][0], out["slowStudy"]["mice"]["M1"][2]], "bandLabel": "middle half of the mice",
+            "plain": {"values": sorted(counted), "label": "network families and sizes", "below": True, "anchor": "end"},
+            "status": {"kind": "none", "text": "No gap: networks on both sides",
+                       "sub": "Pre-registered: none of four claims of more, slower internal state held"},
+            "tip": [["Mice, median", str(out["slowStudy"]["mice"]["M1"][1])],
+                    ["Networks, medians", f"{min(counted):.2f} to {max(counted):.2f}"]],
+            "note": "Task-trained RNN and Mamba carry more internal state than the mice; GRU and CfC less; transformer sizes span them."},
+        {  # README "Light or activity: what tires a worm neuron?" (exploratory curve, corrected by review 7)
+            "title": "Answering the same poke again", "where": "Worm, 56 repeat pairs in 37 animals",
+            "scale": "Second response ÷ previous, 0.6 to 2 minutes apart", "domain": [0, 1.2], "ticks": [0, 0.5, 1], "dp": 1,
+            "band": [0.34, 0.64], "bandLabel": "real worms",
+            "plain": {"value": 1.0, "label": "artificial networks"},
+            "status": {"kind": "open", "text": "Open: the light tool, or the neuron",
+                       "sub": "A network whose input weakens with use reproduces it; this data cannot tell which the worm has"},
+            "tip": [["Real worms", "about half (interval 0.34 to 0.64)"], ["Artificial networks", "the same every time"]],
+            "note": "Exploratory curve. About 9% of the atlas's stimulations are repeats within 5 minutes."},
+        {  # docs/figures/emulator_transfer.json; README test T
+            "title": "Ongoing activity in moving worms", "where": "Worm, 30 freely moving animals (another lab)",
+            "scale": "Activity tests passed, of 6", "domain": [0, 6], "ticks": [0, 1, 2, 3, 4, 5, 6], "tickFmt": "int",
+            "band": [5, 6], "bandLabel": "pass mark",
+            "plain": {"value": em["atanas_control_rest"][0]["rest"], "label": "fitted to rest only"},
+            "fixed": {"value": em["atanas"][0]["rest"], "label": "the emulator recipe", "below": True},
+            "status": {"kind": "open", "text": "Open: still and moving worms differ",
+                       "sub": "The recipe built on immobilised worms fails here; movement or lab conditions"},
+            "tip": [["Emulator recipe", f"{em['atanas'][0]['rest']} of 6, in all five noise draws"], ["Fitted to rest only", f"{em['atanas_control_rest'][0]['rest']} of 6"]],
+            "note": "Refitted from scratch on these worms; no optogenetic pokes in this data."},
+    ]
+    # arc 1: forecasting skill and individuality across the shrinkage penalty (docs/figures/shrinkage.csv)
+    out["shrinkage"] = [{"lam": r["lam"], "r2": num(r["within_worm_r2"]), "ind": num(r["individuality"]),
+                         "typical": sum(v == "too typical" for k, v in r.items() if k.endswith("_verdict")),
+                         "outside": sum(v == "outside" for k, v in r.items() if k.endswith("_verdict"))} for r in rows("shrinkage.csv")]
+    # the emulator: passes on the worms it was built on, not on others
+    out["emulator"] = json.loads((FIG / "emulator_transfer.json").read_text())
+    out["emulator"].pop("note", None)
+    for k, v in out["emulator"].items():
+        for s in v:
+            s.pop("letters", None)
+    return out
+
+
 def pack(x: np.ndarray, lo=-1.5, hi=3.0) -> str:
     q = np.clip((x - lo) / (hi - lo), 0, 1)
     q = np.where(np.isfinite(x), np.round(q * 254) + 1, 0).astype(np.uint8)
@@ -333,7 +491,7 @@ def main() -> int:
     ap.add_argument("--sims", action="store_true", help="also write the simulation demos (web/data/sim)")
     args = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "results.js").write_text("window.NEMATICA_RESULTS = " + json.dumps(results(), separators=(",", ":")) + ";\n",
+    (OUT / "results.js").write_text("window.NEMATICA_RESULTS = " + json.dumps({**results(), **beyond()}, separators=(",", ":")) + ";\n",
                                     encoding="utf-8")
     print("wrote", OUT / "results.js")
     if args.sims:

@@ -53,3 +53,11 @@ figure.plate::before, figure.plate::after { display: none !important; }
 .bar.menu-open nav a { color: var(--ink) !important; }
 .bar.menu-open nav a[aria-current="page"] { color: var(--live) !important; }
 .bar.menu-open nav a { border-color: var(--rule) !important; }
+
+/* parts of the evidence page (18 Nov 2026): the worm, beyond the worm, taken together */
+.with-toc > .part-head { margin: clamp(88px, 10vw, 140px) 0 clamp(8px, 1vw, 16px); padding-top: 26px; border-top: 6px solid var(--ink); }
+.with-toc > .part-head:first-of-type { margin-top: 8px; }
+.part-head .part-n { margin: 0; font: 650 .95rem/1.3 var(--sans); color: var(--live); }
+.part-head .part-t { margin: 8px 0 0; font-family: var(--serif); font-size: clamp(1.9rem, 3.2vw, 2.7rem); line-height: 1.08; letter-spacing: -.012em; color: var(--ink); font-weight: 380; max-width: 22ch; }
+.toc li.part { padding: 16px 0 4px 14px; font-weight: 650; color: var(--ink); font-size: .82rem; }
+.toc li.part:first-child { padding-top: 2px; }

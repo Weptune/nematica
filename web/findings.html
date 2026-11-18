@@ -22,8 +22,8 @@
   </a>
   <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu"><span class="menu-lines" aria-hidden="true"></span><span>Menu</span></button>
   <nav id="site-nav" aria-label="Site">
-    <a href="index.html#question">Question</a>
-    <a href="index.html#approach">Approach</a>
+    <a href="index.html#r1">Results</a>
+    <a href="index.html#answer">The answer so far</a>
     <a href="findings.html" aria-current="page">Evidence</a>
     <a href="method.html">Method</a>
     <a href="sim.html">Simulations</a>
@@ -33,13 +33,14 @@
 </header>
 
 <section class="masthead grain" data-index="01"><div class="in"><div class="folio" aria-hidden="true" style="--step:1"><div class="folio-head"><span>NEMATICA / FIELD INDEX</span><span>01 / 04</span></div><strong class="folio-number">01</strong><div class="folio-foot"><span>FINDINGS</span><i class="folio-track"></i></div></div><h1 class="title">Looking like a brain and working like one are different things.</h1>
-    <p class="standfirst">Every finding here answers part of one question: what makes biological neural networks measurably different from artificial ones? Our tool is a test of copies, run the same way on both: we fitted artificial brains to living worms and tested them on worms they had never seen, by watching and by switching single neurons on with light, then repeated the test on artificial networks whose truth is known, untrained and trained on tasks, and tried it in mouse and human recordings. Predictions were written down before the experiments ran, exploratory results are labelled, and the results that went against us are kept.</p><a class="mast-jump" href="#watching">Explore the evidence <span aria-hidden="true">↓</span></a></div></section>
+    <p class="standfirst">Every finding here answers part of one question: what makes biological neural networks measurably different from artificial ones? Our tool is a test of copies, run the same way on both: we fitted artificial brains to living worms and tested them on worms they had never seen, by watching and by switching single neurons on with light, then repeated the test on artificial networks whose truth is known, untrained and trained on tasks, then took the comparison to mouse visual cortex and seven families of artificial network, from recurrent and spiking networks to transformers, each recorded through the animal's own instrument. Predictions were written down before the experiments ran, exploratory results are labelled, and the results that went against us are kept.</p><a class="mast-jump" href="#watching">Explore the evidence <span aria-hidden="true">↓</span></a></div></section>
 
 <main class="page">
 
   <div class="sheet with-toc">
     <nav class="toc" aria-label="Contents">
       <ol>
+        <li class="part">The worm</li>
         <li><a href="#watching">Looking alive is not enough</a></li>
         <li><a href="#gallery">Every kind of network</a></li>
         <li><a href="#why">Why watching fails</a></li>
@@ -48,19 +49,26 @@
         <li><a href="#noise">Cause and effect, not noise</a></li>
         <li><a href="#fingerprints">Causal fingerprints</a></li>
         <li><a href="#ingredients">What it took</a></li>
+        <li><a href="#emulator">One model for both halves</a></li>
         <li><a href="#complexity">The echo's complexity</a></li>
         <li><a href="#mind">Signatures of a mind at rest</a></li>
         <li><a href="#tiring">A repeat poke gets about half</a></li>
         <li><a href="#drift">Rules that drift</a></li>
         <li><a href="#spiking">Spiking networks</a></li>
+        <li class="part">Beyond the worm</li>
+        <li><a href="#instrument">The instrument matters</a></li>
+        <li><a href="#internal">Internal state in cortex</a></li>
+        <li><a href="#mouse">Mouse hippocampus</a></li>
+        <li class="part">Taken together</li>
         <li><a href="#reading">What it adds up to</a></li>
-        <li><a href="#mouse">Beyond the worm: mouse hippocampus</a></li>
         <li><a href="#wall">Where the data runs out</a></li>
         <li><a href="#checks">Two checks on the headline</a></li>
         <li><a href="#trust">How much to trust each finding</a></li>
         <li><a href="#limits">What this does not show</a></li>
       </ol>
     </nav>
+
+    <div class="part-head"><p class="part-n">Part one</p><p class="part-t">The worm: copies of a brain, watched and poked</p></div>
 
     <!-- 1 -->
     <h2 id="watching">A brain can pass the watching tests and fail every poke.</h2>
@@ -193,6 +201,16 @@
       </table>
     </div>
 
+    <h2 id="emulator">One model passes both halves of the test, but only on the worms it was built on.</h2>
+    <p>The brain above passed the poke test but was weaker at rest. Searching for one model that passes both, round by round, each step guided by where the last one failed, led to a recipe of four ingredients: slow brain-wide states that interact with each other; each worm its own dynamics; causal links learned from pokes; and neuron-level observation, which is about the measurement rather than the biology. Coupling between neuron classes in the fast dynamics turned out not to be needed.</p>
+    <p>On the atlas worms the recipe passes the rule set in advance (at least five of six activity tests and all three poke tests) in every one of ten noise draws, on two different splits of the worms (Figure 8b). Some tests pass narrowly: echo size and spread pass because their excess is within worm-to-worm variation, not because it is absent. Ablations on an earlier version, exploratory, point to what matters: without causal links from pokes the echo pattern fails in every group; without the slow states, correlations become too typical and echo size fails.</p>
+    <p>But the recipe was built on those worms, and no unseen wild-type stimulated worms remain to confirm it. Refitted from scratch on the atlas's unc-31 mutant worms, which played no part in building it, it passes in three of five draws, one short of the four set in advance. On another lab's freely moving worms it passes one of six activity tests in every draw, worse than a plain model fitted to rest. What a copy needs seems to depend on whether the worm is moving, or on the atlas lab's conditions; this data cannot separate the two.</p>
+    <figure class="plate wide">
+      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 8b</span>The emulator recipe, on its own worms and on others</p></div>
+      <div class="table-wrap" style="margin:0"><div data-chart="emulator"></div></div>
+      <figcaption>Each block is one noise draw: six activity tests, then three poke tests. A filled square is a test passed, meaning inside in at least two of three held-out groups. The freely moving worms have no pokes. Controls are a linear model fitted to rest only, refitted on the same worms. Hover a block for its counts.</figcaption>
+    </figure>
+
     <!-- 5 -->
     <h2 id="complexity">In a real brain, most of the brain stays out of the echo.</h2>
     <aside class="note"><p><span class="fig">Suspended 7 November.</span> The per-poke complexity maps give nearly the same values at moments with no poke (worms 0.66 with a poke, 0.68 without), so this section describes ongoing activity, not a property of the echo. Results built on responses averaged over many pokes are unaffected.</p></aside>
@@ -202,7 +220,7 @@
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 9</span>Who joins the echo after a poke</p></div>
       <div data-chart="echoShape"></div>
-      <figcaption>Diagnostic on held-out group 1. The hybrid is the brain that passes the poke test. To watch individual echoes spread through the head, use the <a href="index.html#echo-section">echo explorer</a> on the home page.</figcaption>
+      <figcaption>Diagnostic on held-out group 1. The hybrid is the brain that passes the poke test. To watch echoes spread in a small network, <a href="index.html#try">poke one yourself</a> on the home page.</figcaption>
     </figure>
 
     <!-- 6 -->
@@ -230,14 +248,38 @@
     <h2 id="spiking">Spiking networks behave like the others.</h2>
     <p>Plain spiking networks can be copied by watching and do not tire, like the rate networks, and as built they are less worm-like in echo breadth, resting structure and individuality. Every fatigue we built into the spiking neurons themselves made the second poke look larger, not smaller, on the worm's measure; only a stimulation input that weakens with use gave the worm's sign.</p>
 
-    <h2 id="reading">What it adds up to.</h2>
-    <p>No property we measured separates brains from artificial networks in kind. Each one either dissolved when a network was given the right ingredient, or turned out to measure ongoing activity rather than the brain's answer to a poke. What the surviving differences share is state that a recording of activity does not show: slow signals no neuron carries, changes left behind by use, switching between calm and active stretches. An ordinary artificial network's state is its units' activity; a brain's is more than its neurons' activity. That is a reading across the results, not a direct test. A direct test needs recordings long enough to measure slow hidden state from rest; our own calibration shows that 16 minutes is too short.</p>
+    <div class="part-head"><p class="part-n">Part two</p><p class="part-t">Beyond the worm: mouse cortex and seven kinds of network</p></div>
 
-    <!-- wall -->
+    <h2 id="instrument">Recorded through each mouse's own instrument, a random network has less slow memory than the mouse.</h2>
+    <p>The worm results raise a question they cannot answer alone: do the same differences appear in a larger brain, and with other kinds of network? We took the Allen Brain Observatory's Neuropixels recordings of mouse visual cortex (58 mice) and asked first how much a network's measurements depend on how it is recorded. A recording is a brain seen through an instrument: its bin width, its spikes per bin, its share of unstructured variance, its spread of firing rates. We measured those numbers in each mouse, built a simulated copy of each mouse's instrument, and recorded artificial networks through it.</p>
+    <p>The instrument mattered more than the animals did. A plain 480-unit random network, recorded through a median instrument, had a slow memory (0.107) inside the mice's range (0.031 to 0.228), so the registered test that networks have less slow memory was refuted as worded. But recording the same network through five single mice's instruments moved its value by 1.8 times the spread between mice, and by the registered transfer rule the comparison was not testable at all.</p>
+    <p>Compared mouse by mouse, the picture is clear (Figure 12). In spontaneous activity, the random network has less slow memory than the mouse in 33 of 35 mice, by a median 1.4 between-mouse SDs (90% interval 1.24 to 1.59). With strong slow drives added, it has more than all 31 mice measured, so cortex sits between the two. Tuned on 17 mice, a drive carrying about 6% of each unit's variance brought the network to the typical mouse on 18 held-out mice (median difference +0.03 SDs), but the interval (−0.08 to +0.73) was too wide to show equivalence, and the network did not reproduce how mice differ from each other.</p>
+    <figure class="plate wide">
+      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 12</span>Slow memory, mouse by mouse</p></div>
+      <div data-chart="permouse"></div>
+      <figcaption>Each column is one mouse; hover for its values. The mouse-by-mouse rule was registered after the mouse values were known, and after the network had been recorded at 5 of these mice's instruments, but before the other 30 and before the slow-drive network. An earlier review warned that units without Allen's quality control add slow drift, which raises the mice's values; that check was not run for this test.</figcaption>
+    </figure>
+
+    <h2 id="internal">Cortex does not carry more, slower internal state than artificial networks.</h2>
+    <p>That result fitted our earlier reading, that brains carry state their activity does not show. So we tested its broad form directly, pre-registered, with three independent reviews before the data and one after: does mouse visual cortex carry more internal state than artificial networks (activity not locked to the input), and is that state slower relative to the input? The stimulus was a 30-second natural film shown 20 or 60 times. Both measures compare repeats within one system, so no clock has to be matched across systems. In the mice, a median 59% of state is internal, and it is faster than the input-locked part in 48 of 49 mice (median ratio 0.69). Both measures were reliable across mice (split-half rank correlations 0.96 and 0.83), and a shuffled-film control behaved as it should.</p>
+    <p>Seven families of network were recorded through each mouse's own instrument: a random recurrent network at eight input gains, a task-trained recurrent network, GRU and closed-form continuous-time (CfC) networks, a spiking network, Pythia transformers from 14 million to 1 billion parameters, and Mamba state-space models. None of the four claims held (Figure 13). The networks span the mice: GRU and CfC carry far less internal state, the task-trained network and Mamba more, and the range of transformer sizes contains the median mouse. Larger transformers came closer than the smallest, but not in order of size. On relative slowness, no counted family was shown to be faster than the mice; GRU was shown slower, and for CfC, Pythia and Mamba the difference points the same way, within the known measurement bias.</p>
+    <p>Three caveats travel with this. Nine mice without a measurable film timescale were left out after their values were seen, and they differ from the rest. The spiking network could not be matched to each mouse's instrument. And whether the mice's internal state counts as slow depends on the input: with the film's frames shuffled, the locked part collapses and the ratio rises to about 33.</p>
+    <figure class="plate wide">
+      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 13</span>Seven families of network against 49 mice</p></div>
+      <div class="table-wrap" style="margin:0"><div data-chart="slowFamilies"></div></div>
+      <figcaption>Each bar is the middle half of a network's recordings (one per mouse), the dot its median; the green band, line and ticks are the 49 mice. Grey rings are medians at each of eight input gains for the two film-driven families, which were not counted because changing their playback speed moved them by about one ruler unit. Verdicts under each name use margins set in advance (1.15 ruler units on internal share, 2.12 on log relative slowness). Hover a row for the numbers.</figcaption>
+    </figure>
+
     <h2 id="mouse">Beyond the worm: in mouse hippocampus, the test is not yet sharp enough.</h2>
     <p>The same question in mice: hundreds of cells imaged in hippocampal area CA1 for about 20 untouched minutes, then one inhibitory neuron stimulated about ten times with light (open data from the Cossart lab). Each session is its own individual. The prediction, analysis and expectations were written down before any trace was opened; amendments made later are listed with the results.</p>
     <p>In the 16 sessions that passed every check, ranking cells by how they moved together with the stimulated neuron while it was only being watched ordered their responses to stimulation weakly (rank correlation about 0.15), where distance from the stimulated neuron ordered nothing. A dynamical copy added nothing over that simple correlation, and accounting for running changed nothing. Two of our three predictions were not borne out as written.</p>
     <p>But a control undercuts it. Run at fake stimulation times, when nothing was poked, half as many sessions pass the checks and watching "predicts" those non-responses too, only somewhat less well; the difference is not significant. So this data does not show that watching predicts responses to pokes in mouse CA1, as opposed to the ordinary co-activity our inclusion check selects for. More than half the sessions show no clear response in the stimulated neuron at all, and a PC crash cut the download short; a recovery pass will add the remaining sessions.</p>
+
+    <div class="part-head"><p class="part-n">Part three</p><p class="part-t">Taken together</p></div>
+
+    <h2 id="reading">What it adds up to.</h2>
+    <p>No property we measured separates brains from artificial networks in kind. In the worm, each difference either dissolved when a network was given the right ingredient, or turned out to measure ongoing activity rather than the brain's answer to a poke. In mouse cortex, the broad form of our earlier reading, that brains carry more and slower internal state, failed a direct, pre-registered test: the networks span the mice.</p>
+    <p>What survives is narrower, and practical. A copy of a brain cannot be judged by watching it; it has to be stimulated, and it has to be recorded the way the animal was. Judged that way, every gap we could close closed when the network was given the right data, drive or training. So far the difference looks like information, what a network was shown and built to carry, rather than material. That is a reading across these results, not a law, and two gaps remain open: whether a neuron or the light tool tires on a repeated poke, and why a copy built on still worms fails on moving ones. Both need data that is not public.</p>
 
     <h2 id="wall">Where the data runs out.</h2>
     <p>Everything that can be done with existing data has now been tried at least once. The last test asked whether recording more of one worm helps it be copied by watching. The atlas names a median of 72 neurons per worm but tracks about 123, and the unnamed ones are recorded, only not identifiable across worms. Within single worms, a watching copy that includes them does slightly better than one with named neurons only (better in 26 of 44 worms), and taking out slow patterns adds nothing. But each worm offers only about 3 usable minutes of unpoked activity, and the average of other worms' pokes predicts each worm's own echoes far better (0.22 against 0.05) in 43 of 44 worms.</p>
@@ -275,6 +317,10 @@
           <tr><td>The shared slow signals are not neuropeptides</td><td>Weak to moderate</td><td>15 worms; watching already near its floor</td></tr>
           <tr><td>Nothing transfers across contexts</td><td>Moderate, for the tests run</td><td>Small samples, one stimulus</td></tr>
           <tr><td>Mouse hippocampus</td><td>Inconclusive</td><td>A sham control matches much of the effect</td></tr>
+          <tr><td>The emulator recipe passes rest and pokes on the atlas worms</td><td>Moderate, on those worms only</td><td>Built and tuned on them, some tests by thin margins; fails its pre-set bar on unseen mutant worms and fails on moving worms</td></tr>
+          <tr><td>In mouse cortex, a network's measurements depend on the recording instrument by more than mice differ</td><td>Moderate</td><td>Shown for one network on one measure (slow memory at rest)</td></tr>
+          <tr><td>Mouse by mouse, a random network has less slow memory than the mouse (33 of 35)</td><td>Moderate</td><td>Rule registered after the mouse values were known; quality-control and excluded-mice checks not run for this test; one network family</td></tr>
+          <tr><td>Mouse visual cortex does not carry more, slower internal state than these seven network families</td><td>Strong, for the film and families tested</td><td>One stimulus and one region; intervals rest on three instances per family; nine mice left out after their values were seen</td></tr>
           <tr><td>In people, a watching copy predicts stimulation responses worse than other patients' pokes and than distance (74 patients)</td><td>Weak to moderate</td><td>The measured responses partly contain the stimulation artefact, which favours distance; the watching copy is crude; artefact-free re-extraction needed</td></tr>
         </tbody>
       </table>
@@ -290,7 +336,8 @@
       <li>The test has a measured resolution: it never flags real worms, always catches errors of half, and often misses errors of about a quarter. A pass means within about 25% of a real worm on these tests.</li>
       <li>On 1 November three of the 113 recordings were found to have been cut short when the archive was unpacked, and were rebuilt. Results marked as rerun use the repaired data; older figures are labelled.</li>
       <li>Why real worms resist watching is not known. Among the mechanisms we built into artificial brains, only pathways that are silent at rest reproduced it; that is a constructed demonstration of one possibility, not evidence about worms.</li>
-      <li>Nothing learned in still, immobilised worms has been shown to carry over to freely moving ones.</li>
+      <li>Nothing learned in still, immobilised worms has been shown to carry over to freely moving ones; the emulator built on still worms fails on them.</li>
+      <li>In mouse, one region (visual cortex), one film per test, and only state within a 30-second repeat. Networks other than the spiking one are seen through a spike model, which turns additive changes into multiplicative ones.</li>
       <li>No brain passes everything; each fix so far has cost something elsewhere.</li>
     </ul>
     <p><a class="btn outline" href="method.html">How the test works</a> <a class="btn outline" href="log.html">The research log</a></p>

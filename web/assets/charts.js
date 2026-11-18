@@ -681,6 +681,246 @@
     });
   }
 
+  // ------------------------------------------------------------- Figure: mouse by mouse (map study, amendment 27)
+  function permouse(host) {
+    const P = R.permouse; if (!P) return;
+    const D = P.mice, n = D.length;
+    const W = widthOf(host, 300), narrow = W < 680;
+    const m = { l: 44, r: narrow ? 14 : 178, t: narrow ? 58 : 22, b: 44 };
+    const H = narrow ? 340 : 400;
+    const s = svg(host, W, H, `Slow memory of ${n} Allen mice, of a random network recorded at each mouse's own instrument, and of the same network with slow drives`);
+    const x = (i) => m.l + 8 + (i * (W - m.l - m.r - 16)) / (n - 1);
+    const y = lin(0, 0.34, H - m.b, m.t);
+    [0, 0.1, 0.2, 0.3].forEach((v) => { hline(s, m.l, W - m.r, y(v), { stroke: v ? C.soft : C.rule }); text(s, m.l - 8, y(v) + 4, fmt(v, 1), { "text-anchor": "end", "font-size": 11, fill: C.ink3 }); });
+    text(s, m.l, H - 14, narrow ? `${n} mice, by their own slow memory` : `${n} mice, ordered by their own slow memory (spontaneous activity)`, { "font-size": 11.5, fill: C.ink3 });
+    const lab = (t, xx, yy, col, w) => text(s, xx, yy, t, { "font-size": 12, fill: col, "font-weight": w || 500 });
+    D.forEach((d, i) => {
+      const xi = x(i);
+      vline(s, xi, y(Math.max(d.m, d.rnn)), y(Math.min(d.m, d.rnn)), { stroke: C.rule, "stroke-width": 1 });
+      if (d.slow != null) el("circle", { cx: xi, cy: y(d.slow), r: 4.2, fill: C.plate, stroke: C.ink3, "stroke-width": 1.4 }, s);
+      el("circle", { cx: xi, cy: y(d.rnn), r: 4.2, fill: C.copy }, s);
+      el("circle", { cx: xi, cy: y(d.m), r: 4.6, fill: C.live, stroke: C.plate, "stroke-width": 1.2 }, s);
+      const hit = el("rect", { x: xi - (W - m.l - m.r) / (2 * n), y: m.t, width: (W - m.l - m.r) / n, height: H - m.t - m.b, class: "hit", tabindex: 0,
+        "aria-label": `Mouse ${i + 1}: ${fmt(d.m, 3)}; random network ${fmt(d.rnn, 3)}; with slow drives ${d.slow == null ? "not measured" : fmt(d.slow, 3)}` }, s);
+      hover(hit, `<b>Mouse ${i + 1} of ${n}</b>${row("Mouse", fmt(d.m, 3))}${row("Random network at its instrument", fmt(d.rnn, 3))}` +
+        row("Same network with slow drives", d.slow == null ? "not measured" : fmt(d.slow, 3)) +
+        row("Mouse minus network", `${fmt((d.m - d.rnn) / P.rulerSD, 1)} between-mouse SDs`));
+    });
+    if (!narrow) {
+      const last = D[n - 1], xe = x(n - 1) + 14;
+      const ys = [{ t: "Mouse", v: last.m, c: C.live }, { t: "Random network, recorded", v: last.rnn, c: C.copy, t2: "at that mouse's instrument" },
+        { t: "Same network with", v: last.slow != null ? last.slow : 0.3, c: C.ink2, t2: "strong slow drives" }].map((o) => Object.assign(o, { yy: y(o.v) + 4 }))
+        .sort((a, b) => a.yy - b.yy);
+      for (let j = 1; j < ys.length; j++) if (ys[j].yy - ys[j - 1].yy < 32) ys[j].yy = ys[j - 1].yy + 32;
+      ys.forEach((o) => { lab(o.t, xe, o.yy, o.c, 600); if (o.t2) lab(o.t2, xe, o.yy + 15, o.c, 400); });
+    } else {
+      const items = [["Mouse", C.live, "f"], ["Network", C.copy, "f"], ["Slow drives", C.ink3, "o"]];
+      let lx = m.l;
+      items.forEach(([t, c, k]) => {
+        el("circle", { cx: lx + 4, cy: 20, r: 4, fill: k === "f" ? c : C.plate, stroke: c, "stroke-width": 1.4 }, s);
+        const tt = lab(t, lx + 13, 24, C.ink2, 500); lx += 13 + tt.getComputedTextLength() + 16;
+      });
+    }
+  }
+
+  // ------------------------------------------------------------- Figure: Study 2, network families against 49 mice
+  function slowFamilies(host) {
+    const S = R.slowStudy; if (!S) return;
+    const W = widthOf(host, 760), narrow = false;
+    const labW = Math.min(280, Math.round(W * 0.3));
+    const gap = narrow ? 22 : 34, pw = Math.floor((W - labW - gap - 8) / 2);
+    const x1 = lin(0, 1, labW + 4, labW + pw - 4);
+    const lo = Math.log10(0.06), hi = Math.log10(2.6);
+    const x2 = (v) => labW + pw + gap + 4 + ((Math.log10(Math.max(0.06, Math.min(2.6, v))) - lo) / (hi - lo)) * (pw - 8);
+    const F = Object.fromEntries(S.families.map((f) => [f.id, f]));
+    const rows = [];
+    [{ label: "Counted toward the verdict", fams: ["A2", "A3", "A5", "A6", "A7"] },
+     { label: "Shown, not counted: changing their playback speed moved them", fams: ["A1", "A4"] }].forEach((sc) => {
+      rows.push({ kind: "sec", label: sc.label, h: 36 });
+      sc.fams.forEach((id) => {
+        const f = F[id]; if (!f) return;
+        if (id === "A1" || id === "A4") rows.push({ kind: "sweep", f, h: narrow ? 66 : 54 });
+        else if (f.members.length > 1) { rows.push({ kind: "head", f, h: narrow ? 50 : 50 }); f.members.forEach((mb) => rows.push({ kind: "mem", f, mb, sub: true, h: narrow ? 36 : 27 })); }
+        else rows.push({ kind: "mem", f, mb: f.members[0], h: narrow ? 66 : 54 });
+      });
+    });
+    const top = 74, H = top + rows.reduce((a, r) => a + r.h, 0) + 34;
+    const s = svg(host, W, H, "Internal share and relative slowness of each network family, against 49 mice");
+    const panels = [{ x: x1, a: labW, title: "How much state is internal", sub: "internal share (M1)", key: "M1", ticks: [0, 0.25, 0.5, 0.75, 1], tf: (v) => (v === 0 || v === 1 ? String(v) : String(v)) },
+      { x: x2, a: labW + pw + gap, title: "How slow it is, relative to the input", sub: "internal ÷ locked timescale (M2), log scale", key: "M2", ticks: [0.1, 0.3, 1, 2], tf: (v) => String(v) }];
+    panels.forEach((p) => {
+      el("rect", { x: p.a + 2, y: 0, width: pw - 4, height: 2, fill: C.ink }, s);
+      text(s, p.a + 2, 20, p.title, { class: "label-strong", "font-size": 12.5 });
+      text(s, p.a + 2, 36, p.sub, { "font-size": 11.5, fill: C.ink3 });
+      const q = S.mice[p.key];
+      el("rect", { x: p.x(q[0]), y: top - 16, width: p.x(q[2]) - p.x(q[0]), height: H - top - 12, fill: C.liveWash }, s);
+      vline(s, p.x(q[1]), top - 16, H - 28, { stroke: C.live, "stroke-width": 1.5 });
+      S.mice[p.key + "all"].forEach((v) => vline(s, p.x(v), top - 14, top - 6, { stroke: C.live, "stroke-width": 1, opacity: 0.55 }));
+      text(s, p.x(q[1]) + 5, top - 20, `${S.mice.n} mice, median ${fmt(q[1], 2)}`, { "font-size": 11, fill: C.live, "font-weight": 600 });
+      p.ticks.forEach((v) => { vline(s, p.x(v), H - 28, H - 22, { stroke: C.rule }); text(s, p.x(v), H - 8, p.tf(v), { "text-anchor": "middle", "font-size": 11, fill: C.ink3 }); });
+    });
+    vline(s, x2(1), top - 4, H - 28, { stroke: C.ink3, "stroke-dasharray": "2 3", opacity: 0.6 });
+    if (!narrow) text(s, x2(1) - 5, H - 34, "1: as slow as the input", { "font-size": 10.5, fill: C.ink3, "text-anchor": "end" });
+    const v1 = (f) => f.M1.verdict === "confirmed" ? "more in the mice" : f.M1.verdict === "refuted" ? "more in the network" :
+      f.M1.d === 0 ? (f.id === "A6" ? "sizes span the mice" : "gains span the mice") : "not decided";
+    const v2 = (f) => f.M2.verdict === "confirmed" ? "mice slower" : f.M2.verdict === "refuted" ? "network slower" :
+      ["A5", "A6", "A7"].includes(f.id) ? "not decided, leaning network slower" : "not decided";
+    const tipFor = (f, mb) => `<b>${f.name}${mb && mb.label ? " " + mb.label : ""}</b>` +
+      (mb ? row("Recordings (one per mouse)", mb.n) + row("Internal share M1", `${fmt(mb.M1[1])} [${fmt(mb.M1[0])} to ${fmt(mb.M1[2])}]`) + row("Relative slowness M2", `${fmt(mb.M2[1])} [${fmt(mb.M2[0])} to ${fmt(mb.M2[2])}]`) : "") +
+      row("Internal share", `${v1(f)} (${fmt(f.M1.d, 1)} rulers)`) + row("Slowness", `${v2(f)} (${fmt(f.M2.d, 1)})`) +
+      (f.counted ? "" : row("Counted", "no: playback-speed sensitive"));
+    let y = top;
+    rows.forEach((r) => {
+      if (r.kind === "sec") { text(s, 2, y + 24, r.label, { "font-size": 11.5, fill: C.ink3, "font-weight": 600 }); y += r.h; return; }
+      const fam = r.kind !== "mem" || !r.sub;
+      const yc = r.sub ? y + r.h / 2 : y + (narrow ? 46 : 18);
+      if (fam) {
+        text(s, 2, y + 18 + (narrow ? 0 : 4), r.f.name, { "font-size": 13, fill: C.ink, "font-weight": 650 });
+        if (narrow) text(s, 2, y + 33, `internal share: ${v1(r.f)}; slowness: ${v2(r.f)}`, { "font-size": 10.5, fill: C.ink3 });
+        else { text(s, 2, y + 37, "internal share: " + v1(r.f), { "font-size": 11, fill: C.ink3 }); text(s, 2, y + 50, "slowness: " + v2(r.f), { "font-size": 11, fill: C.ink3 }); }
+      } else text(s, narrow ? 2 : 20, narrow ? y + 12 : yc + 4, r.mb.label, { "font-size": 12, fill: C.ink2 });
+      const ym = r.sub && narrow ? y + 26 : yc;
+      if (r.kind === "mem") {
+        [[x1, "M1"], [x2, "M2"]].forEach(([fx, k]) => {
+          const q = r.mb[k]; if (!q) return;
+          el("line", { x1: fx(q[0]), x2: fx(q[2]), y1: ym, y2: ym, stroke: C.copy, "stroke-width": 2.6, "stroke-linecap": "round" }, s);
+          el("circle", { cx: fx(q[1]), cy: ym, r: 5, fill: C.copy, stroke: C.plate, "stroke-width": 1.5 }, s);
+        });
+      }
+      if (r.kind === "sweep") {
+        [[x1, "M1"], [x2, "M2"]].forEach(([fx, k]) => {
+          const meds = r.f.members.map((mb) => mb[k][1]);
+          el("path", { d: meds.map((v, j) => (j ? "L" : "M") + fx(v).toFixed(1) + "," + ym).join(""), stroke: C.ink3, "stroke-width": 1.2, "stroke-dasharray": "1 2.5", fill: "none" }, s);
+          meds.forEach((v) => el("circle", { cx: fx(v), cy: ym, r: 3.6, fill: C.plate, stroke: C.ink3, "stroke-width": 1.4 }, s));
+        });
+      }
+      if (r.kind !== "head") {
+        const hit = el("rect", { x: 0, y, width: W, height: r.h, class: "hit", tabindex: 0, "aria-label": `${r.f.name} ${r.mb ? r.mb.label : ""}` }, s);
+        hover(hit, () => tipFor(r.f, r.mb) + (r.kind === "sweep" ? `<br><span class="dim">Medians at eight input gains, ${r.f.members[0].label.slice(5)} to ${r.f.members[r.f.members.length - 1].label.slice(5)}, shown as rings</span>` : ""));
+      }
+      y += r.h;
+    });
+  }
+
+  // ------------------------------------------------------------- Figure: the emulator on its own worms and on others
+  function emulator(host) {
+    const E = R.emulator; if (!E) return;
+    const W = widthOf(host, 720), narrow = false;
+    const ROWS = [
+      { k: "atlas_cv3", t: "Atlas worms", s: "the split it was chosen on" },
+      { k: "atlas_blocks1", t: "Atlas worms", s: "a second split of the same worms" },
+      { k: "unc31", t: "unc-31 worms", s: "same atlas, never used to build it", bar: 4 },
+      { k: "unc31_control_rest", t: "Control: fitted to rest only", s: "", control: true },
+      { k: "atanas", t: "Freely moving worms", s: "another lab; no pokes, activity tests only", bar: 4 },
+      { k: "atanas_control_rest", t: "Control: fitted to rest only", s: "", control: true },
+    ];
+    const labW = narrow ? 0 : Math.min(260, Math.round(W * 0.3)), resW = narrow ? 0 : 150;
+    const sq = narrow ? 5 : W > 900 ? 9 : 7, sgap = 2, block = 9 * (sq + sgap) + 6, seedGap = narrow ? 6 : 14;
+    const seedsW = 5 * block + 4 * seedGap;
+    const x0 = narrow ? 2 : labW + Math.max(0, (W - labW - resW - seedsW) / 2);
+    const rh = narrow ? 52 : 46, top = 46;
+    const H = top + ROWS.length * rh + 8;
+    const s = svg(host, W, H, "The emulator recipe: activity and stimulation tests passed in each of five noise draws, on the worms it was built on and on others");
+    for (let k = 0; k < 5; k++) {
+      const bx = x0 + k * (block + seedGap);
+      text(s, bx + block / 2, 16, `draw ${k + 1}`, { "text-anchor": "middle", "font-size": 11, fill: C.ink3 });
+      if (k === 0 && !narrow) { text(s, bx, 34, "activity", { "font-size": 10, fill: C.ink3 }); text(s, bx + 6 * (sq + sgap) + 4, 34, "pokes", { "font-size": 10, fill: C.ink3 }); }
+    }
+    if (!narrow) text(s, W - resW + 10, 16, "passes the rule", { "font-size": 11, fill: C.ink3 });
+    ROWS.forEach((rw, i) => {
+      const d = E[rw.k]; if (!d) return;
+      const y = top + i * rh, yc = narrow ? y + 34 : y + rh / 2;
+      if (i && !rw.control) hline(s, 0, W, y + 2, { stroke: C.soft });
+      const passN = d.filter((v) => v.pass).length;
+      if (narrow) { text(s, 2, y + 16, rw.t + (rw.s ? ": " + rw.s : ""), { "font-size": 11.5, fill: rw.control ? C.ink3 : C.ink, "font-weight": rw.control ? 400 : 600 });
+        text(s, W - 2, y + 16, `${passN} of 5`, { "text-anchor": "end", "font-size": 11.5, fill: passN >= 4 ? C.live : C.copy, "font-weight": 600 }); }
+      else {
+        text(s, rw.control ? 16 : 2, yc + (rw.s ? -2 : 4), rw.t, { "font-size": rw.control ? 12 : 13, fill: rw.control ? C.ink3 : C.ink, "font-weight": rw.control ? 400 : 600 });
+        if (rw.s) text(s, 2, yc + 13, rw.s, { "font-size": 11, fill: C.ink3 });
+      }
+      d.forEach((v, k) => {
+        const bx = x0 + k * (block + seedGap), ok = v.pass;
+        const col = rw.control ? C.ink3 : ok ? C.live : C.copy;
+        for (let j = 0; j < 9; j++) {
+          const isPoke = j >= 6, xx = bx + j * (sq + sgap) + (isPoke ? 6 : 0);
+          if (isPoke && v.poke == null) { hline(s, xx, xx + sq, yc, { stroke: C.rule }); continue; }
+          const filled = isPoke ? j - 6 < v.poke : j < v.rest;
+          el("rect", { x: xx, y: yc - sq / 2, width: sq, height: sq, rx: 1.2, fill: filled ? col : C.plate, stroke: filled ? col : C.rule, "stroke-width": 1 }, s);
+        }
+        const hit = el("rect", { x: bx - 3, y: y + 4, width: block + 6, height: rh - 8, class: "hit", tabindex: 0, "aria-label": `${rw.t}, draw ${k + 1}: ${v.rest} of 6 activity tests, ${v.poke == null ? "no pokes" : v.poke + " of 3 poke tests"}, ${ok ? "passes" : "fails"}` }, s);
+        hover(hit, `<b>${rw.t}, noise draw ${k + 1}</b>${row("Activity tests passed", v.rest + " of 6 (needs 5)")}${row("Poke tests passed", v.poke == null ? "no pokes in this data" : v.poke + " of 3 (needs 3)")}${row("Rule", ok ? "passes" : "fails")}`);
+      });
+      if (!narrow) {
+        text(s, W - resW + 10, yc + 4, `${passN} of 5`, { "font-size": 13, fill: rw.control ? C.ink3 : passN >= 4 ? C.live : C.copy, "font-weight": 650 });
+        if (rw.bar && !rw.control) text(s, W - resW + 52, yc + 4, `(needs ${rw.bar})`, { "font-size": 11, fill: C.ink3 });
+      }
+    });
+  }
+
+  // ------------------------------------------------------------- Figure: where the answer stands (home page)
+  function gaps(host) {
+    const G = R.gaps; if (!G) return;
+    const W = widthOf(host, 300), narrow = W < 820;
+    const labW = narrow ? 0 : Math.min(300, Math.round(W * 0.25)), stW = narrow ? 0 : Math.min(270, Math.round(W * 0.23));
+    const trA = labW + (narrow ? 6 : 34), trB = W - stW - (narrow ? 6 : 44);
+    const rh = narrow ? 240 : 138;
+    const H = G.length * rh + 4;
+    const s = svg(host, W, H, "Each measured difference between real and artificial networks, and what closed it");
+    const STC = { closed: C.live, none: C.ink, open: C.copy };
+    G.forEach((g, i) => {
+      const y0 = i * rh;
+      hline(s, 0, W, y0 + 1, { stroke: i ? C.rule : C.ink, "stroke-width": i ? 1 : 2 });
+      const ty = y0 + 32;
+      text(s, 0, ty, g.title, { "font-size": narrow ? 16 : 17, fill: C.ink, "font-weight": 650 });
+      text(s, 0, ty + 19, g.where, { "font-size": 12.5, fill: C.ink3 });
+      const yt = narrow ? y0 + 112 : y0 + 74;
+      const x = lin(g.domain[0], g.domain[1], trA, trB);
+      hline(s, trA, trB, yt, { stroke: C.rule });
+      (g.ticks || g.domain).forEach((v) => { vline(s, x(v), yt, yt + 5, { stroke: C.rule });
+        text(s, x(v), yt + 19, g.tickFmt === "int" ? String(v) : fmt(v, g.dp == null ? 2 : g.dp), { "text-anchor": "middle", "font-size": 11, fill: C.ink3 }); });
+      text(s, trA, yt + 38, g.scale, { "font-size": 11.5, fill: C.ink2 });
+      const labels = [];
+      if (g.band) {
+        const bw = Math.max(4, x(g.band[1]) - x(g.band[0]));
+        el("rect", { x: x(g.band[0]) - (bw === 4 ? 2 : 0), y: yt - 11, width: bw, height: 22, rx: 4, fill: C.liveTint }, s);
+        if (g.bandLabel) labels.push({ x: x((g.band[0] + g.band[1]) / 2), t: g.bandLabel, c: C.live, w: 600 });
+      }
+      const mark = (o, filled) => {
+        if (!o) return;
+        const v0 = o.value != null ? o.value : o.values ? null : (o.range[0] + o.range[1]) / 2;
+        const inBand = g.band && v0 != null && v0 >= g.band[0] && v0 <= g.band[1];
+        const col = filled ? (inBand || o.ok ? C.live : C.copy) : C.copy;
+        if (o.range) el("line", { x1: x(o.range[0]), x2: x(o.range[1]), y1: yt, y2: yt, stroke: col, "stroke-width": 3.2, "stroke-linecap": "round", opacity: 0.5 }, s);
+        (o.values || [v0]).forEach((v) => el("circle", { cx: x(v), cy: yt, r: filled ? 6 : 5.2, fill: filled ? col : C.plate, stroke: col, "stroke-width": 1.9 }, s));
+        if (o.label) {
+          const xs = (o.values || [v0]).map(x);
+          labels.push({ x: (Math.min(...xs) + Math.max(...xs)) / 2, t: o.label, c: col, w: 500 });
+        }
+      };
+      mark(g.plain, false); mark(g.fixed, true);
+      // place labels above the track, lifting any that would overlap a neighbour
+      const placed = [];
+      labels.sort((a, b) => a.x - b.x).forEach((L) => {
+        const tt = text(s, 0, 0, L.t, { "font-size": 11.5, fill: L.c, "font-weight": L.w });
+        const w = tt.getComputedTextLength();
+        let lx = Math.max(trA - 20, Math.min(L.x - w / 2, trB + 20 - w));
+        let lvl = 0;
+        while (placed.some((p) => p.lvl === lvl && lx < p.x1 + 10 && lx + w > p.x0 - 10)) lvl++;
+        placed.push({ x0: lx, x1: lx + w, lvl });
+        tt.setAttribute("x", lx); tt.setAttribute("y", yt - 17 - lvl * 16);
+        if (lvl) vline(s, L.x, yt - 14 - lvl * 16 + 4, yt - 9, { stroke: L.c, "stroke-width": 1, opacity: 0.5 });
+      });
+      // status
+      const sx = narrow ? 0 : W - stW, sy = narrow ? y0 + 186 : y0 + 32;
+      el("circle", { cx: sx + 5.5, cy: sy - 4.5, r: 5, fill: g.status.kind === "open" ? C.plate : STC[g.status.kind], stroke: STC[g.status.kind], "stroke-width": 1.7 }, s);
+      text(s, sx + 18, sy, g.status.text, { "font-size": 14, fill: STC[g.status.kind], "font-weight": 650 });
+      if (!narrow) wrapWords(g.status.sub || "", 36).forEach((l, j) => text(s, sx + 18, sy + 20 + j * 16, l, { "font-size": 12, fill: C.ink3 }));
+      else if (g.status.sub) wrapWords(g.status.sub, Math.floor((W - 24) / 6.3)).slice(0, 3).forEach((l, j) => text(s, sx + 18, sy + 18 + j * 15, l, { "font-size": 11.5, fill: C.ink3 }));
+      const hit = el("rect", { x: 0, y: y0 + 2, width: W, height: rh - 4, class: "hit", tabindex: 0, "aria-label": `${g.title}: ${g.status.text}` }, s);
+      hover(hit, `<b>${g.title}</b><br><span class="dim">${g.where}</span>${(g.tip || []).map((t) => row(t[0], t[1])).join("")}${g.note ? `<br><span class="dim">${g.note}</span>` : ""}`);
+    });
+  }
+
   // ------------------------------------------------------------- legend for verdict glyphs
   function verdictLegend(host) {
     host.innerHTML = '<span class="k"><span class="sw full"></span>Inside: as real as a real worm</span>' +
@@ -689,7 +929,7 @@
       (host.dataset.legend === "noband" ? "" : '<span class="k"><span class="sw band"></span>Inside in all three groups</span>');
   }
 
-  const FIGS = { rulerStrip, scorecard, restPoke, power, signalNoise, fingerprint, echoShape, calibration, mind, gallery, ceiling, law, rulerTruth };
+  const FIGS = { rulerStrip, scorecard, restPoke, power, signalNoise, fingerprint, echoShape, calibration, mind, gallery, ceiling, law, rulerTruth, permouse, slowFamilies, emulator, gaps };
   window.NematicaCharts = Object.assign({ verdictLegend, name }, FIGS);
 
   // mount every <div data-chart="..."> and redraw when its width changes
