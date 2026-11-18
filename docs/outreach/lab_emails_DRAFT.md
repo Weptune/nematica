@@ -1,38 +1,57 @@
-# DRAFTS, NOT SENT. Emails to labs whose data could unblock NEMATICA (18 Nov 2026)
+# DRAFTS, NOT SENT. Emails to labs whose data could unblock NEMATICA (18 Nov 2026, second version)
 
 Sent by the project owner personally, from their own address. Nothing here is sent by Claude.
-Fill in the bracketed parts. Addresses are the corresponding-author addresses printed in each lab's
-papers or dataset pages; check them before sending. The Leifer email replaces
-`atlas_authors_email_DRAFT.md`.
 
-Suggested order of value: 1 Leifer, 2 Kato, 3 Häusser, 4 Flavell, then 5 to 7.
+**Before sending:**
+- Fill in [affiliation]. A university address helps.
+- Check each address. Kato, Yemini, Häusser and Flavell addresses are the correspondence addresses in
+  their papers or dataset pages; Leifer, Kimura and Bellec are marked "as published" and need looking up.
+- Bracketed optional lines are your call (co-authorship offers, the Creamer note to Leifer).
+- Every email links the one-page summary: https://github.com/Weptune/nematica/blob/main/docs/SUMMARY_FOR_LABS.md
+- Send the top four first. Keep each email to one lab; cc a second author only where noted.
 
-A line worth keeping in every email, because the repository shows it anyway: "I did this work with the
-help of an AI research assistant; all code, pre-registrations and logs are public."
+Suggested order of value: 1 Leifer, 2 Kato, 3 Flavell, 4 Häusser, then 5 to 7.
 
 ---
 
-## 1. Leifer lab (Princeton): new stimulated worms, and the repeat-stimulation decline
+## 1. Leifer lab (Princeton)
 
-To: Andrew Leifer (address as published in Randi et al. 2023)
-Subject: Held-out test of a whole-brain worm model on the signal-propagation atlas
+**To:** Andrew Leifer (address as published in Randi et al. 2023)
+**Subject:** Held-out test of a whole-brain worm model on the signal-propagation atlas: are there more stimulated worms?
 
 Dear Dr Leifer,
 
-I have been using the public signal-propagation atlas (Randi et al. 2023) to test whole-brain models of
-C. elegans against worm-to-worm variation, with every test pre-registered. A model built on the 113
-wild-type worms now passes both resting activity and responses to stimulation on those worms, but every
-public stimulated worm has been used in building it, so I cannot confirm it on unseen animals.
+I am [your role, e.g. a student at X] and have been building a benchmark for whole-brain models of C. elegans,
+where every test is scored in units of worm-to-worm variation and pre-registered. Your signal-propagation
+atlas is the core of it, and it produced the project's clearest result: on your 113 wild-type worms, a
+model fitted to ongoing activity passes most activity tests, yet its responses to single-neuron
+stimulation agree with real worms at 0.004 to 0.014, against 0.087 to 0.121 between real worms. A model
+that also learns from stimulation reaches 0.088 to 0.113.
 
-1. Are there stimulated whole-brain recordings beyond the 113 wild-type and 18 unc-31 worms in the OSF
-   archive (newer wild-type worms, other strains, or recordings set aside)? Even 15 to 20 unseen worms
-   would allow a clean held-out test. I would credit the data in any write-up and share results first.
-2. A smaller point you may know already: when the same neuron is stimulated again 0.6 to 2 minutes
-   later, its response is about half of the first (56 pairs, 37 worms, gap-matched controls), recovering
-   after about 5 minutes, also in unc-31 worms. Is this known for GUR-3/PRDX-2, or is it the neuron?
+Building on that, a model with four ingredients (slow interacting brain-wide states, individuality,
+causal links learned from stimulation, and neuron-level observation) now passes both rest and stimulation
+on your worms. But it was built on all of them, so I cannot confirm it on unseen animals. On your
+unc-31 worms it narrowly fails its pre-set threshold (3 of 5 noise draws, against 4).
 
-Code, pre-registrations and results: github.com/Weptune/nematica. A preprint draft is available on
-request.
+**My request:** are there stimulated whole-brain recordings beyond the 113 wild-type and 18 unc-31 worms
+in the OSF archive, such as newer wild-type worms or recordings that were set aside? Even 15 to 20 unseen
+worms in the same format would allow a clean held-out test, frozen and registered before I open them. I
+would keep the data local, credit it in any write-up, and send you the result before posting it.
+[Optional: I would be glad to discuss co-authorship if the result is useful to you.]
+
+One finding you may want: a neuron stimulated again 0.6 to 2 minutes later responds at about half its
+previous response (56 pairs, 37 worms, gap-matched controls), about two thirds at 2 to 5 minutes, and not
+detectably less after 5 to 10 minutes; it persists in unc-31 worms. About 9% of the atlas's identified
+stimulations are repeats within 5 minutes. I could not tell whether this is GUR-3/PRDX-2 or the neuron;
+do you know?
+
+[Optional, your call: "I also recomputed the held-out measure from the published Creamer et al. models
+and maps and got 0.81 of the train-to-test ceiling rather than 92%. This may well be my error; I would be
+glad to send the calculation."]
+
+A one-page summary: https://github.com/Weptune/nematica/blob/main/docs/SUMMARY_FOR_LABS.md
+(code, pre-registrations and logs are in the same repository; I work with the help of an AI research
+assistant). A preprint draft is available on request.
 
 Best wishes,
 Abhinav Krishna
@@ -40,55 +59,35 @@ Abhinav Krishna
 
 ---
 
-## 2. Kato lab (UCSF): stimulation times for DANDI 000565
+## 2. Kato lab (UCSF)
 
-To: Saul Kato (saul.kato@ucsf.edu); cc Raymond Dunn
-Subject: Optogenetic stimulation times for the whole-brain recordings in DANDI 000565
+**To:** Saul Kato (saul.kato@ucsf.edu); cc Raymond Dunn
+**Subject:** Stimulation times for the whole-brain recordings in DANDI 000565, for a second-lab test of worm brain models
 
 Dear Dr Kato,
 
-I am testing whole-brain models of C. elegans on how they respond to stimulation of single neurons,
-measured against worm-to-worm variation. The only public data of this kind is the Leifer lab atlas,
-and I have used all of it, so I am looking for stimulation data from a second lab.
+I am [your role, e.g. a student at X] and have been building a pre-registered benchmark for whole-brain models of
+C. elegans, scored in units of worm-to-worm variation. Its clearest result, on the Leifer lab's
+signal-propagation atlas, is that a model fitted to ongoing activity looks realistic but responds to
+single-neuron stimulation almost nothing like a real worm (agreement 0.004 to 0.014, against 0.087 to
+0.121 between real worms), while a model that learns from stimulation matches. A four-ingredient model now
+passes both on the atlas worms, but every result so far comes from one lab's preparation, and I have used
+all of its worms.
 
-Your DANDI set 000565 describes its sessions as "NeuroPAL and calcium imaging of immobilized worm with
-optogenetic stimulus", but the `stimulus` groups in the files I checked are empty, so I cannot tell when
-or where light was delivered. (The dandiset description also says the calcium data are unstimulated, so
-I may be misreading it.)
+Your lab looks like the only other source of whole-brain recordings with targeted stimulation of
+identified neurons. DANDI 000565 describes its sessions as "NeuroPAL and calcium imaging of immobilized
+worm with optogenetic stimulus", and one file I checked holds about 24 minutes of dF/F for 118 ROIs, some
+with neuron names, but the `stimulus` groups are empty, so I cannot tell when or where light was delivered.
 
-Could you share the stimulation times and targeted neurons for those sessions, or point me to any
-whole-brain recordings with targeted single-neuron stimulation from your lab that could be shared?
-I would credit the data, share every result with you before posting, and keep the data local.
+**My request:** for those sessions, or any similar recordings you could share, the stimulation onset
+times, the targeted neuron (or ROI), and the light parameters. Even a plain table per session would do.
+With 12 or more worms I would run the same pre-registered test as on the atlas: the model recipe frozen,
+refitted on some of your worms, scored on the others. I would keep the data local, credit it, and send
+you the results before posting anything. [Optional: co-authorship on a resulting paper, if you would
+like it.]
 
-Code and pre-registered tests: github.com/Weptune/nematica.
-
-Best wishes,
-Abhinav Krishna
-[affiliation] · weptune.dev
-
----
-
-## 3. Häusser lab (UCL): target-to-cell mapping in Dalgleish et al. 2020
-
-To: Michael Häusser (m.hausser@ucl.ac.uk)
-Subject: Mapping stimulation targets to imaged cells in the Dalgleish et al. 2020 data
-
-Dear Professor Häusser,
-
-I have been using the public data from Dalgleish et al. (eLife 2020, figshare 13128950) to test whether
-models fitted to ongoing cortical activity predict responses to targeted stimulation, measured against
-animal-to-animal variation.
-
-One step failed: I could not map the 200 target coordinates onto the imaged cells. Under every shift,
-flip and scaling I tried, the best alignment put only about 20% of targets within 2.5 pixels of a cell,
-against about 7.5% by chance. I therefore had to identify targets from their own responses, which left
-too few per session for a clean test.
-
-Is there a target-to-cell mapping (or a coordinate convention I have missed) that you could share or
-point me to? With it, the same test could be run properly on your data. I would credit it and share the
-results with you first.
-
-Code and pre-registered tests: github.com/Weptune/nematica.
+The project in one page: https://github.com/Weptune/nematica/blob/main/docs/SUMMARY_FOR_LABS.md (code,
+pre-registrations and logs in the same repository; I work with the help of an AI research assistant).
 
 Best wishes,
 Abhinav Krishna
@@ -96,25 +95,35 @@ Abhinav Krishna
 
 ---
 
-## 4. Flavell lab (MIT): freely moving worms with targeted stimulation
+## 3. Flavell lab (MIT)
 
-To: Steven Flavell (flavell@mit.edu)
-Subject: Whole-brain recordings in moving worms with targeted neuron stimulation?
+**To:** Steven Flavell (flavell@mit.edu)
+**Subject:** Your freely moving recordings in a pre-registered benchmark of worm brain models, and one request
 
 Dear Dr Flavell,
 
-I have been using your public whole-brain recordings of freely moving worms (Atanas et al. 2023) in a
-pre-registered benchmark of whole-brain models of C. elegans. A model built on immobilised, stimulated
-worms (the Leifer atlas) fails badly on your freely moving worms at rest, which suggests that what an
-artificial worm brain needs depends on whether the worm is moving.
+I am [your role, e.g. a student at X] and have been building a pre-registered benchmark for whole-brain models of
+C. elegans, scored in units of worm-to-worm variation. Your lab's data carries much of it, and you may find
+the results useful:
 
-To test that properly, I would need whole-brain recordings of freely moving worms in which identified
-neurons were stimulated optogenetically. Do any exist in your lab that could be shared, now or when
-published? I would also be glad to know whether the heat pulses in some Atanas recordings have a
-documented protocol beyond the NWB files.
+- On the copper-boundary recordings (Baskoylu et al. 2026), the model that forecasts best is too typical;
+  letting each worm keep more of its own dynamics costs 0.009 R² and brings it onto the real-worm line.
+- A closed-loop brain model driving a body in each held-out worm's own copper arena, with copper entering
+  only through ASH, passes 9 of 10 pairwise levels and all three arena levels.
+- A model built on the Leifer lab's immobilised, stimulated worms, which passes rest and stimulation
+  there, fails on your freely moving Atanas et al. worms at rest (1 of 6 activity levels), even refitted
+  from scratch. Exploratory diagnosis: in moving worms, coupling between neuron types matters and activity
+  is skewed (median skewness 0.83), neither of which the immobilised recipe needs.
 
-I would credit any data and share results with you first. Code and pre-registrations:
-github.com/Weptune/nematica.
+So what an artificial worm brain needs seems to depend on whether the worm is moving, and the deciding test
+needs data that does not seem to be public: **whole-brain recordings of freely moving worms in which
+identified neurons were stimulated optogenetically.** Does your lab have any that could be shared, now or
+when published? If not, any further freely moving recordings in the Atanas format beyond DANDI 000776, the
+copper set and the 2026 directed-turning set would still help. I would keep the data local, credit it,
+and send you results before posting. [Optional: co-authorship, if you would like it.]
+
+The project in one page: https://github.com/Weptune/nematica/blob/main/docs/SUMMARY_FOR_LABS.md (code,
+pre-registrations and logs in the same repository; I work with the help of an AI research assistant).
 
 Best wishes,
 Abhinav Krishna
@@ -122,20 +131,56 @@ Abhinav Krishna
 
 ---
 
-## 5. Kimura lab (Nagoya City University): more semi-restricted recordings (lower priority)
+## 4. Häusser lab (UCL)
 
-To: Koutarou D. Kimura (address as published); cc Chentao Wen
-Subject: More whole-brain recordings like DANDI 000692?
+**To:** Michael Häusser (m.hausser@ucl.ac.uk)
+**Subject:** Dalgleish et al. 2020 data: mapping the 200 stimulation targets onto the imaged cells
+
+Dear Professor Häusser,
+
+I am [your role, e.g. a student at X] and have been testing, with pre-registered rules, whether models fitted to
+ongoing activity predict responses to targeted stimulation. In C. elegans they do not (agreement with real
+worms 0.004 to 0.014, against 0.087 to 0.121 between worms), and I tried the same test in mouse cortex on
+the public data of Dalgleish et al. (eLife 2020; figshare 13128950).
+
+One step failed. I could not map the 200 target coordinates onto the imaged cells: under every shift, flip
+and scaling I tried, the best alignment put about 20% of targets within 2.5 pixels of a cell, against about
+7.5% by chance. Identifying targets from their own responses instead left 7 of 11 sessions usable with 13
+to 41 targets each. With that, ongoing co-activity predicted responses better than distance by the
+pre-registered rule, but part of what it predicted was trial-locked co-activity also present on catch
+trials, and the stimulation-specific part was too weak for a clear test.
+
+**My request:** is there a target-to-cell mapping per session, or a coordinate convention I have missed
+(for example, targets in a different image space or plane order)? With it, the test could be run as
+intended on your data. I would credit it and send you the results before posting.
+
+The project in one page: https://github.com/Weptune/nematica/blob/main/docs/SUMMARY_FOR_LABS.md (code,
+pre-registrations and logs in the same repository; I work with the help of an AI research assistant).
+
+Best wishes,
+Abhinav Krishna
+[affiliation] · weptune.dev
+
+---
+
+## 5. Kimura lab (Nagoya City University), lower priority
+
+**To:** Koutarou D. Kimura (address as published); cc Chentao Wen
+**Subject:** More recordings like DANDI 000692, for testing worm brain models across labs
 
 Dear Dr Kimura,
 
-I am testing whole-brain models of C. elegans on worms from labs other than the one they were built on.
-Your DANDI set 000692 (spontaneous whole-brain activity in semi-restricted worms with NeuroPAL identities)
-is close to ideal, but with 9 recordings from 7 worms it falls below the 12 worms my pre-registered test
-needs. Do you have further recordings of the same kind that could be shared or deposited? I would credit
-them and share results first.
+I am [your role, e.g. a student at X] and have been building a pre-registered benchmark for whole-brain models of
+C. elegans, scored in units of worm-to-worm variation. A model built on the Leifer lab's immobilised worms
+passes there but fails on freely moving worms, and I want to know whether it holds in other labs' restrained
+worms. Your DANDI set 000692 (spontaneous whole-brain activity of semi-restricted worms with NeuroPAL
+identities, about 1.7 Hz) fits the test well, but with 9 recordings from 7 worms it is below the 12 worms
+my pre-registered rule requires.
 
-Code and pre-registrations: github.com/Weptune/nematica.
+**My request:** do you have further recordings of the same kind that could be shared or deposited? I would
+keep them local, credit them, and send you results before posting.
+
+The project in one page: https://github.com/Weptune/nematica/blob/main/docs/SUMMARY_FOR_LABS.md.
 
 Best wishes,
 Abhinav Krishna
@@ -143,19 +188,22 @@ Abhinav Krishna
 
 ---
 
-## 6. Yemini lab (UMass Chan): longer unstimulated recordings (lower priority)
+## 6. Yemini lab (UMass Chan), lower priority
 
-To: Eviatar Yemini (eviatar.yemini@umassmed.edu)
-Subject: Longer unstimulated whole-brain recordings with NeuroPAL identities?
+**To:** Eviatar Yemini (eviatar.yemini@umassmed.edu)
+**Subject:** Longer unstimulated NeuroPAL whole-brain recordings, for testing worm brain models across labs
 
 Dear Dr Yemini,
 
-I am testing whole-brain models of C. elegans on worms from several labs, scored against worm-to-worm
-variation. The NeuroPAL recordings in DANDI 000541 are about 4 minutes each, and my pre-registered test
-needs at least about 8 minutes without stimulation per worm. Do you have longer unstimulated whole-brain
-recordings with NeuroPAL identities that could be shared? I would credit them and share results first.
+I am [your role, e.g. a student at X] and have been building a pre-registered benchmark for whole-brain models of
+C. elegans, scored in units of worm-to-worm variation, and testing whether a model built on one lab's worms
+holds in others. The recordings in DANDI 000541 are about 4 minutes each, and my pre-registered test needs
+at least about 8 minutes without stimulation per worm, in at least 12 worms.
 
-Code and pre-registrations: github.com/Weptune/nematica.
+**My request:** do you have longer unstimulated whole-brain recordings with NeuroPAL identities that could
+be shared? I would keep them local, credit them, and send you results before posting.
+
+The project in one page: https://github.com/Weptune/nematica/blob/main/docs/SUMMARY_FOR_LABS.md.
 
 Best wishes,
 Abhinav Krishna
@@ -163,23 +211,26 @@ Abhinav Krishna
 
 ---
 
-## 7. Bellec lab (TU Wien): comparing on the same data (optional)
+## 7. Bellec lab (TU Wien), optional
 
-To: Guillaume Bellec (address as published in Sourmpis et al., eLife 2026)
-Subject: Calibrated comparison of fitted networks under optogenetic perturbation
+**To:** Guillaume Bellec (address as published in Sourmpis et al., eLife 2026)
+**Subject:** A worm counterpart to your perturbation result, and comparing on the same data
 
 Dear Dr Bellec,
 
 Your eLife paper with Sourmpis, Petersen and Gerstner shows that generic fitted RNNs predict optogenetic
-perturbations poorly in mouse cortex. I have found a related result in C. elegans, scored animal by animal
-against worm-to-worm variation, and I am preparing the same test in mouse using the optogenetic block of the
-public Allen Neuropixels sessions.
+perturbations poorly in mouse cortex, and that some biological constraints help. I have a related result in
+C. elegans, scored animal by animal against worm-to-worm variation: a model fitted to ongoing activity
+agrees with real worms' stimulation responses at 0.004 to 0.014 (against 0.087 to 0.121 between worms),
+while one that learns from stimulation matches. One difference from yours: restricting the model to the
+worm's wiring did not help.
 
-Is the in vivo dataset from your paper available (I may have missed it on the Petersen lab's Zenodo
-page)? Running the same calibrated test on it would let the two results be compared directly. I would
-credit it and share results first.
+I am now preparing the same calibrated test in mouse on the optogenetic blocks of the public Allen
+Neuropixels sessions. **My request:** is the in vivo dataset from your paper public (I may have missed it on
+the Petersen lab's Zenodo page)? Running the same test on it would let the two results be compared on equal
+terms. I would credit it and send you results before posting.
 
-Code and pre-registrations: github.com/Weptune/nematica.
+The project in one page: https://github.com/Weptune/nematica/blob/main/docs/SUMMARY_FOR_LABS.md.
 
 Best wishes,
 Abhinav Krishna
