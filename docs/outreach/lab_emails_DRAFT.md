@@ -4,8 +4,11 @@ Sent by the project owner personally, from their own address. Nothing here is se
 
 **Before sending:**
 - Fill in [affiliation]. A university address helps.
-- Check each address. Kato, Yemini, Häusser and Flavell addresses are the correspondence addresses in
-  their papers or dataset pages; Leifer, Kimura and Bellec are marked "as published" and need looking up.
+- Addresses and where they come from: Leifer, his lab's contact page and CV; Kato and Yemini, the
+  correspondence line of the WormID corpus paper (Sprague et al.); Flavell, his lab's papers; Häusser,
+  the eLife author page of Dalgleish et al. 2020; Kimura, his Nagoya City University faculty page;
+  Bellec, the CCN 2025 abstract of Sourmpis et al. (TU Wien). The two cc addresses are optional and less
+  certain.
 - Bracketed optional lines are your call (co-authorship offers, the Creamer note to Leifer).
 - Every email links the one-page summary: https://github.com/Weptune/nematica/blob/main/docs/SUMMARY_FOR_LABS.md
 - Send the top four first. Keep each email to one lab; cc a second author only where noted.
@@ -16,7 +19,7 @@ Suggested order of value: 1 Leifer, 2 Kato, 3 Flavell, 4 Häusser, then 5 to 7.
 
 ## 1. Leifer lab (Princeton)
 
-**To:** Andrew Leifer (address as published in Randi et al. 2023)
+**To:** Andrew Leifer <leifer@princeton.edu>
 **Subject:** Held-out test of a whole-brain worm model on the signal-propagation atlas: are there more stimulated worms?
 
 Dear Dr Leifer,
@@ -61,7 +64,7 @@ Abhinav Krishna
 
 ## 2. Kato lab (UCSF)
 
-**To:** Saul Kato (saul.kato@ucsf.edu); cc Raymond Dunn
+**To:** Saul Kato <saul.kato@ucsf.edu> (optionally cc Raymond Dunn, the experimenter on these files; his address is not verified here)
 **Subject:** Stimulation times for the whole-brain recordings in DANDI 000565, for a second-lab test of worm brain models
 
 Dear Dr Kato,
@@ -101,7 +104,7 @@ Abhinav Krishna
 
 ## 3. Flavell lab (MIT)
 
-**To:** Steven Flavell (flavell@mit.edu)
+**To:** Steven Flavell <flavell@mit.edu>
 **Subject:** Your freely moving recordings in a benchmark of worm brain models, and one request
 
 Dear Dr Flavell,
@@ -140,7 +143,7 @@ Abhinav Krishna
 
 ## 4. Häusser lab (UCL)
 
-**To:** Michael Häusser (m.hausser@ucl.ac.uk)
+**To:** Michael Häusser <m.hausser@ucl.ac.uk>
 **Subject:** Dalgleish et al. 2020 data: mapping the 200 stimulation targets onto the imaged cells
 
 Dear Professor Häusser,
@@ -172,7 +175,7 @@ Abhinav Krishna
 
 ## 5. Kimura lab (Nagoya City University), lower priority
 
-**To:** Koutarou D. Kimura (address as published); cc Chentao Wen
+**To:** Koutarou D. Kimura <kokimura@nsc.nagoya-cu.ac.jp> (optionally cc Chentao Wen <chentao-wen@umin.ac.jp>, the address in his 2021 eLife paper, which may be out of date)
 **Subject:** More recordings like DANDI 000692, for testing worm brain models across labs
 
 Dear Dr Kimura,
@@ -197,7 +200,7 @@ Abhinav Krishna
 
 ## 6. Yemini lab (UMass Chan), lower priority
 
-**To:** Eviatar Yemini (eviatar.yemini@umassmed.edu)
+**To:** Eviatar Yemini <eviatar.yemini@umassmed.edu>
 **Subject:** Longer unstimulated NeuroPAL whole-brain recordings, for testing worm brain models across labs
 
 Dear Dr Yemini,
@@ -220,7 +223,7 @@ Abhinav Krishna
 
 ## 7. Bellec lab (TU Wien), optional
 
-**To:** Guillaume Bellec (address and affiliation as published in Sourmpis et al., eLife 2026)
+**To:** Guillaume Bellec <guillaume.bellec@tuwien.ac.at>
 **Subject:** A worm counterpart to your perturbation result, and comparing on the same data
 
 Dear Dr Bellec,
