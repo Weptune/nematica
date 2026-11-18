@@ -1,4 +1,4 @@
-# DRAFT, NOT SENT. Email to the signal-propagation atlas authors (8 Nov 2026)
+# DRAFT, NOT SENT. Superseded by lab_emails_DRAFT.md (email 1). Email to the signal-propagation atlas authors (8 Nov 2026)
 
 Nothing here is sent without the project owner's explicit go-ahead.
 
