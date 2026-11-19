@@ -37,3 +37,16 @@ S1 to S3 are reported as undecided.
 
 **Code:** `scripts/opto_sign.py`, which refuses to run unless this file's status line says FROZEN. No
 independent review: this test adds three counts to a pipeline that was reviewed and frozen for Study O.
+
+## Result (19 Nov 2026, 20:37 UTC; `docs/figures/opto/sign_result.json`): undecided
+
+Only 1 of the 15 mice had at least 3 tagged units (sub-763884096, Sst: 3 units; real_up 0.43, w_up 0.67,
+in the predicted direction, but one mouse decides nothing). The other 14 had 0 or 1. As registered, with
+fewer than 8 Pvalb and Sst mice, S1 to S3 are undecided.
+
+**Why, checked afterwards on tagging only (no response read):** with looser tagging windows and thresholds
+(2 to 4.5 ms after onset, at least 0.3, 0.2 or 0.1 extra spikes), these 15 mice still give 0 to 2 units
+each, while Study O's mice give 3 to 38 and the wild-type mice 0 to 1. In these sessions the light
+reached almost no recorded cell, so this dataset holds no second set of mice for the test. A miss in
+planning: tagging counts are part of the instrument and could have been checked before registering; they
+were not.

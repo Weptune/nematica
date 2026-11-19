@@ -284,6 +284,14 @@ def beyond() -> dict:
     out["shrinkage"] = [{"lam": r["lam"], "r2": num(r["within_worm_r2"]), "ind": num(r["individuality"]),
                          "typical": sum(v == "too typical" for k, v in r.items() if k.endswith("_verdict")),
                          "outside": sum(v == "outside" for k, v in r.items() if k.endswith("_verdict"))} for r in rows("shrinkage.csv")]
+    # Study O and S: the watching copy's predicted direction vs the real direction, per mouse
+    so = json.loads((FIG / "opto/sign_studyO.json").read_text())
+    ss = FIG / "opto/sign_result.json"
+    sr = json.loads(ss.read_text()) if ss.exists() else None
+    pick = lambda m, v, st: {"id": m, "study": st, "line": v["line"], "real": v["real_up"], "w": v["w_up"], "rest": v["rest_r"]}  # noqa: E731
+    out["optoSign"] = {"mice": [pick(m, v, "O") for m, v in so.items()] + ([pick(m, v, "S") for m, v in sr["mice"].items()] if sr else []),
+                       "claims": {k: sr[k] for k in ("S1", "S2", "S3") if sr and k in sr}, "nS": sr["n_pvalb_sst"] if sr else 0,
+                       "O4": json.loads((FIG / "opto/result.json").read_text())["O4"]}
     # the emulator: passes on the worms it was built on, not on others
     out["emulator"] = json.loads((FIG / "emulator_transfer.json").read_text())
     out["emulator"].pop("note", None)

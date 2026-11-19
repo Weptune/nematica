@@ -22,8 +22,9 @@ DROP = ["VISmma|n", "VISp|n"]
 def main():
     if "\n**Status: FROZEN" not in (ROOT / "docs/OPTO_SIGN.md").read_text():
         sys.exit("not frozen")
+    studyO = "--studyO" in sys.argv          # Study O's 9 mice, descriptive only (the exploratory table)
     mice, left_out = {}, {}
-    for m in MICE:
+    for m in (json.loads((ROOT / "docs/figures/opto/result.json").read_text())["mice"] if studyO else MICE):
         d = real.load(m)
         t = real.tag(d)
         if t.sum() < 3:
@@ -47,6 +48,10 @@ def main():
                    "w_up": float(np.mean(pw > 0)), "rest_r": rest_r, "W": r["W"], "P": r["P"], "c": r["c"],
                    "gap": (r["P"] - r["W"]) / r["ceiling"] if np.isfinite(r["ceiling"]) else None}
         print(m, {k: (round(v, 3) if isinstance(v, float) else v) for k, v in mice[m].items()}, flush=True)
+    if studyO:
+        (ROOT / "docs/figures/opto/sign_studyO.json").write_text(json.dumps(
+            {m: {k: (round(v, 3) if isinstance(v, float) else v) for k, v in x.items()} for m, x in mice.items()}, indent=1, default=float))
+        return
     ps = [m for m in mice if mice[m]["line"] in ("Pvalb", "Sst")]
     out = {"left_out": left_out, "n_pvalb_sst": len(ps)}
     if len(ps) < 8:

@@ -1,0 +1,34 @@
+{
+ "left_out": {
+  "sub-699733573": "1 tagged units",
+  "sub-703279277": "1 tagged units",
+  "sub-734865729": "0 tagged units",
+  "sub-735109599": "0 tagged units",
+  "sub-738651046": "0 tagged units",
+  "sub-744915196": "0 tagged units",
+  "sub-763236006": "1 tagged units",
+  "sub-707296975": "1 tagged units",
+  "sub-726170927": "0 tagged units",
+  "sub-739783158": "0 tagged units",
+  "sub-757329617": "0 tagged units",
+  "sub-730760263": "0 tagged units",
+  "sub-732548371": "0 tagged units",
+  "sub-745276220": "0 tagged units"
+ },
+ "n_pvalb_sst": 1,
+ "undecided": true,
+ "mice": {
+  "sub-763884096": {
+   "line": "Sst",
+   "tagged": 3,
+   "classes": 21,
+   "real_up": 0.429,
+   "w_up": 0.667,
+   "rest_r": 0.002,
+   "W": -0.089,
+   "P": 0.453,
+   "c": 0.842,
+   "gap": 0.567
+  }
+ }
+}
