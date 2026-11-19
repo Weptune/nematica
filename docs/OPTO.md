@@ -370,3 +370,45 @@ bound 0.56). Misspecified: 0 of 20. Pass. The study is frozen as it stands: regi
 at the freeze commit. Primary claim O4; secondary O1, O2, O3 (with their known weaknesses: O1 gave false
 positives in calibration, O2 and O3 never discriminated); descriptive: rest score, the 10 Hz baseline, O4
 without narrow classes in Pvalb mice.
+
+## Result (19 Nov 2026, 19:48 UTC, run once from the freeze commit; `docs/figures/opto/result.json`)
+
+**Who entered.** 9 of 13 Cre mice (4 had fewer than 3 tagged units after A11). Light-only check: in
+wild-type mice the light alone moved narrow-waveform visual classes by +0.3 to +0.9 SD; two classes passed
+the 0.5 bar and were dropped (VISp narrow, VISmma narrow), several others sat just under it.
+
+**Primary claim O4: not supported.** Median gap 0.47 (above the 0.4 bar) but its bootstrap 5th percentile
+is -0.08 (bar 0.3), over the 8 mice with reliability c at least 0.5. Without narrow classes in Pvalb mice:
+median 1.16, lower bound 0.05, also not supported. The spread comes from two mice where the
+stimulation-fitted copy failed too (sub-769360771, the only Vip mouse, 4 tagged units, P 0.16;
+sub-820866111, P -0.46).
+
+| mouse | line | tagged | c | W (watching) | P (stimulation-fitted) | another mouse |
+|---|---|---|---|---|---|---|
+| sub-769360771 | Vip | 4 | 0.97 | 0.43 | 0.16 | n/a |
+| sub-776061236 | Pvalb | 11 | 0.70 | 0.19 | 0.72 | 0.67 |
+| sub-763808588 | Sst | 7 | 0.83 | -0.55 | 0.87 | 0.41 |
+| sub-774672354 | Sst | 28 | 0.53 | 0.25 | 0.33 | 0.20 |
+| sub-803390283 | Sst | 17 | 0.55 | -0.48 | 0.80 | -0.05 |
+| sub-811322604 | Pvalb | 28 | 0.88 | 0.14 | 0.48 | 0.66 |
+| sub-817060743 | Sst | 13 | 0.35 | -0.43 | 0.48 | 0.20 |
+| sub-820866111 | Pvalb | 29 | 0.91 | -0.17 | -0.46 | 0.66 |
+| sub-821469659 | Pvalb | 32 | 0.92 | -0.76 | 0.59 | 0.46 |
+| **median** | | | | **-0.17** | **0.48** | **0.43** |
+
+**Secondary claims.** O1 (watching falls short of another mouse): supported, median shortfall 0.58, sign
+test p 0.035, n 8. O2 (stimulation-fitted copy reaches the mouse level): supported, n 8. O3 (stimulation
+beats watching): 7 of 9, supported. Calibration showed O1 can give false positives (1 in 20 in A10, 0 in 20
+in A12) and that O2 and O3 come out supported whatever the links are, so these three carry little weight on
+their own.
+
+**Descriptive.** Rest score (W predicting rest-time co-fluctuations it was not fitted on): median 0.28. The
+10 Hz train's own profile matched the test profile at a median of 0.53, about as well as P (0.48).
+
+**Reading (exploratory, not a registered claim).** The copy fitted to resting activity predicted the
+opposite of the real pattern in 6 of 9 mice (W below zero; a sign test on 6 of 9 is not significant, p
+0.25). The tagged cells here are inhibitory interneurons (Pvalb, Sst, Vip). At rest they rise and fall
+together with the cells around them, so a copy that learns from watching expects that driving them excites
+their neighbours; driving them does the reverse. That is the worm result's shape (watching misleads about
+poking), seen in mouse cortex, but the test as registered does not establish it: the pre-set primary claim
+missed its bar, with 8 usable mice and two of them where nothing predicted the response.
