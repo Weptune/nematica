@@ -1,6 +1,6 @@
 # Study S: does rest-time co-activity predict the sign of a driven cell's effect? (registration)
 
-**Status: registration v1 (19 Nov 2026, 19:56 UTC), written before any data of these mice was cached.**
+**Status: FROZEN** (registration v1, 19 Nov 2026, 19:49 UTC, written before any data of these mice was cached; frozen as written, 19:51 UTC).
 Origin: the exploratory follow-up at the end of `docs/OPTO.md` (Study O). There, in all 8 Pvalb and Sst
 mice, the copy fitted to resting activity predicted that driving the tagged inhibitory cells would raise
 most classes, and most classes fell instead; in the one Vip mouse most rose. That was found after looking,
@@ -25,7 +25,7 @@ the tagged class's rate and that class's rate.
 - S1, driving them suppresses: real_up < 0.5 in a one-sided sign test, p < 0.05.
 - S2, watching predicts the wrong direction: w_up > real_up in a one-sided sign test, p < 0.05.
 - S3, they co-fluctuate at rest: rest_r > 0 in a one-sided sign test, p < 0.05 (the premise of S2).
-With 12 possible mice, a sign test needs at least 10 of 12 (p 0.019); 9 of 12 is p 0.073.
+Ties (exactly zero) are dropped, as in Study O. With 12 possible mice, a sign test needs at least 10 of 12 (p 0.019); 9 of 12 is p 0.073.
 
 **Reported only.** The same three numbers for the Vip mice (expected: real_up above 0.5, from Vip cells'
 known inhibition of other inhibitory cells; with 3 mice nothing is claimed). Study O's W, P and gap for these

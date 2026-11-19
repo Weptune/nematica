@@ -413,7 +413,7 @@ their neighbours; driving them does the reverse. That is the worm result's shape
 poking), seen in mouse cortex, but the test as registered does not establish it: the pre-set primary claim
 missed its bar, with 8 usable mice and two of them where nothing predicted the response.
 
-### Exploratory follow-up (after the result, 19 Nov 2026, 19:52 UTC; not registered, read as a lead)
+### Exploratory follow-up (after the result, 19 Nov 2026, 19:48 UTC; not registered, read as a lead)
 
 Direction of change per mouse: how many classes the watching copy says go up, and how many really did.
 
