@@ -94,7 +94,7 @@ def cache(mouse):
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
     ASSETS = {ds: md.dandi_assets(ds) for ds in ("000021", "000022")}
-    for m in CRE + WT:
+    for m in (sys.argv[1:] or CRE + WT):
         for attempt in range(3):
             try:
                 print(m, cache(m), flush=True)
