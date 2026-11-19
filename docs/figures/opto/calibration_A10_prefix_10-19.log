@@ -1,0 +1,19 @@
+10 sub-776061236 visible {'c': 0.999, 'W': 0.764, 'P': 0.988, 'gap': 0.219, 'gap_lo': 0.182, 'O4': False, 'O1': False, 'O2': True, 'O3': 13, 'rest': 0.748, 'train2_baseline': 0.994}
+10 sub-776061236 silent {'c': 1.0, 'W': -0.137, 'P': 0.972, 'gap': 1.021, 'gap_lo': 0.888, 'O4': True, 'O1': False, 'O2': True, 'O3': 13, 'rest': -0.013, 'train2_baseline': 0.975}
+10 sub-776061236 misspecified {'c': 0.974, 'W': 0.949, 'P': 0.991, 'gap': 0.037, 'gap_lo': 0.02, 'O4': False, 'O1': False, 'O2': True, 'O3': 13, 'rest': 0.232, 'train2_baseline': 0.988}
+11 sub-763808588 visible {'c': 1.0, 'W': 0.811, 'P': 0.993, 'gap': 0.182, 'gap_lo': 0.144, 'O4': False, 'O1': False, 'O2': True, 'O3': 13, 'rest': 0.758, 'train2_baseline': 0.996}
+Traceback (most recent call last):
+  File "/home/claude/nematica/scripts/opto_instrument_cal.py", line 63, in <module>
+    main()
+    ~~~~^^
+  File "/home/claude/nematica/scripts/opto_instrument_cal.py", line 47, in main
+    rec = real.synthetic(rng, inst, kind == "silent", c0 * (1 + 0.3 * rng.normal(0, 1, K)),
+                         A0 * (1 + 0.3 * rng.normal(0, 1, (K, K))), mis=kind == "misspecified")
+  File "/home/claude/nematica/nematica/opto/real.py", line 265, in synthetic
+    counts = rng.poisson(base * np.exp(gain * lat - gain ** 2 / 2)).astype(np.float32)
+             ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "numpy/random/_generator.pyx", line 3330, in numpy.random._generator.Generator.poisson
+  File "numpy/random/_common.pyx", line 902, in numpy.random._common.disc
+  File "numpy/random/_common.pyx", line 699, in numpy.random._common.discrete_broadcast_d
+  File "numpy/random/_common.pyx", line 409, in numpy.random._common.check_array_constraint
+ValueError: lam value too large

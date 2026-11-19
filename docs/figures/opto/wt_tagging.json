@@ -1,0 +1,212 @@
+{
+ "sub-772616820": {
+  "group": "wild-type",
+  "qc_units": 614,
+  "tagged": 0,
+  "tagged_areas": []
+ },
+ "sub-754477355": {
+  "group": "wild-type",
+  "qc_units": 839,
+  "tagged": 0,
+  "tagged_areas": []
+ },
+ "sub-769319621": {
+  "group": "wild-type",
+  "qc_units": 811,
+  "tagged": 0,
+  "tagged_areas": []
+ },
+ "sub-800249582": {
+  "group": "wild-type",
+  "qc_units": 623,
+  "tagged": 0,
+  "tagged_areas": []
+ },
+ "sub-800250054": {
+  "group": "wild-type",
+  "qc_units": 493,
+  "tagged": 8,
+  "tagged_areas": [
+   "CA1",
+   "ProS",
+   "VISal",
+   "VISam",
+   "VISp",
+   "VISpm"
+  ]
+ },
+ "sub-827809879": {
+  "group": "wild-type",
+  "qc_units": 898,
+  "tagged": 0,
+  "tagged_areas": []
+ },
+ "sub-769360771": {
+  "group": "Cre",
+  "qc_units": 581,
+  "tagged": 5,
+  "tagged_areas": [
+   "CA1",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISrl"
+  ]
+ },
+ "sub-775876808": {
+  "group": "Cre",
+  "qc_units": 844,
+  "tagged": 1,
+  "tagged_areas": [
+   "VISrl"
+  ]
+ },
+ "sub-776061236": {
+  "group": "Cre",
+  "qc_units": 629,
+  "tagged": 26,
+  "tagged_areas": [
+   "APN",
+   "CA1",
+   "CA3",
+   "DG",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-763808588": {
+  "group": "Cre",
+  "qc_units": 429,
+  "tagged": 13,
+  "tagged_areas": [
+   "CA1",
+   "CA3",
+   "DG",
+   "VISam",
+   "VISp",
+   "VISrl"
+  ]
+ },
+ "sub-774672354": {
+  "group": "Cre",
+  "qc_units": 1036,
+  "tagged": 32,
+  "tagged_areas": [
+   "CA1",
+   "ProS",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISrl"
+  ]
+ },
+ "sub-791857600": {
+  "group": "Cre",
+  "qc_units": 655,
+  "tagged": 0,
+  "tagged_areas": []
+ },
+ "sub-795770029": {
+  "group": "Cre",
+  "qc_units": 598,
+  "tagged": 14,
+  "tagged_areas": [
+   "CA1",
+   "CA3",
+   "DG",
+   "LGd",
+   "PPT",
+   "VISam",
+   "VISl",
+   "VISrl"
+  ]
+ },
+ "sub-803390283": {
+  "group": "Cre",
+  "qc_units": 673,
+  "tagged": 21,
+  "tagged_areas": [
+   "CA1",
+   "SCig",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm"
+  ]
+ },
+ "sub-811322604": {
+  "group": "Cre",
+  "qc_units": 561,
+  "tagged": 30,
+  "tagged_areas": [
+   "CA1",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISrl"
+  ]
+ },
+ "sub-813701555": {
+  "group": "Cre",
+  "qc_units": 595,
+  "tagged": 4,
+  "tagged_areas": [
+   "ProS",
+   "SCiw",
+   "VISmmp",
+   "VISrl"
+  ]
+ },
+ "sub-817060743": {
+  "group": "Cre",
+  "qc_units": 767,
+  "tagged": 23,
+  "tagged_areas": [
+   "CA1",
+   "DG",
+   "LP",
+   "VIS",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-820866111": {
+  "group": "Cre",
+  "qc_units": 795,
+  "tagged": 41,
+  "tagged_areas": [
+   "CA1",
+   "DG",
+   "LP",
+   "MGd",
+   "TH",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-821469659": {
+  "group": "Cre",
+  "qc_units": 477,
+  "tagged": 39,
+  "tagged_areas": [
+   "CA1",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISpm"
+  ]
+ }
+}

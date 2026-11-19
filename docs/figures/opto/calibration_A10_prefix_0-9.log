@@ -1,0 +1,11 @@
+0 sub-769360771 visible {'c': 1.0, 'W': 0.84, 'P': 0.998, 'gap': 0.156, 'gap_lo': 0.129, 'O4': False, 'O1': False, 'O2': True, 'O3': 13, 'rest': 0.608, 'train2_baseline': 0.998}
+0 sub-769360771 silent {'c': 1.0, 'W': -0.209, 'P': 0.988, 'gap': 1.202, 'gap_lo': 0.989, 'O4': True, 'O1': True, 'O2': True, 'O3': 13, 'rest': 0.086, 'train2_baseline': 0.993}
+0 sub-769360771 misspecified {'c': 0.963, 'W': 0.946, 'P': 0.983, 'gap': 0.046, 'gap_lo': 0.017, 'O4': False, 'O1': False, 'O2': True, 'O3': 13, 'rest': 0.182, 'train2_baseline': 0.981}
+1 sub-776061236 visible {'c': 1.0, 'W': 0.736, 'P': 0.992, 'gap': 0.257, 'gap_lo': 0.189, 'O4': False, 'O1': True, 'O2': True, 'O3': 13, 'rest': 0.602, 'train2_baseline': 0.991}
+1 sub-776061236 silent {'c': 1.0, 'W': 0.011, 'P': 0.999, 'gap': 0.989, 'gap_lo': 0.806, 'O4': True, 'O1': True, 'O2': True, 'O3': 13, 'rest': 0.083, 'train2_baseline': 1.0}
+1 sub-776061236 misspecified {'c': 0.981, 'W': 0.969, 'P': 0.99, 'gap': 0.024, 'gap_lo': 0.015, 'O4': False, 'O1': False, 'O2': True, 'O3': 13, 'rest': 0.258, 'train2_baseline': 0.989}
+2 sub-763808588 visible {'c': 0.999, 'W': 0.863, 'P': 0.994, 'gap': 0.135, 'gap_lo': 0.098, 'O4': False, 'O1': False, 'O2': True, 'O3': 13, 'rest': 0.722, 'train2_baseline': 0.995}
+2 sub-763808588 silent {'c': 1.0, 'W': -0.015, 'P': 0.997, 'gap': 0.972, 'gap_lo': 0.589, 'O4': True, 'O1': True, 'O2': False, 'O3': 13, 'rest': 0.121, 'train2_baseline': 0.999}
+2 sub-763808588 misspecified {'c': 0.963, 'W': 0.917, 'P': 0.982, 'gap': 0.062, 'gap_lo': 0.031, 'O4': False, 'O1': False, 'O2': True, 'O3': 13, 'rest': 0.439, 'train2_baseline': 0.978}
+3 sub-769360771 visible {'c': 1.0, 'W': 0.799, 'P': 0.991, 'gap': 0.196, 'gap_lo': 0.165, 'O4': False, 'O1': False, 'O2': True, 'O3': 13, 'rest': 0.849, 'train2_baseline': 0.992}
+3 sub-769360771 silent {'c': 1.0, 'W': -0.042, 'P': 0.99, 'gap': 1.022, 'gap_lo': 0.822, 'O4': True, 'O1': True, 'O2': True, 'O3': 13, 'rest': -0.097, 'train2_baseline': 0.99}

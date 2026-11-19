@@ -275,3 +275,83 @@ The A6 check passes on all three instruments. O1 again gave a false positive on 
 - O4 uses mice whose ceiling (odd vs even trials) is at least 0.5, since a gap scaled by an unreliable
   ceiling means little; if fewer than 8 mice qualify, O4 is reported as undecidable.
 - Everything runs from `scripts/opto_run.py`, which refuses to start until a line starting "Status: FROZEN" (in bold) is added here.
+
+### A10: changes after the independent review (19 Nov 2026, 18:21 UTC, before any real response is read)
+
+Review: `docs/OPTO_REVIEW.md`. Correction to A7: the earliest onset after a previous light is 0.44 s,
+not 0.45 s (wild-type sub-772616820).
+1. Units: class rates for both copies are built from each unit's counts divided by its 1 s spontaneous SD,
+   and the copies' z-unit predictions are rescaled to those units before comparison with the profile.
+2. NaN agreements are dropped explicitly and every claim reports its n.
+3. O3 needs P > W in at least 10/13 of the mice analysed (rounded up).
+4. Ceiling: c is the odd vs even r; the gap is divided by sqrt(2c/(1+c)), the best a perfect copy can reach.
+   A9's 0.5 rule applies to c.
+5. Classes no wild-type mouse has are kept and listed as unchecked.
+6. Units whose area is empty, "grey" or "root" belong to no class.
+7. Calibration adds a third population per instrument: links visible at rest but W misspecified (a shared
+   slow driver of all classes and the tagged class, two lags of dynamics, and a soft saturating
+   nonlinearity). Required: O4 not supported.
+8. W positive control at rest: W is refitted on the first half of each spontaneous block and asked to
+   predict, on the second halves, the average change of each class in the 1 s after the tagged class rises
+   above 2 SD (clamped to its own average course). Rest score = r across classes. Interpretation rule: a
+   supported O4 is read as "the copy fitted at rest works at rest but fails under drive" only if the median
+   rest score is at least 0.5; otherwise as "W is the wrong model even at rest".
+9. Robustness (reported beside O4, not replacing it): O4 without narrow-waveform classes in Pvalb mice.
+10. Baseline for P: per mouse, r between the 10 Hz train's own profile and the test profile.
+11. Tagging is run on the six wild-type mice now (pulse spikes only); units tagged there are false
+    positives and are reported before freeze.
+12. False-positive rates: 20 fresh seeds, rotating the three instruments, each with a visible, a silent
+    and a misspecified-visible population. Required: O4 supported in at most 1 of 20 visible and at most 1
+    of 20 misspecified populations, and in at least 18 of 20 silent ones. If not met, the study stops.
+13. Framing: O4 is "the copy fitted at rest fails under drive while a copy fitted to other stimulation
+    succeeds". It is not evidence of silent links by itself, and it does not use the between-mouse
+    comparison; O1 and O2 carry that, as secondary claims.
+
+**A10 smoke test and revision of A10.8 (18:30 UTC, one synthetic individual per kind, instrument
+sub-769360771, seed 1; before the 20-seed run).** Rest score: 0.74 with visible links, 0.31 with silent
+links, 0.26 with W misspecified. It is low in both the cases it was meant to tell apart, because with
+silent links there is nothing at rest for W to capture. So A10.8's interpretation rule is withdrawn; the
+rest score is reported as description only. Also seen: the 10 Hz train's own profile matched the test
+profile at 0.996 with visible links, about as well as P. In a network like these, the pattern across classes
+barely depends on the light's time course, so P's success is close to "the same pattern as other
+stimulation". This is why A10.13 frames O4 as a statement about W (the copy fitted at rest fails under
+drive), with P as the evidence that the pattern is predictable from the input at all.
+
+**A10.12 restart (18:31 UTC).** The first 20-seed run crashed at seed 11 (silent population): a strongly
+coupled synthetic individual drove a unit's rate past what a Poisson draw accepts. Synthetic firing now
+saturates at about 20 times the resting rate (latent capped at 6), and all 20 seeds are rerun from the
+start under the same pass rule. The partial logs of the crashed run are kept
+(`docs/figures/opto/calibration_A10_prefix_*.log`); the 15 populations they completed (seeds 0 to 2 and 10
+in full, seed 3 visible and silent, seed 11 visible) all came out as required: O4 supported in the 5 silent
+ones and in none of the 10 visible or misspecified ones.
+
+### A11: tagging screened for light artefacts (19 Nov 2026, 18:52 UTC, before any test response is read)
+
+A10.11 result (`docs/figures/opto/wt_tagging.json`): the registered tagging rule tagged 0 units in five
+wild-type mice and **8 units in sub-800250054**, a mouse with no opsin. Their spikes are locked to the
+light's onset and to its offset (at 5 ms for 5 ms pulses, at 10 ms for 10 ms pulses), the signature of an
+electrical artefact of light on the probe, and both fall inside the registered 1 to 11 ms window. The
+same artefact can tag units in Cre mice.
+
+**A11.** Tagging uses the odd-numbered 10 ms pulses only, counting spikes 2 to 9 ms after onset against the
+7 ms before (same test and thresholds). This window avoids both the onset and the offset of the light. On
+the wild-type mice it tags 0 units in all six. In the Cre mice it tags 4, 1, 11, 7, 28, 0, 2, 17, 28, 1, 13,
+29 and 32 units (registered order), so with the rule of at least 3 tagged units, 9 mice enter the test
+(sub-775876808, sub-791857600, sub-795770029 and sub-813701555 are left out). The 20-seed calibration (A10.12)
+was started with instruments tagged by the old rule; it is finished and reported as is, then rerun with the
+A11 instruments (seeds 20261300 + i, fresh) under the same pass rule.
+
+**A10.12 result (old-rule instruments, seeds 20261200 to 20261219, 19:08 UTC;
+`calibration_A10_0-9.json`, `calibration_A10_10-19.json`).**
+
+| population (20 each) | O4 supported | gap, range | W, median | P, median | rest score, median |
+|---|---|---|---|---|---|
+| links visible | 0 | 0.05 to 0.16 | 0.87 | 0.99 | 0.68 |
+| links silent | 20 | 0.84 to 1.26 | -0.08 | 0.98 | 0.01 |
+| visible, W misspecified | 0 | 0.02 to 0.08 | 0.95 | 0.99 | 0.17 |
+
+Pass (required at most 1, at least 18, at most 1). A limit worth stating: the misspecification built here
+(shared slow driver, two lags, saturation) did not hurt W's agreement at all (0.95), so this check shows
+that these particular departures from W's model do not produce a false O4; it cannot show that no
+departure would. O1 was supported in 1 of 20 visible populations (a false positive) and O2 in all 60, so
+O2 does not discriminate either.

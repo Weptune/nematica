@@ -64,21 +64,56 @@ def courses(block, cls, n, onsets, s):
 
 
 def analyse(rec):
+    """W, P, the measured profile, split-half reliability c and the best reachable r, sqrt(2c/(1+c)) (A10.4).
+    Class rates are built from per-unit counts divided by each unit's 1 s spontaneous SD, and the copies'
+    predictions are rescaled to those units (A10.1)."""
     cls, n = rec["cls"], rec["n_classes"]
-    sd = spont_sd(rec["spont"])
+    sd = np.maximum(spont_sd(rec["spont"]), 1e-9)
     resp = unit_responses(rec["block"], rec["on_test"], sd)
     keep = cls >= 0
     classes = np.arange(n)
     prof = core.profile(resp[:, keep], cls[keep], classes)
-    ceil = core.agree(core.profile(resp[0::2][:, keep], cls[keep], classes),
-                      core.profile(resp[1::2][:, keep], cls[keep], classes))
-    W = fit_watch(rec["spont"], cls, n)
-    te = courses(rec["block"], cls, n, rec["on_test"], W[2])
-    tr = courses(rec["block"], cls, n, rec["on_train"], W[2])
-    pw = core.predict_watch(W, te[:, 0], 0)[1:]
-    tr2 = courses(rec["block"], cls, n, rec["on_train2"], W[2])
-    pp = core.predict_poke(fit_poke2([tr, tr2]), te[:, 0])
-    return {"ceiling": ceil, "W": core.agree(pw, prof), "P": core.agree(pp, prof), "profile": prof}
+    c = core.agree(core.profile(resp[0::2][:, keep], cls[keep], classes),
+                   core.profile(resp[1::2][:, keep], cls[keep], classes))
+    spont = [x / sd for x in rec["spont"]]
+    block = rec["block"] / sd
+    W = fit_watch(spont, cls, n)
+    scale = W[2][1:] * core.TEST_BINS             # z units -> per-unit SD units of a 1 s count
+    te = courses(block, cls, n, rec["on_test"], W[2])
+    tr = courses(block, cls, n, rec["on_train"], W[2])
+    tr2 = courses(block, cls, n, rec["on_train2"], W[2])
+    pw = core.predict_watch(W, te[:, 0], 0)[1:] * scale
+    pp = core.predict_poke(fit_poke2([tr, tr2]), te[:, 0]) * scale
+    out = {"c": c, "ceiling": float(np.sqrt(2 * c / (1 + c))) if c > 0 else np.nan,
+           "W": core.agree(pw, prof), "P": core.agree(pp, prof), "profile": prof}
+    if len(rec["on_train2"]):
+        out["train2_baseline"] = core.agree(core.profile(unit_responses(rec["block"], rec["on_train2"], sd)[:, keep],
+                                                         cls[keep], classes), prof)
+    return out
+
+
+def rest_score(rec, z_thr=2.0):
+    """A10.8: W fitted on the first half of each spontaneous block predicts, on the second halves, each
+    class's average change in the 1 s after the tagged class rises above 2 SD, clamped to its own course."""
+    cls, n = rec["cls"], rec["n_classes"]
+    sd = np.maximum(spont_sd(rec["spont"]), 1e-9)
+    first = [x[: len(x) // 2] / sd for x in rec["spont"]]
+    second = [x[len(x) // 2:] / sd for x in rec["spont"]]
+    W = fit_watch([f for f in first if len(f) > 2], cls, n)
+    M, mu, s = W
+    segs = []
+    for x in second:
+        Z = (class_rates(x, cls, n) - mu) / s
+        up = np.flatnonzero((Z[1:, 0] > z_thr) & (Z[:-1, 0] <= z_thr)) + 1
+        last = -10 ** 9
+        for o in up:
+            if o - BASE_BINS >= 0 and o + core.TEST_BINS <= len(Z) and o - last >= core.TEST_BINS:
+                segs.append(Z[o:o + core.TEST_BINS] - Z[o - BASE_BINS:o].mean(0)); last = o
+    if len(segs) < 20:
+        return {"rest_score": np.nan, "rest_events": len(segs)}
+    avg = np.mean(segs, 0)
+    pred = core.predict_watch(W, avg[:, 0], 0)[1:]
+    return {"rest_score": core.agree(pred, avg[:, 1:].mean(0)), "rest_events": len(segs)}
 
 
 def fit_poke2(course_list, L=core.TEST_BINS):
@@ -113,7 +148,7 @@ def half_cosine(d):
     return np.flatnonzero(d["opto_name"] == "raised_cosine")
 
 
-def tag(d):
+def tag_registered(d):
     """Registered rule: odd-numbered square-pulse trials (1st, 3rd, ... in time order), spikes 1 to 11 ms
     after onset against the 10 ms before; one-sided Wilcoxon p < 0.001 and >= 0.3 extra spikes per trial."""
     tr = square_pulses(d)
@@ -131,13 +166,34 @@ def tag(d):
     return out
 
 
+def tag(d):
+    """A11: the registered rule, screened for light artefacts. Odd-numbered 10 ms square-pulse trials only;
+    spikes 2 to 9 ms after onset against the 7 ms before; one-sided Wilcoxon p < 0.001 and >= 0.3 extra spikes
+    per trial. The window avoids the onset and offset of the light, where wild-type units fire artefactually."""
+    tr = square_pulses(d)
+    tr = tr[np.isclose(d["opto_duration"][tr], 0.01)]
+    tr = tr[np.argsort(d["opto_start"][tr])][0::2]
+    on = d["opto_start"][tr]
+    out = np.zeros(len(d["trains"]), bool)
+    for i, s in enumerate(d["trains"]):
+        post = np.searchsorted(s, on + 0.009) - np.searchsorted(s, on + 0.002)
+        pre = np.searchsorted(s, on) - np.searchsorted(s, on - 0.007)
+        diff = post - pre
+        if diff.mean() < 0.3 or not np.any(diff):
+            continue
+        if wilcoxon(post, pre, alternative="greater", zero_method="wilcox").pvalue < 0.001:
+            out[i] = True
+    return out
+
+
 def classes(d, tagged, min_units=5):
     """Class = area x waveform group (narrow < 0.4 ms). Used if >= 5 non-tagged units. Returns cls, names."""
     lab = np.array([f"{a}|{'n' if w < 0.4 else 'b'}" for a, w in zip(d["area"], d["waveform_ms"])])
-    names = sorted(k for k in set(lab[~tagged]) if (lab[~tagged] == k).sum() >= min_units)
+    ok = ~tagged & ~np.isin(d["area"], ["", "grey", "root"])          # A10.6
+    names = sorted(k for k in set(lab[ok]) if (lab[ok] == k).sum() >= min_units)
     cls = np.full(len(lab), -2)
     for j, k in enumerate(names):
-        cls[(lab == k) & ~tagged] = j
+        cls[(lab == k) & ok] = j
     cls[tagged] = -1
     return cls, names
 
@@ -180,10 +236,11 @@ def schedule(d):
 
 
 # ------------------------------------------------------------------ synthetic systems through an instrument
-def synthetic(rng, inst, silent, coupling, A, gain=0.5):
+def synthetic(rng, inst, silent, coupling, A, gain=0.5, mis=False):
     """As core.synthetic, but with the instrument's classes, units, rates, spontaneous blocks and its own
     trial schedule (A7): square pulses as one bin at 8 resting SDs, the half-cosine as in the pilot, and the
-    10 Hz train as ten bins at 4 resting SDs."""
+    10 Hz train as ten bins at 4 resting SDs. mis=True (A10.7, links visible): W is the wrong model, with a
+    shared slow driver of every class and the tagged class, two lags of dynamics, and a saturating link."""
     cls, K = inst["cls"], inst["n_classes"]
     A = A * (0.85 / max(abs(np.linalg.eigvals(A))))
     rho, sig = 0.9, 0.3
@@ -205,14 +262,27 @@ def synthetic(rng, inst, silent, coupling, A, gain=0.5):
             stim[o:o + core.TEST_BINS:5] += 4 * tag_sd
     z = np.zeros((T, K)); tau = np.zeros(T)
     e = rng.normal(0, sig, (T, K)); et = rng.normal(0, sig, T)
-    for t in range(1, T):
-        tau[t] = rho * tau[t - 1] + et[t] + stim[t]
-        drive = tau[t - 1] if not silent else max(0.0, tau[t - 1] - thr) * 3
-        z[t] = A @ z[t - 1] + e[t] + 0.25 * coupling * drive
+    if mis:
+        A2 = -0.35 * A
+        comp = np.block([[A, A2], [np.eye(K), np.zeros((K, K))]])
+        f = 0.85 / max(abs(np.linalg.eigvals(comp)))
+        A, A2 = A * f, A2 * f * f
+        g = np.zeros(T); eg = rng.normal(0, 0.06, T); wg = rng.normal(0, 1, K)
+    for t in range(2, T):
+        if not mis:
+            tau[t] = rho * tau[t - 1] + et[t] + stim[t]
+            drive = tau[t - 1] if not silent else max(0.0, tau[t - 1] - thr) * 3
+            z[t] = A @ z[t - 1] + e[t] + 0.25 * coupling * drive
+        else:
+            g[t] = 0.995 * g[t - 1] + eg[t]
+            tau[t] = rho * tau[t - 1] + et[t] + stim[t] + 0.1 * g[t]
+            drive = 2 * tag_sd * np.tanh(tau[t - 1] / (2 * tag_sd))
+            z[t] = A @ z[t - 1] + A2 @ z[t - 2] + e[t] + 0.25 * coupling * drive + 0.1 * wg * g[t]
     zs = z / z[:T_sp].std(0)
     taus = tau / tau[:T_sp].std()
     lat = np.where(cls[None, :] == -1, taus[:, None], zs[:, np.clip(cls, 0, None)])
     base = np.maximum(inst["rate_hz"], 0.05) * BIN
+    lat = np.minimum(lat, 6.0)                   # firing saturates at e^3 (about 20x) the resting rate
     counts = rng.poisson(base * np.exp(gain * lat - gain ** 2 / 2)).astype(np.float32)
     edges = np.r_[0, np.cumsum(seg)]
     return {"spont": [counts[a:b] for a, b in zip(edges[:-1], edges[1:])], "block": counts[T_sp:],
