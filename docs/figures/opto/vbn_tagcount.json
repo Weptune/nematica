@@ -1,0 +1,882 @@
+{
+ "sub-506940": {
+  "line": "Vip",
+  "qc": 764,
+  "tagged": 2,
+  "classes": 38,
+  "tagged_areas": [
+   "VISam",
+   "VISp"
+  ]
+ },
+ "sub-509808": {
+  "line": "Sst",
+  "qc": 852,
+  "tagged": 55,
+  "classes": 30,
+  "tagged_areas": [
+   "CA1",
+   "SUB",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISrl"
+  ]
+ },
+ "sub-510589": {
+  "line": "Vip",
+  "qc": 534,
+  "tagged": 1,
+  "classes": 27,
+  "tagged_areas": [
+   "VISp"
+  ]
+ },
+ "sub-521466": {
+  "line": "Vip",
+  "qc": 729,
+  "tagged": 0,
+  "classes": 31,
+  "tagged_areas": []
+ },
+ "sub-524760": {
+  "line": "wt",
+  "qc": 578,
+  "tagged": 0,
+  "classes": 21,
+  "tagged_areas": []
+ },
+ "sub-524761": {
+  "line": "wt",
+  "qc": 614,
+  "tagged": 0,
+  "classes": 26,
+  "tagged_areas": []
+ },
+ "sub-524925": {
+  "line": "Sst",
+  "qc": 613,
+  "tagged": 0,
+  "classes": 29,
+  "tagged_areas": []
+ },
+ "sub-524926": {
+  "line": "Sst",
+  "qc": 576,
+  "tagged": 2,
+  "classes": 30,
+  "tagged_areas": [
+   "VISp"
+  ]
+ },
+ "sub-527294": {
+  "line": "Sst",
+  "qc": 1176,
+  "tagged": 5,
+  "classes": 43,
+  "tagged_areas": [
+   "VISam",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-527749": {
+  "line": "Sst",
+  "qc": 891,
+  "tagged": 33,
+  "classes": 37,
+  "tagged_areas": [
+   "CA1",
+   "ProS",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm"
+  ]
+ },
+ "sub-530862": {
+  "line": "Vip",
+  "qc": 616,
+  "tagged": 3,
+  "classes": 28,
+  "tagged_areas": [
+   "VISl",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-531237": {
+  "line": "wt",
+  "qc": 989,
+  "tagged": 0,
+  "classes": 9,
+  "tagged_areas": []
+ },
+ "sub-532246": {
+  "line": "Vip",
+  "qc": 766,
+  "tagged": 1,
+  "classes": 35,
+  "tagged_areas": [
+   "VISp"
+  ]
+ },
+ "sub-533537": {
+  "line": "wt",
+  "qc": 908,
+  "tagged": 0,
+  "classes": 32,
+  "tagged_areas": []
+ },
+ "sub-533539": {
+  "line": "wt",
+  "qc": 729,
+  "tagged": 0,
+  "classes": 37,
+  "tagged_areas": []
+ },
+ "sub-536211": {
+  "line": "Vip",
+  "qc": 743,
+  "tagged": 2,
+  "classes": 34,
+  "tagged_areas": [
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-536213": {
+  "line": "Vip",
+  "qc": 654,
+  "tagged": 0,
+  "classes": 29,
+  "tagged_areas": []
+ },
+ "sub-536480": {
+  "line": "Vip",
+  "qc": 826,
+  "tagged": 3,
+  "classes": 41,
+  "tagged_areas": [
+   "VISam",
+   "VISpm"
+  ]
+ },
+ "sub-540536": {
+  "line": "Vip",
+  "qc": 863,
+  "tagged": 2,
+  "classes": 31,
+  "tagged_areas": [
+   "VISl",
+   "VISp"
+  ]
+ },
+ "sub-541234": {
+  "line": "wt",
+  "qc": 900,
+  "tagged": 0,
+  "classes": 38,
+  "tagged_areas": []
+ },
+ "sub-542072": {
+  "line": "wt",
+  "qc": 964,
+  "tagged": 0,
+  "classes": 39,
+  "tagged_areas": []
+ },
+ "sub-544358": {
+  "line": "Sst",
+  "qc": 865,
+  "tagged": 31,
+  "classes": 34,
+  "tagged_areas": [
+   "CA1",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-544456": {
+  "line": "Sst",
+  "qc": 756,
+  "tagged": 4,
+  "classes": 31,
+  "tagged_areas": [
+   "CA1",
+   "VISam",
+   "VISpm"
+  ]
+ },
+ "sub-544835": {
+  "line": "wt",
+  "qc": 833,
+  "tagged": 0,
+  "classes": 35,
+  "tagged_areas": []
+ },
+ "sub-544836": {
+  "line": "wt",
+  "qc": 990,
+  "tagged": 0,
+  "classes": 42,
+  "tagged_areas": []
+ },
+ "sub-544837": {
+  "line": "wt",
+  "qc": 506,
+  "tagged": 0,
+  "classes": 29,
+  "tagged_areas": []
+ },
+ "sub-574081": {
+  "line": "Sst",
+  "qc": 757,
+  "tagged": 40,
+  "classes": 33,
+  "tagged_areas": [
+   "CA1",
+   "CA3",
+   "HPF",
+   "ProS",
+   "SSp",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm"
+  ]
+ },
+ "sub-574082": {
+  "line": "Sst",
+  "qc": 726,
+  "tagged": 38,
+  "classes": 24,
+  "tagged_areas": [
+   "CA1",
+   "DG",
+   "POST",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm"
+  ]
+ },
+ "sub-576323": {
+  "line": "wt",
+  "qc": 889,
+  "tagged": 0,
+  "classes": 30,
+  "tagged_areas": []
+ },
+ "sub-576324": {
+  "line": "wt",
+  "qc": 955,
+  "tagged": 0,
+  "classes": 30,
+  "tagged_areas": []
+ },
+ "sub-577287": {
+  "line": "Sst",
+  "qc": 691,
+  "tagged": 26,
+  "classes": 36,
+  "tagged_areas": [
+   "CA1",
+   "DG",
+   "NB",
+   "POST",
+   "VISal",
+   "VISl",
+   "VISp",
+   "VISpm"
+  ]
+ },
+ "sub-578003": {
+  "line": "wt",
+  "qc": 1376,
+  "tagged": 0,
+  "classes": 35,
+  "tagged_areas": []
+ },
+ "sub-578257": {
+  "line": "Sst",
+  "qc": 782,
+  "tagged": 54,
+  "classes": 26,
+  "tagged_areas": [
+   "CA1",
+   "ProS",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-579993": {
+  "line": "wt",
+  "qc": 823,
+  "tagged": 0,
+  "classes": 33,
+  "tagged_areas": []
+ },
+ "sub-585326": {
+  "line": "wt",
+  "qc": 669,
+  "tagged": 0,
+  "classes": 28,
+  "tagged_areas": []
+ },
+ "sub-585329": {
+  "line": "wt",
+  "qc": 877,
+  "tagged": 0,
+  "classes": 32,
+  "tagged_areas": []
+ },
+ "sub-599294": {
+  "line": "Vip",
+  "qc": 557,
+  "tagged": 1,
+  "classes": 19,
+  "tagged_areas": [
+   "VISam"
+  ]
+ },
+ "sub-544838": {
+  "line": "wt",
+  "qc": 939,
+  "tagged": 0,
+  "classes": 38,
+  "tagged_areas": []
+ },
+ "sub-545994": {
+  "line": "Sst",
+  "qc": 701,
+  "tagged": 23,
+  "classes": 8,
+  "tagged_areas": [
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISrl",
+   "grey"
+  ]
+ },
+ "sub-545996": {
+  "line": "Sst",
+  "qc": 937,
+  "tagged": 43,
+  "classes": 39,
+  "tagged_areas": [
+   "CA1",
+   "DG",
+   "PoT",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm"
+  ]
+ },
+ "sub-546503": {
+  "line": "Vip",
+  "qc": 789,
+  "tagged": 4,
+  "classes": 34,
+  "tagged_areas": [
+   "VISl",
+   "VISp",
+   "VISpm"
+  ]
+ },
+ "sub-546507": {
+  "line": "Vip",
+  "qc": 757,
+  "tagged": 7,
+  "classes": 35,
+  "tagged_areas": [
+   "SUB",
+   "VISal",
+   "VISp",
+   "VISpm"
+  ]
+ },
+ "sub-546508": {
+  "line": "Vip",
+  "qc": 638,
+  "tagged": 3,
+  "classes": 35,
+  "tagged_areas": [
+   "VISal",
+   "VISrl"
+  ]
+ },
+ "sub-546512": {
+  "line": "Vip",
+  "qc": 455,
+  "tagged": 0,
+  "classes": 23,
+  "tagged_areas": []
+ },
+ "sub-548465": {
+  "line": "wt",
+  "qc": 578,
+  "tagged": 0,
+  "classes": 27,
+  "tagged_areas": []
+ },
+ "sub-548715": {
+  "line": "wt",
+  "qc": 737,
+  "tagged": 0,
+  "classes": 35,
+  "tagged_areas": []
+ },
+ "sub-548716": {
+  "line": "wt",
+  "qc": 659,
+  "tagged": 0,
+  "classes": 32,
+  "tagged_areas": []
+ },
+ "sub-548717": {
+  "line": "wt",
+  "qc": 1056,
+  "tagged": 0,
+  "classes": 35,
+  "tagged_areas": []
+ },
+ "sub-548720": {
+  "line": "wt",
+  "qc": 836,
+  "tagged": 0,
+  "classes": 33,
+  "tagged_areas": []
+ },
+ "sub-548721": {
+  "line": "wt",
+  "qc": 864,
+  "tagged": 0,
+  "classes": 34,
+  "tagged_areas": []
+ },
+ "sub-550324": {
+  "line": "Sst",
+  "qc": 1070,
+  "tagged": 48,
+  "classes": 34,
+  "tagged_areas": [
+   "CA1",
+   "DG",
+   "SUB",
+   "VISal",
+   "VISam",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-553253": {
+  "line": "Vip",
+  "qc": 800,
+  "tagged": 1,
+  "classes": 27,
+  "tagged_areas": [
+   "VISal"
+  ]
+ },
+ "sub-553960": {
+  "line": "Vip",
+  "qc": 933,
+  "tagged": 2,
+  "classes": 35,
+  "tagged_areas": [
+   "VISal",
+   "VISpm"
+  ]
+ },
+ "sub-553963": {
+  "line": "Vip",
+  "qc": 780,
+  "tagged": 2,
+  "classes": 30,
+  "tagged_areas": [
+   "CA1",
+   "VISp"
+  ]
+ },
+ "sub-553964": {
+  "line": "Vip",
+  "qc": 729,
+  "tagged": 1,
+  "classes": 32,
+  "tagged_areas": [
+   "VISp"
+  ]
+ },
+ "sub-554013": {
+  "line": "Sst",
+  "qc": 549,
+  "tagged": 33,
+  "classes": 28,
+  "tagged_areas": [
+   "CA1",
+   "HPF",
+   "ProS",
+   "SUB",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm"
+  ]
+ },
+ "sub-555304": {
+  "line": "Vip",
+  "qc": 1043,
+  "tagged": 6,
+  "classes": 39,
+  "tagged_areas": [
+   "CA1",
+   "VISam",
+   "VISp"
+  ]
+ },
+ "sub-556014": {
+  "line": "Sst",
+  "qc": 931,
+  "tagged": 46,
+  "classes": 34,
+  "tagged_areas": [
+   "CA1",
+   "DG",
+   "MGm",
+   "POST",
+   "ProS",
+   "VISal",
+   "VISl",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-556016": {
+  "line": "Sst",
+  "qc": 1113,
+  "tagged": 41,
+  "classes": 36,
+  "tagged_areas": [
+   "CA1",
+   "HPF",
+   "POST",
+   "ProS",
+   "VIS",
+   "VISal",
+   "VISam",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-556021": {
+  "line": "Sst",
+  "qc": 752,
+  "tagged": 36,
+  "classes": 28,
+  "tagged_areas": [
+   "CA1",
+   "DG",
+   "HPF",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISrl"
+  ]
+ },
+ "sub-558306": {
+  "line": "Sst",
+  "qc": 934,
+  "tagged": 29,
+  "classes": 37,
+  "tagged_areas": [
+   "CA1",
+   "HPF",
+   "POST",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-560356": {
+  "line": "Sst",
+  "qc": 1017,
+  "tagged": 45,
+  "classes": 31,
+  "tagged_areas": [
+   "CA1",
+   "HPF",
+   "ProS",
+   "SUB",
+   "VISal",
+   "VISl",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-560770": {
+  "line": "Vip",
+  "qc": 1016,
+  "tagged": 5,
+  "classes": 38,
+  "tagged_areas": [
+   "CA3",
+   "VISl",
+   "VISp",
+   "VISpm"
+  ]
+ },
+ "sub-560771": {
+  "line": "Vip",
+  "qc": 762,
+  "tagged": 3,
+  "classes": 41,
+  "tagged_areas": [
+   "VISp",
+   "VISpm"
+  ]
+ },
+ "sub-560962": {
+  "line": "wt",
+  "qc": 1136,
+  "tagged": 0,
+  "classes": 12,
+  "tagged_areas": []
+ },
+ "sub-560964": {
+  "line": "wt",
+  "qc": 763,
+  "tagged": 0,
+  "classes": 30,
+  "tagged_areas": []
+ },
+ "sub-562033": {
+  "line": "Vip",
+  "qc": 825,
+  "tagged": 4,
+  "classes": 31,
+  "tagged_areas": [
+   "CA1",
+   "VISam"
+  ]
+ },
+ "sub-563323": {
+  "line": "Sst",
+  "qc": 983,
+  "tagged": 39,
+  "classes": 34,
+  "tagged_areas": [
+   "CA1",
+   "DG",
+   "ProS",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-563326": {
+  "line": "Sst",
+  "qc": 816,
+  "tagged": 16,
+  "classes": 37,
+  "tagged_areas": [
+   "CA1",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm"
+  ]
+ },
+ "sub-563495": {
+  "line": "Sst",
+  "qc": 738,
+  "tagged": 42,
+  "classes": 29,
+  "tagged_areas": [
+   "CA1",
+   "HPF",
+   "POST",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-563497": {
+  "line": "Sst",
+  "qc": 303,
+  "tagged": 26,
+  "classes": 13,
+  "tagged_areas": [
+   "CA1",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-564012": {
+  "line": "Sst",
+  "qc": 1078,
+  "tagged": 25,
+  "classes": 39,
+  "tagged_areas": [
+   "CA1",
+   "HPF",
+   "VISal",
+   "VISl",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-567286": {
+  "line": "Sst",
+  "qc": 339,
+  "tagged": 22,
+  "classes": 18,
+  "tagged_areas": [
+   "CA1",
+   "VISal",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-568022": {
+  "line": "wt",
+  "qc": 501,
+  "tagged": 0,
+  "classes": 17,
+  "tagged_areas": []
+ },
+ "sub-568963": {
+  "line": "Vip",
+  "qc": 1041,
+  "tagged": 7,
+  "classes": 33,
+  "tagged_areas": [
+   "CA1",
+   "VISam",
+   "VISl",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-570299": {
+  "line": "Sst",
+  "qc": 736,
+  "tagged": 54,
+  "classes": 25,
+  "tagged_areas": [
+   "CA1",
+   "SUB",
+   "VISal",
+   "VISam",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-570301": {
+  "line": "Sst",
+  "qc": 735,
+  "tagged": 36,
+  "classes": 22,
+  "tagged_areas": [
+   "CA1",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-570302": {
+  "line": "Sst",
+  "qc": 831,
+  "tagged": 45,
+  "classes": 26,
+  "tagged_areas": [
+   "CA1",
+   "HPF",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-571520": {
+  "line": "wt",
+  "qc": 673,
+  "tagged": 0,
+  "classes": 33,
+  "tagged_areas": []
+ },
+ "sub-572846": {
+  "line": "Sst",
+  "qc": 957,
+  "tagged": 44,
+  "classes": 29,
+  "tagged_areas": [
+   "CA1",
+   "SUB",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ },
+ "sub-574078": {
+  "line": "Sst",
+  "qc": 918,
+  "tagged": 31,
+  "classes": 32,
+  "tagged_areas": [
+   "CA1",
+   "HPF",
+   "VISal",
+   "VISam",
+   "VISl",
+   "VISp",
+   "VISpm",
+   "VISrl"
+  ]
+ }
+}

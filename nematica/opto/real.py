@@ -81,9 +81,9 @@ def analyse(rec):
     scale = W[2][1:] * core.TEST_BINS             # z units -> per-unit SD units of a 1 s count
     te = courses(block, cls, n, rec["on_test"], W[2])
     tr = courses(block, cls, n, rec["on_train"], W[2])
-    tr2 = courses(block, cls, n, rec["on_train2"], W[2])
+    trs = [tr] + ([courses(block, cls, n, rec["on_train2"], W[2])] if len(rec["on_train2"]) else [])
     pw = core.predict_watch(W, te[:, 0], 0)[1:] * scale
-    pp = core.predict_poke(fit_poke2([tr, tr2]), te[:, 0]) * scale
+    pp = core.predict_poke(fit_poke2(trs), te[:, 0]) * scale
     out = {"c": c, "ceiling": float(np.sqrt(2 * c / (1 + c))) if c > 0 else np.nan,
            "W": core.agree(pw, prof), "P": core.agree(pp, prof), "profile": prof}
     if len(rec["on_train2"]):
