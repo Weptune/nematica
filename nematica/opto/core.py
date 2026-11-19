@@ -117,3 +117,47 @@ def synthetic(rng, K=12, n_per=20, n_tag=8, silent=False, coupling=None, A=None,
     base = base_hz * BIN * rng.lognormal(0, 0.6, lat.shape[1])
     counts = rng.poisson(base * np.exp(gain * lat)).astype(np.float32)
     return counts, cls, T_sp, on_train, on_test, c
+
+
+# ------------------------------------------------------------------ amendment A4: class x time profiles
+NB = 10  # 100 ms bins over the 1 s response window
+
+
+def _chunks(Y, nb=NB):
+    """(T, ...) -> (nb, ...) means over equal chunks of the first axis."""
+    return Y[: (len(Y) // nb) * nb].reshape(nb, -1, *Y.shape[1:]).mean(1)
+
+
+def unit_courses(counts, onsets, sd, nb=NB):
+    """Per trial, unit and 100 ms bin: count minus the mean pre-onset count per bin, in units of the 1 s
+    spontaneous SD scaled to the bin. Returns (trials, nb, N)."""
+    out = []
+    for o in onsets:
+        post = counts[o:o + TEST_BINS].reshape(nb, -1, counts.shape[1]).sum(1)
+        pre = counts[o - PRE_BINS:o].sum(0) / nb
+        out.append((post - pre) / np.maximum(sd / np.sqrt(nb), 1e-9))
+    return np.asarray(out)
+
+
+def profile_t(resp, cls, classes):
+    """Per class and bin, the median over its units of the trial mean. Returns flattened (K * nb,)."""
+    m = resp.mean(0)
+    return np.stack([np.median(m[:, cls == k], 1) for k in classes], 0).ravel()
+
+
+def predict_watch_t(model, tag_course, tag_index):
+    M = model[0]
+    x = np.zeros(M.shape[0]); traj = []
+    for t in range(len(tag_course)):
+        x = M @ x
+        x[tag_index] = tag_course[t]
+        traj.append(x.copy())
+    return np.delete(_chunks(np.asarray(traj)), tag_index, 1).T.ravel()
+
+
+def predict_poke_t(H, tag_test):
+    T, L = len(tag_test), H.shape[0]
+    D = np.zeros((T, L))
+    for j in range(L):
+        D[j:, j] = tag_test[:T - j]
+    return _chunks(D @ H).T.ravel()

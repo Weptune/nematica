@@ -164,3 +164,47 @@ pattern (O1, O2 and O3 together) is recovered once. O3 (stimulation beats watchi
 recovered every time; O1 and O2 are not reliable at 13 animals. Verdict of the pilot: as registered, only
 O3 has the power to be read; O1 and O2 would be reported as underpowered unless a later amendment, made
 before mouse responses are read, fixes that.
+
+**A4 (19 Nov 2026, 17:36 UTC, written before running; no mouse data read).** Where the noise comes from:
+each animal's measured profile is already near its ceiling (odd vs even trials about 1.0), so resampling
+trials, the fix floated after A3, would not help and is dropped. The noise is that each agreement is a
+correlation over only 12 numbers (one per class), so a copy that knows nothing can still score 0.3 by
+chance. A4 keeps the time course: the profile becomes class x ten 100 ms bins over the same 1 s window, the
+copies' predictions are binned the same way, and agreement is Pearson r over all class-bin cells. Claim
+rules O1 to O3 and checks A1 and (c) are unchanged. Rerun on the same five populations and seeds as A3; all
+results reported. If A4 does not recover the silent pattern in at least three of the four silent
+populations while keeping O1 unsupported in the visible one, O1 and O2 are reported as underpowered.
+
+**A4 result (19 Nov 2026, 17:37 UTC).** Silent pattern recovered in 1 of 4 populations again (O1 failed at
+jitter 0.3 and 0.5, O2 at 0.1); visible O1 correctly unsupported. By A4's own rule, O1 and O2 are
+underpowered and the class x time profile is not adopted; the registered class profile stays.
+
+A closer look at all A3 and A4 runs shows a second problem: O3 is met in every population, **including the
+visible one** (13 of 13 there too). Fitting on stimulation always helps a little, so "P beats W" does not
+tell silent links from visible ones. What does separate them is the size of the gap: P minus W was 0.13 to
+0.22 with visible links and 0.62 to 1.07 with silent links, in every run.
+
+**A5 (19 Nov 2026, 17:40 UTC, written before running; thresholds chosen from the A1 to A4 pilot runs, so
+they are tested on fresh seeds).** New claim O4: per animal, gap = (P - W) / ceiling; supported when the
+median over animals exceeds 0.4 and its bootstrap 5th percentile exceeds 0.3. O4 becomes the primary claim;
+O3 is kept but reported as non-diagnostic; O1 and O2 are kept as secondary and reported with their power.
+Check on fresh seeds 1, 2 and 3 (never used before), jitter 0.1, 0.3 and 0.5 (one per seed), one visible and
+one silent population each: required, O4 supported in all three silent and in none of the three visible.
+All results reported.
+
+**A5 result (19 Nov 2026, fresh seeds).**
+
+| seed, jitter | population | between | W | P | gap (lower bound) | O4 | O1 |
+|---|---|---|---|---|---|---|---|
+| 1, 0.1 | visible | 0.99 | 0.82 | 0.95 | 0.13 (0.11) | no | **yes (false positive)** |
+| 1, 0.1 | silent | 1.00 | 0.37 | 0.93 | 0.57 (0.49) | yes | yes |
+| 2, 0.3 | visible | 0.91 | 0.87 | 0.97 | 0.10 (0.08) | no | no |
+| 2, 0.3 | silent | 0.99 | -0.08 | 1.00 | 1.08 (0.93) | yes | yes |
+| 3, 0.5 | visible | 0.90 | 0.84 | 0.97 | 0.14 (0.10) | no | no |
+| 3, 0.5 | silent | 0.33 | 0.02 | 1.00 | 0.76 (0.56) | yes | no |
+
+O4 passes its check: supported in all three silent populations, none of the three visible. The smallest
+silent gap (0.57) and the largest visible gap (0.14) are far apart. O1 also gave a false positive when
+individuals were near-identical, which confirms it as secondary. Study O's primary claim is now O4.
+Remaining before the real test: the same calibration on three mice's real instruments (their units, rates
+and trial counts), then one independent review, then freeze.

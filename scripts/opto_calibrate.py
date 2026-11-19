@@ -33,6 +33,12 @@ def score(rng, silent, coupling=None, A=None):
     tr = course(on_tr)
     H = core.fit_poke(tr[:, 1:], tr[:, 0])
     pp = core.predict_poke(H, te[:, 0])
+    if "--timecourse" in sys.argv:  # amendment A4
+        rt = core.unit_courses(counts, on_te, sd)
+        prof = core.profile_t(rt, cls, classes)
+        ceil = core.agree(core.profile_t(rt[0::2], cls, classes), core.profile_t(rt[1::2], cls, classes))
+        pw = core.predict_watch_t(W, te[:, 0], 0)
+        pp = core.predict_poke_t(H, te[:, 0])
     return {"ceiling": ceil, "W": core.agree(pw, prof), "P": core.agree(pp, prof), "profile": prof, "c": c}
 
 
@@ -52,13 +58,23 @@ def verdicts(pop, rng):
     return {"between": round(float(np.median(between)), 3), "W": round(float(np.median(rW)), 3), "P": round(float(np.median(rP)), 3),
             "O1": bool(np.median(dW) > 0.1 and sign_p(dW) < 0.05), "O1_d": round(float(np.median(dW)), 3), "O1_p": round(sign_p(dW), 4),
             "O2": bool(np.percentile(boots, 95) < 0.1), "O2_hi": round(float(np.percentile(boots, 95)), 3),
-            "O3": int((rP > rW).sum()), "O3_ok": bool((rP > rW).sum() >= 10)}
+            "O3": int((rP > rW).sum()), "O3_ok": bool((rP > rW).sum() >= 10), **gap_claim(pop, rng)}
+
+
+def gap_claim(pop, rng):
+    """Amendment A5: O4, the stimulation copy beats the watching copy by a large margin, per animal, as a
+    fraction of that animal's ceiling. Supported when the median exceeds 0.4 and its bootstrap 5th
+    percentile exceeds 0.3."""
+    g = np.array([(r["P"] - r["W"]) / r["ceiling"] for r in pop])
+    lo = np.percentile([np.median(rng.choice(g, len(g))) for _ in range(2000)], 5)
+    return {"gap": round(float(np.median(g)), 3), "gap_lo": round(float(lo), 3),
+            "O4": bool(np.median(g) > 0.4 and lo > 0.3)}
 
 
 def main():
-    rng = np.random.default_rng(20261119)
+    rng = np.random.default_rng(int(next((a.split("=")[1] for a in sys.argv if a.startswith("--seed=")), 20261119)))
     jit = float(next((a.split("=")[1] for a in sys.argv if a.startswith("--jitter=")), 0.3))
-    kinds = ("silent",) if "--silent-only" in sys.argv else ("visible", "silent")
+    kinds = ("silent",) if "--silent-only" in sys.argv else ("visible",) if "--visible-only" in sys.argv else ("visible", "silent")
     out = {"jitter": jit}
     for kind in kinds:
         base = rng.normal(0, 1, 12); A0 = rng.normal(0, 1, (12, 12)) / np.sqrt(12)
@@ -67,11 +83,11 @@ def main():
         out[kind]["ceiling"] = round(float(np.median([r["ceiling"] for r in pop])), 3)
         print(kind, out[kind], flush=True)
     if len(kinds) == 1:
-        (ROOT / "docs/figures/opto" / f"calibration_A2_j{jit}.json").write_text(json.dumps(out, indent=1)); return
+        (ROOT / "docs/figures/opto" / f"calibration_{'A4' if '--timecourse' in sys.argv else 'A2'}_{kinds[0]}_j{jit}_s{rng.bit_generator.state['state']['state'] % 1000}.json").write_text(json.dumps(out, indent=1)); return
     ok = {"silent": out["silent"]["O1"] and out["silent"]["O2"] and out["silent"]["O3_ok"], "visible": not out["visible"]["O1"],
           "c": out["visible"]["between"] < out["visible"]["ceiling"]}
     print("A1 checks:", ok)
-    name = "calibration_A1_pilot.json" if "--pilot" in sys.argv else "calibration_A1.json"
+    name = ("calibration_A4_pilot.json" if "--timecourse" in sys.argv else "calibration_A1_pilot.json") if "--pilot" in sys.argv else "calibration_A1.json"
     (ROOT / "docs/figures/opto" / name).write_text(json.dumps({**out, "checks": ok}, indent=1))
 
 
