@@ -1,0 +1,34 @@
+{
+ "jitter": 0.3,
+ "visible": {
+  "between": 0.433,
+  "W": 0.77,
+  "P": 0.926,
+  "O1": false,
+  "O1_d": -0.354,
+  "O1_p": 1.0,
+  "O2": true,
+  "O2_hi": -0.402,
+  "O3": 13,
+  "O3_ok": true,
+  "ceiling": 1.0
+ },
+ "silent": {
+  "between": 0.677,
+  "W": 0.258,
+  "P": 0.958,
+  "O1": true,
+  "O1_d": 0.366,
+  "O1_p": 0.0112,
+  "O2": true,
+  "O2_hi": -0.209,
+  "O3": 13,
+  "O3_ok": true,
+  "ceiling": 1.0
+ },
+ "checks": {
+  "silent": true,
+  "visible": true,
+  "c": true
+ }
+}

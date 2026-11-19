@@ -115,3 +115,52 @@ silent at rest, W must fall below 0.5 of the ceiling while P reaches at least 0.
 check fails, the study stops, as Studies 3 and 4 did, and no real response is read.
 
 **Before freeze:** one independent review of this draft and the calibration code.
+
+### Calibration pilot and amendment A1 (19 Nov 2026, after the pilot on a generic instrument; no mouse data read)
+
+Pilot (`scripts/opto_calibrate.py --pilot`, `docs/figures/opto/calibration_pilot.json`): the first synthetic
+"silent" network let its links fire at rest (threshold 3 resting SDs); raised to 4, a property of the
+synthetic system, not of the test. Then, over five systems each: links visible at rest, W 0.76 to 0.85 and
+P 0.90 to 0.97; links silent at rest, W -0.30 to 0.31 and P 0.69 to 0.96; synthetic ceilings about 1.0.
+The separation is large, but checks (a) and (b) as written fail by small margins because they are
+fractions of a ceiling far higher than real data will give.
+
+**A1.** Checks (a) and (b) are replaced by verdict-level checks, which test what the claims test: two
+synthetic populations of 13 individuals each (coupling jittered by 30% between individuals), one with
+links visible at rest and one with links silent at rest, scored with the claim rules O1 to O3 unchanged.
+Required: silent population, O1 and O3 supported and O2 met; visible population, O1 not supported. Check
+(c) is kept. The pilot's synthetic systems are otherwise unchanged.
+
+**A1 result (19 Nov 2026, pilot, generic instrument).** Visible population: O1 not supported, as required.
+Silent population: W 0.04 below zero, P 0.93, O2 and O3 met, but O1 not supported (median between-individual
+agreement 0.17, so W falls short of it by only 0.05, under the 0.1 margin). Check (c) passed. Reading: when
+individuals differ a lot, "a copy falls short of another animal" has little room to show. O1's power depends
+on how much individuals agree, which only the data will say.
+
+**A2 (written before running).** A power sweep on the silent population: between-individual coupling jitter
+0.1, 0.2 and 0.3 (0.3 already run). Purpose: state, before any mouse response is read, the between-individual
+agreement below which O1 cannot be decided; if the real value falls below it, O1 is reported as undecidable,
+not as failed. O2 and O3 do not depend on it.
+
+**A2 result and A3 (19 Nov 2026, pilot).** Jitter 0.1 gave between-individual agreement -0.09 and jitter 0.2
+gave 0.69: not monotonic, because each synthetic individual drew its own internal network from scratch, so
+"individuals" were unrelated animals. That is a fault in the synthetic population, not in the test. A3: a
+population now shares one internal network and one coupling, each jittered per individual by the same
+fraction. A1's checks and claim rules are unchanged; the A1 and A2 runs are rerun under A3 (written before
+running).
+
+**A3 results (19 Nov 2026, pilot, generic instrument; all runs reported, none dropped).**
+
+| run | population | between | W | P | O1 | O2 | O3 |
+|---|---|---|---|---|---|---|---|
+| A1 rerun, jitter 0.3 | visible | 0.43 | 0.77 | 0.93 | no (as required) | yes | 13/13 |
+| A1 rerun, jitter 0.3 | silent | 0.68 | 0.26 | 0.96 | yes | yes | 13/13 |
+| A2, jitter 0.1 | silent | 0.62 | -0.15 | 0.66 | yes | no | 13/13 |
+| A2, jitter 0.3 | silent | 0.53 | -0.05 | 0.93 | no (p 0.29) | yes | 13/13 |
+| A2, jitter 0.5 | silent | 0.08 | -0.10 | 0.93 | no | yes | 13/13 |
+
+The A1 checks pass on the A1 rerun, but that is one draw. Across the four silent populations the full
+pattern (O1, O2 and O3 together) is recovered once. O3 (stimulation beats watching, per animal) is
+recovered every time; O1 and O2 are not reliable at 13 animals. Verdict of the pilot: as registered, only
+O3 has the power to be read; O1 and O2 would be reported as underpowered unless a later amendment, made
+before mouse responses are read, fixes that.
