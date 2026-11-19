@@ -1,0 +1,44 @@
+{
+ "sub-769360771": {
+  "qc_units": 581,
+  "tagged": 5,
+  "classes": 22,
+  "units_in_classes": 554,
+  "spont_s": 1264.3,
+  "n_train": 150,
+  "n_test": 75,
+  "visible": {
+   "between": 0.55,
+   "W": 0.785,
+   "P": 0.876,
+   "O1": false,
+   "O1_d": -0.227,
+   "O1_p": 1.0,
+   "O2": true,
+   "O2_hi": -0.253,
+   "O3": 13,
+   "O3_ok": true,
+   "gap": 0.115,
+   "gap_lo": 0.083,
+   "O4": false,
+   "ceiling": 0.999
+  },
+  "silent": {
+   "between": 0.531,
+   "W": -0.019,
+   "P": 0.746,
+   "O1": true,
+   "O1_d": 0.364,
+   "O1_p": 0.0017,
+   "O2": false,
+   "O2_hi": 0.351,
+   "O3": 12,
+   "O3_ok": true,
+   "gap": 0.54,
+   "gap_lo": 0.225,
+   "O4": false,
+   "ceiling": 1.0
+  },
+  "pass": false
+ }
+}

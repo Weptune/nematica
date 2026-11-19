@@ -208,3 +208,70 @@ silent gap (0.57) and the largest visible gap (0.14) are far apart. O1 also gave
 individuals were near-identical, which confirms it as secondary. Study O's primary claim is now O4.
 Remaining before the real test: the same calibration on three mice's real instruments (their units, rates
 and trial counts), then one independent review, then freeze.
+
+### A6: calibration through real instruments (19 Nov 2026, 17:54 UTC, written before running)
+
+Data are being cached locally (`scripts/opto_cache.py`, `data/cache/opto`, never committed): QC units'
+metadata and spike times in spontaneous blocks and the optogenetic block only. The instrument of a mouse is
+its QC units, its tagged units, its classes, its units' firing rates, its spontaneous blocks and its trial
+counts. Finding the tagged units reads spikes 1 to 11 ms around the odd square-pulse onsets, which the
+registration already counts as part of the input; no test-condition (half-cosine) response and no
+non-tagged response to any light is computed before freeze.
+
+Instruments: the first registered mouse of each line, sub-769360771 (Vip), sub-776061236 (Pvalb),
+sub-763808588 (Sst). Through each, two synthetic populations (13 individuals, one shared network and
+coupling jittered 30%, trials interleaved at random with 1.7 to 2.5 s between onsets, units at the mouse's
+own firing rates) with links visible or silent at rest, scored by `nematica/opto/real.py:analyse`, the code
+the real test will use (`scripts/opto_instrument_cal.py`). Pass: O4 supported in the silent population and
+not in the visible one, for each of the three instruments. If any instrument fails, the study stops before
+any response is read, and that is reported. Seed 20261120, never used before.
+
+**A6 first run (17:55 UTC), instrument sub-769360771 only.** Visible: gap 0.10 (O4 not supported, as
+required). Silent: W -0.01 but **P -0.78**, gap -0.48, O4 not supported. Check failed. Cause, found from
+the real trial timing (start-to-start 1.69 to 2.18 s; end of one light to the next onset as little as
+0.69 s): the registered baseline, the 1 s before onset, often contains the end of the previous trial's
+light and its response, so after a half-cosine or a 10 Hz train the baseline is inflated and the
+"response" comes out negative. P, learned on these contaminated square-pulse trials, learned the wrong sign.
+This is a flaw in the registered response definition, caught by calibration as intended; no real response
+was read.
+
+**A7 (17:56 UTC, written before rerunning; no real response read).** (1) Baseline: the 0.24 s before onset
+(12 bins), which ends every trial at least 0.45 s after any earlier light, for unit responses, profiles and
+the copies' courses; the 1 s response window is unchanged. (2) Synthetic systems use the mouse's own trial
+order and timing, including the 10 Hz trains (ten bins at 4 resting SDs), instead of an invented schedule.
+A6's pass rule is unchanged and is rerun on all three instruments with the same seed.
+
+**A7 result (18:00 UTC), instrument sub-769360771.** Visible: gap 0.12 (not supported, as required).
+Silent: W -0.02, P 0.75, gap 0.54 but its bootstrap lower bound 0.23 is under 0.3, so O4 not supported.
+Check failed again, now narrowly: P is right on average but varies between individuals. The square pulse
+is brief, so with links silent at rest it barely crosses the threshold and tells P little about a 1 s drive.
+
+**A8 (18:01 UTC, written before running; no real response read).** P learns from all stimulation except the
+test condition: square pulses and the 10 Hz trains, one set of kernels fitted to both. P still never sees
+the half-cosine. Rerun on all three instruments with a fresh seed (20261121); A6's pass rule unchanged. If
+it fails, the study is stopped as registered, and the failure and its causes are what is reported.
+
+**A8 result (18:08 UTC, seed 20261121).** Each instrument was first run alone (sub-769360771, then
+sub-776061236; both passed), then all three in one call, which is the record
+(`calibration_instruments_A8.json`):
+
+| instrument | tagged / classes | visible: W, P, gap (low) | silent: W, P, gap (low) | pass |
+|---|---|---|---|---|
+| sub-769360771 (Vip) | 5 / 22 | 0.80, 1.00, 0.20 (0.18) | 0.02, 0.96, 0.87 (0.51) | yes |
+| sub-776061236 (Pvalb) | 26 / 23 | 0.84, 0.97, 0.14 (0.11) | 0.05, 1.00, 0.95 (0.56) | yes |
+| sub-763808588 (Sst) | 13 / 21 | 0.82, 0.99, 0.17 (0.14) | 0.10, 0.99, 0.84 (0.70) | yes |
+
+The A6 check passes on all three instruments. O1 again gave a false positive on one visible population
+(sub-769360771), so it stays secondary.
+
+### A9: run details the registration left open (18:12 UTC, written before any real response is read)
+
+- Light-only check: wild-type mice are classed the same way with no tagging; a class name (area x
+  waveform) is dropped from every mouse if the median of its profile value over the wild-type mice that
+  have it exceeds 0.5 in absolute value. Classes left with fewer than 4 per mouse: that mouse is reported
+  and left out.
+- Between-mouse agreement uses the classes two mice share (at least 4); pairs sharing fewer are skipped; a
+  mouse with no usable pair is left out of O1 and O2 but kept for O3 and O4.
+- O4 uses mice whose ceiling (odd vs even trials) is at least 0.5, since a gap scaled by an unreliable
+  ceiling means little; if fewer than 8 mice qualify, O4 is reported as undecidable.
+- Everything runs from `scripts/opto_run.py`, which refuses to start until a line starting "Status: FROZEN" (in bold) is added here.
