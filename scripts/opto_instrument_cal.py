@@ -43,7 +43,7 @@ def main():
         for kind in ("visible", "silent", "misspecified"):
             c0 = rng.normal(0, 1, K); A0 = rng.normal(0, 1, (K, K)) / np.sqrt(K)
             pop = []
-            for _ in range(13):
+            for _ in range(int(arg("n", 13))):
                 rec = real.synthetic(rng, inst, kind == "silent", c0 * (1 + 0.3 * rng.normal(0, 1, K)),
                                      A0 * (1 + 0.3 * rng.normal(0, 1, (K, K))), mis=kind == "misspecified")
                 r = real.analyse(rec)

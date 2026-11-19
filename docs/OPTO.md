@@ -1,6 +1,6 @@
 # Study O: the stimulation test in mouse cortex (Allen optotagging)
 
-Status: **registration draft v0.1 (19 Nov 2026); calibration next; no response read**. Written 17 Nov 2026 (UTC) before any optogenetic table or
+**Status: FROZEN** (19 Nov 2026, 19:46 UTC, commit "Study O: freeze"; amendments A1 to A12 at the end; no test response read before this line). Written 17 Nov 2026 (UTC) before any optogenetic table or
 response was opened. Context: `docs/STRATEGY_2026-11-17.md` and `docs/EMU_R.md` (the worm stimulation data
 is exhausted; no public second worm dataset passes; plans must not depend on replies from other labs).
 
@@ -355,3 +355,18 @@ Pass (required at most 1, at least 18, at most 1). A limit worth stating: the mi
 that these particular departures from W's model do not produce a false O4; it cannot show that no
 departure would. O1 was supported in 1 of 20 visible populations (a false positive) and O2 in all 60, so
 O2 does not discriminate either.
+
+**A11 calibration result (seeds 20261300 to 20261319, 19:26 UTC; `calibration_A10_A11_*.json`).** Links
+visible: O4 supported 0 of 20 (gap 0.08 to 0.17). Silent: 20 of 20 (gap 0.77 to 1.17, lowest bootstrap
+bound 0.70). Misspecified: 0 of 20 (gap 0.02 to 0.07). Pass.
+
+**A12 (19:27 UTC, before running).** Every calibration so far used populations of 13 individuals, but after
+A11 only 9 mice enter the test, and fewer if some fall under the 0.5 reliability rule. The 20-seed check is
+rerun with populations of 9 (seeds 20261400 + i, fresh), same pass rule. If it passes, the study is frozen.
+
+**A12 result (seeds 20261400 to 20261419, populations of 9, 19:45 UTC; `calibration_A10_A12_*.json`).**
+Visible: O4 supported 0 of 20 (gap 0.06 to 0.17). Silent: 20 of 20 (gap 0.85 to 1.30, lowest bootstrap
+bound 0.56). Misspecified: 0 of 20. Pass. The study is frozen as it stands: registration plus A1 to A12, code
+at the freeze commit. Primary claim O4; secondary O1, O2, O3 (with their known weaknesses: O1 gave false
+positives in calibration, O2 and O3 never discriminated); descriptive: rest score, the 10 Hz baseline, O4
+without narrow classes in Pvalb mice.
