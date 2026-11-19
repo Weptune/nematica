@@ -371,7 +371,7 @@ at the freeze commit. Primary claim O4; secondary O1, O2, O3 (with their known w
 positives in calibration, O2 and O3 never discriminated); descriptive: rest score, the 10 Hz baseline, O4
 without narrow classes in Pvalb mice.
 
-## Result (19 Nov 2026, 19:48 UTC, run once from the freeze commit; `docs/figures/opto/result.json`)
+## Result (19 Nov 2026, 19:47 UTC, run once from the freeze commit; `docs/figures/opto/result.json`)
 
 **Who entered.** 9 of 13 Cre mice (4 had fewer than 3 tagged units after A11). Light-only check: in
 wild-type mice the light alone moved narrow-waveform visual classes by +0.3 to +0.9 SD; two classes passed
@@ -412,3 +412,27 @@ together with the cells around them, so a copy that learns from watching expects
 their neighbours; driving them does the reverse. That is the worm result's shape (watching misleads about
 poking), seen in mouse cortex, but the test as registered does not establish it: the pre-set primary claim
 missed its bar, with 8 usable mice and two of them where nothing predicted the response.
+
+### Exploratory follow-up (after the result, 19 Nov 2026, 19:52 UTC; not registered, read as a lead)
+
+Direction of change per mouse: how many classes the watching copy says go up, and how many really did.
+
+| mouse | line | rest correlation, tagged vs other classes (median) | W: classes predicted up | real: classes up |
+|---|---|---|---|---|
+| sub-769360771 | Vip | 0.09 | 100% | 100% |
+| sub-776061236 | Pvalb | 0.09 | 83% | 39% |
+| sub-763808588 | Sst | 0.09 | 84% | 16% |
+| sub-774672354 | Sst | 0.11 | 66% | 31% |
+| sub-803390283 | Sst | 0.08 | 74% | 26% |
+| sub-811322604 | Pvalb | 0.33 | 86% | 29% |
+| sub-817060743 | Sst | 0.11 | 83% | 22% |
+| sub-820866111 | Pvalb | 0.18 | 90% | 29% |
+| sub-821469659 | Pvalb | 0.11 | 67% | 25% |
+
+In every mouse the tagged inhibitory cells rose and fell with the rest of the brain at rest, so the
+watching copy predicted that driving them would push most classes up. In all 8 Pvalb and Sst mice, most
+classes went down instead. In the one Vip mouse, whose cells mainly inhibit other inhibitory cells, most
+classes went up, and there W did reasonably (0.43). This is what known circuitry predicts, and it is the
+plainest version of the project's question: rest-time co-activity points the wrong way about what a cell
+does when driven. It was looked for after the result, so it needs its own registered test (for example, on
+the 15 Cre mice with 45 trials per condition, which the registration did not use) before it is a claim.
