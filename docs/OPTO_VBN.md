@@ -46,3 +46,42 @@ VIS); broad-waveform classes only (narrow classes may hold untagged cells driven
 
 **Code:** `scripts/opto_vbn.py`, which refuses to run unless this file's status line says FROZEN. No new
 independent review: the pipeline is Study O's reviewed code; the new parts are the counts and tests above.
+
+## Result (19 Nov 2026, run once at 23:38 UTC from the freeze commit; `docs/figures/opto/vbn_result.json`)
+
+39 mice entered: 29 Sst, 10 Vip (15 Vip and Sst mice had fewer than 3 tagged units). Light-only check
+dropped one class (unassigned visual cortex, narrow).
+
+| claim | result | n | p |
+|---|---|---|---|
+| V1, driving Sst cells lowers most regions | **supported**, 29 of 29 mice | 29 | 2e-9 |
+| V2, watching predicts the wrong direction (Sst) | **supported**, 28 of 29 | 29 | 6e-8 |
+| V3, Sst cells move with the brain at rest | **supported**, 28 of 29 | 29 | 6e-8 |
+| V4, driving Vip cells raises most regions | **supported**, 10 of 10 | 10 | 0.001 |
+| V5, the error is specific to Sst | **supported** | 29 vs 10 | 3e-6 |
+
+Robustness: V1 and V2 hold with visual-cortex classes only (29 of 29, 28 of 29) and with broad-waveform
+classes only (29 of 29, 29 of 29).
+
+Medians: Sst mice, regions that rose 12.5%, the watching copy predicted 77%; Vip mice, rose 79%, predicted
+69%. Rest correlation of the tagged cells with other regions: Sst 0.04, Vip 0.02 (small, but positive in
+28 of 29 Sst mice). Pattern agreement (Study O's measure, descriptive): W -0.06 (Sst) and 0.05 (Vip); P,
+fitted on pulses, 0.57 and 0.47.
+
+**Control added after the run (not registered; `docs/figures/opto/vbn_wt_control.json`).** In the 27
+wild-type mice, the light alone raised a median 66% of regions (range 25% to 100%): mice see or otherwise
+react to the light. Against that baseline, driving Sst cells lowers far more (12.5% rose; Mann-Whitney
+p 3e-10) and driving Vip cells raises somewhat more (79%; p 0.001). So V4's "most regions rise" is partly
+the light itself; the Vip effect beyond light is real but smaller than the Sst effect.
+
+**What this says.** At rest, both kinds of inhibitory cell rise and fall slightly with the rest of the
+brain, so a copy built by watching predicts that driving either one raises activity. Driving Sst cells
+does the opposite in every mouse; driving Vip cells, which mostly inhibit other inhibitory cells, does
+raise activity. Watching cannot tell the two apart; the effect of driving a cell depends on what its links
+do, and those links do not show in its resting co-activity. This confirms, in 39 new mice and with
+pre-registered tests, the exploratory pattern from Study O, and it is the mouse-cortex counterpart of the
+worm result: a copy that only watched answers stimulation wrongly.
+
+**Limits.** One session per mouse, one lab's rig, two cell types. The tests are about direction (share of
+regions up or down), not the detailed pattern, where both copies were weak. The light-alone effect was
+measured after the run.
