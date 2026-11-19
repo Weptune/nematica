@@ -29,6 +29,12 @@ def _s(a):
 
 
 def session_asset(mouse):
+    vbn = ROOT / "docs/figures/opto/feasibility_vbn.jsonl"
+    if vbn.exists():
+        for l in vbn.open():
+            r = json.loads(l)
+            if r["id"] == mouse:
+                return "000713", next(a for a in ASSETS["000713"] if a["path"] == r["path"])
     for ds in ("000021", "000022"):
         for a in ASSETS[ds]:
             p = a["path"]
@@ -80,7 +86,7 @@ def cache(mouse):
         m = (s >= lo) & (s <= hi)
         for a0, b0 in spont:
             m |= (s >= a0) & (s < b0)
-        keep_t.append(np.round(s[m] * 1e5).astype(np.int64))   # 10 us units
+        keep_t.append(np.round(s[m] * 1e5).astype(np.int32))   # 10 us units (fits: sessions < 21000 s)
         keep_i.append(keep_i[-1] + int(m.sum()))
     np.savez_compressed(dest, unit_id=meta["id"][qc], area=area[qc], waveform_ms=meta["waveform_duration"][qc],
                         firing_rate=meta["firing_rate"][qc], spikes_10us=np.concatenate(keep_t),
@@ -93,7 +99,7 @@ def cache(mouse):
 
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
-    ASSETS = {ds: md.dandi_assets(ds) for ds in ("000021", "000022")}
+    ASSETS = {ds: md.dandi_assets(ds) for ds in ("000021", "000022", "000713")}
     for m in (sys.argv[1:] or CRE + WT):
         for attempt in range(3):
             try:
