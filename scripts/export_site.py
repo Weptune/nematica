@@ -284,14 +284,14 @@ def beyond() -> dict:
     out["shrinkage"] = [{"lam": r["lam"], "r2": num(r["within_worm_r2"]), "ind": num(r["individuality"]),
                          "typical": sum(v == "too typical" for k, v in r.items() if k.endswith("_verdict")),
                          "outside": sum(v == "outside" for k, v in r.items() if k.endswith("_verdict"))} for r in rows("shrinkage.csv")]
-    # Study O and S: the watching copy's predicted direction vs the real direction, per mouse
-    so = json.loads((FIG / "opto/sign_studyO.json").read_text())
-    ss = FIG / "opto/sign_result.json"
-    sr = json.loads(ss.read_text()) if ss.exists() else None
-    pick = lambda m, v, st: {"id": m, "study": st, "line": v["line"], "real": v["real_up"], "w": v["w_up"], "rest": v["rest_r"]}  # noqa: E731
-    out["optoSign"] = {"mice": [pick(m, v, "O") for m, v in so.items()] + ([pick(m, v, "S") for m, v in sr["mice"].items()] if sr else []),
-                       "claims": {k: sr[k] for k in ("S1", "S2", "S3") if sr and k in sr}, "nS": sr["n_pvalb_sst"] if sr else 0,
-                       "O4": json.loads((FIG / "opto/result.json").read_text())["O4"]}
+    # Study V: the watching copy's predicted direction vs the real direction, per mouse (39 held-out mice)
+    vr = json.loads((FIG / "opto/vbn_result.json").read_text())
+    wt = json.loads((FIG / "opto/vbn_wt_control.json").read_text())["wt_real_up"]
+    out["optoSign"] = {"mice": [{"id": m, "line": v["line"], "real": v["real_up"], "w": v["w_up"], "rest": v["rest_r"]}
+                                for m, v in vr["mice"].items()],
+                       "wt": [round(float(x), 3) for x in np.percentile(wt, [25, 50, 75])], "nWT": len(wt),
+                       "claims": {k: vr[k] for k in ("V1", "V2", "V3", "V4", "V5")},
+                       "median": {k: vr[f"median_{k}"] for k in ("Sst", "Vip")}}
     # the emulator: passes on the worms it was built on, not on others
     out["emulator"] = json.loads((FIG / "emulator_transfer.json").read_text())
     out["emulator"].pop("note", None)

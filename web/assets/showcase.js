@@ -196,49 +196,56 @@
   function sign(host) {
     const O = R.optoSign; if (!O) return;
     const narrow = host.clientWidth < 640;
-    const H = narrow ? 420 : 470;
-    const order = ["Pvalb", "Sst", "Vip"];
-    const D = O.mice.slice().sort((a, b) => order.indexOf(a.line) - order.indexOf(b.line) || (a.study > b.study ? 1 : -1) || a.real - b.real);
-    const { s, w, P, glow } = stage(host, H, `For ${D.length} mice: the share of brain regions a copy fitted at rest predicted would rise when inhibitory cells were driven, and the share that did`);
-    const m = { l: narrow ? 40 : 64, r: narrow ? 12 : 210, t: 22, b: 70 };
-    const gapG = narrow ? 14 : 28, n = D.length, ng = order.filter((g) => D.some((d) => d.line === g)).length;
-    const step = (w - m.l - m.r - gapG * (ng - 1)) / n;
+    const H = narrow ? 430 : 480;
+    const order = ["Sst", "Vip"];
+    const D = O.mice.filter((d) => order.includes(d.line)).sort((a, b) => order.indexOf(a.line) - order.indexOf(b.line) || a.real - b.real);
+    const { s, w, P, glow } = stage(host, H, `For ${D.length} mice: the share of brain regions a copy fitted at rest predicted would rise when one kind of inhibitory cell was driven, and the share that did`);
+    const m = { l: narrow ? 40 : 64, r: narrow ? 12 : 220, t: narrow ? 52 : 22, b: 74 };
+    const gapG = narrow ? 18 : 40, n = D.length;
+    if (narrow) {
+      el("circle", { cx: 8, cy: 12, r: 4, fill: "none", stroke: P.copy, "stroke-width": 1.8 }, s); tx(s, 18, 16, "copy fitted at rest", { "font-size": 12, fill: P.copy });
+      el("circle", { cx: 150, cy: 12, r: 4.2, fill: P.real }, s); tx(s, 160, 16, "what happened", { "font-size": 12, fill: P.real });
+      el("rect", { x: 4, y: 26, width: 10, height: 10, fill: P.faint }, s); tx(s, 18, 35, "light alone, mice without the opsin", { "font-size": 12, fill: P.dim });
+    }
+    const step = (w - m.l - m.r - gapG) / n;
     const y = lin(0, 1, H - m.b, m.t);
+    // light alone, in mice without the opsin
+    el("rect", { x: m.l, y: y(O.wt[2]), width: w - m.l - m.r, height: y(O.wt[0]) - y(O.wt[2]), fill: P.faint, opacity: 0.9 }, s);
     [0, 0.25, 0.5, 0.75, 1].forEach((v) => {
       el("line", { x1: m.l, x2: w - m.r, y1: px(y(v)), y2: px(y(v)), stroke: v === 0.5 ? P.axis : P.faint, "stroke-dasharray": v === 0.5 ? "4 4" : null }, s);
       tx(s, m.l - 10, y(v) + 4, `${Math.round(v * 100)}%`, { "text-anchor": "end", "font-size": 12, fill: P.dim });
     });
-    tx(s, 14, (m.t + H - m.b) / 2, narrow ? "regions that rise" : "Share of brain regions that rise", { "font-size": 12.5, fill: P.ink, "font-weight": 600, "text-anchor": "middle", transform: `rotate(-90 14 ${(m.t + H - m.b) / 2})` });
-    let xi = m.l, g = null, gx0 = 0, last = null;
-    const r = narrow ? 4.2 : 6;
+    if (!narrow) tx(s, 14, (m.t + H - m.b) / 2, "Share of brain regions that rise", { "font-size": 12.5, fill: P.ink, "font-weight": 600, "text-anchor": "middle", transform: `rotate(-90 14 ${(m.t + H - m.b) / 2})` });
+    let xi = m.l, g = null, gx0 = 0;
+    const r = narrow ? 3.2 : 4.6;
     const groups = [];
     D.forEach((d, i) => {
       if (d.line !== g) { if (g) { groups.push([g, gx0, xi]); xi += gapG; } g = d.line; gx0 = xi; }
       const cx = xi + step / 2;
-      const up = d.real > d.w;
-      rv(el("line", { x1: px(cx), x2: px(cx), y1: y(d.w), y2: y(d.real), stroke: P.axis, "stroke-width": 1.4 }, s), i, 30);
-      rv(el("circle", { cx, cy: y(d.w), r: r - 0.5, fill: P.bg, stroke: P.copy, "stroke-width": 2 }, s), i, 30);
-      rv(el("circle", { cx, cy: y(d.real), r, fill: P.real, filter: glow, opacity: d.study === "S" ? 1 : 0.92 }, s), i, 30);
-      if (d.study === "S") el("circle", { cx, cy: y(d.real), r: r + 3, fill: "none", stroke: P.real, "stroke-width": 1, opacity: 0.6 }, s);
+      rv(el("line", { x1: px(cx), x2: px(cx), y1: y(d.w), y2: y(d.real), stroke: P.axis, "stroke-width": 1.2 }, s), i, 14);
+      rv(el("circle", { cx, cy: y(d.w), r: r - 0.4, fill: P.bg, stroke: P.copy, "stroke-width": 1.8 }, s), i, 14);
+      rv(el("circle", { cx, cy: y(d.real), r, fill: P.real, filter: glow }, s), i, 14);
       const hit = el("rect", { x: xi, y: m.t, width: step, height: H - m.t - m.b, fill: "transparent" }, s);
-      hover(hit, `<b>${d.line} mouse ${d.id.replace("sub-", "")}</b>${row("Copy fitted at rest predicted rising", Math.round(d.w * 100) + "%")}${row("Actually rose when driven", Math.round(d.real * 100) + "%")}${row("At rest, these cells moved with", d.rest > 0 ? "the rest of the brain" : "against it")}${row("Mouse set", d.study === "O" ? "where the pattern was found" : "held out, tested after registering")}`);
-      xi += step; last = { cx, d };
+      hover(hit, `<b>${d.line} mouse ${d.id.replace("sub-", "")}</b>${row("Copy fitted at rest predicted rising", Math.round(d.w * 100) + "%")}${row("Actually rose when the cells were driven", Math.round(d.real * 100) + "%")}${row("Light alone, mice without the opsin", Math.round(O.wt[1] * 100) + "% (median)")}`);
+      xi += step;
     });
     groups.push([g, gx0, xi]);
-    const LN = { Pvalb: "Pvalb cells", Sst: "Sst cells", Vip: "Vip cells" };
-    const SUB = { Pvalb: "inhibit their neighbours", Sst: "inhibit their neighbours", Vip: "inhibit other inhibitors" };
+    const cnt = (l) => D.filter((d) => d.line === l).length;
+    const LN = narrow ? { Sst: `Sst, ${cnt("Sst")}`, Vip: `Vip, ${cnt("Vip")}` } : { Sst: `Sst cells, ${cnt("Sst")} mice`, Vip: `Vip cells, ${cnt("Vip")} mice` };
+    const SUB = narrow ? { Sst: "inhibit neighbours", Vip: "inhibit inhibitors" } : { Sst: "inhibit their neighbours", Vip: "inhibit other inhibitors" };
     groups.forEach(([gname, a, b]) => {
       el("line", { x1: a + 2, x2: b - 2, y1: H - m.b + 14, y2: H - m.b + 14, stroke: P.axis }, s);
       tx(s, (a + b) / 2, H - m.b + 34, LN[gname], { "text-anchor": "middle", "font-size": narrow ? 12 : 14, fill: P.ink, "font-weight": 650 });
-      if (!narrow || b - a > 90) tx(s, (a + b) / 2, H - m.b + 52, SUB[gname], { "text-anchor": "middle", "font-size": 12, fill: P.dim });
+      tx(s, (a + b) / 2, H - m.b + 52, SUB[gname], { "text-anchor": "middle", "font-size": narrow ? 11 : 12, fill: P.dim });
     });
     if (!narrow) {
       const xe = w - m.r + 24;
-      tx(s, xe, y(0.86), "What the copy fitted", { "font-size": 14, fill: P.copy, "font-weight": 650 });
-      tx(s, xe, y(0.86) + 18, "at rest predicted", { "font-size": 13, fill: P.copy });
-      tx(s, xe, y(0.2), "What happened when", { "font-size": 14, fill: P.real, "font-weight": 650 });
-      tx(s, xe, y(0.2) + 18, "the cells were driven", { "font-size": 13, fill: P.real });
-      if (D.some((d) => d.study === "S")) { tx(s, xe, y(0.5) + 4, "Ringed: held-out mice,", { "font-size": 12, fill: P.dim }); tx(s, xe, y(0.5) + 20, "tested after registering", { "font-size": 12, fill: P.dim }); }
+      tx(s, xe, y(0.9), "What the copy fitted", { "font-size": 14, fill: P.copy, "font-weight": 650 });
+      tx(s, xe, y(0.9) + 18, "at rest predicted", { "font-size": 13, fill: P.copy });
+      tx(s, xe, y(O.wt[1]) + 4, "Light alone, in mice", { "font-size": 12.5, fill: P.dim });
+      tx(s, xe, y(O.wt[1]) + 20, "without the opsin", { "font-size": 12.5, fill: P.dim });
+      tx(s, xe, y(0.14), "What happened when", { "font-size": 14, fill: P.real, "font-weight": 650 });
+      tx(s, xe, y(0.14) + 18, "the cells were driven", { "font-size": 13, fill: P.real });
     }
   }
 
