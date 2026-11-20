@@ -134,3 +134,49 @@ The reviewer found the class indexing, the direction test's orientation for both
 and the absence of leaks from the light schedule, the low-light rule and the dropped class to be correct.
 
 **Code:** `scripts/opto_second.py`, which refuses to run unless this file's status line says FROZEN.
+
+## Result (20 Nov 2026, run once at 19:39 UTC from the freeze commit; `docs/figures/opto/second_result.json`)
+
+All 39 mice entered (no mouse was left out once silent units were dropped). Sst mice, primary analysis, n = 29:
+
+| claim | result | numbers | p |
+|---|---|---|---|
+| S0, Sst mice agree with each other | **supported** | median agreement 0.36; above 0 in 28 of 29 | 6e-8 |
+| S1, P predicts that most classes fall | **supported** | P predicts 31% rise (really 12%); right side of one half in 27 of 29 | 8e-7 |
+| S2, P's pattern is within a quarter of a second mouse | **supported** | P 0.60 against a second mouse's 0.36; P above the second mouse in 26 of 29 | 9e-6 |
+| **Verdict for P** | **like a second mouse** | | |
+| S3, the watching copy is not like a second mouse | **supported** | wrong direction (predicts 77% rise), pattern -0.07 | 6e-8, 9e-6 |
+| S4, P is within a quarter of the average of the other mice | **supported** | P 0.58 against the average mouse's 0.52 | 0.0002 |
+
+**Beside it.**
+- Every robustness row gives the same verdict for P in Sst mice: visual-cortex classes only (P 0.60 against
+  0.20), broad-waveform classes only (0.62 against 0.48), classes light alone barely moves (0.63 against
+  0.40), the untouched pipeline (0.60 against 0.36) and the untouched pipeline without the five affected mice
+  (0.62 against 0.32, n = 24).
+- S4 holds in every row except the untouched pipeline on all mice (p = 0.036, above its 0.01 threshold); it
+  holds there once the five affected mice are left out (p = 0.0007). So S4 depends on the silent-unit fix.
+- X, the copy taught only by other mice's pulses (descriptive): 0.51 against 0.36, direction right (19%
+  predicted to rise); like a second mouse by the same rule.
+- Vip mice (descriptive, n = 10): P 0.48 against 0.31, like a second mouse in the primary and low-light rows,
+  undecided on visual-cortex or broad-waveform classes alone. The watching copy is undecided there.
+
+**What this says.** In Sst mice, a copy taught by brief light pulses gets right what the watching copy gets
+wrong: the direction of the slow drive's effect. Its pattern across brain regions agrees with the mouse
+better than a second mouse's own response does, and at least about as well as the average of the other mice.
+A copy that never saw this mouse's stimulation, only other mice's pulses, also passes. By the project's
+ruler, the question on the home page is answered: a copy taught by stimulation answers like a second mouse.
+
+**What it does not say.**
+- The copy is far from perfect. Its pattern agreement is 0.60 where the recording's own reliability would
+  allow about 0.97. Two mice agree at only 0.36, so the ruler's bar was low here; the direction test and S4
+  are what make the pass more than that.
+- As registered, P's agreement was already known from Study V, so S2 only asked whether mice agree with each
+  other by less than about 0.78. They do, by a wide margin.
+- P is a copy of the same mouse through the same instrument, handed the driven cells' measured activity. It
+  predicts how the other regions follow, for one inhibitory cell type, one rig, one session per mouse.
+- A second mouse is another animal recorded through other units, which lowers its agreement for reasons that
+  are not biology.
+
+**Record keeping.** The commit that added the last calibration records says it includes the reviewer's
+reruns; it does not. The reviewer's reruns were not saved to the files, and are quoted in the calibration
+section from the review itself.
