@@ -216,6 +216,10 @@ def beyond() -> dict:
     # record (README sections named in each comment); the rest is computed above.
     counted = [mb["M1"][1] for f in fams if f["counted"] for mb in f["members"]]
     em = json.loads((FIG / "emulator_transfer.json").read_text())
+    jt = json.loads((FIG / "journey_journey_copper.json").read_text())["table"]      # Study J, the registered run
+    jm = "hybrid_kernels_slow6d_indivslow1_hp_memfix_"
+    jr = {"frozen": [jt[jm + "diag_hsd1"][str(k)]["passed"] for k in range(5)], "given": [jt[jm + "hsd1_gcop"][str(k)]["passed"] for k in range(5)],
+          "plain": [jt["var3_spontaneous"][str(k)]["passed"] for k in range(5)], "coupling": [jt[jm + "hsd1"][str(k)]["passed"] for k in range(3)]}
     out["gaps"] = [
         {  # README headline and "Arc 4: the causal Turing test" (repaired data, six held-out pools)
             "title": "Answering a single-neuron poke", "where": "Worm, 113 animals (signal-propagation atlas)",
@@ -269,16 +273,17 @@ def beyond() -> dict:
                        "sub": "A network whose input weakens with use reproduces it; this data cannot tell which the worm has"},
             "tip": [["Real worms", "about half (interval 0.34 to 0.64)"], ["Artificial networks", "the same every time"]],
             "note": "Exploratory curve. About 9% of the atlas's stimulations are repeats within 5 minutes."},
-        {  # docs/figures/emulator_transfer.json; README test T
-            "title": "Ongoing activity in moving worms", "where": "Worm, 30 freely moving animals (another lab)",
+        {  # docs/JOURNEY.md (Study J, registered): the copper set, which no recipe of this family had met
+            "title": "Ongoing activity in moving worms", "where": "Worm, 27 freely moving animals the recipe had never met (another lab)",
             "scale": "Activity tests passed, of 6", "domain": [0, 6], "ticks": [0, 1, 2, 3, 4, 5, 6], "tickFmt": "int",
             "band": [5, 6], "bandLabel": "pass mark",
-            "plain": {"value": em["atanas_control_rest"][0]["rest"], "label": "fitted to rest only"},
-            "fixed": {"value": em["atanas"][0]["rest"], "label": "the emulator recipe", "below": True},
-            "status": {"text": "Still and moving worms differ",
-                       "sub": "The recipe built on immobilised worms fails here; movement or lab conditions"},
-            "tip": [["Emulator recipe", f"{em['atanas'][0]['rest']} of 6, in all five noise draws"], ["Fitted to rest only", f"{em['atanas_control_rest'][0]['rest']} of 6"]],
-            "note": "Refitted from scratch on these worms; no optogenetic pokes in this data."},
+            "plain": {"range": [min(jr["frozen"]), max(jr["frozen"])], "label": "the recipe built on still worms"},
+            "fixed": {"value": sorted(jr["given"])[2], **({"range": [min(jr["given"]), max(jr["given"])]} if min(jr["given"]) != max(jr["given"]) else {}), "label": "given what it lacked", "below": True},
+            "status": {"text": "Coupling brings most of it back",
+                       "sub": "Given the coupling between neuron types and the skew of real activity, the recipe comes one test short. Written down in advance"},
+            "tip": [["The recipe built on still worms", f"{min(jr['frozen'])} to {max(jr['frozen'])} of 6"], ["A plain copy fitted to rest", f"{jr['plain'][0]} of 6"],
+                    ["The recipe, given what it lacked", f"{jr['given'][0]} of 6, in all five noise draws"]],
+            "note": "Refitted from scratch on these worms; no optogenetic pokes in this data. On 30 other moving worms the recipe passed 1 of 6."},
     ]
     # arc 1: forecasting skill and individuality across the shrinkage penalty (docs/figures/shrinkage.csv)
     out["shrinkage"] = [{"lam": r["lam"], "r2": num(r["within_worm_r2"]), "ind": num(r["individuality"]),
@@ -311,6 +316,7 @@ def beyond() -> dict:
                        "wt": [round(float(x), 3) for x in np.percentile(wt, [25, 50, 75])], "nWT": len(wt),
                        "claims": {k: vr[k] for k in ("V1", "V2", "V3", "V4", "V5")},
                        "median": {k: vr[f"median_{k}"] for k in ("Sst", "Vip")}}
+    out["journey"] = jr
     # the emulator: passes on the worms it was built on, not on others
     out["emulator"] = json.loads((FIG / "emulator_transfer.json").read_text())
     out["emulator"].pop("note", None)

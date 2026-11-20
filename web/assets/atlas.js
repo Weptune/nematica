@@ -340,19 +340,21 @@
 
   // ------------------------------------------------------------------ VII. the journey: six tests, three trials
   function journey(host) {
-    const E = R.emulator; if (!E) return;
-    const mode = (k) => { const v = (E[k] || []).map((d) => d.rest), c = {}; v.forEach((n) => (c[n] = (c[n] || 0) + 1)); return [Math.min(...v), Math.max(...v), +Object.keys(c).sort((a, b) => c[b] - c[a])[0]]; };
-    const rows = [["On the worms it was built on", "the recipe, held-still worms", mode("atlas_cv3")], ["On worms that move", "the same recipe, refitted, another lab", mode("atanas")], ["On worms that move", "a plain copy fitted to rest alone", mode("atanas_control_rest")]];
-    const nar = host.clientWidth < 470, rowH = nar ? 122 : 106, H = rowH * 3 + (nar ? 26 : 34);
-    const { s } = stage(host, H, "Of six tests of ongoing activity, the recipe passes five or six on the worms it was built on, one on freely moving worms, where a plain copy fitted to rest passes three");
+    const E = R.emulator, J = R.journey; if (!E || !J) return;
+    const span = (v) => [Math.min(...v), Math.max(...v)];
+    const rows = [["On the worms it was built on", "the recipe, held-still worms", span((E.atlas_cv3 || []).map((d) => d.rest))], ["On worms that move", "the same recipe, refitted, another lab", span(J.frozen)],
+      ["On worms that move", "a plain copy fitted to rest alone", span(J.plain)], ["On worms that move", "the recipe, given what it lacked", span(J.given)]];
+    const nar = host.clientWidth < 470, rowH = nar ? 118 : 100, H = rowH * rows.length + (nar ? 26 : 34);
+    const said = (v) => (v[0] === v[1] ? `${v[0]}` : v[1] - v[0] === 1 ? `${v[0]} or ${v[1]}` : `${v[0]} to ${v[1]}`);
+    const { s } = stage(host, H, `Of six tests of ongoing activity, the recipe passes ${said(rows[0][2])} on the worms it was built on and ${said(rows[1][2])} on freely moving worms, where a plain copy fitted to rest passes ${said(rows[2][2])}; given the coupling and the skew it lacked, it passes ${said(rows[3][2])}, short of the pass mark of five`);
     const r = nar ? 13 : 16, gap = nar ? 10 : 13, x0 = 6, y0 = nar ? 64 : 40;
     const px5 = x0 + 4 * (2 * r + gap) - gap / 2;
-    el("path", { d: nar ? rows.map((_, k) => `M${px(px5)} ${y0 + k * rowH - r - 6}v${2 * r + 12}`).join("") : `M${px(px5)} 6V${rowH * 3 - 14}`, stroke: C.gold, "stroke-dasharray": "2 5" }, s);
-    tx(s, px5 + 9, rowH * 3 + (nar ? 2 : 6), "the pass mark: 5 of 6", it(16, C.gold));
+    el("path", { d: nar ? rows.map((_, k) => `M${px(px5)} ${y0 + k * rowH - r - 6}v${2 * r + 12}`).join("") : `M${px(px5)} 6V${rowH * rows.length - 14}`, stroke: C.gold, "stroke-dasharray": "2 5" }, s);
+    tx(s, px5 + 9, rowH * rows.length + (nar ? 2 : 6), "the pass mark: 5 of 6", it(16, C.gold));
     rows.forEach(([a, b, v], k) => { const yy = y0 + k * rowH;
-      for (let i = 0; i < 6; i++) { const cx = x0 + r + i * (2 * r + gap), on = i < v[2], maybe = i >= v[0] && i < v[1];
+      for (let i = 0; i < 6; i++) { const cx = x0 + r + i * (2 * r + gap), on = i < v[0], maybe = i >= v[0] && i < v[1];
         rv(on ? (ORBS ? moon(s, cx, yy, r * 0.94, 1, "copy") : mark.full(s, cx, yy, r * 0.82)) : el("circle", { cx, cy: yy, r: r - 1, fill: C.paper, stroke: maybe ? C.lit : C.line, "stroke-width": 1.4, "stroke-dasharray": maybe ? "3 3" : null }, s), k * 6 + i, 40); }
-      const cnt = v[0] === v[1] ? `${v[0]} of 6 in all five runs` : `${v[0]} or ${v[1]} of 6 across five runs`;
+      const cnt = v[0] === v[1] ? `${v[0]} of 6 in all five runs` : `${said(v)} of 6 across five runs`;
       if (nar) { tx(s, x0, yy - 40, a, it(19.5)); tx(s, x0, yy - 23, b, small({ "font-size": 11.5 })); tx(s, x0 + 6 * (2 * r + gap) + 4, yy + 4, cnt.replace(" in all five runs", "").replace(" across five runs", ""), small({ "font-size": 12 })); }
       else { note(s, x0 + 6 * (2 * r + gap) + 18, yy - 2, a, [b], { size: 23 }); tx(s, x0, yy + r + 23, cnt, small({ fill: C.b3 })); }
     });
