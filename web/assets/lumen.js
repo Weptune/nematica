@@ -27,7 +27,7 @@
     r = g.createRadialGradient(n / 2, n * 0.4, R * 0.74, n / 2, n * 0.4, R * 1.12); r.addColorStop(0, "rgba(255,255,255,0)"); r.addColorStop(1, "rgba(255,255,255,.3)"); g.fillStyle = r; g.fillRect(0, n * 0.56, n, n * 0.44);
     r = g.createRadialGradient(n * 0.35, n * 0.3, 0, n * 0.35, n * 0.3, R * 0.34); r.addColorStop(0, "rgba(255,255,255,.95)"); r.addColorStop(1, "rgba(255,255,255,0)"); g.fillStyle = r; g.fillRect(0, 0, n, n); g.restore(); });
   // a grain of gold dust: a point with a little light round it
-  const grain = (k) => sprite("g" + k, 24, (g, n) => { const r = g.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2), c = k ? [255, 244, 214] : [246, 204, 104];
+  const grain = (k) => sprite("g" + k, 24, (g, n) => { const r = g.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2), c = k === 2 ? [255, 122, 158] : k ? [255, 244, 214] : [246, 204, 104];
     r.addColorStop(0, rgba(c, 1)); r.addColorStop(0.22, rgba(c, 0.85)); r.addColorStop(0.5, rgba(c, 0.2)); r.addColorStop(1, rgba(c, 0)); g.fillStyle = r; g.fillRect(0, 0, n, n); });
   const WASH = [228, 172, 58];
   // the four points a bright light throws
@@ -69,6 +69,14 @@
     const s = u * r.len * 1.25, fade = Math.sin(PI * Math.min(1, u * 1.02));
     [[0.2, 0, 0.1], [0.13, 0.02, 0.16], [0.07, 0.035, 0.26]].forEach((p) => { if (trace(g, r, s - p[0] * r.len, s - p[1] * r.len)) { g.lineWidth = 2.6 * r.w; g.strokeStyle = rgba([255, 250, 236], p[2] * fade); g.stroke(); } });
   }
+  // a curve that is losing something: embers leave it and fall, more of them where it has sunk further
+  function shed(g, r, t, A) {
+    const a = smooth((A - r.d) / 900); if (a <= 0 || REDUCED) return; const P = r.pts, C = r.cum, im = grain(2);
+    for (const e of r.em) { const d = e.u * r.len; let i = 1; while (i < P.length - 1 && C[i] < d) i++;
+      const sg = C[i] - C[i - 1] || 1, f = (d - C[i - 1]) / sg, x0 = P[i - 1][0] + (P[i][0] - P[i - 1][0]) * f, y0 = P[i - 1][1] + (P[i][1] - P[i - 1][1]) * f, w = Math.min(1, Math.max(0, (y0 - r.y0) / r.span));
+      if (w <= 0.02) continue; const p = (t / e.per + e.off) % 1, y = y0 + p * p * e.fall * (0.4 + 0.6 * w), x = x0 + e.sway * Math.sin(p * 5 + e.off * 9) * p, sz = e.s * (1 - 0.45 * p);
+      g.globalAlpha = a * Math.min(1, w * 1.6) * Math.min(1, p * 9) * Math.pow(1 - p, 1.2); g.drawImage(im, x - sz / 2, y - sz / 2, sz, sz); }
+  }
   // a line from one mark to another, and now and then a light that runs along it and lands
   function beam(g, b, t, A, now) {
     const gr = smooth((A - b.d) / 520); if (gr <= 0) return;
@@ -92,13 +100,14 @@
     g.globalCompositeOperation = "lighter";
     for (const b of L.bands) dust(g, b, t, smooth((A - b.d) / 1100));
     for (const r of L.ribbons) ribbon(g, r, t, A);
+    for (const r of L.sheds) shed(g, r, t, A);
     for (const b of L.beams) beam(g, b, t, A, now);
     const S = L.stars;
     for (const s of S) {                                        // what each mark throws
       s.a = smooth((A - s.d) / 420); if (s.a <= 0) continue;
       s.h += ((s.hot ? 1 : 0) - s.h) * 0.22; s.fl = Math.exp(-Math.max(0, A - s.d) / 300) * (A < 1e8 ? 1 : 0) + (s.kick ? Math.exp(-(now - s.kick) / 340) * 0.75 : 0);
       if (s.kind === "ring" && s.h < 0.02) continue;
-      const R = s.r * (s.kind === "ring" ? 2.6 * s.h : 3.3 * (1 + 0.09 * Math.sin(t * s.om + s.ph)) + 3.2 * s.fl + 1.7 * s.h);
+      const R = s.r * (s.kind === "ring" ? 2.6 * s.h : 3.3 * (1 + 0.09 * Math.sin(t * s.om + s.ph)) + 3.2 * s.fl + 1.7 * s.h + (s.wave && !REDUCED ? s.wave * (0.5 + 0.5 * Math.sin(t * 0.8 - s.x * 0.012)) : 0));
       g.globalAlpha = s.a * (s.kind === "ring" ? 0.7 : 0.92); g.drawImage(halo(s.kind), s.x - R, s.y - R, 2 * R, 2 * R);
     }
     g.globalCompositeOperation = "source-over";
@@ -134,13 +143,14 @@
     const dpr = Math.min(3, window.devicePixelRatio || 1), cv = document.createElement("canvas"); cv.className = "lum"; cv.setAttribute("aria-hidden", "true");
     cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); host.appendChild(cv);
     const q = rnd(Math.round(w * 31 + h * 17 + LAYERS.length * 101));
-    const L = { host, cv, g: cv.getContext("2d"), w, h, dpr, stars: [], beams: [], bands: [], ribbons: [], vis: !io, born: 0, old: !!host.closest(".in") };
+    const L = { host, cv, g: cv.getContext("2d"), w, h, dpr, stars: [], beams: [], bands: [], ribbons: [], sheds: [], vis: !io, born: 0, old: !!host.closest(".in") };
     LAYERS.push(L); if (io) io.observe(cv); else kick();
     const grains = (area, long) => { const n = Math.round(Math.min(1500, Math.max(30, area / 44))), f = new Float32Array(n * 5);
       for (let i = 0, k = 0; i < n; i++, k += 5) { f[k] = q(); f[k + 1] = 0.02 + q() * 0.96; f[k + 2] = 0.7 + q() * q() * 1.5; f[k + 3] = q() * TAU; f[k + 4] = (2.5 + q() * 6) / Math.max(40, long); } return { f, n }; };
     return {
       // a mark: kind is real, copy, bone or ring. The thing returned can be told it is under the pointer (hot) or struck (kick)
-      star(kind, x, y, r, delay) { const s = { kind, x, y, r, d: delay || 0, ph: q() * TAU, om: 0.5 + q() * 1.1, per: 7 + q() * 11, off: q(), hot: 0, h: 0, a: 0, fl: 0, kick: 0 }; L.stars.push(s); return s; },
+      // wave: how far its glow swells as a slow wave passes along the plate, in its own radii
+      star(kind, x, y, r, delay, wave) { const s = { kind, x, y, r, d: delay || 0, ph: q() * TAU, om: 0.5 + q() * 1.1, per: 7 + q() * 11, off: q(), hot: 0, h: 0, a: 0, fl: 0, kick: 0, wave: wave || 0 }; L.stars.push(s); return s; },
       heat(s, on) { s.hot = on ? 1 : 0; kick(); },
       beam(x0, y0, x1, y1, ka, kb, delay, o) { o = o || {}; const len = Math.hypot(x1 - x0, y1 - y0);
         const b = { x0, y0, x1, y1, ka, kb, ca: COL[ka], cb: COL[kb], d: delay || 0, w: o.w || 1.25, a: o.a == null ? 0.72 : o.a, glow: o.glow !== false, pulse: !!o.pulse, fall: !!o.fall, to: o.to || null,
@@ -150,6 +160,10 @@
       arcBand(cx, cy, r0, r1, a0, a1, delay) { const gr = grains(Math.abs(a1 - a0) * 0.5 * (r1 * r1 - r0 * r0), Math.abs(a1 - a0) * r1); L.bands.push({ arc: true, cx, cy, r0, r1, a0, a1, d: delay || 0, f: gr.f, n: gr.n }); },
       ribbon(pts, kind, delay, o) { o = o || {}; const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
         L.ribbons.push({ pts, cum, len: cum[cum.length - 1], c: COL[kind], d: delay || 0, w: o.w || 1, off: o.off != null ? o.off : q() * 6, per: o.per || 9 }); },
+      // embers falling from a curve, wherever it lies below the level y0; thickest where it is span or more below
+      shed(pts, y0, span, delay, n) { const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+        const em = []; for (let i = 0; i < (n || 90); i++) em.push({ u: Math.sqrt(q()), per: 2.8 + q() * 3.6, off: q(), fall: 34 + q() * 62, sway: (q() - 0.5) * 18, s: 5 + q() * q() * 7.5 });
+        L.sheds.push({ pts, cum, len: cum[cum.length - 1], y0, span, d: delay || 0, em }); },
     };
   }
   window.NEMATICA_LUMEN = { layer };

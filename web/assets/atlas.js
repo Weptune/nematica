@@ -195,7 +195,7 @@
     el("stop", { offset: 0, "stop-color": C.copy, "stop-opacity": 0.03 }, lg); el("stop", { offset: 1, "stop-color": C.copy, "stop-opacity": 0.3 }, lg);
     if (lost.length > 1) rv(el("path", { d: `M${lost[0][0].toFixed(1)} ${yB(1)}` + lost.map((q) => `L${q[0].toFixed(1)} ${q[1].toFixed(1)}`).join("") + `V${yB(1)}Z`, fill: `url(#${gid})` }, s), 40, 20);
     glowLine(s, dOf(pA), C.bone, 2, L); glowLine(s, dOf(pB), C.lit, 2, L);
-    if (L) { L.ribbon(pA, "bone", 0, { off: 1.5 }); L.ribbon(pB, "copy", 0, { off: 2.4 }); }
+    if (L) { L.ribbon(pA, "bone", 0, { off: 1.5 }); L.ribbon(pB, "copy", 0, { off: 2.4 }); L.shed(pB, yB(0.96), yB(0.5) - yB(0.96), 1500, nar ? 70 : 150); }      // individuality falling away: embers leave the curve once it sinks under the real worms
     const tipOf = (j) => `<b>Pull toward the average: ${Number(D[j].lam).toLocaleString()}</b>${row("Forecasting skill (R²)", f2(D[j].r2, 3))}${row("Individuality (real worms are 1)", f2(D[j].ind, 2))}`;
     pA.forEach((q, j) => hover(dot(S, "bone", q[0], q[1], 5, j, 190), tipOf(j)));
     pB.forEach((q, j) => hover(dot(S, "full", q[0], q[1], 5.4, j, 190), tipOf(j)));
@@ -224,7 +224,7 @@
     else el("path", { d: D.map((d, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(d.m).toFixed(1)).join(""), fill: "none", stroke: C.gold, "stroke-width": 9, "stroke-opacity": 0.1, "stroke-linejoin": "round", "stroke-linecap": "round" }, s);
     D.forEach((d, i) => { const xi = x(i), col = el("g", {}, s);
       if (L) { L.beam(xi, y(d.rnn), xi, y(d.m), "ring", "real", i * 22 + 100, { a: 0.42, w: 1, glow: false });
-        if (d.slow != null) L.star("copy", xi, y(d.slow), r - 1.2, i * 22 + 420); L.star("ring", xi, y(d.rnn), r - 0.6, i * 22); L.star("real", xi, y(d.m), r, i * 22 + 180); }
+        if (d.slow != null) L.star("copy", xi, y(d.slow), r - 1.2, i * 22 + 420, 3.2); L.star("ring", xi, y(d.rnn), r - 0.6, i * 22); L.star("real", xi, y(d.m), r, i * 22 + 180); }      // the slow drive shows as a slow swell passing along its marks
       else { rv(el("path", { d: `M${px(xi)} ${y(d.m)}V${y(d.rnn)}`, stroke: C.line }, col), i, 22);
         if (d.slow != null) rv(mark.full(col, xi, y(d.slow), r - 1.2), i, 22);
         rv(mark.ring(col, xi, y(d.rnn), r - 0.6), i, 22); rv(mark.real(col, xi, y(d.m), r), i, 22); }
@@ -324,6 +324,7 @@
     const r = nar ? 30 : 50, x1 = r * 1.5 + 2, x2 = x1 + r * 2 + (nar ? 44 : 76), yA = nar ? 74 : 96, yB = nar ? 232 : 256;
     [[yA, "real", mid, "A real worm"], [yB, "copy", 1, "An artificial network"]].forEach(([yy, kind, f, name], k) => {
       rv(moon(s, x1, yy, r, 1, kind), k * 4, 120); rv(moon(s, x2, yy, r, f, kind), k * 4 + 2, 120);
+      if (!k) moon(s, x2, yy, r, 1, kind).classList.add("wane");      // asked again, the real worm's answer is seen to fade: a full moon over the waned one, which then goes
       el("path", { d: `M${x1 + r + 10} ${px(yy)}H${x2 - r - 12}m-7 -4.5l7 4.5-7 4.5`, fill: "none", stroke: C.b3 }, s);
       if (!k) [lo, hi].forEach((v) => { const rx = r * Math.abs(1 - 2 * v);
         el("path", { d: `M${x2} ${yy - r}A${rx.toFixed(2)} ${r} 0 0 ${v < 0.5 ? 0 : 1} ${x2} ${yy + r}`, fill: "none", stroke: C.bone, "stroke-dasharray": "2 4", "stroke-opacity": 0.85 }, s); });

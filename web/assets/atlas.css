@@ -157,6 +157,11 @@ ol, ul { padding: 0; list-style: none; }
 /* the light under a plate: lumen.js paints the marks and their glow here; the SVG of scales and words lies over it */
 .lum { position: absolute; left: 0; top: 0; width: 100%; height: auto; pointer-events: none; }
 .fig-host > svg, .ledger .strip > svg { position: relative; }
+/* the waning: the second answer starts whole and fades to what was measured */
+.fig .wane { opacity: 0; pointer-events: none; }
+.in .wane { animation: wane 4.2s ease .3s both; }
+@keyframes wane { 0% { opacity: 0; } 10% { opacity: 1; } 42% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .in .wane { animation: none; } }
 .ledger .strip { position: relative; }
 .fig figcaption { font: 500 .86rem/1.5 var(--sans); color: var(--bone-3); margin-top: 14px; max-width: 62rem; }
 .fig svg text { font-family: var(--sans); }
