@@ -22,6 +22,19 @@ from ..bench.causal import window
 from ..data.pumpprobe import PumpProbe
 
 
+def normal_scores(rec: PumpProbe) -> PumpProbe:
+    """The same recording with each neuron's trace replaced by its normal scores (rank, then the Gaussian
+    quantile): every neuron keeps the order of its values in time and loses the shape of their distribution."""
+    from dataclasses import replace
+    from scipy.stats import norm, rankdata
+    x = np.array(rec.x, dtype=float)
+    for i in range(x.shape[0]):
+        ok = np.isfinite(x[i])
+        if ok.sum() > 2:
+            x[i, ok] = norm.ppf((rankdata(x[i, ok]) - 0.5) / ok.sum())
+    return replace(rec, x=x)
+
+
 def class_matrix(rec: PumpProbe, classes) -> np.ndarray:
     """(len(classes), T) class means of per-neuron z-scores; NaN where not observed."""
     T = rec.n_frames
@@ -738,6 +751,7 @@ class HybridKernel:
         self.kin_sd, self.kin_med = 0.0, 1.0
         self.h_sd = 0.0
         self.qmap, self.class_quantiles = False, {}
+        self.gcop, self.worm_quantiles = False, []      # [J] dynamics fitted on normal scores; real shapes put back, one training worm's at a time
         self.slow_drift = False
         self.slow_drift_pool = False
         self.drift_gain = 1.0     # each row draws its drift from training worm-class rows          # donors' ultra-slow drifts (minutes), class by class
@@ -883,6 +897,12 @@ class HybridKernel:
 
     def fit(self, train, val):
         from ..bench.perturbational import event_matrices
+        raw = list(train) + list(val)
+        if self.gcop:
+            # [J] skewed activity as a fixed, per-neuron output shape over Gaussian dynamics: everything below is
+            # fitted to the normal scores. Meant for recordings without pokes (the kernels would be fitted to
+            # normal scores too).
+            train, val = [normal_scores(r) for r in train], [normal_scores(r) for r in val]
         if self.gru:
             self.var = AtlasGRU(hidden=self.gru, sampled=self.gru_sampled, steps=self.gru_steps).fit(train, val)
         elif self.lowrank:
@@ -915,6 +935,18 @@ class HybridKernel:
                     if v.size > 200:
                         qs.setdefault(c, []).append((v - v.mean()) / v.std())
             self.class_quantiles = {c: np.quantile(np.concatenate(v), np.linspace(0, 1, 201)) for c, v in qs.items()}
+        if self.gcop:
+            # the shape of each class's activity in each training worm, and pooled over worms as a fallback
+            self.worm_quantiles, pool = [], {}
+            for r in raw:
+                z = class_matrix(r, self.var.classes); q = {}
+                for i, c in enumerate(self.var.classes):
+                    v = z[i][np.isfinite(z[i])]
+                    if v.size > 200 and v.std() > 0:
+                        v = (v - v.mean()) / v.std()
+                        q[c] = np.quantile(v, np.linspace(0, 1, 201)); pool.setdefault(c, []).append(v)
+                self.worm_quantiles.append(q)
+            self.class_quantiles = {c: np.quantile(np.concatenate(v), np.linspace(0, 1, 201)) for c, v in pool.items()}
         if self.members:
             self.member_rho = self._member_corrs(list(train) + list(val))
             if self.member_rho:
@@ -1203,6 +1235,17 @@ class HybridKernel:
             # training worms (rank-preserving map to pooled z-scored quantiles) [A]
             for i, c in enumerate(bg.classes):
                 q = self.class_quantiles.get(c)
+                if q is None:
+                    continue
+                sd0, m0 = x[i].std(), x[i].mean()
+                r = np.argsort(np.argsort(x[i])) / max(len(x[i]) - 1, 1)
+                x[i] = m0 + sd0 * np.interp(r, np.linspace(0, 1, len(q)), q)
+        if self.gcop and self.worm_quantiles:
+            # [J] this simulated worm takes the shapes of one training worm's distributions, class by class
+            # (rank-preserving), so worms differ in shape as real ones do; pooled shape where that worm lacks a class
+            donor = self.worm_quantiles[int(rng.integers(len(self.worm_quantiles)))]
+            for i, c in enumerate(bg.classes):
+                q = donor.get(c, self.class_quantiles.get(c))
                 if q is None:
                     continue
                 sd0, m0 = x[i].std(), x[i].mean()

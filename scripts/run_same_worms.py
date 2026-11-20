@@ -52,7 +52,7 @@ def make_model(spec: str):
     if base.startswith("hybrid_kernels"):
         parts = [p for p in base.replace("hybrid_kernels", "").split("_") if p]
         bg = next((p[2:] for p in parts if p.startswith("bg")), "spontaneous")
-        mask = next((p for p in parts if not p.startswith("bg") and p not in ("obs", "heavy", "regimes", "obsfit", "classquiet", "quietfit", "quietobsfit", "indiv", "indivshock", "hp", "mem", "memfix", "ownrho", "nokernels", "diag", "drift", "driftpool", "qmap") and not p.startswith("burst") and not p.startswith("kin") and not p.startswith("hsd") and not p.startswith("driftpool") and not p.startswith("indivslow") and not p.startswith("lowrank") and not p.startswith("smooth")
+        mask = next((p for p in parts if not p.startswith("bg") and p not in ("obs", "heavy", "regimes", "obsfit", "classquiet", "quietfit", "quietobsfit", "indiv", "indivshock", "hp", "mem", "memfix", "ownrho", "nokernels", "diag", "drift", "driftpool", "qmap", "gcop") and not p.startswith("burst") and not p.startswith("kin") and not p.startswith("hsd") and not p.startswith("driftpool") and not p.startswith("indivslow") and not p.startswith("lowrank") and not p.startswith("smooth")
                      and not p.startswith("gru") and not p.startswith("innov") and not p.startswith("slow")), None)
         hk = HybridKernel(mask=mask, background=bg, obs_noise="obs" in parts, heavy="heavy" in parts,
                             regimes="regimes" in parts, obs_fit="obsfit" in parts,
@@ -96,7 +96,8 @@ def make_model(spec: str):
             hk.drift_gain = float(dp[9:]) if len(dp) > 9 else 1.0
             hk.name += "_" + dp
         hk.qmap = "qmap" in parts
-        for flag in ("nokernels", "diag", "drift", "qmap"):
+        hk.gcop = "gcop" in parts
+        for flag in ("nokernels", "diag", "drift", "qmap", "gcop"):
             if flag in parts:
                 hk.name += "_" + flag
         if hk.slow_own_rho:
@@ -134,6 +135,7 @@ def main() -> int:
     ap.add_argument("--tag", default="")
     ap.add_argument("--fold", type=int, default=None)
     ap.add_argument("--atanas", action="store_true", help="data is the Atanas 2023 WormWideWeb JSON folder (no pokes)")
+    ap.add_argument("--copper", action="store_true", help="data is the copper set's folder of Flavell-pipeline h5 files (no pokes)")
     ap.add_argument("--seed-offset", type=int, default=0, help="different simulation noise (cache names get _s<offset>)")
     ap.add_argument("--pci", action="store_true", help="also score perturbational complexity (P1, P2)")
     args = ap.parse_args()
@@ -143,6 +145,9 @@ def main() -> int:
     if args.atanas:
         from nematica.data.atanas_pp import load_atanas_pp_dir
         recs = {r.uid: r for r in load_atanas_pp_dir(args.data)}
+    elif args.copper:
+        from nematica.data.copper_pp import load_copper_pp_dir
+        recs = {r.uid: r for r in load_copper_pp_dir(args.data)}
     else:
         recs = {r.uid: r for r in load_pumpprobe_dir(args.data)}
     folds = load_folds(args.folds)["folds"]

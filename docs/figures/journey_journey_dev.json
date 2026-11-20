@@ -1,0 +1,68 @@
+{
+ "hybrid_kernels_slow6d_hp_memfix_gcop": {
+  "0": {
+   "passed": 4,
+   "distribution": "III",
+   "timescale": "III",
+   "correlation": "III",
+   "dimension": "OOO",
+   "leadlag": "OII",
+   "dwell": "IOO"
+  }
+ },
+ "hybrid_kernels_slow6d_indivslow0.5_hp_memfix_gcop": {
+  "0": {
+   "passed": 4,
+   "distribution": "III",
+   "timescale": "IOI",
+   "correlation": "ITI",
+   "dimension": "OOO",
+   "leadlag": "III",
+   "dwell": "IOO"
+  }
+ },
+ "hybrid_kernels_slow6d_indivslow0.5_hp_memfix_hsd0.5_gcop": {
+  "0": {
+   "passed": 3,
+   "distribution": "III",
+   "timescale": "OOI",
+   "correlation": "ITI",
+   "dimension": "OOO",
+   "leadlag": "III",
+   "dwell": "IOO"
+  }
+ },
+ "hybrid_kernels_slow6d_indivslow1_hp_memfix_gcop": {
+  "0": {
+   "passed": 4,
+   "distribution": "III",
+   "timescale": "OOO",
+   "correlation": "ITI",
+   "dimension": "IOI",
+   "leadlag": "III",
+   "dwell": "IOO"
+  }
+ },
+ "hybrid_kernels_slow6d_indivslow1_hp_memfix_hsd0.5_gcop": {
+  "0": {
+   "passed": 5,
+   "distribution": "III",
+   "timescale": "OOO",
+   "correlation": "ITI",
+   "dimension": "IOI",
+   "leadlag": "III",
+   "dwell": "IOI"
+  }
+ },
+ "hybrid_kernels_slow6d_indivslow1_hp_memfix_hsd1_gcop": {
+  "0": {
+   "passed": 4,
+   "distribution": "III",
+   "timescale": "OOO",
+   "correlation": "III",
+   "dimension": "IOI",
+   "leadlag": "III",
+   "dwell": "IOO"
+  }
+ }
+}
