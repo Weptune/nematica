@@ -38,7 +38,7 @@ visual layer only: all copy stays plain and exact.
   `assets/showcase.js`, `assets/specimen.js`, `assets/img/fig-*.png`.
 
 ## Adding a result
-Add a card to `.arcana`, a plate (`section.plate` with a seal, "How we asked", "What we saw", numbers, a
+Add a card to `.arcana` (its `.back` holds the headline number and one sentence, shown on hover), a plate (`section.plate` with a seal, "How we asked", "What we saw", numbers, a
 figure and a verdict), a row in the ledger (`ledger()` in `atlas.js`), and update the tally and the great
 seal's count. Numbers come from committed result tables through `export_site.py`, never typed by hand
 into a figure.

@@ -130,7 +130,7 @@ ol, ul { padding: 0; list-style: none; }
   .card:hover .txt > h3, .card:hover .txt > p, .card:focus-visible .txt > h3, .card:focus-visible .txt > p { opacity: 0; }
   .card:hover .back, .card:focus-visible .back { opacity: 1; }
 }
-@media (hover: none) { .card .back { display: none; } }
+@media (hover: none) { .card .back, .hov { display: none; } }
 .card .v { margin-top: auto; padding-top: 16px; display: flex; align-items: center; justify-content: center; gap: 9px; font: 600 .8rem var(--sans); color: var(--bone-2); }
 .card .v svg { width: 40px; height: 20px; flex: none; }
 .seal svg { width: 100%; height: 100%; overflow: visible; }

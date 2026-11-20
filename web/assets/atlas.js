@@ -512,8 +512,9 @@
     const onRail = () => { if (!rail || !plates[0]) return; const y = scrollY + innerHeight * 0.45;
       const top0 = plates[0].getBoundingClientRect().top + scrollY, end = ans.getBoundingClientRect().bottom + scrollY;
       rail.classList.toggle("on", y > top0 && scrollY + innerHeight * 0.3 < end);
-      let cur = -1; plates.forEach((p, i) => { if (p.getBoundingClientRect().top + scrollY <= y) cur = i; });
-      railA.forEach((a, i) => a.setAttribute("aria-current", String(i === cur && y < ans.getBoundingClientRect().top + scrollY))); };
+      const tops = plates.map((p) => p.getBoundingClientRect().top + scrollY); let cur = -1; tops.forEach((t, i) => { if (t <= y) cur = i; });
+      const inside = y < ans.getBoundingClientRect().top + scrollY;      // plates set side by side light up together
+      railA.forEach((a, i) => a.setAttribute("aria-current", String(inside && cur >= 0 && Math.abs(tops[i] - tops[cur]) < 2))); };
     addEventListener("scroll", onRail, { passive: true }); onRail();
     const top = $("#top"), menu = $(".menu");
     const onScroll = () => top.classList.toggle("stuck", scrollY > 24); onScroll(); addEventListener("scroll", onScroll, { passive: true });
