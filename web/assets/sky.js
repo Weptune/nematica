@@ -201,16 +201,16 @@
   // ================================================================ the star of seven: every question joined in the order of the days
   const WEEK = ["saturn", "jupiter", "mars", "sun", "venus", "mercury", "moon"];        // round the circle; the star's lines then run Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn
   const star = make([1.32, 1.32], (t) => [0.2, 0.26 * sin(t * 0.3)]);
-  star.seg = 0.2; star.glow = 0.5; star.tips = [];
+  star.seg = 0.2; star.glow = 0.85; star.tips = [];
   { const at = (k) => -PI / 2 + (k / 7) * TAU, ring = [];
-    for (let k = 0; k < 98; k++) { const a = (k / 98) * TAU; ring.push(put(star, cos(a), -sin(a), 0, 0.6, 0.8, GOLD, 0)); }
-    chain(star, ring, true, 0.5, GOLD, 0.9);
-    const tip = WEEK.map((name, k) => put(star, cos(at(k)), -sin(at(k)), 0.02, 1.9, 3.6, METAL[name], 1)); star.tips = tip;
+    for (let k = 0; k < 98; k++) { const a = (k / 98) * TAU; ring.push(put(star, cos(a), -sin(a), 0, 0.8, 0.9, GOLD, 0)); }
+    chain(star, ring, true, 0.75, GOLD, 1.1);
+    const tip = WEEK.map((name, k) => put(star, cos(at(k)), -sin(at(k)), 0.02, 2, 4.4, METAL[name], 1)); star.tips = tip;
     for (let k = 0; k < 7; k++) { const a = at(k), b = at((k + 3) % 7), idx = [tip[k]];
-      for (let q = 1; q <= 24; q++) { const f = q / 25; idx.push(put(star, cos(a) + (cos(b) - cos(a)) * f, -(sin(a) + (sin(b) - sin(a)) * f), 0, 0.75, 0.85, q % 2 ? GOLD : BONE, 0)); }
-      idx.push(tip[(k + 3) % 7]); chain(star, idx, false, 0.55, GOLD, 1.1); }
+      for (let q = 1; q <= 24; q++) { const f = q / 25; idx.push(put(star, cos(a) + (cos(b) - cos(a)) * f, -(sin(a) + (sin(b) - sin(a)) * f), 0, 0.95, 1.05, q % 2 ? GOLD : WHITE, 0)); }
+      idx.push(tip[(k + 3) % 7]); chain(star, idx, false, 0.85, GOLD, 1.3); }
     while (star.k < N) { const a = (star.k / 4) * TAU; put(star, 0.05 * cos(a), 0.05 * sin(a), 0, 1.2, 1.2, WHITE, 0); } }
-  star.pos = (i, t, o) => { const a = REDUCED ? 0 : t * 0.04, c = cos(a), s = sin(a), x = star.P[3 * i], y = star.P[3 * i + 1]; o[0] = x * c - y * s; o[1] = x * s + y * c; o[2] = star.P[3 * i + 2] + 0.02 * sin(t * 1.1 + i); };
+  star.pos = (i, t, o) => { const a = REDUCED ? 0 : t * 0.04, c = cos(a), s = sin(a), x = star.P[3 * i], y = star.P[3 * i + 1]; o[0] = x * c - y * s; o[1] = x * s + y * c; o[2] = star.P[3 * i + 2]; };
   FORMS.star = star;
   [orr, bal].forEach((F) => { if (!F.pos) F.pos = still(F); });
 
@@ -334,12 +334,12 @@
   }
   orr.under = (s, a, t) => { dial(s, 1.1, 1.125, 84, 7, 1.15, true, REDUCED ? 0 : t * 0.01, 0.2 * a, BONE); proj(s, 0, 0, 0, q3); const r = s.S * 0.5; ctx.globalAlpha = 0.9 * a; ctx.drawImage(aura(GOLD), q3[0] - r, q3[1] - r, 2 * r, 2 * r); ctx.globalAlpha = 1; };
   star.under = (s, a, t) => { const r = REDUCED ? 0 : t * 0.04; dial(s, 1.055, 1.085, 84, 12, 1.115, false, r, 0.3 * a, GOLD);
-    const wide = new Path2D(), inner = new Path2D(), at = (k, R) => { const an = -PI / 2 + (k / 7) * TAU + r; proj(s, R * cos(an), -R * sin(an), 0, q3); };
+    const wide = new Path2D(), inner = new Path2D(), at = (k, R) => { const an = -PI / 2 + (k / 7) * TAU - r; proj(s, R * cos(an), -R * sin(an), 0, q3); };
     for (let k = 0; k < 7; k++) { at(k, 1); wide.moveTo(q3[0], q3[1]); at(k + 3, 1); wide.lineTo(q3[0], q3[1]); at(k + 0.5, 0.36); if (k) inner.lineTo(q3[0], q3[1]); else inner.moveTo(q3[0], q3[1]); } inner.closePath();
-    ctx.lineWidth = 6; ctx.strokeStyle = rgba(GOLD, 0.05 * a); ctx.stroke(wide); ctx.fillStyle = rgba(GOLD, 0.05 * a); ctx.fill(inner); ctx.lineWidth = 0.7; ctx.strokeStyle = rgba(GOLD, 0.3 * a); ctx.stroke(inner); };
+    ctx.lineWidth = 9; ctx.strokeStyle = rgba(GOLD, 0.07 * a); ctx.stroke(wide); ctx.lineWidth = 3; ctx.strokeStyle = rgba(GOLD, 0.1 * a); ctx.stroke(wide); ctx.fillStyle = rgba(GOLD, 0.06 * a); ctx.fill(inner); ctx.lineWidth = 0.8; ctx.strokeStyle = rgba(GOLD, 0.4 * a); ctx.stroke(inner); };
   orr.over = (s, a) => { SPHERES.forEach((name, k) => { const i = orr.planets[k], on = orr.hl < 0 ? 0.85 : k === orr.hl ? 1 : 0.3; glyph(name, sx[i] + 20, sy[i] - 18, 21, METAL[name], a * on); });
     if (orr.hl >= 0 && orr.label) { const i = orr.planets[orr.hl]; ctx.font = "italic 500 21px Cormorant, Georgia, serif"; ctx.textAlign = "left"; ctx.fillStyle = rgba(WHITE, a); ctx.fillText(orr.label, sx[i] + 38, sy[i] - 10); } };
-  star.over = (s, a, t) => { const r = REDUCED ? 0 : t * 0.04; WEEK.forEach((name, k) => { const an = -PI / 2 + (k / 7) * TAU, x = 1.24 * cos(an), y = -1.24 * sin(an); proj(s, x * cos(r) - y * sin(r), x * sin(r) + y * cos(r), 0, q3); glyph(name, q3[0], q3[1], Math.max(18, s.S * 0.11), METAL[name], 0.95 * a); }); };
+  star.over = (s, a, t) => { const r = REDUCED ? 0 : t * 0.04; WEEK.forEach((name, k) => { const an = -PI / 2 + (k / 7) * TAU, x = 1.24 * cos(an), y = -1.24 * sin(an); proj(s, x * cos(r) - y * sin(r), x * sin(r) + y * cos(r), 0, q3); glyph(name, q3[0], q3[1], Math.max(19, s.S * 0.125), METAL[name], a); }); };
 
   let px = 0, py = 0, tpx = 0, tpy = 0, mx = -1e4, my = -1e4, hoverI = -1, lastAuto = 0, heroHold = 0, heroForm = "worm", born = 0, hit = -1;
   function frame(now) {

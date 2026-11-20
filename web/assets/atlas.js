@@ -329,7 +329,7 @@
 
   // ------------------------------------------------------------------ seals: a ring of ticks, one per animal, round a planet's sign
   function seal(host) {
-    const n = +host.dataset.n || 0, g = host.dataset.g, legend = !host.closest(".duo") && !host.closest(".card") && host.dataset.legend;
+    const n = +host.dataset.n || 0, g = host.dataset.g, legend = !host.closest(".card") && host.dataset.legend;
     const s = el("svg", { viewBox: "0 0 200 200", "aria-hidden": "true" }); host.appendChild(s);
     el("circle", { cx: 100, cy: 100, r: 98.5, fill: "none", stroke: C.line }, s);
     el("circle", { cx: 100, cy: 100, r: 95, fill: "none", stroke: C.hair }, s);
