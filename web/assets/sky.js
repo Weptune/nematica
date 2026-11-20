@@ -26,6 +26,9 @@
   const rnd = () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
   let W = 0, H = 0, DPR = 1;
   const ORBS = window.NEMATICA_ORBS || null;       // the shader that renders the planets as real bodies; without it they are drawn
+  // far behind everything, a band of cloud painted once by the same shader; it slides a little as the page scrolls
+  let cloud = null, cloudY = 1e9;
+  if (ORBS) { cloud = ORBS.sprite("nebula", 768, {}); cloud.id = "nebula"; cloud.setAttribute("aria-hidden", "true"); cv.parentNode.insertBefore(cloud, cv); }
 
   // ---------------------------------------------------------------- colour: brass for the living, carmine for copies, a metal for each planet
   const PAL = [
@@ -94,7 +97,7 @@
     let X = WP[3 * i], Y = y * c - z * s + tA[1], Z = y * s + z * c + tA[2];
     const q = ease(hero.m * 1.5 - 0.5 * (rank[i] / N));
     if (q > 0) { X += (LAT[3 * i] - X) * q; Y += (LAT[3 * i + 1] - Y) * q; Z += (LAT[3 * i + 2] - Z) * q; }
-    o[0] = X; o[1] = Y; o[2] = Z; o[3] = 1 + q * (0.85 / hero.lum[i] - 1); o[4] = q; o[5] = 1 + q * (1.25 / hero.siz[i] - 1);
+    o[0] = X; o[1] = Y; o[2] = Z; o[3] = (1 + q * (0.85 / hero.lum[i] - 1)) * (1 + (1 - q) * 0.9 * (y * s + z * c)); o[4] = q; o[5] = 1 + q * (1.25 / hero.siz[i] - 1);
   };
 
   // ================================================================ the orrery: one question at the centre, seven ways round it
@@ -116,33 +119,27 @@
   };
 
   // ================================================================ the balance: a living system in one pan, a network in the other
-  const bal = make([1.72, 1.08], (t) => [0.24, 0.42 * sin(t * 0.21)]);
-  bal.seg = 0.34; bal.glow = 0.26; bal.tint = GOLD;
-  { const FY = 0.68, ARM = 1.25, PAN = -0.34, PR = 0.42;
-    const line = (n, f, lum, siz, col, grp, closed, a) => { const idx = []; for (let k = 0; k < n; k++) { const p = f(closed ? k / n : k / (n - 1)); idx.push(put(bal, p[0], p[1], p[2] || 0, lum, siz, col, grp)); } if (a !== 0) chain(bal, idx, closed, a == null ? 0.5 : a, col === BONE ? BONE : col, 0.9); return idx; };
-    line(14, (q) => [-0.5 + q, -1.0], 0.7, 0.9, BONE, 0);                                         // the foot
-    line(10, (q) => [-0.34 + 0.68 * q, -0.93], 0.7, 0.9, BONE, 0);
-    line(30, (q) => [0, -0.93 + (FY + 0.93 - 0.07) * q], 0.75, 0.9, BONE, 0);                    // the pillar
-    line(10, (q) => [0.065 * cos(q * TAU), FY + 0.065 * sin(q * TAU)], 1, 1, GOLD, 0, true, 0.5); // the pivot
-    line(5, (q) => [0, FY + 0.1 + 0.16 * q], 0.8, 0.8, GOLD, 0);
-    line(43, (q) => [-ARM + 2 * ARM * q, FY], 1, 1.1, GOLD, 1, false, 0.7);                      // the beam
-    [-1, 1].forEach((sd) => { const g = sd < 0 ? 2 : 3, cx = sd * ARM;
-      for (let c = 0; c < 3; c++) { const a = PI / 2 + (c * TAU) / 3; line(8, (q) => [cx + PR * cos(a) * q, FY + (PAN - FY) * q, PR * sin(a) * q], 0.55, 0.7, BONE, g, false, 0.32); }
-      line(26, (q) => [cx + PR * cos(q * TAU), PAN, PR * sin(q * TAU)], 0.85, 0.9, GOLD, g, true, 0.6);     // the pan's rim
-      line(10, (q) => [cx + PR * cos(PI * q), PAN - 0.13 * sin(PI * q), 0], 0.6, 0.8, BONE, g, false, 0.36);   // and its bowl
-      for (let k = 0; k < 14; k++) { let i;
-        if (sd < 0) { i = put(bal, cx - 0.26 + 0.04 * k, PAN + 0.1, 0, 1.25, 1.5, GOLD, g); bal.aux[4 * i] = k; bal.aux[4 * i + 1] = 1; }      // a small worm
-        else if (k < 12) { const l = Math.floor(k / 4), w = k % 4; i = put(bal, cx - 0.3 + 0.2 * l, PAN + 0.07 + 0.12 * (w >> 1), 0.12 * ((w & 1) - 0.5), 1.25, 1.5, CARM, g); }   // a small network: three layers
-        else i = put(bal, cx + 0.3, PAN + 0.07 + 0.12 * (k - 12), 0, 1.25, 1.5, CARM, g);                                                                                       // and its two outputs
-      } });
-    line(8, (q) => [0, FY - 0.08 - 0.3 * q], 0.9, 0.8, GOLD, 4, false, 0.45);                     // the needle
-    line(11, (q) => { const a = -PI / 2 + (q - 0.5) * 1.1; return [0.44 * cos(a), FY + 0.44 * sin(a)]; }, 0.6, 0.7, BONE, 0, false, 0.2);   // and its scale
-    bal.FY = FY; bal.ARM = ARM; }
+  // The instrument itself is drawn as lit brass (further down); the neurons are what it weighs. Half of them
+  // make a small worm in the left pan, half a small layered network in the right; a few are glints on the metal.
+  const bal = make([1.72, 1.1], (t) => [0.24, 0.42 * sin(t * 0.21)]);
+  bal.glow = 0.3; bal.tint = GOLD;
+  const BAL = { FY: 0.68, ARM: 1.25, PAN: -0.34, PR: 0.42, DEEP: 0.13 }, swing = (t) => (REDUCED ? 0.03 : 0.05 * sin(t * 0.6) + 0.018 * sin(t * 1.7));
+  { const nW = 126, nH = 80;
+    for (let k = 0; k < nW; k++) { const head = k < nH, u = head ? 0.02 + 0.42 * (k / nH) : 0.44 + 0.56 * ((k - nH) / (nW - nH)), r = head ? 0.08 * Math.pow(sin(PI * Math.min(1, u / 0.46 + 0.08)), 0.7) : 0.012, an = rnd() * TAU, rr = r * Math.sqrt(rnd());
+      const i = put(bal, -BAL.ARM + (u - 0.5) * 0.7, BAL.PAN + 0.11 + rr * sin(an), rr * cos(an) * 1.3, head ? 0.7 + 0.6 * rnd() : 1, head ? 0.9 + 0.8 * rnd() * rnd() : 0.9, k % 3 ? GOLD : WHITE, 2); bal.aux[4 * i] = u; bal.aux[4 * i + 1] = 1; bal.aux[4 * i + 2] = rnd() * TAU; }
+    for (let k = 0; k < 125; k++) { const l = Math.floor(k / 25), w = k % 25, i = put(bal, BAL.ARM + (l - 2) * 0.125, BAL.PAN + 0.045 + Math.floor(w / 5) * 0.062, ((w % 5) - 2) * 0.085, 1, 1.05, CARM, 3); bal.aux[4 * i] = l; bal.aux[4 * i + 1] = 2; }
+    const glint = (x, y, z, siz, g) => put(bal, x, y, z, 1.25, siz, GOLD, g);
+    glint(0, BAL.FY, 0.03, 2.6, 0); glint(-BAL.ARM, BAL.FY, 0, 1.7, 1); glint(BAL.ARM, BAL.FY, 0, 1.7, 1); glint(0, BAL.FY + 0.29, 0, 1.9, 0); glint(0, BAL.FY - 0.4, 0, 1.3, 4);
+    [-0.8, -0.2, 0.52].forEach((y) => glint(-0.03, y, 0.03, 1.1, 0));
+    [-1, 1].forEach((sd) => { for (let q = 0; q < 6; q++) { const an = (q / 6) * TAU + 0.4; glint(sd * BAL.ARM + BAL.PR * cos(an), BAL.PAN, BAL.PR * sin(an), 1.15, sd < 0 ? 2 : 3); } });
+    while (bal.k < N) { const an = (bal.k / 8) * TAU; glint(0.5 * cos(an), -0.94, 0.5 * sin(an), 1.05, 0); } }
   bal.pos = (i, t, o) => {
-    const g = bal.grp[i], b = REDUCED ? 0.03 : 0.05 * sin(t * 0.6) + 0.018 * sin(t * 1.7); let x = bal.P[3 * i], y = bal.P[3 * i + 1]; const z = bal.P[3 * i + 2];
-    if (g === 1) { const d = x; x = d * cos(b); y = bal.FY + d * sin(b); }
-    else if (g === 2 || g === 3) { const sd = g === 2 ? -1 : 1; x += sd * bal.ARM * (cos(b) - 1); y += sd * bal.ARM * sin(b); if (bal.aux[4 * i + 1]) y += 0.035 * sin(t * 2.2 + bal.aux[4 * i] * 0.8); }
-    else if (g === 4) { const d = y - bal.FY, a = -b * 5; x = -d * sin(a); y = bal.FY + d * cos(a); }
+    const g = bal.grp[i], b = swing(t), kind = bal.aux[4 * i + 1]; let x = bal.P[3 * i], y = bal.P[3 * i + 1]; const z = bal.P[3 * i + 2];
+    if (g === 1) { const d = x; x = d * cos(b); y = BAL.FY + d * sin(b); }
+    else if (g === 2 || g === 3) { const sd = g === 2 ? -1 : 1; x += sd * BAL.ARM * (cos(b) - 1); y += sd * BAL.ARM * sin(b);
+      if (kind === 1) { const u = bal.aux[4 * i]; y += 0.022 * sin(t * 2.1 - u * 8); o[3] = 0.75 + 0.5 * Math.pow(0.5 + 0.5 * sin(t * 1.3 + bal.aux[4 * i + 2]), 4); }       // the small worm stirs, its cells flickering
+      else if (kind === 2) o[3] = 0.5 + 0.85 * Math.pow(Math.max(0, sin(t * 2.2 - bal.aux[4 * i] * 1.15)), 2); }                                                          // the small network fires layer by layer
+    else if (g === 4) { const d = y - BAL.FY, a = -b * 5; x = -d * sin(a); y = BAL.FY + d * cos(a); }
     o[0] = x; o[1] = y; o[2] = z;
   };
 
@@ -266,32 +263,62 @@
   function segs(list, alpha, c, lw) { if (alpha < 0.01 || !list.length) return; const p = new Path2D(); for (let k = 0; k < list.length; k += 2) { const a = list[k], b = list[k + 1]; p.moveTo(sx[a], sy[a]); p.lineTo(sx[b], sy[b]); } ctx.lineWidth = lw; ctx.strokeStyle = rgba(c, alpha); ctx.stroke(p); }
 
   // ---- the worm's body, its nerve cord and its wiring; or the network's layers
-  const CS = new Float32Array(2 * (CORD + 1)), SHN = 110, shL = new Float32Array(2 * (SHN + 1)), shR = new Float32Array(2 * (SHN + 1));
+  const CS = new Float32Array(2 * (CORD + 1)), SHN = 110;
+  // The worm's body is glass: brightest where the wall turns edge-on, with a line of light along its upper
+  // side and the rings of its skin wrapping round. Inside the head sit the pharynx (two bulbs joined by a
+  // narrow neck) and, round that neck, the nerve ring where most of the head's wiring gathers.
+  const BN = SHN + 1, bX = new Float32Array(BN), bY = new Float32Array(BN), nX = new Float32Array(BN), nY = new Float32Array(BN), bR = new Float32Array(BN), bU = new Float32Array(BN), bS = new Float32Array(BN);
+  const bump = (u, c, h) => { const d = (u - c) / h; return d > -1 && d < 1 ? Math.pow(cos((d * PI) / 2), 0.8) : 0; };
+  const gullet = (u) => (u < 0.016 || u > 0.31 ? 0 : (0.1 + 0.25 * bump(u, 0.125, 0.042) + 0.31 * bump(u, 0.266, 0.044)) * smooth((u - 0.016) / 0.012) * smooth((0.31 - u) / 0.01));
+  function ribbon(lo, hi, k0, k1) { const p = new Path2D(), f = (d, k) => (typeof d === "number" ? d : d(bU[k])) * bR[k];
+    for (let k = k0; k <= k1; k++) { const d = f(lo, k), x = bX[k] + nX[k] * d, y = bY[k] + nY[k] * d; if (k === k0) p.moveTo(x, y); else p.lineTo(x, y); }
+    for (let k = k1; k >= k0; k--) { const d = f(hi, k); p.lineTo(bX[k] + nX[k] * d, bY[k] + nY[k] * d); } p.closePath(); return p; }
+  const gut = (u) => (u < 0.325 || u > 0.94 ? 0 : (0.4 + 0.045 * sin(u * 150)) * smooth((u - 0.325) / 0.03) * Math.pow(smooth((0.94 - u) / 0.2), 0.7));
+  const GRAIN = Array.from({ length: 110 }, () => [0.34 + 0.57 * rnd(), (rnd() * 2 - 1) * 0.3, 0.5 + rnd()]);
+  const WALL = Array.from({ length: 25 }, (_, k) => { const v = -1 + k / 12; return Math.sign(v) * (1 - Math.pow(1 - Math.abs(v), 1.6)); });       // finer toward the edges, where the light changes fastest
+  // a link drawn as a gentle curve; which way it bows is fixed by the pair it joins
+  const bow = (a, b) => (((a * 7 + b * 13) % 7) - 3) * 0.045;
+  function curves(list, alpha, c, lw) { if (alpha < 0.01 || !list.length) return; const p = new Path2D();
+    for (let k = 0; k < list.length; k += 2) { const a = list[k], b = list[k + 1], h = bow(a, b), dx = sx[b] - sx[a], dy = sy[b] - sy[a]; p.moveTo(sx[a], sy[a]); p.quadraticCurveTo((sx[a] + sx[b]) / 2 - dy * h, (sy[a] + sy[b]) / 2 + dx * h, sx[b], sy[b]); }
+    ctx.lineWidth = lw; ctx.strokeStyle = rgba(c, alpha); ctx.stroke(p); }
+  function wormBody(s, t, live) {
+    const roll = t * 0.3, cr = cos(roll), sr = sin(roll);
+    for (let k = 0; k <= CORD; k++) { const u = k / CORD, yc = -0.75 * NR * taper(u) * smooth((u - 0.1) / 0.22); axis(u, t, q3); proj(s, q3[0], q3[1] + yc * cr, q3[2] + yc * sr, q3); CS[2 * k] = q3[0]; CS[2 * k + 1] = q3[1]; }
+    for (let k = 0; k <= SHN; k++) { const f = k / SHN, u = -0.035 + 1.115 * (f < 0.12 ? 0.07 * Math.pow(f / 0.12, 2) : 0.07 + 0.93 * ((f - 0.12) / 0.88));   // more samples round the nose
+      axis(u, t, q3); const z0 = proj(s, q3[0], q3[1], q3[2], q3), x = q3[0], y = q3[1], pf = q3[2];
+      axis(u + 0.004, t, q3); const z1 = proj(s, q3[0], q3[1], q3[2], q3); let tx = q3[0] - x, ty = q3[1] - y; const tl = Math.hypot(tx, ty) || 1; tx /= tl; ty /= tl;
+      const v = c01((u + 0.035) / 0.085);
+      bX[k] = x; bY[k] = y; nX[k] = -ty; nY[k] = tx; bU[k] = u; bS[k] = ((z1 - z0) * s.S) / tl;       // how steeply the body runs toward the eye here
+      bR[k] = (0.165 + 0.2 * taper(u)) * Math.sqrt(1 - (1 - v) * (1 - v)) * Math.pow(c01((1.08 - u) / 0.52), 1.05) * s.S * pf; }
+    // glass: the wall is brightest edge-on
+    for (let q = 0; q < WALL.length - 1; q++) { const d = Math.abs(WALL[q] + WALL[q + 1]) / 2; ctx.fillStyle = rgba(q < 12 ? BONE : GOLD, (0.01 + 0.16 * Math.pow(d, 3.4)) * live); ctx.fill(ribbon(WALL[q], WALL[q + 1], 0, SHN)); }
+    ctx.fillStyle = rgba(WHITE, 0.04 * live); ctx.fill(ribbon(-0.76, -0.5, 4, SHN - 14)); ctx.fillStyle = rgba(WHITE, 0.085 * live); ctx.fill(ribbon(-0.67, -0.6, 8, SHN - 22));   // a line of light along the back
+    // the rings of the skin, each bowed by how the body is turned
+    const rings = new Path2D(); for (let k = 12; k < SHN - 4; k++) { const r = bR[k], b = (0.14 + Math.max(-0.7, Math.min(0.7, bS[k] * 0.9))) * r; rings.moveTo(bX[k] - nX[k] * r, bY[k] - nY[k] * r); rings.quadraticCurveTo(bX[k] + nY[k] * b * 2, bY[k] - nX[k] * b * 2, bX[k] + nX[k] * r, bY[k] + nY[k] * r); }
+    ctx.lineWidth = 0.6; ctx.strokeStyle = rgba(BONE, 0.05 * live); ctx.stroke(rings);
+    const body = ribbon(-1, 1, 0, SHN); ctx.lineWidth = 6; ctx.strokeStyle = rgba(GOLD, 0.035 * live); ctx.stroke(body); ctx.lineWidth = 0.9; ctx.strokeStyle = rgba(BONE, 0.36 * live); ctx.stroke(body);
+    // the gut, running the length of the body behind the pharynx, with its grains
+    let g0 = 0, g1 = 0; for (let k = 0; k <= SHN; k++) { if (bU[k] < 0.325) g0 = k + 1; if (bU[k] < 0.94) g1 = k; }
+    const gp = ribbon((u) => -gut(u), gut, g0, g1); ctx.fillStyle = rgba(GOLD, 0.03 * live); ctx.fill(gp); ctx.lineWidth = 0.7; ctx.strokeStyle = rgba(GOLD, 0.15 * live); ctx.stroke(gp);
+    ctx.fillStyle = rgba(GOLD, 0.2 * live); for (const gr of GRAIN) { const f = ((gr[0] + 0.035) / 1.115 - 0.07) / 0.93 * 0.88 + 0.12, kf = f * SHN, k = Math.min(SHN - 1, Math.floor(kf)), q = kf - k, x = bX[k] + (bX[k + 1] - bX[k]) * q, y = bY[k] + (bY[k + 1] - bY[k]) * q, d = gr[1] * bR[k] * (0.9 + 0.1 * sin(t * 0.9 + gr[0] * 40)); ctx.fillRect(x + nX[k] * d - 0.6, y + nY[k] * d - 0.6, 1.2 * gr[2], 1.2 * gr[2]); }
+    // the pharynx, and the nerve ring round its neck
+    let k0 = 0, k1 = 0; for (let k = 0; k <= SHN; k++) { if (bU[k] < 0.016) k0 = k + 1; if (bU[k] < 0.31) k1 = k; }
+    const ph = ribbon((u) => -gullet(u), gullet, k0, k1); ctx.fillStyle = rgba(BONE, 0.07 * live); ctx.fill(ph); ctx.lineWidth = 1; ctx.strokeStyle = rgba(BONE, 0.46 * live); ctx.stroke(ph);
+    const lumen = new Path2D(); for (let k = k0; k <= k1; k++) { if (k === k0) lumen.moveTo(bX[k], bY[k]); else lumen.lineTo(bX[k], bY[k]); } ctx.lineWidth = 0.6; ctx.strokeStyle = rgba(BONE, 0.16 * live); ctx.stroke(lumen);
+    let kr = k0; for (let k = k0; k <= k1; k++) if (Math.abs(bU[k] - 0.195) < Math.abs(bU[kr] - 0.195)) kr = k;
+    const rr = bR[kr] * 0.62, thin = Math.max(2.2, rr * Math.min(0.5, Math.abs(bS[kr]) * 0.8 + 0.12)), an = Math.atan2(nY[kr], nX[kr]);
+    ctx.lineWidth = 6; ctx.strokeStyle = rgba(GOLD, 0.06 * live); ctx.beginPath(); ctx.ellipse(bX[kr], bY[kr], rr, thin, an, 0, TAU); ctx.stroke();
+    ctx.lineWidth = 1.2; ctx.strokeStyle = rgba(GOLD, 0.48 * live); ctx.beginPath(); ctx.ellipse(bX[kr], bY[kr], rr, thin, an, 0, TAU); ctx.stroke();
+    // the nerve cord, brightest where the most links run through it
+    ctx.lineCap = "round";
+    for (let k = 0; k < CORD; k++) { const f = (traffic[k] + traffic[k + 1]) / 2; ctx.lineWidth = 0.7 + 2.1 * f; ctx.strokeStyle = rgba(GOLD, (0.07 + 0.3 * f) * live); ctx.beginPath(); ctx.moveTo(CS[2 * k], CS[2 * k + 1]); ctx.lineTo(CS[2 * k + 2], CS[2 * k + 3]); ctx.stroke(); }
+    const sp2 = new Path2D(); for (let i = 0; i < N; i++) if (spur[i]) { const k = Math.round(WU[i] * CORD), dx = CS[2 * k] - sx[i], dy = CS[2 * k + 1] - sy[i]; sp2.moveTo(sx[i], sy[i]); sp2.quadraticCurveTo(sx[i] + dx * 0.5 - dy * 0.14, sy[i] + dy * 0.5 + dx * 0.14, CS[2 * k], CS[2 * k + 1]); }
+    ctx.lineWidth = 0.5; ctx.strokeStyle = rgba(BONE, 0.08 * live); ctx.stroke(sp2);
+    curves(near[0], 0.08 * live, BONE, 0.5); curves(near[1], 0.16 * live, BONE, 0.6); curves(near[2], 0.36 * live, GOLD, 0.9);
+  }
   hero.under = (s, a, t) => {
     const m = hero.m, live = a * smooth(1 - m * 3.2), net = a * smooth((m - 0.68) / 0.3);
-    if (live > 0.01) {
-      for (let k = 0; k <= CORD; k++) { axis(k / CORD, t, q3); proj(s, q3[0], q3[1], q3[2], q3); CS[2 * k] = q3[0]; CS[2 * k + 1] = q3[1]; }
-      // the body: a glass sheath round the nervous system, ringed like the animal's skin
-      for (let k = 0; k <= SHN; k++) { const f = k / SHN, u = -0.035 + 1.115 * (f < 0.12 ? 0.07 * Math.pow(f / 0.12, 2) : 0.07 + 0.93 * ((f - 0.12) / 0.88));   // more samples round the nose
-        axis(u, t, q3); proj(s, q3[0], q3[1], q3[2], q3); const x = q3[0], y = q3[1], pf = q3[2];
-        axis(u + 0.004, t, q3); proj(s, q3[0], q3[1], q3[2], q3); let tx = q3[0] - x, ty = q3[1] - y; const tl = Math.hypot(tx, ty) || 1; tx /= tl; ty /= tl;
-        const v = c01((u + 0.035) / 0.085), r = (0.165 + 0.2 * taper(u)) * Math.sqrt(1 - (1 - v) * (1 - v)) * Math.pow(c01((1.08 - u) / 0.52), 1.05) * s.S * pf;
-        shL[2 * k] = x - ty * r; shL[2 * k + 1] = y + tx * r; shR[2 * k] = x + ty * r; shR[2 * k + 1] = y - tx * r; }
-      const body = new Path2D(), rings = new Path2D(); body.moveTo(shL[0], shL[1]);
-      for (let k = 1; k <= SHN; k++) body.lineTo(shL[2 * k], shL[2 * k + 1]);
-      for (let k = SHN; k >= 0; k--) body.lineTo(shR[2 * k], shR[2 * k + 1]); body.closePath();
-      for (let k = 14; k < SHN - 3; k += 1) { rings.moveTo(shL[2 * k], shL[2 * k + 1]); rings.lineTo(shR[2 * k], shR[2 * k + 1]); }
-      ctx.fillStyle = rgba(GOLD, 0.03 * live); ctx.fill(body);
-      ctx.lineWidth = 0.6; ctx.strokeStyle = rgba(BONE, 0.04 * live); ctx.stroke(rings);
-      ctx.lineWidth = 5; ctx.strokeStyle = rgba(GOLD, 0.035 * live); ctx.stroke(body);
-      ctx.lineWidth = 0.9; ctx.strokeStyle = rgba(BONE, 0.3 * live); ctx.stroke(body);
-      // the nerve cord, brightest where the most links run through it
-      ctx.lineCap = "round";
-      for (let k = 0; k < CORD; k++) { const f = (traffic[k] + traffic[k + 1]) / 2; ctx.lineWidth = 0.7 + 2.1 * f; ctx.strokeStyle = rgba(GOLD, (0.07 + 0.3 * f) * live); ctx.beginPath(); ctx.moveTo(CS[2 * k], CS[2 * k + 1]); ctx.lineTo(CS[2 * k + 2], CS[2 * k + 3]); ctx.stroke(); }
-      const sp2 = new Path2D(); for (let i = 0; i < N; i++) if (spur[i]) { const k = Math.round(WU[i] * CORD); sp2.moveTo(sx[i], sy[i]); sp2.lineTo(CS[2 * k], CS[2 * k + 1]); }
-      ctx.lineWidth = 0.5; ctx.strokeStyle = rgba(BONE, 0.075 * live); ctx.stroke(sp2);
-      segs(near[0], 0.075 * live, BONE, 0.5); segs(near[1], 0.15 * live, BONE, 0.6); segs(near[2], 0.34 * live, GOLD, 0.9);
-    }
+    if (live > 0.01) wormBody(s, t, live);
     if (net > 0.01) { segs(LE, 0.15 * net, CARM, 0.6);
       const fr = new Path2D(), mid = (LAYERS - 1) / 2; for (let l = 0; l < FULL; l++) { const x = (l - mid) * LX, c = [[-0.56, -0.46], [0.56, -0.46], [0.56, 0.46], [-0.56, 0.46]]; c.forEach((v, k) => { proj(s, x, v[0], v[1], q3); if (k) fr.lineTo(q3[0], q3[1]); else fr.moveTo(q3[0], q3[1]); }); fr.closePath(); }
       ctx.fillStyle = rgba(CARM, 0.016 * net); ctx.fill(fr); ctx.lineWidth = 0.7; ctx.strokeStyle = rgba(CARM, 0.2 * net); ctx.stroke(fr); }
@@ -353,6 +380,56 @@
     ctx.lineWidth = 0.6; ctx.strokeStyle = rgba(c, 0.26 * a); ctx.stroke(of); bands.forEach((b) => { ctx.strokeStyle = rgba(c, b[2] * a); ctx.stroke(b[0]); });
   }
   Object.keys(METAL).forEach((n) => (FORMS[n].under = globeUnder));
+
+  // ---- the balance, in lit brass: round bars shaded across their width, drums with a lit side and a paler top, dishes with a shadowed bowl
+  const BR = ["#1a1203", "#6a4e12", "#c39b3e", "#f8e6ac"];       // brass in shadow, in half light, lit, and where the light glances
+  const at3 = (s, x, y, z) => { proj(s, x, y, z, q3); return [q3[0], q3[1], q3[2]]; };
+  function bar(s, A, B, wa, wb) { const a = at3(s, A[0], A[1], A[2] || 0), b = at3(s, B[0], B[1], B[2] || 0), dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1; let nx = -dy / l, ny = dx / l; if (nx + ny < 0) { nx = -nx; ny = -ny; }     // n points away from the light
+    const ra = Math.max(0.6, (wa * s.S * a[2]) / 2), rb = Math.max(0.6, ((wb == null ? wa : wb) * s.S * b[2]) / 2), r = Math.max(ra, rb), mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+    const g = ctx.createLinearGradient(mx - nx * r, my - ny * r, mx + nx * r, my + ny * r); g.addColorStop(0, BR[1]); g.addColorStop(0.22, BR[3]); g.addColorStop(0.42, BR[2]); g.addColorStop(0.78, BR[1]); g.addColorStop(1, BR[0]);
+    ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(a[0] + nx * ra, a[1] + ny * ra); ctx.lineTo(b[0] + nx * rb, b[1] + ny * rb); ctx.lineTo(b[0] - nx * rb, b[1] - ny * rb); ctx.lineTo(a[0] - nx * ra, a[1] - ny * ra); ctx.closePath(); ctx.fill(); }
+  const loop = (s, cx, y, r, n) => { const pts = []; for (let k = 0; k < n; k++) { const a = (k / n) * TAU, z = proj(s, cx + r * cos(a), y, r * sin(a), q3); pts.push([q3[0], q3[1], z]); } return pts; };
+  const closed = (pts) => { const p = new Path2D(); pts.forEach((q, k) => (k ? p.lineTo(q[0], q[1]) : p.moveTo(q[0], q[1]))); p.closePath(); return p; };
+  const ends = (pts) => { let l = pts[0], r = pts[0]; pts.forEach((q) => { if (q[0] < l[0]) l = q; if (q[0] > r[0]) r = q; }); return [l, r]; };
+  function drum(s, cx, y0, y1, r) { const lo = loop(s, cx, y0, r, 30), hi = loop(s, cx, y1, r, 30), el = ends(lo), eh = ends(hi);
+    const g = ctx.createLinearGradient(el[0][0], 0, el[1][0], 0); g.addColorStop(0, BR[1]); g.addColorStop(0.2, BR[3]); g.addColorStop(0.42, BR[2]); g.addColorStop(0.8, BR[1]); g.addColorStop(1, BR[0]);
+    ctx.fillStyle = g; ctx.fill(closed(lo)); ctx.beginPath(); ctx.moveTo(eh[0][0], eh[0][1]); ctx.lineTo(eh[1][0], eh[1][1]); ctx.lineTo(el[1][0], el[1][1]); ctx.lineTo(el[0][0], el[0][1]); ctx.closePath(); ctx.fill();
+    const g2 = ctx.createLinearGradient(eh[0][0], eh[0][1] - 4, eh[1][0], eh[1][1] + 4); g2.addColorStop(0, BR[2]); g2.addColorStop(0.35, BR[1]); g2.addColorStop(1, "#3a2a08"); const top = closed(hi); ctx.fillStyle = g2; ctx.fill(top); ctx.lineWidth = 0.7; ctx.strokeStyle = "rgba(248,230,172,.55)"; ctx.stroke(top); }
+  function ball(x, y, r) { const g = ctx.createRadialGradient(x - r * 0.35, y - r * 0.4, r * 0.05, x, y, r); g.addColorStop(0, BR[3]); g.addColorStop(0.35, BR[2]); g.addColorStop(0.8, BR[1]); g.addColorStop(1, BR[0]); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
+  function dish(s, cx, cy) { const rim = loop(s, cx, cy, BAL.PR, 44), e = ends(rim), zc = proj(s, cx, cy, 0, q3), bot = at3(s, cx, cy - BAL.DEEP, 0), w = e[1][0] - e[0][0], yb = e[0][1] + (bot[1] - e[0][1]) * 1.34;
+    // the outside of the bowl, seen under the near edge of the rim
+    const under = new Path2D(); under.moveTo(e[0][0], e[0][1]); under.bezierCurveTo(e[0][0] + w * 0.12, yb, e[1][0] - w * 0.12, yb + (e[1][1] - e[0][1]), e[1][0], e[1][1]);
+    rim.filter((q) => q[2] > zc).sort((a, b) => b[0] - a[0]).forEach((q) => under.lineTo(q[0], q[1])); under.closePath();
+    const g = ctx.createLinearGradient(e[0][0], 0, e[1][0], 0); g.addColorStop(0, BR[1]); g.addColorStop(0.24, BR[3]); g.addColorStop(0.46, BR[2]); g.addColorStop(0.82, BR[1]); g.addColorStop(1, BR[0]); ctx.fillStyle = g; ctx.fill(under);
+    // its hollow: in shadow on the side the light comes from, catching it on the far wall
+    const hollow = closed(rim), g2 = ctx.createLinearGradient(e[0][0], 0, e[1][0], 0); g2.addColorStop(0, BR[0]); g2.addColorStop(0.5, "#3a2a08"); g2.addColorStop(0.88, BR[1]); g2.addColorStop(1, "#9c7a26");
+    ctx.fillStyle = g2; ctx.fill(hollow); ctx.lineWidth = 1.6; ctx.strokeStyle = BR[2]; ctx.stroke(hollow); ctx.lineWidth = 0.6; ctx.strokeStyle = "rgba(248,230,172,.85)"; ctx.stroke(hollow); }
+  bal.under = (s, a, t) => {
+    const b = swing(t), cb = cos(b), sb2 = sin(b), g0 = ctx.globalAlpha; ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = a; ctx.lineCap = "round";
+    const end = (sd) => [sd * BAL.ARM * cb, BAL.FY + sd * BAL.ARM * sb2, 0], pan = (sd) => [sd * BAL.ARM * cb, BAL.PAN + sd * BAL.ARM * sb2];
+    drum(s, 0, -1.02, -0.96, 0.52); drum(s, 0, -0.96, -0.9, 0.38); drum(s, 0, -0.9, -0.86, 0.2);                             // the foot, in three steps
+    bar(s, [0, -0.86], [0, BAL.FY - 0.05], 0.06, 0.042);                                                                    // the pillar, with its turned collars
+    [[-0.8, 0.05], [-0.74, 0.035], [-0.2, 0.045], [0.5, 0.04]].forEach(([y, r]) => drum(s, 0, y - 0.014, y + 0.014, r));
+    // the scale the needle reads against
+    const pv = at3(s, 0, BAL.FY, 0), R0 = 0.42 * s.S * pv[2]; ctx.strokeStyle = "rgba(236,230,214,.55)"; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.arc(pv[0], pv[1], R0, PI / 2 - 0.5, PI / 2 + 0.5); ctx.stroke();
+    ctx.beginPath(); for (let k = -5; k <= 5; k++) { const an = PI / 2 + k * 0.1, r1 = R0 - (k % 5 ? 5 : 9); ctx.moveTo(pv[0] + R0 * cos(an), pv[1] + R0 * sin(an)); ctx.lineTo(pv[0] + r1 * cos(an), pv[1] + r1 * sin(an)); } ctx.stroke();
+    const na = -b * 5; bar(s, [0, BAL.FY], [0.38 * sin(na), BAL.FY - 0.38 * cos(na)], 0.022, 0.004);
+    [-1, 1].forEach((sd) => { const e = end(sd), pn = pan(sd); dish(s, pn[0], pn[1]);
+      const e2 = at3(s, e[0], e[1], 0); ctx.setLineDash([2.8, 2.2]);
+      for (let c = 0; c < 3; c++) { const an = PI / 2 + (c * TAU) / 3, r = at3(s, pn[0] + BAL.PR * cos(an), pn[1], BAL.PR * sin(an)); ctx.lineWidth = 1.5; ctx.strokeStyle = BR[1]; ctx.beginPath(); ctx.moveTo(e2[0], e2[1]); ctx.lineTo(r[0], r[1]); ctx.stroke(); ctx.lineWidth = 0.7; ctx.strokeStyle = BR[3]; ctx.beginPath(); ctx.moveTo(e2[0] - 0.4, e2[1]); ctx.lineTo(r[0] - 0.4, r[1]); ctx.stroke(); }
+      ctx.setLineDash([]); });
+    bar(s, end(-1), [0, BAL.FY], 0.022, 0.05); bar(s, [0, BAL.FY], end(1), 0.05, 0.022);                                    // the beam, thickest at the pivot
+    [-1, 1].forEach((sd) => { const e = at3(s, ...end(sd)); ball(e[0], e[1], 0.03 * s.S * e[2]); });
+    bar(s, [0, BAL.FY + 0.05], [0, BAL.FY + 0.25], 0.03, 0.014); const fin = at3(s, 0, BAL.FY + 0.29, 0); ball(fin[0], fin[1], 0.042 * s.S * fin[2]);
+    ball(pv[0], pv[1], 0.078 * s.S * pv[2]); ctx.lineWidth = 1; ctx.strokeStyle = "rgba(46,33,6,.7)"; ctx.beginPath(); ctx.arc(pv[0], pv[1], 0.045 * s.S * pv[2], 0, TAU); ctx.stroke();
+    ctx.globalAlpha = g0; ctx.globalCompositeOperation = "lighter";
+    // what is weighed: a small worm in its glass body, a small network in its five layers
+    const pl = pan(-1), up = new Path2D(), dn = []; for (let k = 0; k <= 24; k++) { const u = k / 24, r = 0.105 * Math.pow(sin(PI * Math.min(1, u * 1.5 + 0.06)), 0.6) * Math.pow(c01((1.02 - u) / 0.5), 0.8), y = pl[1] + 0.11 + 0.022 * sin(t * 2.1 - u * 8), x = pl[0] + (u - 0.5) * 0.74;
+      proj(s, x, y + r, 0, q3); if (k) up.lineTo(q3[0], q3[1]); else up.moveTo(q3[0], q3[1]); proj(s, x, y - r, 0, q3); dn.push([q3[0], q3[1]]); }
+    for (let k = dn.length - 1; k >= 0; k--) up.lineTo(dn[k][0], dn[k][1]); up.closePath(); ctx.fillStyle = rgba(GOLD, 0.05 * a); ctx.fill(up); ctx.lineWidth = 0.8; ctx.strokeStyle = rgba(BONE, 0.42 * a); ctx.stroke(up);
+    const pr = pan(1), fr = new Path2D(); for (let l = 0; l < 5; l++) { const x = pr[0] + (l - 2) * 0.125; [[0.02, -0.2], [0.32, -0.2], [0.32, 0.2], [0.02, 0.2]].forEach((v, k) => { proj(s, x, pr[1] + v[0], v[1], q3); if (k) fr.lineTo(q3[0], q3[1]); else fr.moveTo(q3[0], q3[1]); }); fr.closePath(); }
+    ctx.fillStyle = rgba(CARM, 0.03 * a); ctx.fill(fr); ctx.lineWidth = 0.7; ctx.strokeStyle = rgba(CARM, 0.4 * a); ctx.stroke(fr);
+  };
   // a graduated circle, as on the limb of an old instrument: n ticks from r0 to r1, every k-th one longer; flat to the viewer, or lying in the figure's ground plane
   function dial(s, r0, r1, n, every, long, ground, spin, alpha, c) {
     const p = new Path2D(), ring = new Path2D(), at = (r, a) => { const x = r * cos(a), y = r * sin(a); if (ground) proj(s, x, 0, y, q3); else proj(s, x, y, 0, q3); };
@@ -385,6 +462,7 @@
     if (lastT) { slow = now - lastT > 30 ? slow + 1 : Math.max(0, slow - 2); if (slow > 45 && QUAL > 1) { QUAL = QUAL > 1.5 ? 1.5 : 1; slow = 0; resize(); } } lastT = now;   // keep it smooth on slow machines
     if (!born) born = now; if (now - measured > 700) measure();
     const t = REDUCED ? 8 : now / 1000, y0 = scrollY;
+    if (cloud) { const ty = Math.round((0.3 - 0.6 * (y0 / Math.max(1, document.documentElement.scrollHeight - H))) * H); if (ty !== cloudY) { cloudY = ty; cloud.style.transform = `translate3d(0,${ty}px,0)`; } }
     px += (tpx - px) * 0.05; py += (tpy - py) * 0.05;
 
     // ---- how much of each figure is in, from where the page is
@@ -439,7 +517,7 @@
     // ---- signals in flight: along a link, or down the nerve cord
     const hw = heroStage ? smooth((heroStage.w - 0.8) / 0.2) : 0, pc = hero.m > 0.5 ? [255, 190, 205] : PAL[GOLD];
     for (let q = pulses.length - 1; q >= 0; q--) { const pu = pulses[q], u = (now - pu.t0) / pu.d; if (u >= 1) { en[pu.b] = Math.max(en[pu.b], pu.p); pulses.splice(q, 1); continue; } if (u < 0 || hw < 0.02) continue;
-      const at = (v, o) => { if (!pu.far) { o[0] = sx[pu.a] + (sx[pu.b] - sx[pu.a]) * v; o[1] = sy[pu.a] + (sy[pu.b] - sy[pu.a]) * v; return; }
+      const at = (v, o) => { if (!pu.far) { const dx = sx[pu.b] - sx[pu.a], dy = sy[pu.b] - sy[pu.a], h = hero.m > 0.5 ? 0 : bow(pu.a, pu.b) * 4 * v * (1 - v); o[0] = sx[pu.a] + dx * v - dy * h; o[1] = sy[pu.a] + dy * v + dx * h; return; }
         const ka = WU[pu.a] * CORD, kb = WU[pu.b] * CORD;
         if (v < 0.14) { const f = v / 0.14, k0 = Math.round(ka); o[0] = sx[pu.a] + (CS[2 * k0] - sx[pu.a]) * f; o[1] = sy[pu.a] + (CS[2 * k0 + 1] - sy[pu.a]) * f; }
         else if (v > 0.86) { const f = (v - 0.86) / 0.14, k1 = Math.round(kb); o[0] = CS[2 * k1] + (sx[pu.b] - CS[2 * k1]) * f; o[1] = CS[2 * k1 + 1] + (sy[pu.b] - CS[2 * k1 + 1]) * f; }

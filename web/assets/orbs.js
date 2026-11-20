@@ -101,9 +101,18 @@ vec4 rings(float r) {
   a += .62 * smoothstep(2.02, 2.04, r) * (1. - smoothstep(2.25, 2.28, r)) * (1. - .85 * (smoothstep(2.19, 2.2, r) - smoothstep(2.215, 2.225, r)));
   return vec4(mix(vec3(.74, .65, .52), vec3(.98, .92, .80), fine), clamp(a * (.62 + .55 * fine), 0., 1.));
 }
+// not a body: the far cloud behind everything, a band of blue and violet gas crossed by dark lanes, with a little gold where it is thickest
+vec4 nebula(vec2 u) {
+  vec3 p = vec3(u * 1.5, uSeed), w = p + .95 * vec3(fbm3(p * 1.2 + 2.), fbm3(p * 1.2 + 9.), 0.);
+  float n = fbm(w * 1.05), m = fbm(w * 2.7 + 5.), band = exp(-pow((u.y + u.x * .42 - .08 + .3 * (n - .5)) / .5, 2.));
+  float dens = smoothstep(.36, .82, n * .72 + m * .34) * (.22 + .9 * band) * (1. - .62 * smoothstep(.52, .74, fbm(w * 3.3 + 11.)) * band);
+  vec3 c = mix(vec3(.10, .27, .74), vec3(.30, .19, .64), smoothstep(.36, .72, m)); c = mix(c, vec3(.92, .70, .42), smoothstep(.64, .92, n) * band * .4);
+  float a = clamp(dens * .5, 0., 1.) * (1. - smoothstep(.8, 1., max(abs(u.x), abs(u.y)) * .98)); return vec4(c * a, a);
+}
 vec4 over(vec4 top, vec4 under) { return vec4(top.rgb + under.rgb * (1. - top.a), top.a + under.a * (1. - top.a)); }
 
 void main() {
+  if (uKind > 7.5) { gl_FragColor = nebula(v) * uGain; return; }
   vec2 p = v / uR; float px = uPx / uR;
   float cr = cos(uRoll), sr = sin(uRoll); vec2 q = vec2(p.x * cr + p.y * sr, -p.x * sr + p.y * cr); q.y /= uFlat;      // the body's own upright, squashed at the poles
   float r2 = dot(q, q), r = sqrt(r2); bool isSun = uKind > 4.5 && uKind < 5.5;
@@ -155,6 +164,7 @@ void main() {
     saturn: { kind: 4, R: 0.42, air: [1, 0.92, 0.72, 0.12], airH: 0.04, amb: 0.012, flat: 0.9, ring: 1, seed: 6.2 },
     sun: { kind: 5, R: 0.36, air: [0, 0, 0, 0], airH: 0.1, amb: 1, seed: 3.3 },
     moon: { kind: 6, R: 0.9, air: [0.8, 0.88, 1, 0.07], airH: 0.02, amb: 0.03, seed: 5.5 },
+    nebula: { kind: 8, R: 1, air: [0, 0, 0, 0], airH: 0.1, amb: 1, seed: 7.7 },
   };
   const norm = (a) => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
   // paint one body into the corner of the working canvas at s by s device pixels

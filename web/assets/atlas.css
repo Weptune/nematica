@@ -401,3 +401,6 @@ main, .foot { position: relative; z-index: 1; }
 .card .seal { width: min(100%, 150px); }
 .card .seal .planet { transition: transform 1.2s cubic-bezier(.2, .7, .2, 1); transform-origin: 100px 100px; }
 .card:hover .seal .planet, .card.lit .seal .planet { transform: scale(1.12); }
+
+/* ---- the far cloud behind the scene (painted once by assets/orbs.js, placed by assets/sky.js) */
+#nebula { position: fixed; left: 0; top: -30vh; width: 100vw; height: 160vh; z-index: 0; pointer-events: none; opacity: .8; will-change: transform; }
