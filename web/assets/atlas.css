@@ -108,7 +108,6 @@ ol, ul { padding: 0; list-style: none; }
 }
 @media (hover: none) { .card .back, .hov { display: none; } }
 .card .v { margin-top: auto; padding-top: 16px; display: flex; align-items: center; justify-content: center; gap: 9px; font: 600 .8rem var(--sans); color: var(--bone-2); }
-.card .v svg { width: 40px; height: 20px; flex: none; }
 .seal svg { width: 100%; height: 100%; overflow: visible; }
 .seal .legend { font: 600 9.5px var(--sans); letter-spacing: .22em; fill: var(--bone-3); }
 .seal .ticks { transform-origin: 100px 100px; }
@@ -173,7 +172,7 @@ ol, ul { padding: 0; list-style: none; }
 @media (prefers-reduced-motion: reduce) { .card .back, .card .txt > h3, .card .txt > p { transition: none; } .rv { opacity: 1; } .draw { stroke-dashoffset: 0; } html { scroll-behavior: auto; } .card, .seal .ticks { transition: none; } }
 
 .verdict { display: flex; align-items: center; gap: clamp(14px, 2vw, 26px); margin-top: clamp(30px, 4vw, 56px); padding-top: 22px; border-top: 1px solid var(--line); }
-.verdict svg { width: clamp(64px, 7vw, 96px); height: auto; flex: none; }
+.verdict svg { width: clamp(22px, 2.2vw, 30px); height: auto; flex: none; color: var(--gilt); align-self: flex-start; margin-top: .35em; }
 .verdict p { font: 500 clamp(1.3rem, 1.1rem + .8vw, 1.9rem)/1.2 var(--serif); max-width: 46rem; }
 .verdict p i { color: var(--gilt); }
 .verdict p span { display: block; font: 500 .9rem/1.45 var(--sans); color: var(--bone-3); margin-top: 6px; }
@@ -222,17 +221,9 @@ ol, ul { padding: 0; list-style: none; }
 .great { max-width: 520px; width: 100%; justify-self: center; }
 .great svg { width: 100%; height: auto; overflow: visible; }
 .great .legend { font: 600 11px var(--sans); letter-spacing: .2em; fill: var(--bone-3); }
-.great figcaption { display: flex; justify-content: center; gap: 22px; margin-top: 16px; font: 500 .82rem var(--sans); color: var(--bone-2); }
-.great figcaption span { display: inline-flex; align-items: center; gap: 8px; }
-.great figcaption i { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
-.great .k1 { border: 2px solid var(--gilt); } .great .k2 { border: 1px solid var(--bone-2); outline: 1px solid var(--bone-2); outline-offset: 2px; } .great .k3 { border: 1px dashed var(--bone-2); }
 .why { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 3vw, 56px); margin-top: clamp(44px, 5vw, 84px); padding-top: 26px; border-top: 1px solid var(--line); }
 .why p { font: 500 1.16rem/1.42 var(--serif); color: var(--bone-2); }
 @media (max-width: 860px) { .why { grid-template-columns: 1fr; } }
-.tally { display: flex; gap: clamp(18px, 3vw, 48px); margin-top: 30px; flex-wrap: wrap; }
-.tally div { border-top: 1px solid var(--line); padding-top: 10px; min-width: 7rem; }
-.tally b { display: block; font: 300 3.4rem/.9 var(--serif); font-variant-numeric: lining-nums; }
-.tally span { font: 500 .84rem var(--sans); color: var(--bone-2); }
 @media (max-width: 860px) { .claim { grid-template-columns: 1fr; } }
 
 /* ------------------------------------------------------------------ deeper, footer */
@@ -330,7 +321,7 @@ main, .foot { position: relative; z-index: 1; }
 .chapter .over span { color: var(--bone-3); font-size: .74em; margin-left: .5em; }
 .chapter h2 { font: 400 clamp(2.6rem, 1rem + 5.3vw, 6.8rem)/.92 var(--serif); letter-spacing: -.024em; text-wrap: balance; text-shadow: 0 2px 40px rgba(4, 10, 28, .9); }
 .chip { display: inline-flex; align-items: center; gap: 12px; margin-top: clamp(22px, 4vh, 40px); font: 600 1rem var(--sans); border: 1px solid var(--line); border-radius: 999px; padding: 10px 22px 10px 14px; background: rgba(4, 10, 28, .55); }
-.chip svg { width: 44px; height: 22px; flex: none; }
+.chip svg { width: 16px; height: 16px; flex: none; color: var(--gilt); }
 @media (max-width: 900px) { .chapter { max-width: none; justify-content: flex-end; min-height: 92svh; padding: 0 0 6vh; } .chapter .seal { display: none; } }
 .panel { position: relative; background: linear-gradient(180deg, rgba(8, 20, 52, .9), rgba(4, 11, 30, .95)); border: 1px solid var(--hair); padding: clamp(22px, 4.2vw, 68px); box-shadow: 0 50px 140px rgba(0, 0, 0, .45); }
 .panel::before { content: ""; position: absolute; left: -1px; top: -1px; width: min(42%, 420px); height: 2px; background: linear-gradient(90deg, #f0cf78, rgba(240, 207, 120, 0)); }
@@ -343,7 +334,6 @@ main, .foot { position: relative; z-index: 1; }
 /* ---- numbers with weight */
 .num b { background: linear-gradient(180deg, #fff6dc 8%, #f0cf78 52%, #b8923a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 400; padding-bottom: .06em; }
 .num b i { -webkit-text-fill-color: rgba(236, 230, 214, .64); }
-.tally b { background: linear-gradient(180deg, #fff6dc, #f0cf78 60%, #b8923a); -webkit-background-clip: text; background-clip: text; color: transparent; font-size: 4.6rem; }
 .claim .big { font-size: clamp(2.2rem, 1.1rem + 3.6vw, 4.8rem); }
 .claim .big em { color: #f0cf78; text-shadow: 0 0 40px rgba(240, 207, 120, .35); }
 
@@ -357,7 +347,7 @@ main, .foot { position: relative; z-index: 1; }
 @media (max-width: 720px) { .card, .card:hover { transform: none; } }
 
 /* ---- light on the marks that stand for real animals, and on what a copy learned */
-.verdict svg, .chip svg, .card .v svg { filter: drop-shadow(0 0 6px rgba(240, 207, 120, .35)); }
+.verdict svg, .chip svg { filter: drop-shadow(0 0 6px rgba(240, 207, 120, .35)); }
 .bench { background: rgba(4, 10, 28, .5); }
 .rail a { background: rgba(4, 10, 28, .8); }
 @media (prefers-reduced-motion: reduce) { .kin .w { opacity: 1; transform: none; transition: none; } .card, .card:hover { transition: none; transform: none; } .tw::after { transition: none; } }

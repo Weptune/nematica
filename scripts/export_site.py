@@ -223,7 +223,7 @@ def beyond() -> dict:
             "band": [0.087, 0.121], "bandLabel": "real worms with each other",
             "plain": {"range": [0.004, 0.014], "label": "copy fitted by watching"},
             "fixed": {"range": [0.088, 0.113], "value": 0.1, "label": "copy that also learned from pokes", "below": True},
-            "status": {"kind": "closed", "text": "Closed by learning from pokes",
+            "status": {"text": "Learning from pokes is what it takes",
                        "sub": "Pattern shown equivalent in 6 of 6 held-out groups; size and ongoing activity match less well"},
             "tip": [["Copy fitted by watching", "0.004 to 0.014"], ["Real worms with each other", "0.087 to 0.121"],
                     ["Copy that also learned from pokes", "0.088 to 0.113"]],
@@ -234,7 +234,7 @@ def beyond() -> dict:
             "band": [0.99, 1.01], "bandLabel": "real worms",
             "plain": {"value": 0.78, "label": "tuned to forecast best"},
             "fixed": {"value": 0.99, "ok": True, "label": "keeps each worm's own dynamics", "below": True},
-            "status": {"kind": "closed", "text": "Closed by keeping individuals",
+            "status": {"text": "Keeping individuals costs almost nothing",
                        "sub": "Costs 0.009 of forecasting skill; 7 of 8 tests inside in a nested check"},
             "tip": [["Best forecaster", "too typical on correlations and behaviour encoding"], ["Individuality", "0.78 against 0.99"]],
             "note": "Not pre-registered; one lab's worms."},
@@ -244,7 +244,7 @@ def beyond() -> dict:
             "band": [-0.5, 0.5], "bandLabel": "within half an SD",
             "plain": {"value": -out["permouse"]["medianSD"], "label": "random network"},
             "fixed": {"value": -0.03, "range": [-0.73, 0.08], "label": "with a slow drive, 18 held-out mice", "below": True},
-            "status": {"kind": "closed", "text": "Closed by a slow drive",
+            "status": {"text": "A slow drive brings the network to the mouse",
                        "sub": "About 6% of each unit's variance; interval too wide to show equivalence"},
             "tip": [["Random network lower in", f"{out['permouse']['lower']} of {out['permouse']['n']} mice"],
                     ["Mouse minus network", f"{out['permouse']['medianSD']} SDs [{out['permouse']['ci90SD'][0]} to {out['permouse']['ci90SD'][1]}]"],
@@ -255,7 +255,7 @@ def beyond() -> dict:
             "scale": "Share of state that is internal, not locked to the input", "domain": [0, 1], "ticks": [0, 0.5, 1], "dp": 1,
             "band": [out["slowStudy"]["mice"]["M1"][0], out["slowStudy"]["mice"]["M1"][2]], "bandLabel": "middle half of the mice",
             "plain": {"values": sorted(counted), "label": "network families and sizes", "below": True, "anchor": "end"},
-            "status": {"kind": "none", "text": "No gap: networks on both sides",
+            "status": {"text": "No difference to find: networks on both sides",
                        "sub": "Pre-registered: none of four claims of more, slower internal state held"},
             "tip": [["Mice, median", str(out["slowStudy"]["mice"]["M1"][1])],
                     ["Networks, medians", f"{min(counted):.2f} to {max(counted):.2f}"]],
@@ -265,7 +265,7 @@ def beyond() -> dict:
             "scale": "Second response ÷ previous, 0.6 to 2 minutes apart", "domain": [0, 1.2], "ticks": [0, 0.5, 1], "dp": 1,
             "band": [0.34, 0.64], "bandLabel": "real worms",
             "plain": {"value": 1.0, "label": "artificial networks"},
-            "status": {"kind": "open", "text": "Open: the light tool, or the neuron",
+            "status": {"text": "The light tool, or the neuron?",
                        "sub": "A network whose input weakens with use reproduces it; this data cannot tell which the worm has"},
             "tip": [["Real worms", "about half (interval 0.34 to 0.64)"], ["Artificial networks", "the same every time"]],
             "note": "Exploratory curve. About 9% of the atlas's stimulations are repeats within 5 minutes."},
@@ -275,7 +275,7 @@ def beyond() -> dict:
             "band": [5, 6], "bandLabel": "pass mark",
             "plain": {"value": em["atanas_control_rest"][0]["rest"], "label": "fitted to rest only"},
             "fixed": {"value": em["atanas"][0]["rest"], "label": "the emulator recipe", "below": True},
-            "status": {"kind": "open", "text": "Open: still and moving worms differ",
+            "status": {"text": "Still and moving worms differ",
                        "sub": "The recipe built on immobilised worms fails here; movement or lab conditions"},
             "tip": [["Emulator recipe", f"{em['atanas'][0]['rest']} of 6, in all five noise draws"], ["Fitted to rest only", f"{em['atanas_control_rest'][0]['rest']} of 6"]],
             "note": "Refitted from scratch on these worms; no optogenetic pokes in this data."},
@@ -300,8 +300,14 @@ def beyond() -> dict:
     # Study V: the watching copy's predicted direction vs the real direction, per mouse (39 held-out mice)
     vr = json.loads((FIG / "opto/vbn_result.json").read_text())
     wt = json.loads((FIG / "opto/vbn_wt_control.json").read_text())["wt_real_up"]
-    out["optoSign"] = {"mice": [{"id": m, "line": v["line"], "real": v["real_up"], "w": v["w_up"], "rest": v["rest_r"]}
+    # Study P: what a copy given the mouse's own answers to brief pulses predicts, and how it compares with a second mouse
+    sp = json.loads((FIG / "opto/second_result.json").read_text())
+    out["optoSign"] = {"mice": [{"id": m, "line": v["line"], "real": v["real_up"], "w": v["w_up"], "rest": v["rest_r"],
+                                 "p": sp["mice"].get(m, {}).get("p_up")}
                                 for m, v in vr["mice"].items()],
+                       "second": {line: {"n": sp["primary"][line]["n"], **{k: round(sp["primary"][line]["median"][k], 3) for k in ("B", "P", "W", "X", "A", "PA", "p_up")},
+                                         "right": sum(1 for v in sp["mice"].values() if v["line"] == line and (v["p_up"] < 0.5) == (sp["primary"][line]["median"]["real_up"] < 0.5)),
+                                         "above": sum(1 for v in sp["mice"].values() if v["line"] == line and v["P"] > v["B"])} for line in ("Sst", "Vip")},
                        "wt": [round(float(x), 3) for x in np.percentile(wt, [25, 50, 75])], "nWT": len(wt),
                        "claims": {k: vr[k] for k in ("V1", "V2", "V3", "V4", "V5")},
                        "median": {k: vr[f"median_{k}"] for k in ("Sst", "Vip")}}

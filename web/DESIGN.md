@@ -53,7 +53,11 @@ is visual only: all copy stays plain and exact.
 - **Type.** Cormorant for display, questions, numerals and home-page prose; Schibsted Grotesk for data,
   controls and captions; Newsreader only for long running text on inner pages. Chart text is never in a
   series colour: a small key mark beside the label carries identity.
-- **Verdicts are shapes** (`#v-closed`, `#v-open`, `#v-none` in the sprite in `index.html`).
+- **No verdict labels.** The site does not sort questions into closed, open or anything else, and has no
+  tally of them (the owner's decision, 21 Nov 2026: a public showcase states what was found). Each chapter
+  opens with one plain line under its title and ends with one plain line and its limits; the ledger row says
+  the same in a few words. Say what was seen and what the data cannot say, in ordinary sentences. On the
+  great seal and the masthead seal every planet has the same gold ring.
 - **The old order.** The orrery's spheres run Moon, Mercury, Venus, Sun, Mars, Jupiter, Saturn from the
   centre out. The star of seven (in the sky and on the great seal) has the planets round its circle in
   that order reversed, so its lines join them in the order of the days of the week.
@@ -65,7 +69,7 @@ is visual only: all copy stays plain and exact.
 - No em dashes anywhere.
 
 ## Files
-- `index.html`: the page, plus the SVG sprite: planet signs, verdict marks, and the gradients and patterns
+- `index.html`: the page, plus the SVG sprite: planet signs, a small star, and the gradients and patterns
   the keys and the fallback marks use. Scripts load in this order: data, `orbs.js`, `sky.js`, `lumen.js`,
   `atlas.js`, `emblems.js`, `bench.js`. Each is cached by its `?v=` number: raise it when the file changes.
 - `assets/atlas.css`: tokens and components, in page order.
@@ -109,6 +113,5 @@ is visual only: all copy stays plain and exact.
 ## Adding a result
 Add a card to `.arcana` (its `.back` holds the headline number and one sentence, shown on hover), a plate
 (`section.plate` with an `.open` holding the chapter header and a `.stage`, then a panel with "How we asked",
-"What we saw", numbers, a figure and a verdict), a row in the ledger (`ledger()` in `atlas.js`), and update the tally and the great
-seal's count. Numbers come from committed result tables through `export_site.py`, never typed by hand
+"What we saw", numbers, a figure and one closing line), and a row in the ledger (`ledger()` in `atlas.js`). Numbers come from committed result tables through `export_site.py`, never typed by hand
 into a figure.

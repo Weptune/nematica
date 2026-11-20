@@ -144,7 +144,8 @@
     const nar = host.clientWidth < 720, H = nar ? 470 : 540, order = ["Sst", "Vip"];
     const D = O.mice.filter((d) => order.includes(d.line)).sort((a, b) => order.indexOf(a.line) - order.indexOf(b.line) || a.real - b.real);
     const S = stage(host, H, `For ${D.length} mice: the share of brain regions a copy fitted at rest predicted would rise when one kind of inhibitory cell was driven, and the share that did`), { s, w, L } = S;
-    const ky = key(s, 2, 20, [["ring", "what the copy fitted at rest predicted"], ["real", "what happened when the cells were driven"], ["light", nar ? "what the light alone does" : `what the light alone does, in ${O.nWT || 27} mice whose cells cannot answer it`]], w);
+    const hasP = D.some((d) => d.p != null);
+    const ky = key(s, 2, 20, [["ring", "what the copy fitted at rest predicted"], ["real", "what happened when the cells were driven"]].concat(hasP ? [["full", nar ? "a copy given brief pulses" : "what a copy given brief pulses predicted"]] : [], [["light", nar ? "what the light alone does" : `what the light alone does, in ${O.nWT || 27} mice whose cells cannot answer it`]]), w);
     const m = { l: nar ? 50 : 96, r: nar ? 8 : 26, t: ky + (nar ? 74 : 72), b: 84 }, gapG = nar ? 20 : 56, n = D.length;
     const step = (w - m.l - m.r - gapG) / n, y = lin(0, 1, H - m.b, m.t);
     if (L) L.band(m.l, y(O.wt[2]), w - m.l - m.r, y(O.wt[0]) - y(O.wt[2]), false, 0, true);      // what the light alone does: a pale mist, not the gold of the yardstick
@@ -158,10 +159,11 @@
     D.forEach((d, i) => { if (d.line !== g) { if (g) { groups.push([g, gx0, xi]); xi += gapG; } g = d.line; gx0 = xi; }
       const cx = xi + step / 2, col = el("g", {}, s);
       if (L) { const hit = L.star("real", cx, y(d.real), r, i * 14 + 260); L.star("ring", cx, y(d.w), r - 0.6, i * 14);      // what was predicted, then light running from it to what happened
-        L.beam(cx, y(d.w), cx, y(d.real), "ring", "real", i * 14 + 120, { pulse: true, fall: true, to: hit, off: i * 0.085, per: 7.5, w: 1.3 }); }
+        L.beam(cx, y(d.w), cx, y(d.real), "ring", "real", i * 14 + 120, { pulse: true, fall: true, to: hit, off: i * 0.085, per: 7.5, w: 1.3 });
+        if (d.p != null) L.star("copy", cx, y(d.p), r - 1.3, i * 14 + 520); }
       else { rv(el("path", { d: `M${cx.toFixed(1)} ${y(d.w)}V${y(d.real)}`, stroke: `url(#${gid})`, "stroke-width": 1.3 }, col), i, 14);
-        rv(mark.ring(col, cx, y(d.w), r - 0.6), i, 14); rv(mark.real(col, cx, y(d.real), r), i, 14); }
-      hover(el("rect", { x: xi, y: m.t, width: step, height: H - m.t - m.b, fill: "transparent" }, s), `<b>${d.line} mouse ${d.id.replace("sub-", "")}</b>${row("Copy fitted at rest predicted rising", pc(d.w))}${row("Rose when the cells were driven", pc(d.real))}${row("Light alone, median", pc(O.wt[1]))}`);
+        rv(mark.ring(col, cx, y(d.w), r - 0.6), i, 14); if (d.p != null) rv(mark.full(col, cx, y(d.p), r - 1.3), i, 14); rv(mark.real(col, cx, y(d.real), r), i, 14); }
+      hover(el("rect", { x: xi, y: m.t, width: step, height: H - m.t - m.b, fill: "transparent" }, s), `<b>${d.line} mouse ${d.id.replace("sub-", "")}</b>${row("Copy fitted at rest predicted rising", pc(d.w))}${d.p != null ? row("Copy given brief pulses predicted rising", pc(d.p)) : ""}${row("Rose when the cells were driven", pc(d.real))}${row("Light alone, median", pc(O.wt[1]))}`);
       xi += step; });
     groups.push([g, gx0, xi]);
     const cnt = (l) => D.filter((d) => d.line === l).length, said = { Sst: ["The copy said rise. They fell.", "in 29 of 29 mice"], Vip: ["These did rise.", "in 10 of 10 mice"] };
@@ -427,13 +429,14 @@
     if (O) { const sst = O.mice.filter((d) => d.line === "Sst"), re = sst.map((d) => d.real), wu = sst.map((d) => d.w);
       G.splice(1, 0, { title: "Which way a cell pushes", where: `Mouse cortex, ${O.mice.length} animals, written down in advance`, scale: "Share of regions that rise when Sst cells are switched on", domain: [0, 1], ticks: [0, 0.5, 1], pct: true,
         band: [qt(re, 0.25), qt(re, 0.75)], bandLabel: "real mice", plain: { value: med(wu), label: "copy fitted at rest" },
-        status: { kind: "open", text: "Open: watching points the wrong way", sub: "A copy taught by light pulses does better; none yet answers like a second mouse" } }); }
+        fixed: sst.some((d) => d.p != null) ? { value: med(sst.filter((d) => d.p != null).map((d) => d.p)), label: "copy given brief pulses" } : null,
+        status: { text: "Watching points the wrong way", sub: O.second ? `A copy given the mouse's own answers to brief pulses gets the direction right in ${O.second.Sst.right} of ${O.second.Sst.n}` : "A copy taught by light pulses does better" } }); }
     const names = [["mercury", "The Echo"], ["mars", "The Push"], ["venus", "The Face"], ["saturn", "The Long Memory"], ["sun", "The Inner Light"], ["moon", "The Waning"], ["jupiter", "The Journey"]];
     host.innerHTML = "";
     G.forEach((g, i) => {
       const rowEl = document.createElement("a"); rowEl.className = "row"; rowEl.href = "#q" + (i + 1); rowEl.style.textDecoration = "none"; rowEl.style.color = "inherit";
       rowEl.innerHTML = `<svg class="g" aria-hidden="true"><use href="#g-${names[i][0]}"/></svg><div class="t"><b>${names[i][1]}</b><span>${g.where}</span></div><div class="strip"></div>
-        <div class="st"><svg aria-hidden="true" viewBox="0 0 48 24"><use href="#v-${g.status.kind}"/></svg><div><b>${g.status.text}</b>${g.status.sub}</div></div>`;
+        <div class="st"><div><b>${g.status.text}</b>${g.status.sub}</div></div>`;
       host.appendChild(rowEl);
       if (ORBS) { const ic = rowEl.querySelector("svg.g"), nm = names[i][0]; ic.innerHTML = ""; ic.setAttribute("viewBox", "0 0 100 100"); ic.classList.add("orb");      // the row's sign is its planet
         orbImage(ic, nm, 50, 50, { mercury: 40, venus: 42, mars: 40, jupiter: 45, saturn: 22, sun: 21, moon: 42 }[nm], { light: nm === "moon" ? [0.86, 0.3, 0.12] : [-0.6, 0.5, 0.62], roll: nm === "saturn" ? 0.36 : nm === "mars" ? 0.4 : 0.08, lean: nm === "saturn" ? 0.42 : 0.12, spin: nm === "jupiter" ? 0.25 : 0.9, time: 4 }, "card", 420); }
@@ -461,10 +464,9 @@
     });
   }
 
-  // ------------------------------------------------------------------ the great seal: the seven questions on the star of seven, each ringed by how it came out
+  // ------------------------------------------------------------------ the great seal: the seven questions on the star of seven
   function greatSeal(host) {
     const cards = $$(".arcana .card"); if (!cards.length) return;
-    const kind = {}; cards.forEach((c) => (kind[c.querySelector(".seal").dataset.g] = (c.querySelector(".v use").getAttribute("href") || "").replace("#v-", "")));
     const WEEK = ["saturn", "jupiter", "mars", "sun", "venus", "mercury", "moon"];      // round the circle as in the sky above; the star's lines then run in the order of the days
     const s = el("svg", { viewBox: "0 0 520 520", "aria-hidden": "true" }); host.appendChild(s);
     const cx = 260, cy = 260, RO = 250, RV = 172;
@@ -486,12 +488,11 @@
     el("circle", { cx, cy, r: 40, fill: C.deep, stroke: C.gilt, "stroke-opacity": 0.8 }, s);
     el("path", { d: "M6 44c10 0 11-23 23-23 11 0 11 22 20 22 5 0 7-7 9-13-1 11-5 18-11 18-12 0-10-22-19-22-8 0-11 23-22 23z", fill: C.bone, transform: `translate(${cx - 26} ${cy - 28}) scale(.82)` }, s);
     el("circle", { cx: cx - 26 + 29 * 0.82, cy: cy - 28 + 23.5 * 0.82, r: 3.5, fill: "url(#mk-real)" }, s);
-    WEEK.forEach((name, i) => { const [x, y] = V[i], k = kind[name];
-      if (k === "closed") el("circle", { cx: x, cy: y, r: 54, fill: "url(#gl-real)" }, s);
-      el("circle", { cx: x, cy: y, r: 31, fill: C.deep, stroke: k === "closed" ? C.gold : C.b2, "stroke-width": k === "closed" ? 2 : 1.2, "stroke-dasharray": k === "open" ? "3 4" : null }, s);
-      if (k === "none") el("circle", { cx: x, cy: y, r: 36.5, fill: "none", stroke: C.b2 }, s);
+    WEEK.forEach((name, i) => { const [x, y] = V[i];
+      el("circle", { cx: x, cy: y, r: 50, fill: "url(#gl-real)", opacity: 0.7 }, s);
+      el("circle", { cx: x, cy: y, r: 31, fill: C.deep, stroke: C.gold, "stroke-width": 1.5 }, s);
       if (ORBS) orbImage(s, name, x, y, { mercury: 21, venus: 23, mars: 22, jupiter: 24.5, saturn: 14.5, sun: 15.5, moon: 22 }[name], { light: name === "moon" ? [0.86, 0.3, 0.12] : [-0.6, 0.5, 0.62], roll: name === "saturn" ? 0.36 : name === "mars" ? 0.4 : 0.08, lean: name === "saturn" ? 0.42 : 0.12, spin: name === "jupiter" ? 0.25 : 0.9, time: 4 }, "card", 420);
-      else { const u = el("use", { href: "#g-" + name, x: x - 18, y: y - 18, width: 36, height: 36 }, s); u.style.color = k === "closed" ? C.gold : C.bone; } });
+      else { const u = el("use", { href: "#g-" + name, x: x - 18, y: y - 18, width: 36, height: 36 }, s); u.style.color = C.gold; } });
   }
 
   // ------------------------------------------------------------------ wiring it up
