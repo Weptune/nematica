@@ -60,12 +60,15 @@
 
   // ---------------------------------------------------------------- the same yardstick
   const herd = Array.from({ length: 13 }, (_, i) => [0.78 + 0.5 * rnd(), (i / 13) * TAU + rnd() * 0.3, 0.012 + 0.02 * rnd(), rnd() * TAU]);
+  const grit = Array.from({ length: 260 }, () => [rnd() * TAU, 0.03 + 0.94 * rnd(), 0.8 + rnd() * rnd() * 1.6, rnd() * TAU, 0.006 + rnd() * 0.012]);   // gold dust: angle, depth in the ring, size, phase, drift
   function rule(g, W, H, t) {
     const cx = W * 0.4, cy = H * 0.47, R = Math.min(H * 0.27, W * 0.2), lo = 0.82 * R, hi = 1.24 * R;
-    // where another animal usually sits: a ring, engraved
+    // where another animal usually sits: a ring of gold dust, as on the plates below
     g.save(); g.beginPath(); g.arc(cx, cy, hi, 0, TAU); g.arc(cx, cy, lo, 0, TAU, true); g.clip();
-    g.beginPath(); for (let x = -H; x < W; x += 5) { g.moveTo(cx - W + x, cy + H); g.lineTo(cx - W + x + 2 * H, cy - H); } g.strokeStyle = rgba(BRASS, 0.75); g.lineWidth = 1; g.stroke();
-    const wash = g.createRadialGradient(cx, cy, lo, cx, cy, hi); wash.addColorStop(0, rgba(GOLD, 0.02)); wash.addColorStop(0.5, rgba(GOLD, 0.1)); wash.addColorStop(1, rgba(GOLD, 0.02)); g.fillStyle = wash; g.fillRect(0, 0, W, H); g.restore();
+    const wash = g.createRadialGradient(cx, cy, lo, cx, cy, hi); wash.addColorStop(0, rgba([228, 172, 58], 0.26)); wash.addColorStop(0.2, rgba([228, 172, 58], 0.11)); wash.addColorStop(0.8, rgba([228, 172, 58], 0.11)); wash.addColorStop(1, rgba([228, 172, 58], 0.26)); g.fillStyle = wash; g.fillRect(0, 0, W, H); g.restore();
+    g.globalCompositeOperation = "lighter"; const dot = HALO.get(GOLD);
+    grit.forEach((p) => { const a = p[0] + (REDUCED ? 0 : t * p[4]), r = lo + (hi - lo) * p[1], tw = sin(t * (0.5 + p[2] * 0.4) + p[3]), sz = p[2] * 3.4; g.globalAlpha = 0.25 + 0.75 * tw * tw; g.drawImage(dot, cx + r * cos(a) - sz / 2, cy + r * sin(a) - sz / 2, sz, sz); });
+    g.globalAlpha = 1; g.globalCompositeOperation = "source-over";
     ring(g, cx, cy, lo, GOLD, 0.7, 1); ring(g, cx, cy, hi, GOLD, 0.7, 1);
     g.beginPath(); for (let k = 0; k < 72; k++) { const a = (k / 72) * TAU, r0 = hi + 3, r1 = hi + (k % 6 ? 6 : 10); g.moveTo(cx + r0 * cos(a), cy + r0 * sin(a)); g.lineTo(cx + r1 * cos(a), cy + r1 * sin(a)); } g.strokeStyle = rgba(BONE, 0.3); g.lineWidth = 0.8; g.stroke();
     // the other animals, each about one unit away

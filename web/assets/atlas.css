@@ -154,6 +154,10 @@ ol, ul { padding: 0; list-style: none; }
 .fig { margin-top: clamp(36px, 4.6vw, 72px); position: relative; }
 .fig-host { position: relative; min-height: 200px; }
 .fig svg.show { width: 100%; height: auto; overflow: visible; }
+/* the light under a plate: lumen.js paints the marks and their glow here; the SVG of scales and words lies over it */
+.lum { position: absolute; left: 0; top: 0; width: 100%; height: auto; pointer-events: none; }
+.fig-host > svg, .ledger .strip > svg { position: relative; }
+.ledger .strip { position: relative; }
 .fig figcaption { font: 500 .86rem/1.5 var(--sans); color: var(--bone-3); margin-top: 14px; max-width: 62rem; }
 .fig svg text { font-family: var(--sans); }
 .fig svg text.sf { font-family: var(--serif); }

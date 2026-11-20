@@ -1,10 +1,11 @@
 /* NEMATICA, the atlas: every drawing on the home page that carries data. Each is an engraved plate: hairline
    rules with graduated ticks, serif numerals, notes written on the figure where the thing they describe is,
    and marks that are lit. Brass is a real animal, a carmine ring is a plain artificial copy, a filled carmine
-   mark is a copy given what it lacked, hatching is how far real animals sit from each other. Drawn as SVG at
-   the page's own pixel size from window.NEMATICA_RESULTS (web/data/results.js, exported by
-   scripts/export_site.py from committed result tables). The gradients and patterns the marks use live in
-   the sprite at the top of index.html. */
+   mark is a copy given what it lacked, gold dust between two lines is how far real animals sit from each
+   other. The scales, numerals and notes are SVG at the page's own pixel size; the marks and their light are
+   painted on a canvas under each plate by lumen.js, and where that is missing they are drawn here instead.
+   Everything is placed from window.NEMATICA_RESULTS (web/data/results.js, exported by scripts/export_site.py
+   from committed result tables). The gradients and patterns live in the sprite at the top of index.html. */
 (function () {
   "use strict";
   const R = window.NEMATICA_RESULTS || {};
@@ -13,7 +14,8 @@
   const C = { bone: "#ece6d6", b2: "rgba(236,230,214,.74)", b3: "rgba(236,230,214,.64)", line: "rgba(236,230,214,.26)",
     hair: "rgba(236,230,214,.13)", ghost: "rgba(236,230,214,.06)", real: "#b68f1b", gilt: "#dcbc62", gold: "#f0cf78",
     copy: "#e03063", lit: "#ff5d88", paper: "#071230", deep: "#040a1c" };
-  const HATCH = "url(#hatch)";   // real animals' spread is engraved, not tinted
+  const HATCH = "url(#hatch)";   // without the canvas of light, real animals' spread is engraved
+  const LUM = window.NEMATICA_LUMEN || null;
   const $ = (q, r) => (r || document).querySelector(q), $$ = (q, r) => Array.from((r || document).querySelectorAll(q));
   function el(tag, a, p) { const n = document.createElementNS(NS, tag); for (const k in a || {}) if (a[k] != null) n.setAttribute(k, a[k]); if (p) p.appendChild(n); return n; }
   function tx(p, x, y, s, a) { const t = el("text", Object.assign({ x, y }, a || {}), p); t.textContent = s; return t; }
@@ -29,8 +31,9 @@
     host.innerHTML = "";
     const w = Math.max(280, Math.floor(host.clientWidth));
     const s = el("svg", { width: w, height: h, viewBox: `0 0 ${w} ${h}`, class: "show", role: "img", "aria-label": label });
+    const L = LUM ? LUM.layer(host, w, h) : null;
     host.appendChild(s);
-    return { s, w };
+    return { s, w, L };
   }
   let tipEl;
   function tip(html, e) {
@@ -55,11 +58,18 @@
     full(p, x, y, r) { const g = el("g", { class: "mk" }, p); el("circle", { cx: x, cy: y, r: r * 3, fill: "url(#gl-copy)" }, g); el("circle", { cx: x, cy: y, r, fill: "url(#mk-copy)" }, g); return g; },
     ring(p, x, y, r) { const g = el("g", { class: "mk" }, p); el("circle", { cx: x, cy: y, r, fill: C.paper, stroke: C.lit, "stroke-width": 1.7 }, g); return g; },
   };
+  // a mark on a plate: a light on the canvas under it with something over it to rest the pointer on, or a drawn mark
+  const KIND = { real: "real", full: "copy", ring: "ring", bone: "bone" };
+  function dot(S, kind, x, y, r, i, step) {
+    if (!S.L) return rv(kind === "bone" ? el("circle", { cx: x, cy: y, r, fill: C.bone, stroke: C.paper, "stroke-width": 2 }, S.s) : mark[kind](S.s, x, y, r), i, step);
+    const st = S.L.star(KIND[kind], x, y, r, i * (step || 18)), c = el("circle", { cx: x, cy: y, r: r + 3, fill: "transparent", class: "mk" }, S.s);
+    c.addEventListener("pointerenter", () => S.L.heat(st, 1)); c.addEventListener("pointerleave", () => S.L.heat(st, 0)); c.star = st; return c;
+  }
   // a key: small marks and what they stand for, in a row that wraps when it must
   function key(s, x0, y, items, wmax) {
     let x = x0, yy = y;
     items.forEach(([k, t]) => { const g = el("g", {}, s);
-      if (k === "band") { el("rect", { x: 0, y: -12, width: 16, height: 13, fill: HATCH }, g); el("path", { d: "M0 -12.5h16M0 1.5h16", stroke: C.gilt }, g); }
+      if (k === "band") { el("rect", { x: 0, y: -12, width: 16, height: 13, fill: LUM ? "url(#dust)" : HATCH }, g); el("path", { d: "M0 -12.5h16M0 1.5h16", stroke: C.gilt }, g); }
       else if (k === "light") el("rect", { x: 0, y: -12, width: 16, height: 13, fill: "rgba(236,230,214,.16)" }, g);
       else if (k === "ink") el("path", { d: "M0 -5h16", stroke: C.bone, "stroke-width": 2 }, g);
       else if (k === "tick") el("path", { d: "M8 -13v15", stroke: C.gold, "stroke-width": 1.6 }, g);
@@ -79,9 +89,9 @@
       el("path", { d: `M${sx.toFixed(1)} ${sy.toFixed(1)}L${tx0.toFixed(1)} ${ty0.toFixed(1)}`, stroke: C.b3, "stroke-width": 0.8, fill: "none" }, g); el("circle", { cx: tx0, cy: ty0, r: 2.6, fill: "none", stroke: C.b3, "stroke-width": 0.9 }, g); }
     return g;
   }
-  // the spread between real animals: hatching between two brass lines, lying along x (a level band) or along y (an upright one)
-  function band(s, x, y, w, h, upright) {
-    el("rect", { x, y, width: w, height: h, fill: "rgba(240,207,120,.07)" }, s); el("rect", { x, y, width: w, height: h, fill: HATCH }, s);
+  // the spread between real animals: gold dust (or, without the canvas, hatching) between two brass lines, lying along x (a level band) or along y (an upright one)
+  function band(s, x, y, w, h, upright, L) {
+    if (L) L.band(x, y, w, h, upright); else { el("rect", { x, y, width: w, height: h, fill: "rgba(240,207,120,.07)" }, s); el("rect", { x, y, width: w, height: h, fill: HATCH }, s); }
     el("path", { d: upright ? `M${px(x)} ${y}v${h}M${px(x + w)} ${y}v${h}` : `M${x} ${px(y)}h${w}M${x} ${px(y + h)}h${w}`, stroke: C.gilt, "stroke-opacity": 0.85 }, s);
   }
   // an engraved scale up the left: a rule, long ticks with numerals, short ticks between, and faint lines across at the long ones
@@ -95,18 +105,18 @@
   }
   const titleY = (s, x, y0, y1, t) => tx(s, 0, 0, t, it(17, C.b2, { "text-anchor": "middle", transform: `translate(${x} ${(y0 + y1) / 2}) rotate(-90)` }));
   // a line that glows: a soft wide stroke under a fine one
-  function glowLine(s, d, col, w) { el("path", { d, fill: "none", stroke: col, "stroke-width": (w || 2) * 4, "stroke-opacity": 0.12, "stroke-linejoin": "round", "stroke-linecap": "round" }, s);
+  function glowLine(s, d, col, w, lit) { if (!lit) el("path", { d, fill: "none", stroke: col, "stroke-width": (w || 2) * 4, "stroke-opacity": 0.12, "stroke-linejoin": "round", "stroke-linecap": "round" }, s);
     const p = el("path", { d, fill: "none", stroke: col, "stroke-width": w || 2, "stroke-linejoin": "round", "stroke-linecap": "round", class: "draw" }, s); p.style.setProperty("--len", Math.ceil(p.getTotalLength())); return p; }
 
   // ------------------------------------------------------------------ I. the echo
   function echo(host) {
     const pts = (R.restPoke || []).filter((d) => d.poke != null), G = (R.gaps || [])[0] || { band: [0.087, 0.121] };
     const nar = host.clientWidth < 720, H = nar ? 520 : Math.round(clamp(host.clientWidth * 0.46, 480, 560));
-    const { s, w } = stage(host, H, "Each copy of the worm brain: how many resting-activity tests it passes, against how well its answers to a poke agree with real worms");
+    const S = stage(host, H, "Each copy of the worm brain: how many resting-activity tests it passes, against how well its answers to a poke agree with real worms"), { s, w, L } = S;
     const ky = key(s, 2, 20, [["ring", "a copy that only watched"], ["full", "a copy that also learned from pokes"], ["band", "how well two real worms agree"]], w);
     const m = { l: nar ? 50 : 96, r: nar ? 8 : 26, t: ky + 30, b: 72 };
     const x = lin(0.45, nar ? 5.55 : 6.2, m.l, w - m.r), y = lin(-0.008, 0.135, H - m.b, m.t);
-    band(s, m.l, y(G.band[1]), w - m.r - m.l, y(G.band[0]) - y(G.band[1]));
+    band(s, m.l, y(G.band[1]), w - m.r - m.l, y(G.band[0]) - y(G.band[1]), false, L);
     ruleY(s, m.l, w - m.r, y, [0, 0.04, 0.08, 0.12], f2);
     el("path", { d: `M${m.l} ${px(H - m.b)}H${w - m.r}`, stroke: C.hair }, s);
     for (let k = 1; k <= (nar ? 5 : 6); k++) { el("path", { d: `M${px(x(k))} ${H - m.b}v7`, stroke: C.b2 }, s); tx(s, x(k), H - m.b + 27, String(k), num({ "text-anchor": "middle" })); }
@@ -119,7 +129,7 @@
         const clash = () => placed.some((p) => Math.hypot(p.x - (x(+k) + off), p.y - cy) < 2 * r + 1.5);
         while (clash() && lift < 9) { t++; off = (t % 2 ? 1 : -1) * Math.ceil(t / 2) * r * 0.95; if (Math.abs(off) > half) { lift++; t = 0; off = 0; cy = y0 + (lift % 2 ? -1 : 1) * Math.ceil(lift / 2) * (r + 0.6); } }
         placed.push({ x: x(+k) + off, y: cy });
-        const learned = d.brain.startsWith("hybrid"), c = rv(learned ? mark.full(s, x(+k) + off, cy, r) : mark.ring(s, x(+k) + off, cy, r - 0.8), i++, 9);
+        const learned = d.brain.startsWith("hybrid"), c = dot(S, learned ? "full" : "ring", x(+k) + off, cy, learned ? r : r - 0.8, i++, 9);
         if (!learned) top[k] = Math.max(top[k] || 0, Math.abs(off));
         hover(c, `<b>${learned ? "Learned from pokes too" : "Learned by watching"}</b>${row("Resting tests passed", d.rest + " of 6")}${row("Agreement with real worms", f2(1 - d.poke))}`); }); });
     if (!nar) {
@@ -133,7 +143,7 @@
     const O = R.optoSign; if (!O) return;
     const nar = host.clientWidth < 720, H = nar ? 470 : 540, order = ["Sst", "Vip"];
     const D = O.mice.filter((d) => order.includes(d.line)).sort((a, b) => order.indexOf(a.line) - order.indexOf(b.line) || a.real - b.real);
-    const { s, w } = stage(host, H, `For ${D.length} mice: the share of brain regions a copy fitted at rest predicted would rise when one kind of inhibitory cell was driven, and the share that did`);
+    const S = stage(host, H, `For ${D.length} mice: the share of brain regions a copy fitted at rest predicted would rise when one kind of inhibitory cell was driven, and the share that did`), { s, w, L } = S;
     const ky = key(s, 2, 20, [["ring", "what the copy fitted at rest predicted"], ["real", "what happened when the cells were driven"], ["light", nar ? "what the light alone does" : `what the light alone does, in ${O.nWT || 27} mice whose cells cannot answer it`]], w);
     const m = { l: nar ? 50 : 96, r: nar ? 8 : 26, t: ky + (nar ? 74 : 72), b: 84 }, gapG = nar ? 20 : 56, n = D.length;
     const step = (w - m.l - m.r - gapG) / n, y = lin(0, 1, H - m.b, m.t);
@@ -146,15 +156,17 @@
     let xi = m.l + (nar ? 4 : 10), g = null, gx0 = 0; const r = nar ? 3.4 : 5.2, groups = [];
     D.forEach((d, i) => { if (d.line !== g) { if (g) { groups.push([g, gx0, xi]); xi += gapG; } g = d.line; gx0 = xi; }
       const cx = xi + step / 2, col = el("g", {}, s);
-      rv(el("path", { d: `M${cx.toFixed(1)} ${y(d.w)}V${y(d.real)}`, stroke: `url(#${gid})`, "stroke-width": 1.3 }, col), i, 14);
-      rv(mark.ring(col, cx, y(d.w), r - 0.6), i, 14); rv(mark.real(col, cx, y(d.real), r), i, 14);
+      if (L) { const hit = L.star("real", cx, y(d.real), r, i * 14 + 260); L.star("ring", cx, y(d.w), r - 0.6, i * 14);      // what was predicted, then light running from it to what happened
+        L.beam(cx, y(d.w), cx, y(d.real), "ring", "real", i * 14 + 120, { pulse: true, fall: true, to: hit, off: i * 0.085, per: 7.5, w: 1.3 }); }
+      else { rv(el("path", { d: `M${cx.toFixed(1)} ${y(d.w)}V${y(d.real)}`, stroke: `url(#${gid})`, "stroke-width": 1.3 }, col), i, 14);
+        rv(mark.ring(col, cx, y(d.w), r - 0.6), i, 14); rv(mark.real(col, cx, y(d.real), r), i, 14); }
       hover(el("rect", { x: xi, y: m.t, width: step, height: H - m.t - m.b, fill: "transparent" }, s), `<b>${d.line} mouse ${d.id.replace("sub-", "")}</b>${row("Copy fitted at rest predicted rising", pc(d.w))}${row("Rose when the cells were driven", pc(d.real))}${row("Light alone, median", pc(O.wt[1]))}`);
       xi += step; });
     groups.push([g, gx0, xi]);
     const cnt = (l) => D.filter((d) => d.line === l).length, said = { Sst: ["The copy said rise. They fell.", "in 29 of 29 mice"], Vip: ["These did rise.", "in 10 of 10 mice"] };
     groups.forEach(([gn, a, b]) => { const mid = (a + b) / 2;
       el("path", { d: `M${a + 2} ${px(H - m.b + 16)}v-5H${b - 2}v5`, stroke: C.line, fill: "none" }, s);
-      const edge = nar && b > w - 60, ax = edge ? w - 2 : mid, an = edge ? "end" : "middle";
+      const edge = nar && b > w - 60, ax = edge ? w - 2 : nar ? a + 2 : mid, an = edge ? "end" : nar ? "start" : "middle";
       tx(s, ax, H - m.b + 42, nar ? `${gn}, ${cnt(gn)} mice` : `${gn} cells, ${cnt(gn)} mice`, it(nar ? 17 : 21, C.bone, { "text-anchor": an }));
       tx(s, ax, H - m.b + 62, gn === "Sst" ? (nar ? "quiet their neighbours" : "they quiet their neighbours") : (nar ? "quiet the quieters" : "they quiet the cells that quiet others"), small({ "text-anchor": an }));
       if (!nar || gn === "Sst") note(s, mid, m.t - 32, nar ? said[gn][0].replace("The copy said rise. ", "Predicted to rise. ") : said[gn][0], [said[gn][1]], { anchor: "middle", size: nar ? 17 : 21 }); });
@@ -164,7 +176,7 @@
   function face(host) {
     const D = R.shrinkage || []; if (!D.length) return;
     const nar = host.clientWidth < 720, H = nar ? 500 : 560;
-    const { s, w } = stage(host, H, "As each worm's model is pulled toward the average worm, forecasting skill barely changes while individuality collapses");
+    const S = stage(host, H, "As each worm's model is pulled toward the average worm, forecasting skill barely changes while individuality collapses"), { s, w, L } = S;
     const m = { l: nar ? 50 : 96, r: nar ? 12 : 26, t: 62, b: 78 }, lx = (v) => Math.log10(+v);
     const x = lin(lx(D[0].lam), lx(D[D.length - 1].lam), m.l + 26, w - m.r - (nar ? 16 : 210));
     const gapY = 56, ph = (H - m.t - m.b - gapY) / 2;
@@ -172,7 +184,7 @@
     const iBest = D.reduce((b, d, i) => (d.r2 > D[b].r2 ? i : b), 0), iTrue = D.findIndex((d) => +d.lam === 300);
     const xr = nar ? w - m.r : x(lx(D[D.length - 1].lam)) + 8;
     ruleY(s, m.l, xr, yA, [0.7, 0.73, 0.76], f2, 3); ruleY(s, m.l, xr, yB, [0.5, 0.75, 1], f2, 5);
-    band(s, m.l, yB(1.04), xr - m.l, yB(0.96) - yB(1.04));
+    band(s, m.l, yB(1.04), xr - m.l, yB(0.96) - yB(1.04), false, L);
     [[iTrue, "the faithful copy"], [iBest, "the best forecaster"]].forEach(([k, t], j) => { const xx = x(lx(D[k].lam)), up = nar && !j ? 20 : 0;
       el("path", { d: `M${px(xx)} ${m.t - 14 - up}V${H - m.b + 8}`, stroke: C.b3, "stroke-dasharray": "2 5" }, s);
       tx(s, xx, m.t - 24 - up, t, it(nar ? 16.5 : 20, C.bone, { "text-anchor": nar ? (j ? "start" : "end") : "middle", dx: nar ? (j ? -30 : 30) : 0 })); });
@@ -182,10 +194,11 @@
     const lost = pB.filter((q) => q[1] >= yB(1) - 0.5), gid = "fl" + Math.random().toString(36).slice(2, 7), lg = el("linearGradient", { id: gid, x1: 0, y1: 0, x2: 0, y2: 1 }, el("defs", {}, s));
     el("stop", { offset: 0, "stop-color": C.copy, "stop-opacity": 0.03 }, lg); el("stop", { offset: 1, "stop-color": C.copy, "stop-opacity": 0.3 }, lg);
     if (lost.length > 1) rv(el("path", { d: `M${lost[0][0].toFixed(1)} ${yB(1)}` + lost.map((q) => `L${q[0].toFixed(1)} ${q[1].toFixed(1)}`).join("") + `V${yB(1)}Z`, fill: `url(#${gid})` }, s), 40, 20);
-    glowLine(s, dOf(pA), C.bone, 2); glowLine(s, dOf(pB), C.lit, 2);
+    glowLine(s, dOf(pA), C.bone, 2, L); glowLine(s, dOf(pB), C.lit, 2, L);
+    if (L) { L.ribbon(pA, "bone", 0, { off: 1.5 }); L.ribbon(pB, "copy", 0, { off: 2.4 }); }
     const tipOf = (j) => `<b>Pull toward the average: ${Number(D[j].lam).toLocaleString()}</b>${row("Forecasting skill (R²)", f2(D[j].r2, 3))}${row("Individuality (real worms are 1)", f2(D[j].ind, 2))}`;
-    pA.forEach((q, j) => hover(rv(el("circle", { cx: q[0], cy: q[1], r: 5, fill: C.bone, stroke: C.paper, "stroke-width": 2 }, s), j, 90), tipOf(j)));
-    pB.forEach((q, j) => hover(rv(mark.full(s, q[0], q[1], 5.2), j, 90), tipOf(j)));
+    pA.forEach((q, j) => hover(dot(S, "bone", q[0], q[1], 5, j, 190), tipOf(j)));
+    pB.forEach((q, j) => hover(dot(S, "full", q[0], q[1], 5.4, j, 190), tipOf(j)));
     const xe = pA[pA.length - 1][0] + 24;
     if (!nar) { note(s, xe, pA[pA.length - 1][1] + 2, "Forecasting skill", ["barely moves"]); note(s, xe, yB(1) + 2, "Real worms", ["are this individual"], { fill: C.gold }); note(s, xe, pB[pB.length - 1][1] + 2, "Individuality", ["falls away"]); }
     else { tx(s, m.l + 8, yA(0.77) + 4, "forecasting skill", it(16.5)); tx(s, m.l + 8, yB(1.12) + 6, "individuality (real worms are 1)", it(16.5)); }
@@ -199,7 +212,7 @@
   function memory(host) {
     const PM = R.permouse; if (!PM) return;
     const D = PM.mice, n = D.length, nar = host.clientWidth < 720, H = nar ? 470 : 560;
-    const { s, w } = stage(host, H, `Slow memory in ${n} mice, in a random network recorded through each mouse's own instrument, and in the same network with strong slow drives`);
+    const S = stage(host, H, `Slow memory in ${n} mice, in a random network recorded through each mouse's own instrument, and in the same network with strong slow drives`), { s, w, L } = S;
     const ky = key(s, 2, 20, [["real", "a mouse"], ["ring", nar ? "a random network, recorded alike" : "a random network, recorded as that mouse was"], ["full", "the same network, with strong slow drives"]], w);
     const m = { l: nar ? 50 : 96, r: nar ? 8 : 26, t: ky + 30, b: 62 };
     const x = (i) => m.l + 22 + (i * (w - m.l - m.r - 44)) / (n - 1), y = lin(0, 0.34, H - m.b, m.t);
@@ -207,11 +220,14 @@
     if (!nar) titleY(s, 26, m.t, H - m.b, "slow memory");
     const r = nar ? 3.4 : 5.2;
     // the mice, lowest to highest, as one rising line of light
-    el("path", { d: D.map((d, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(d.m).toFixed(1)).join(""), fill: "none", stroke: C.gold, "stroke-width": 9, "stroke-opacity": 0.1, "stroke-linejoin": "round", "stroke-linecap": "round" }, s);
+    if (L) L.ribbon(D.map((d, i) => [x(i), y(d.m)]), "real", 200, { w: 1.15, off: 2 });
+    else el("path", { d: D.map((d, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(d.m).toFixed(1)).join(""), fill: "none", stroke: C.gold, "stroke-width": 9, "stroke-opacity": 0.1, "stroke-linejoin": "round", "stroke-linecap": "round" }, s);
     D.forEach((d, i) => { const xi = x(i), col = el("g", {}, s);
-      rv(el("path", { d: `M${px(xi)} ${y(d.m)}V${y(d.rnn)}`, stroke: C.line }, col), i, 22);
-      if (d.slow != null) rv(mark.full(col, xi, y(d.slow), r - 1.2), i, 22);
-      rv(mark.ring(col, xi, y(d.rnn), r - 0.6), i, 22); rv(mark.real(col, xi, y(d.m), r), i, 22);
+      if (L) { L.beam(xi, y(d.rnn), xi, y(d.m), "ring", "real", i * 22 + 100, { a: 0.42, w: 1, glow: false });
+        if (d.slow != null) L.star("copy", xi, y(d.slow), r - 1.2, i * 22 + 420); L.star("ring", xi, y(d.rnn), r - 0.6, i * 22); L.star("real", xi, y(d.m), r, i * 22 + 180); }
+      else { rv(el("path", { d: `M${px(xi)} ${y(d.m)}V${y(d.rnn)}`, stroke: C.line }, col), i, 22);
+        if (d.slow != null) rv(mark.full(col, xi, y(d.slow), r - 1.2), i, 22);
+        rv(mark.ring(col, xi, y(d.rnn), r - 0.6), i, 22); rv(mark.real(col, xi, y(d.m), r), i, 22); }
       hover(el("rect", { x: xi - (w - m.l - m.r) / (2 * n), y: m.t, width: (w - m.l - m.r) / n, height: H - m.t - m.b, fill: "transparent" }, s),
         `<b>Mouse ${i + 1} of ${n}</b>${row("Mouse", f2(d.m, 3))}${row("Random network, recorded like this mouse", f2(d.rnn, 3))}${row("Same network, strong slow drives", d.slow == null ? "not measured" : f2(d.slow, 3))}`); });
     tx(s, (m.l + w - m.r) / 2, H - 12, `${n} mice, in order of their own slow memory`, it(17, C.b2, { "text-anchor": "middle" }));
@@ -229,7 +245,7 @@
     const tipOf = (o) => `<b>${o.t}</b>${row("Internal share, median over mice", pc(o.v))}${row("Middle half", `${pc(o.mb.M1[0])} to ${pc(o.mb.M1[2])}`)}`;
     const q = S.mice.M1, all = S.mice.M1all, label = "Share of state that is internal, in 49 mice and in each kind of network";
     if (host.clientWidth < 760) return lightStrip(host, S, nets, tipOf, label);
-    const H = Math.round(clamp(host.clientWidth * 0.53, 500, 640)), { s, w } = stage(host, H, label);
+    const H = Math.round(clamp(host.clientWidth * 0.53, 500, 640)), T = stage(host, H, label), { s, w, L } = T;
     const cx = w / 2, cy = H - 92, Rg = Math.min(w * 0.36, H - 196, w / 2 - 190), r0 = Rg * 0.15;
     const ang = (v) => PI - v * PI, at = (v, r) => [cx + r * Math.cos(ang(v)), cy - r * Math.sin(ang(v))];
     const arc = (r, v0, v1) => { const [x0, y0] = at(v0, r), [x1, y1] = at(v1, r); return `M${x0.toFixed(1)} ${y0.toFixed(1)}A${r} ${r} 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`; };
@@ -238,13 +254,16 @@
     const sky = el("g", { "clip-path": `url(#${cid})` }, s);
     el("circle", { cx, cy, r: Rg * 0.95, fill: "url(#gl-real)", opacity: 0.55 }, sky);
     // the rays
-    all.forEach((v, i) => { const [x0, y0] = at(v, r0 + 12), [x1, y1] = at(v, Rg - 58); rv(el("path", { d: `M${x0.toFixed(1)} ${y0.toFixed(1)}L${x1.toFixed(1)} ${y1.toFixed(1)}`, stroke: C.gold, "stroke-width": 1.3, "stroke-opacity": 0.62, "stroke-linecap": "round" }, sky), i, 14); });
+    all.forEach((v, i) => { const [x0, y0] = at(v, r0 + 12), [x1, y1] = at(v, Rg - 58);
+      if (L) L.beam(x0, y0, x1, y1, "real", "real", i * 16 + 200, { pulse: true, a: 0.6, w: 1.25, per: 5 + ((i * 7) % 5), run: 1.5, glint: 0.7 });
+      else rv(el("path", { d: `M${x0.toFixed(1)} ${y0.toFixed(1)}L${x1.toFixed(1)} ${y1.toFixed(1)}`, stroke: C.gold, "stroke-width": 1.3, "stroke-opacity": 0.62, "stroke-linecap": "round" }, sky), i, 14); });
     if (ORBS) orbImage(sky, "sun", cx, cy, r0 * 1.05, { spin: 0.8, time: 5 }, "fig", 520);
     else { el("circle", { cx, cy, r: r0 * 2.6, fill: "url(#gl-real)" }, sky); el("circle", { cx, cy, r: r0, fill: "url(#mk-real)" }, sky); }
     // the middle half of the mice, engraved outside the scale
     const [bx0, by0] = at(q[0], Rg + 8), [bx1, by1] = at(q[2], Rg + 8), [bx2, by2] = at(q[2], Rg + 26), [bx3, by3] = at(q[0], Rg + 26);
     const wedge = `M${bx0.toFixed(1)} ${by0.toFixed(1)}A${Rg + 8} ${Rg + 8} 0 0 1 ${bx1.toFixed(1)} ${by1.toFixed(1)}L${bx2.toFixed(1)} ${by2.toFixed(1)}A${Rg + 26} ${Rg + 26} 0 0 0 ${bx3.toFixed(1)} ${by3.toFixed(1)}Z`;
-    el("path", { d: wedge, fill: "rgba(240,207,120,.07)" }, s); el("path", { d: wedge, fill: HATCH, stroke: C.gilt, "stroke-opacity": 0.85 }, s);
+    if (L) { L.arcBand(cx, cy, Rg + 8, Rg + 26, -ang(q[0]), -ang(q[2])); el("path", { d: wedge, fill: "none", stroke: C.gilt, "stroke-opacity": 0.85 }, s); }
+    else { el("path", { d: wedge, fill: "rgba(240,207,120,.07)" }, s); el("path", { d: wedge, fill: HATCH, stroke: C.gilt, "stroke-opacity": 0.85 }, s); }
     // the scale: an arc from none of it to all of it
     el("path", { d: arc(Rg, 0, 1), fill: "none", stroke: C.b2 }, s); el("path", { d: arc(Rg - 5, 0, 1), fill: "none", stroke: C.hair }, s);
     let long = "", short = ""; for (let k = 0; k <= 100; k += 1) { const v = k / 100, [x0, y0] = at(v, Rg), [x1, y1] = at(v, Rg - (k % 25 === 0 ? 16 : k % 5 === 0 ? 10 : 5)), seg = `M${x0.toFixed(1)} ${y0.toFixed(1)}L${x1.toFixed(1)} ${y1.toFixed(1)}`; if (k % 5 === 0) long += seg; else short += seg; }
@@ -264,13 +283,14 @@
       boxes.push(box); t.setAttribute("x", bx); t.setAttribute("y", by + (anchor === "middle" ? 0 : 6));
       const [l0x, l0y] = at(v, Rg + 9), [l1x, l1y] = at(v, Rg + (inBand ? 50 : 40) + (lane - 1) * 27 - (anchor === "middle" ? 22 : 6));
       el("path", { d: `M${l0x.toFixed(1)} ${l0y.toFixed(1)}L${l1x.toFixed(1)} ${l1y.toFixed(1)}`, stroke: C.lit, "stroke-opacity": 0.6 }, s);
-      g.items.forEach((o, j) => { const [x, y] = at(o.v, Rg); hover(rv(mark.ring(s, x, y, 7), i + j, 70), tipOf(o)); hover(t, tipOf(o)); }); });
+      g.items.forEach((o, j) => { const [x, y] = at(o.v, Rg), c = hover(dot(T, "ring", x, y, 7, i + j, 70), tipOf(o)); hover(t, tipOf(o));
+        if (c.star) { t.addEventListener("pointerenter", () => L.heat(c.star, 1)); t.addEventListener("pointerleave", () => L.heat(c.star, 0)); } }); });
   }
   // on a narrow screen the same thing is a straight scale
   function lightStrip(host, S, nets, tipOf, label) {
-    const H = 470, { s, w } = stage(host, H, label), m = { l: 14, r: 14 }, x = lin(0, 1, m.l, w - m.r), q = S.mice.M1;
+    const H = 470, T = stage(host, H, label), { s, w, L } = T, m = { l: 14, r: 14 }, x = lin(0, 1, m.l, w - m.r), q = S.mice.M1;
     const ky = key(s, 2, 20, [["tick", "one mouse"], ["band", "the middle half of the mice"], ["ring", "a kind of network"]], w), ya = Math.round((ky + 30 + H - 50) / 2);
-    band(s, x(q[0]), ya - 62, x(q[2]) - x(q[0]), 124, true);
+    band(s, x(q[0]), ya - 62, x(q[2]) - x(q[0]), 124, true, L);
     S.mice.M1all.forEach((v, i) => rv(el("path", { d: `M${px(x(v))} ${ya - 14}V${ya + 14}`, stroke: C.gold, "stroke-width": 1.5, "stroke-opacity": 0.8 }, s), i, 12));
     el("path", { d: `M${m.l} ${px(ya)}H${w - m.r}`, stroke: C.b2 }, s);
     [0, 0.25, 0.5, 0.75, 1].forEach((v) => { el("path", { d: `M${px(x(v))} ${ya - 6}V${ya + 6}`, stroke: C.b2 }, s); tx(s, x(v), H - 34, v === 0 ? "none" : v === 1 ? "all" : pc(v), num({ "text-anchor": v === 0 ? "start" : v === 1 ? "end" : "middle" })); });
@@ -280,7 +300,7 @@
       let k = 0; while ((lanes[k] || []).some((b) => lx < b[1] + 12 && lx + tw > b[0] - 12)) k++; (lanes[k] = lanes[k] || []).push([lx, lx + tw]);
       const ly = isUp ? ya - 78 - k * 22 : ya + 88 + k * 22; t.setAttribute("x", lx); t.setAttribute("y", ly);
       el("path", { d: `M${px(x(o.v))} ${isUp ? ly + 6 : ya + 8}V${isUp ? ya - 8 : ly - 14}`, stroke: C.lit, "stroke-opacity": 0.55 }, s);
-      hover(rv(mark.ring(s, x(o.v), ya, 5.5), i, 60), tipOf(o)); hover(t, tipOf(o)); });
+      hover(dot(T, "ring", x(o.v), ya, 5.5, i, 60), tipOf(o)); hover(t, tipOf(o)); });
   }
 
   // ------------------------------------------------------------------ VI. the waning: a moon for each answer
@@ -414,17 +434,17 @@
         <div class="st"><svg aria-hidden="true" viewBox="0 0 48 24"><use href="#v-${g.status.kind}"/></svg><div><b>${g.status.text}</b>${g.status.sub}</div></div>`;
       host.appendChild(rowEl);
       const sh = rowEl.querySelector(".strip"), w = Math.max(240, Math.floor(sh.clientWidth)), H = 110;
-      const s = el("svg", { viewBox: `0 0 ${w} ${H}`, width: w, height: H, role: "img", "aria-label": `${g.scale}. ${g.status.text}.` }); sh.appendChild(s);
+      const s = el("svg", { viewBox: `0 0 ${w} ${H}`, width: w, height: H, role: "img", "aria-label": `${g.scale}. ${g.status.text}.` }), L = LUM ? LUM.layer(sh, w, H) : null, S = { s, L }; sh.appendChild(s);
       const x = lin(g.domain[0], g.domain[1], 10, w - 10), ya = 52, fmt = (v) => (g.pct ? pc(v) : g.tickFmt === "int" ? String(v) : f2(v, g.dp));
       const bw = Math.max(4, x(g.band[1]) - x(g.band[0]));
-      band(s, x(g.band[0]), ya - 15, bw, 30, true);
+      band(s, x(g.band[0]), ya - 15, bw, 30, true, L);
       el("path", { d: `M10 ${px(ya)}H${w - 10}`, stroke: C.b3 }, s);
       g.ticks.forEach((v) => { el("path", { d: `M${px(x(v))} ${ya}v6`, stroke: C.b2 }, s); tx(s, x(v), ya + 31, fmt(v), num({ "font-size": 13.5, "text-anchor": "middle" })); });
       tx(s, 10, 12, g.scale, small({ "font-size": 11.5, fill: C.b3 }));
       const place = (o, filled) => { if (!o) return;
         if (o.range) el("path", { d: `M${x(o.range[0])} ${px(ya)}H${x(o.range[1])}`, stroke: C.lit, "stroke-width": 3, "stroke-linecap": "round" }, s);
         const vals = o.values || (o.value != null ? [o.value] : o.range ? [(o.range[0] + o.range[1]) / 2] : []);
-        vals.forEach((v) => (filled ? mark.full(s, x(v), ya, 6) : mark.ring(s, x(v), ya, 5)));
+        vals.forEach((v, j) => (L ? dot(S, filled ? "full" : "ring", x(v), ya, filled ? 6 : 5, i * 6 + j + (filled ? 4 : 0), 60) : filled ? mark.full(s, x(v), ya, 6) : mark.ring(s, x(v), ya, 5)));
         if (!vals.length) return;
         const cxm = vals.length > 1 ? (x(vals[0]) + x(vals[vals.length - 1])) / 2 : x(vals[0]);
         const anchor = vals.length > 1 ? "middle" : cxm > w * 0.6 ? "end" : cxm < w * 0.25 ? "start" : "middle", dx = anchor === "end" ? 8 : anchor === "start" ? -8 : 0;
@@ -463,7 +483,8 @@
       if (k === "closed") el("circle", { cx: x, cy: y, r: 54, fill: "url(#gl-real)" }, s);
       el("circle", { cx: x, cy: y, r: 31, fill: C.deep, stroke: k === "closed" ? C.gold : C.b2, "stroke-width": k === "closed" ? 2 : 1.2, "stroke-dasharray": k === "open" ? "3 4" : null }, s);
       if (k === "none") el("circle", { cx: x, cy: y, r: 36.5, fill: "none", stroke: C.b2 }, s);
-      const u = el("use", { href: "#g-" + name, x: x - 18, y: y - 18, width: 36, height: 36 }, s); u.style.color = k === "closed" ? C.gold : C.bone; });
+      if (ORBS) orbImage(s, name, x, y, { mercury: 21, venus: 23, mars: 22, jupiter: 24.5, saturn: 14.5, sun: 15.5, moon: 22 }[name], { light: name === "moon" ? [0.86, 0.3, 0.12] : [-0.6, 0.5, 0.62], roll: name === "saturn" ? 0.36 : name === "mars" ? 0.4 : 0.08, lean: name === "saturn" ? 0.42 : 0.12, spin: name === "jupiter" ? 0.25 : 0.9, time: 4 }, "card", 420);
+      else { const u = el("use", { href: "#g-" + name, x: x - 18, y: y - 18, width: 36, height: 36 }, s); u.style.color = k === "closed" ? C.gold : C.bone; } });
   }
 
   // ------------------------------------------------------------------ wiring it up

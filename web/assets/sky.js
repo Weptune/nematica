@@ -383,27 +383,38 @@
 
   // ---- the balance, in lit brass: round bars shaded across their width, drums with a lit side and a paler top, dishes with a shadowed bowl
   const BR = ["#1a1203", "#6a4e12", "#c39b3e", "#f8e6ac"];       // brass in shadow, in half light, lit, and where the light glances
+  // polished brass across a round bar: the edge, the glancing light, the lit metal, the dark ground it mirrors, a little of the sky coming round the far side
+  const ROD = [[0, "#33240a"], [0.1, "#96701f"], [0.185, "#fff4cf"], [0.26, "#e6c263"], [0.45, "#b3862a"], [0.62, "#553c0c"], [0.8, "#241903"], [0.92, "#554f58"], [1, "#120d03"]];
+  const rod = (g) => { ROD.forEach((q) => g.addColorStop(q[0], q[1])); return g; };
+  // a turned face: brass cut on a lathe throws light in wedges round its centre
+  const TURN = [[0, "#f3dc98"], [0.07, "#c39b3e"], [0.18, "#5f460f"], [0.26, "#8f6f22"], [0.34, "#4c370b"], [0.44, "#d2ad4e"], [0.5, "#fff3cb"], [0.56, "#c8a142"], [0.68, "#5f460f"], [0.77, "#967628"], [0.87, "#4c370b"], [0.95, "#c39b3e"], [1, "#f3dc98"]];
+  function turned(pts, dark) { let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9; pts.forEach((q) => { x0 = Math.min(x0, q[0]); x1 = Math.max(x1, q[0]); y0 = Math.min(y0, q[1]); y1 = Math.max(y1, q[1]); });
+    const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, rx = (x1 - x0) / 2 || 1, ry = (y1 - y0) / 2 || 1; if (!ctx.createConicGradient) return false;
+    const g = ctx.createConicGradient(-2.5, 0, 0); TURN.forEach((q) => g.addColorStop(q[0], q[1]));
+    ctx.save(); ctx.translate(cx, cy); ctx.scale(1, ry / rx); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, rx, 0, TAU); ctx.fill();
+    if (dark) { const v = ctx.createRadialGradient(-rx * 0.25, -rx * 0.1, rx * 0.1, 0, 0, rx); v.addColorStop(0, "rgba(10,7,1,.86)"); v.addColorStop(0.62, "rgba(18,12,2,.66)"); v.addColorStop(0.92, "rgba(24,16,3,.2)"); v.addColorStop(1, "rgba(24,16,3,0)"); ctx.fillStyle = v; ctx.fill(); }
+    ctx.lineWidth = 0.5; [0.3, 0.52, 0.7, 0.86].forEach((k, i) => { ctx.strokeStyle = i % 2 ? "rgba(255,240,196,.2)" : "rgba(20,13,2,.34)"; ctx.beginPath(); ctx.arc(0, 0, rx * k, 0, TAU); ctx.stroke(); });
+    ctx.restore(); return true; }
   const at3 = (s, x, y, z) => { proj(s, x, y, z, q3); return [q3[0], q3[1], q3[2]]; };
   function bar(s, A, B, wa, wb) { const a = at3(s, A[0], A[1], A[2] || 0), b = at3(s, B[0], B[1], B[2] || 0), dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1; let nx = -dy / l, ny = dx / l; if (nx + ny < 0) { nx = -nx; ny = -ny; }     // n points away from the light
     const ra = Math.max(0.6, (wa * s.S * a[2]) / 2), rb = Math.max(0.6, ((wb == null ? wa : wb) * s.S * b[2]) / 2), r = Math.max(ra, rb), mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
-    const g = ctx.createLinearGradient(mx - nx * r, my - ny * r, mx + nx * r, my + ny * r); g.addColorStop(0, BR[1]); g.addColorStop(0.22, BR[3]); g.addColorStop(0.42, BR[2]); g.addColorStop(0.78, BR[1]); g.addColorStop(1, BR[0]);
-    ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(a[0] + nx * ra, a[1] + ny * ra); ctx.lineTo(b[0] + nx * rb, b[1] + ny * rb); ctx.lineTo(b[0] - nx * rb, b[1] - ny * rb); ctx.lineTo(a[0] - nx * ra, a[1] - ny * ra); ctx.closePath(); ctx.fill(); }
+    ctx.fillStyle = rod(ctx.createLinearGradient(mx - nx * r, my - ny * r, mx + nx * r, my + ny * r)); ctx.beginPath(); ctx.moveTo(a[0] + nx * ra, a[1] + ny * ra); ctx.lineTo(b[0] + nx * rb, b[1] + ny * rb); ctx.lineTo(b[0] - nx * rb, b[1] - ny * rb); ctx.lineTo(a[0] - nx * ra, a[1] - ny * ra); ctx.closePath(); ctx.fill(); }
   const loop = (s, cx, y, r, n) => { const pts = []; for (let k = 0; k < n; k++) { const a = (k / n) * TAU, z = proj(s, cx + r * cos(a), y, r * sin(a), q3); pts.push([q3[0], q3[1], z]); } return pts; };
   const closed = (pts) => { const p = new Path2D(); pts.forEach((q, k) => (k ? p.lineTo(q[0], q[1]) : p.moveTo(q[0], q[1]))); p.closePath(); return p; };
   const ends = (pts) => { let l = pts[0], r = pts[0]; pts.forEach((q) => { if (q[0] < l[0]) l = q; if (q[0] > r[0]) r = q; }); return [l, r]; };
   function drum(s, cx, y0, y1, r) { const lo = loop(s, cx, y0, r, 30), hi = loop(s, cx, y1, r, 30), el = ends(lo), eh = ends(hi);
-    const g = ctx.createLinearGradient(el[0][0], 0, el[1][0], 0); g.addColorStop(0, BR[1]); g.addColorStop(0.2, BR[3]); g.addColorStop(0.42, BR[2]); g.addColorStop(0.8, BR[1]); g.addColorStop(1, BR[0]);
-    ctx.fillStyle = g; ctx.fill(closed(lo)); ctx.beginPath(); ctx.moveTo(eh[0][0], eh[0][1]); ctx.lineTo(eh[1][0], eh[1][1]); ctx.lineTo(el[1][0], el[1][1]); ctx.lineTo(el[0][0], el[0][1]); ctx.closePath(); ctx.fill();
-    const g2 = ctx.createLinearGradient(eh[0][0], eh[0][1] - 4, eh[1][0], eh[1][1] + 4); g2.addColorStop(0, BR[2]); g2.addColorStop(0.35, BR[1]); g2.addColorStop(1, "#3a2a08"); const top = closed(hi); ctx.fillStyle = g2; ctx.fill(top); ctx.lineWidth = 0.7; ctx.strokeStyle = "rgba(248,230,172,.55)"; ctx.stroke(top); }
-  function ball(x, y, r) { const g = ctx.createRadialGradient(x - r * 0.35, y - r * 0.4, r * 0.05, x, y, r); g.addColorStop(0, BR[3]); g.addColorStop(0.35, BR[2]); g.addColorStop(0.8, BR[1]); g.addColorStop(1, BR[0]); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
+    ctx.fillStyle = rod(ctx.createLinearGradient(el[0][0], 0, el[1][0], 0)); ctx.fill(closed(lo)); ctx.beginPath(); ctx.moveTo(eh[0][0], eh[0][1]); ctx.lineTo(eh[1][0], eh[1][1]); ctx.lineTo(el[1][0], el[1][1]); ctx.lineTo(el[0][0], el[0][1]); ctx.closePath(); ctx.fill();
+    const g2 = ctx.createLinearGradient(eh[0][0], eh[0][1] - 4, eh[1][0], eh[1][1] + 4); g2.addColorStop(0, BR[2]); g2.addColorStop(0.35, BR[1]); g2.addColorStop(1, "#3a2a08"); const top = closed(hi); if (!turned(hi)) { ctx.fillStyle = g2; ctx.fill(top); } ctx.lineWidth = 0.8; ctx.strokeStyle = "rgba(255,240,196,.7)"; ctx.stroke(top); }
+  function ball(x, y, r) { const g = ctx.createRadialGradient(x - r * 0.36, y - r * 0.42, r * 0.02, x - r * 0.08, y - r * 0.1, r * 1.06);
+    [[0, "#fffbe8"], [0.1, "#f6dc8c"], [0.36, "#b98d2c"], [0.62, "#5e430e"], [0.82, "#241903"], [0.93, "#77705f"], [1, "#161003"]].forEach((q) => g.addColorStop(q[0], q[1])); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
   function dish(s, cx, cy) { const rim = loop(s, cx, cy, BAL.PR, 44), e = ends(rim), zc = proj(s, cx, cy, 0, q3), bot = at3(s, cx, cy - BAL.DEEP, 0), w = e[1][0] - e[0][0], yb = e[0][1] + (bot[1] - e[0][1]) * 1.34;
     // the outside of the bowl, seen under the near edge of the rim
     const under = new Path2D(); under.moveTo(e[0][0], e[0][1]); under.bezierCurveTo(e[0][0] + w * 0.12, yb, e[1][0] - w * 0.12, yb + (e[1][1] - e[0][1]), e[1][0], e[1][1]);
     rim.filter((q) => q[2] > zc).sort((a, b) => b[0] - a[0]).forEach((q) => under.lineTo(q[0], q[1])); under.closePath();
-    const g = ctx.createLinearGradient(e[0][0], 0, e[1][0], 0); g.addColorStop(0, BR[1]); g.addColorStop(0.24, BR[3]); g.addColorStop(0.46, BR[2]); g.addColorStop(0.82, BR[1]); g.addColorStop(1, BR[0]); ctx.fillStyle = g; ctx.fill(under);
+    ctx.fillStyle = rod(ctx.createLinearGradient(e[0][0], 0, e[1][0], 0)); ctx.fill(under);
     // its hollow: in shadow on the side the light comes from, catching it on the far wall
     const hollow = closed(rim), g2 = ctx.createLinearGradient(e[0][0], 0, e[1][0], 0); g2.addColorStop(0, BR[0]); g2.addColorStop(0.5, "#3a2a08"); g2.addColorStop(0.88, BR[1]); g2.addColorStop(1, "#9c7a26");
-    ctx.fillStyle = g2; ctx.fill(hollow); ctx.lineWidth = 1.6; ctx.strokeStyle = BR[2]; ctx.stroke(hollow); ctx.lineWidth = 0.6; ctx.strokeStyle = "rgba(248,230,172,.85)"; ctx.stroke(hollow); }
+    if (!turned(rim, true)) { ctx.fillStyle = g2; ctx.fill(hollow); } ctx.lineWidth = 2; ctx.strokeStyle = BR[2]; ctx.stroke(hollow); ctx.lineWidth = 0.7; ctx.strokeStyle = "rgba(255,240,196,.9)"; ctx.stroke(hollow); }
   bal.under = (s, a, t) => {
     const b = swing(t), cb = cos(b), sb2 = sin(b), g0 = ctx.globalAlpha; ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = a; ctx.lineCap = "round";
     const end = (sd) => [sd * BAL.ARM * cb, BAL.FY + sd * BAL.ARM * sb2, 0], pan = (sd) => [sd * BAL.ARM * cb, BAL.PAN + sd * BAL.ARM * sb2];
