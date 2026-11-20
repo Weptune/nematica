@@ -386,8 +386,7 @@ main, .foot { position: relative; z-index: 1; }
   .open { grid-template-columns: 1fr; align-content: end; gap: 0; min-height: 92svh; }
   .open .stage { order: -1; height: 38svh; align-self: auto; }
   .open .chapter { padding: 2vh 0 6vh; justify-content: flex-start; }
-  .how .open, .answer .open { min-height: 0; }
-  .seven .open { height: auto; }
+  .seven .open, .how .open, .answer .open { grid-template-columns: 1fr; min-height: 0; height: auto; }
   .seven .open .stage { height: 34svh; }
 }
 

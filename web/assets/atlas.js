@@ -108,6 +108,7 @@
     const x = lin(0.45, nar ? 5.55 : 6.2, m.l, w - m.r), y = lin(-0.008, 0.135, H - m.b, m.t);
     band(s, m.l, y(G.band[1]), w - m.r - m.l, y(G.band[0]) - y(G.band[1]));
     ruleY(s, m.l, w - m.r, y, [0, 0.04, 0.08, 0.12], f2);
+    el("path", { d: `M${m.l} ${px(H - m.b)}H${w - m.r}`, stroke: C.hair }, s);
     for (let k = 1; k <= (nar ? 5 : 6); k++) { el("path", { d: `M${px(x(k))} ${H - m.b}v7`, stroke: C.b2 }, s); tx(s, x(k), H - m.b + 27, String(k), num({ "text-anchor": "middle" })); }
     tx(s, (m.l + w - m.r) / 2, H - 12, nar ? "tests of resting activity passed, of 6" : "how real it looks at rest: tests of resting activity passed, of 6", it(17, C.b2, { "text-anchor": "middle" }));
     if (!nar) titleY(s, 26, m.t, H - m.b, "how real its answers to a poke are");
