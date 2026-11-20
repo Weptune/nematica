@@ -96,8 +96,13 @@ is visual only: all copy stays plain and exact.
   anatomy-only positions. Rebuild with `python -I scripts/export_site.py`.
 - `test/index.html` is the open test's static page (reference board, how to run it). When the site runs
   with its server (`web/serve.sh`), the live test is mounted at `/test/` instead.
-- Social preview: `assets/img/og.jpg` (1200 x 630), referenced relatively; once the site has a domain,
-  make `og:image` an absolute URL.
+- The site's address is `https://nematica.weptune.dev` (a subdomain of the owner's own domain; its DNS is
+  at Spaceship). It needs one DNS record, a CNAME from `nematica` to `weptune.github.io`, and the same
+  name entered as the custom domain under the repository's Pages settings. No `CNAME` file is needed when
+  Pages is fed by the workflow. The address is written into each page's `og:url`, canonical link and
+  `og:image`, and into `robots.txt` and `sitemap.xml`: change all of them together if it ever moves.
+- `404.html` uses paths from the site's root, so it works for a missing page at any depth.
+- Social preview: `assets/img/og.jpg` (1200 x 630).
 - To check what will be published: copy `git ls-files -co --exclude-standard web` to a folder, serve it,
   and look for 404s.
 

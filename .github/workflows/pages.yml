@@ -1,5 +1,6 @@
 # Publishes the research site (web/) to GitHub Pages. Runs only when started by hand (Actions tab, "Run
 # workflow"), so nothing is published by a push. Needs Pages enabled with "GitHub Actions" as the source.
+# The site's address is https://nematica.weptune.dev: set it as the custom domain under Settings, Pages.
 # The live brain-likeness test needs its server (web/serve.sh); on Pages, /test/ is its static reference page.
 name: Publish site
 on:
