@@ -253,7 +253,7 @@
   Object.keys(GD).forEach((k) => (GLYPH[k] = new Path2D(GD[k])));
   function glyph(name, x, y, size, c, a) { ctx.save(); ctx.translate(x - size / 2, y - size / 2); ctx.scale(size / 48, size / 48); ctx.lineWidth = 2.4; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.strokeStyle = rgba(c, a); ctx.stroke(GLYPH[name]); ctx.restore(); }
   const STARS = Array.from({ length: 170 }, () => ({ x: rnd(), y: rnd(), z: 0.25 + rnd() * 0.75, s: rnd() }));
-  let QUAL = 2, slow = 0, lastT = 0;
+  let QUAL = 2, ORBQ = 1, slow = 0, lastT = 0;
   function resize() { DPR = Math.min(QUAL, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR); measure(); }
 
   const sx = new Float32Array(N), sy = new Float32Array(N), sf = new Float32Array(N), sb = new Float32Array(N), ss = new Float32Array(N), sp = new Float32Array(N);
@@ -470,7 +470,9 @@
   function frame(now) {
     requestAnimationFrame(frame); if (document.hidden) { lastT = 0; return; }
     const dt = lastT ? Math.min(80, now - lastT) : 16;
-    if (lastT) { slow = now - lastT > 30 ? slow + 1 : Math.max(0, slow - 2); if (slow > 45 && QUAL > 1) { QUAL = QUAL > 1.5 ? 1.5 : 1; slow = 0; resize(); } } lastT = now;   // keep it smooth on slow machines
+    if (lastT) { slow = now - lastT > 30 ? slow + 1 : Math.max(0, slow - 2);                                                 // keep it smooth on slow machines:
+      if (slow > 45) { if (ORBS && ORBQ > 0.5) { ORBQ = ORBQ > 0.75 ? 0.7 : 0.5; ORBS.quality(ORBQ); slow = 0; }                 // first the planets are painted smaller and stretched,
+        else if (QUAL > 1) { QUAL = QUAL > 1.5 ? 1.5 : 1; slow = 0; resize(); } } } lastT = now;                                 // then the whole scene is drawn at fewer pixels
     if (!born) born = now; if (now - measured > 700) measure();
     const t = REDUCED ? 8 : now / 1000, y0 = scrollY;
     if (cloud) { const ty = Math.round((0.3 - 0.6 * (y0 / Math.max(1, document.documentElement.scrollHeight - H))) * H); if (ty !== cloudY) { cloudY = ty; cloud.style.transform = `translate3d(0,${ty}px,0)`; } }
