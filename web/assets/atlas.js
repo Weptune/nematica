@@ -147,7 +147,8 @@
     const ky = key(s, 2, 20, [["ring", "what the copy fitted at rest predicted"], ["real", "what happened when the cells were driven"], ["light", nar ? "what the light alone does" : `what the light alone does, in ${O.nWT || 27} mice whose cells cannot answer it`]], w);
     const m = { l: nar ? 50 : 96, r: nar ? 8 : 26, t: ky + (nar ? 74 : 72), b: 84 }, gapG = nar ? 20 : 56, n = D.length;
     const step = (w - m.l - m.r - gapG) / n, y = lin(0, 1, H - m.b, m.t);
-    el("rect", { x: m.l, y: y(O.wt[2]), width: w - m.l - m.r, height: y(O.wt[0]) - y(O.wt[2]), fill: "rgba(236,230,214,.085)" }, s);
+    if (L) L.band(m.l, y(O.wt[2]), w - m.l - m.r, y(O.wt[0]) - y(O.wt[2]), false, 0, true);      // what the light alone does: a pale mist, not the gold of the yardstick
+    else el("rect", { x: m.l, y: y(O.wt[2]), width: w - m.l - m.r, height: y(O.wt[0]) - y(O.wt[2]), fill: "rgba(236,230,214,.085)" }, s);
     el("path", { d: `M${m.l} ${px(y(O.wt[2]))}H${w - m.r}M${m.l} ${px(y(O.wt[0]))}H${w - m.r}`, stroke: C.line, "stroke-dasharray": "2 4" }, s);
     ruleY(s, m.l, w - m.r, y, [0, 0.25, 0.5, 0.75, 1], pc, 5);
     if (!nar) titleY(s, 26, m.t, H - m.b, "share of brain regions that rise");

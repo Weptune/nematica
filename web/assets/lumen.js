@@ -27,7 +27,7 @@
     r = g.createRadialGradient(n / 2, n * 0.4, R * 0.74, n / 2, n * 0.4, R * 1.12); r.addColorStop(0, "rgba(255,255,255,0)"); r.addColorStop(1, "rgba(255,255,255,.3)"); g.fillStyle = r; g.fillRect(0, n * 0.56, n, n * 0.44);
     r = g.createRadialGradient(n * 0.35, n * 0.3, 0, n * 0.35, n * 0.3, R * 0.34); r.addColorStop(0, "rgba(255,255,255,.95)"); r.addColorStop(1, "rgba(255,255,255,0)"); g.fillStyle = r; g.fillRect(0, 0, n, n); g.restore(); });
   // a grain of gold dust: a point with a little light round it
-  const grain = (k) => sprite("g" + k, 24, (g, n) => { const r = g.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2), c = k === 2 ? [255, 122, 158] : k ? [255, 244, 214] : [246, 204, 104];
+  const grain = (k) => sprite("g" + k, 24, (g, n) => { const r = g.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2), c = k === 3 ? [226, 228, 236] : k === 2 ? [255, 122, 158] : k ? [255, 244, 214] : [246, 204, 104];
     r.addColorStop(0, rgba(c, 1)); r.addColorStop(0.22, rgba(c, 0.85)); r.addColorStop(0.5, rgba(c, 0.2)); r.addColorStop(1, rgba(c, 0)); g.fillStyle = r; g.fillRect(0, 0, n, n); });
   const WASH = [228, 172, 58];
   // the four points a bright light throws
@@ -41,12 +41,12 @@
     g.globalAlpha = a;
     if (b.arc) { g.beginPath(); g.arc(b.cx, b.cy, b.r1, b.a0, b.a1); g.arc(b.cx, b.cy, b.r0, b.a1, b.a0, true); g.closePath(); g.fillStyle = rgba(WASH, 0.12); g.fill(); }
     else { if (!b.wash) { const w = b.up ? g.createLinearGradient(b.x, 0, b.x + b.w, 0) : g.createLinearGradient(0, b.y, 0, b.y + b.h);
-        [[0, 0.24], [0.14, 0.11], [0.5, 0.07], [0.86, 0.11], [1, 0.24]].forEach((s) => w.addColorStop(s[0], rgba(WASH, s[1]))); b.wash = w; }
+        (b.pale ? [[0, 0.13], [0.14, 0.075], [0.5, 0.055], [0.86, 0.075], [1, 0.13]] : [[0, 0.24], [0.14, 0.11], [0.5, 0.07], [0.86, 0.11], [1, 0.24]]).forEach((s) => w.addColorStop(s[0], rgba(b.pale ? COL.bone : WASH, s[1]))); b.wash = w; }
       g.fillStyle = b.wash; g.fillRect(b.x, b.y, b.w, b.h); }
-    const f = b.f, n = b.n, bright = Math.floor(n * 0.08), g0 = grain(0), g1 = grain(1);
+    const f = b.f, n = b.n, bright = b.pale ? 0 : Math.floor(n * 0.08), g0 = grain(b.pale ? 3 : 0), g1 = grain(1), dim = b.pale ? 0.5 : 1;
     for (let i = 0, k = 0; i < n; i++, k += 5) {
       let u = f[k] + t * f[k + 4]; u -= Math.floor(u); const v = f[k + 1], s = (i < bright ? f[k + 2] * 1.5 : f[k + 2]) * 2.7;
-      const tw = Math.sin(t * (0.45 + f[k + 2] * 0.5) + f[k + 3]), al = a * (0.2 + 0.8 * tw * tw) * (0.62 + 0.38 * Math.sin(u * 9 - t * 0.35 + v * 3));
+      const tw = Math.sin(t * (0.45 + f[k + 2] * 0.5) + f[k + 3]), al = dim * a * (0.2 + 0.8 * tw * tw) * (0.62 + 0.38 * Math.sin(u * 9 - t * 0.35 + v * 3));
       let x, y; if (b.arc) { const an = b.a0 + (b.a1 - b.a0) * u, r = b.r0 + (b.r1 - b.r0) * v; x = b.cx + r * Math.cos(an); y = b.cy + r * Math.sin(an); }
       else if (b.up) { x = b.x + v * b.w; y = b.y + (1 - u) * b.h; } else { x = b.x + u * b.w; y = b.y + v * b.h; }
       g.globalAlpha = al; g.drawImage(i < bright ? g1 : g0, x - s / 2, y - s / 2, s, s);
@@ -155,7 +155,8 @@
       beam(x0, y0, x1, y1, ka, kb, delay, o) { o = o || {}; const len = Math.hypot(x1 - x0, y1 - y0);
         const b = { x0, y0, x1, y1, ka, kb, ca: COL[ka], cb: COL[kb], d: delay || 0, w: o.w || 1.25, a: o.a == null ? 0.72 : o.a, glow: o.glow !== false, pulse: !!o.pulse, fall: !!o.fall, to: o.to || null,
           off: o.off != null ? o.off : q() * 9, per: o.per || 7, run: o.run || Math.max(0.7, Math.min(1.5, len / 190)), glint: o.glint || 1, len, hit: false }; L.beams.push(b); return b; },
-      band(x, y, w2, h2, upright, delay) { const gr = grains(w2 * h2, upright ? h2 : w2); L.bands.push({ x, y, w: w2, h: h2, up: !!upright, d: delay || 0, f: gr.f, n: gr.n }); },
+      // pale: a mist instead of gold, for a spread that is not the yardstick itself
+      band(x, y, w2, h2, upright, delay, pale) { const gr = grains(w2 * h2 * (pale ? 0.45 : 1), upright ? h2 : w2); L.bands.push({ x, y, w: w2, h: h2, up: !!upright, d: delay || 0, f: gr.f, n: gr.n, pale: !!pale }); },
       // the same between two arcs: angles as the canvas counts them
       arcBand(cx, cy, r0, r1, a0, a1, delay) { const gr = grains(Math.abs(a1 - a0) * 0.5 * (r1 * r1 - r0 * r0), Math.abs(a1 - a0) * r1); L.bands.push({ arc: true, cx, cy, r0, r1, a0, a1, d: delay || 0, f: gr.f, n: gr.n }); },
       ribbon(pts, kind, delay, o) { o = o || {}; const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
