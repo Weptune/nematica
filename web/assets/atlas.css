@@ -379,7 +379,7 @@ main, .foot { position: relative; z-index: 1; }
 /* ---- the deck: cards with depth, tilting to the pointer */
 .arcana { perspective: 1500px; }
 .card { background: linear-gradient(180deg, rgba(16, 40, 92, .94), rgba(5, 14, 38, .97)); transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translate3d(0, var(--ty, 0px), 0); transition: transform .6s cubic-bezier(.2, .7, .2, 1), border-color .25s, box-shadow .4s; box-shadow: 0 18px 50px rgba(0, 0, 0, .35); will-change: transform; }
-.card:hover, .card:focus-visible { --ty: -16px; transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translate3d(0, var(--ty), 0); background: linear-gradient(180deg, rgba(22, 52, 116, .96), rgba(7, 18, 46, .98)); box-shadow: 0 40px 90px rgba(0, 0, 0, .55), 0 0 70px rgba(240, 207, 120, .16); transition-duration: .18s, .25s, .4s; }
+.card:hover, .card:focus-visible, .card.lit { --ty: -16px; transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translate3d(0, var(--ty), 0); background: linear-gradient(180deg, rgba(22, 52, 116, .96), rgba(7, 18, 46, .98)); box-shadow: 0 40px 90px rgba(0, 0, 0, .55), 0 0 70px rgba(240, 207, 120, .16); transition-duration: .18s, .25s, .4s; }
 .card::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s; background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 246, 220, .16), transparent 58%); }
 .card:hover::after { opacity: 1; }
 .card h3 { font-size: 1.9rem; }
@@ -404,14 +404,26 @@ main, .foot { position: relative; z-index: 1; }
 @media (max-width: 980px) { .scroll-cue { display: none; } .chapter::before { font-size: 16rem; top: 34%; -webkit-text-stroke-color: rgba(240, 207, 120, .1); } }
 @media (prefers-reduced-motion: reduce) { .fig circle.rv { transform: none; } .scroll-cue::after { animation: none; } }
 
-/* each part of the page breathes its own light: the planet's metal, behind its sign */
-@property --aura { syntax: "<color>"; inherits: true; initial-value: rgba(0, 0, 0, 0); }
-html { --aura: rgba(0, 0, 0, 0); transition: --aura 1.8s ease; }
-html[data-sky="lattice"] { --aura: rgba(255, 79, 126, .16); } html[data-sky="worm"] { --aura: rgba(240, 207, 120, .08); }
-html[data-sky="ring"] { --aura: rgba(240, 207, 120, .12); } html[data-sky="star"] { --aura: rgba(240, 207, 120, .15); }
-html[data-sky="mercury"] { --aura: rgba(120, 170, 255, .2); } html[data-sky="mars"] { --aura: rgba(255, 84, 60, .2); }
-html[data-sky="venus"] { --aura: rgba(255, 150, 90, .17); } html[data-sky="saturn"] { --aura: rgba(130, 150, 200, .18); }
-html[data-sky="sun"] { --aura: rgba(255, 200, 80, .22); } html[data-sky="moon"] { --aura: rgba(190, 205, 255, .17); } html[data-sky="jupiter"] { --aura: rgba(160, 200, 230, .16); }
-#aura { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(70vh circle at 76% 48%, var(--aura), transparent 72%); }
-html[data-sky="worm"] #aura, html[data-sky="lattice"] #aura, html[data-sky="ring"] #aura { background: radial-gradient(90vh 60vh at 50% 58%, var(--aura), transparent 72%); }
-@media (max-width: 900px) { #aura { background: radial-gradient(60vh circle at 50% 30%, var(--aura), transparent 72%); } }
+/* ---- stages: the box in each section where the scene's figure sits. The figure travels with its box,
+   so it never lies over the words beside it (assets/sky.js reads these boxes). */
+.stage { pointer-events: none; min-width: 0; }
+.hero { align-items: stretch; }
+.hero .stage { flex: 1 1 auto; min-height: 30svh; }
+@media (min-width: 981px) and (max-width: 1240px) { .hero-foot { grid-template-columns: minmax(0, 27rem) auto; } .hero-cap { grid-column: 1 / -1; grid-row: 1; justify-self: start; text-align: left; max-width: none; } }
+.seven .stage { height: clamp(300px, 56svh, 620px); margin-bottom: clamp(8px, 2vh, 28px); }
+.seven .sec-head.opening { min-height: 0; padding-bottom: 0; }
+.open { display: grid; grid-template-columns: minmax(0, 1.42fr) minmax(0, 1fr); gap: clamp(16px, 3vw, 64px); align-items: center; min-height: 96svh; }
+.open .stage { align-self: stretch; }
+.open .chapter { max-width: none; min-height: 0; }
+.open .sec-head { display: block; margin: 0; min-height: 0; }
+.open .sec-head h2 { font-size: clamp(2.8rem, 1rem + 6vw, 7.4rem); line-height: .9; text-shadow: 0 2px 40px rgba(4, 10, 28, .9); }
+.open .sec-head .prose { margin-top: clamp(18px, 3vh, 34px); }
+.how .open { min-height: 78svh; margin-bottom: clamp(20px, 4vh, 48px); grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); }
+.answer .open { min-height: 88svh; margin-bottom: clamp(20px, 4vh, 48px); grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); }
+@media (max-width: 900px) {
+  .open { grid-template-columns: 1fr; align-content: end; gap: 0; min-height: 92svh; }
+  .open .stage { order: -1; height: 38svh; align-self: auto; }
+  .open .chapter { padding: 2vh 0 6vh; justify-content: flex-start; }
+  .how .open, .answer .open { min-height: 0; }
+  .seven .stage { height: 40svh; }
+}

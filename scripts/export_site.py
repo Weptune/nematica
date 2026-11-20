@@ -526,12 +526,14 @@ def wiring() -> dict:
         y = -15 + 3 * jit(n, "y") if cord else (dv * 9 + 14 * jit(n, "y")) * half
         z = 3 * jit(n, "z") if cord else (side * 7 + 6 * jit(n, "z")) * half
         pos += [round(ap + 6 * jit(n, "x"), 1), round(y, 1), round(z, 1)]
-    edges = []
+    edges, weight = [], []
     for i, a in enumerate(names):
         for j, b in enumerate(names):
             if i != j and (Gs[i, j] > 0 or (Gg[i, j] > 0 and i < j)):
                 edges += [j, i]                     # from b onto a
-    return {"names": names, "pos": pos, "edges": edges, "source": "Kunert et al. 2014 via the C. elegans Neural Interactome (BSD 3-Clause); schematic positions"}
+                weight.append(int(round(Gs[i, j] + Gg[i, j])))   # how many contacts: the scene draws strong links brighter
+    return {"names": names, "pos": pos, "edges": edges, "w": weight,
+            "source": "Kunert et al. 2014 via the C. elegans Neural Interactome (BSD 3-Clause); schematic positions"}
 
 
 def main() -> int:

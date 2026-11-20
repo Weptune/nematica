@@ -529,6 +529,12 @@
     if (!REDUCED && matchMedia("(hover: hover)").matches) $$(".card").forEach((c) => { c.addEventListener("pointermove", (e) => { const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
         c.style.setProperty("--ry", ((x - 0.5) * 16).toFixed(2) + "deg"); c.style.setProperty("--rx", ((0.5 - y) * 10).toFixed(2) + "deg"); c.style.setProperty("--mx", (x * 100).toFixed(1) + "%"); c.style.setProperty("--my", (y * 100).toFixed(1) + "%"); });
       c.addEventListener("pointerleave", () => { c.style.setProperty("--ry", "0deg"); c.style.setProperty("--rx", "0deg"); }); });
+    // the deck and the orrery answer each other: a card under the pointer lights its sphere, and a sphere under the pointer lifts its card
+    const SKY = window.NEMATICA_SKY, deck = $$(".arcana .card");
+    if (SKY && deck.length) { const sign = (c) => c.querySelector(".seal").dataset.g, title = (c) => `${c.querySelector(".num").firstChild.textContent.trim()}. ${c.querySelector("h3").textContent}`;
+      deck.forEach((c) => { const on = () => SKY.light(sign(c), title(c)), off = () => SKY.light(null); c.addEventListener("pointerenter", on); c.addEventListener("pointerleave", off); c.addEventListener("focus", on); c.addEventListener("blur", off); });
+      SKY.onplanet = (g) => { let hit = null; deck.forEach((c) => { const y = sign(c) === g; c.classList.toggle("lit", y); if (y) hit = c; }); SKY.light(g, hit ? title(hit) : ""); };
+      SKY.pick = (g) => { const c = deck.find((d) => sign(d) === g), to = c && $(c.getAttribute("href")); if (to) to.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" }); }; }
     const prog = $("#progress"), onProg = () => prog && prog.style.setProperty("--p", (scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)).toFixed(4));
     addEventListener("scroll", onProg, { passive: true }); onProg();
     const top = $("#top"), menu = $(".menu");
