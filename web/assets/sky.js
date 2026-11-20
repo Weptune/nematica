@@ -51,14 +51,16 @@
 
   // ---------------------------------------------------------------- scenes: a formation, how it moves, where it sits, what shows
   const wide = () => W > 900;
-  const sign = (name) => ({ f: F[name], def: (i, p, t, o) => { o[0] = p[0]; o[1] = p[1]; o[2] = p[2] + 0.025 * Math.sin(t * 1.2 + i); },
+  // each sign shines in its planet's metal: quicksilver, iron, copper, lead, gold, silver, tin
+  const METAL = { mercury: [196, 222, 255], mars: [255, 122, 92], venus: [255, 170, 118], saturn: [176, 190, 214], sun: [255, 214, 110], moon: [226, 234, 250], jupiter: [214, 226, 236] };
+  const sign = (name) => ({ tint: METAL[name], f: F[name], def: (i, p, t, o) => { o[0] = p[0]; o[1] = p[1]; o[2] = p[2] + 0.025 * Math.sin(t * 1.2 + i); },
     rot: (t) => [0.12 * Math.sin(t * 0.37), 0.5 * Math.sin(t * 0.45)], at: () => (wide() ? [0.76, 0.5, H * 0.3] : [0.5, 0.3, Math.min(W, H) * 0.22]), edge: 0, lat: 0, col: 0, dim: wide() ? 1 : 0.5, pt: 1.5, chain: 1 });
   const SC = {
     worm: { f: F.worm, def: (i, p, t, o) => { const u = p[0] / 5.2 + 0.5, a = t * 0.3, c = Math.cos(a), s = Math.sin(a), ph = 6.283 * 1.3 * u - t * 1.0, A = 0.38 * (0.3 + 0.7 * u);
         o[0] = p[0]; o[1] = p[1] * c - p[2] * s + A * Math.sin(ph); o[2] = p[1] * s + p[2] * c + 0.3 * Math.cos(ph) * (0.3 + 0.7 * u); },
       rot: (t) => [0.14 + 0.05 * Math.sin(t * 0.2), 0.16 * Math.sin(t * 0.13)], at: () => [0.5, wide() ? 0.62 : 0.56, Math.min((W * 0.86) / 5.2, H * 0.34)], edge: 1, lat: 0, col: 0, dim: 1 },
-    lattice: { f: F.lattice, def: (i, p, t, o) => { o[0] = p[0]; o[1] = p[1]; o[2] = p[2]; }, rot: (t) => [0.22, 0.62 * Math.sin(t * 0.22)],
-      at: () => [0.5, wide() ? 0.64 : 0.58, Math.min((W * 0.8) / 5.4, H * 0.26)], edge: 0, lat: 1, col: 1, dim: 1 },
+    lattice: { f: F.lattice, def: (i, p, t, o) => { o[0] = p[0]; o[1] = p[1]; o[2] = p[2]; }, rot: (t) => [0.2, 0.44 * Math.sin(t * 0.22)],
+      at: () => [0.5, wide() ? 0.6 : 0.56, Math.min((W * 0.72) / 5.4, H * 0.24)], edge: 0, lat: 1, col: 1, dim: 1 },
     ring: { f: F.ring, def: (i, p, t, o) => { const a = t * 0.03, c = Math.cos(a), s = Math.sin(a); o[0] = p[0] * c - p[1] * s; o[1] = p[0] * s + p[1] * c; o[2] = 0; },
       rot: (t) => [1.0 + 0.05 * Math.sin(t * 0.3), 0.12 * Math.sin(t * 0.2)], at: () => [0.5, 0.4, Math.min(W * 0.3, H * 0.5)], edge: 1.5, lat: 0, col: 0, dim: 1, longK: 0.9 },
     wave: { f: F.wave, def: (i, p, t, o) => { o[0] = p[0]; o[1] = 0.16 * Math.sin(p[0] * 1.6 + t * 0.8) + 0.12 * Math.sin(p[2] * 2.3 + t * 0.55); o[2] = p[2]; },
@@ -72,13 +74,13 @@
   // ---------------------------------------------------------------- state
   const from = mk(), wp = mk(), sx = new Float32Array(N), sy = new Float32Array(N), sf = new Float32Array(N), en = new Float32Array(N), tin = [0, 0, 0], tmp = [0, 0, 0];
   for (let i = 0; i < N * 3; i++) from[i] = F.scatter[i] * 1.4;
-  let scene = null, prev = { edge: 0, lat: 0, col: 0, dim: 0.6, at: [0.5, 0.5, 200] }, t0 = -1e9, DUR = 2200, heroForm = "worm", heroHold = 0, lastAuto = 0;
+  let scene = null, prev = { edge: 0, lat: 0, col: 0, dim: 0.6, at: [0.5, 0.5, 200], tint: GOLD }, t0 = -1e9, DUR = 2200, heroForm = "worm", heroHold = 0, lastAuto = 0;
   let px = 0, py = 0, tpx = 0, tpy = 0, hoverI = -1, mx = -1e4, my = -1e4, fade = 1, lastPoke = 0;
   const pulses = [];
   const ease = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * u * (u * (6 * u - 15) + 10));
   function go(name, now) {
     if (!SC[name] || scene === name) return;
-    if (scene) { const s = SC[scene], g = ease((now - t0) / DUR), a = s.at(); prev = { edge: prev.edge + (s.edge - prev.edge) * g, lat: prev.lat + (s.lat - prev.lat) * g, col: prev.col + (s.col - prev.col) * g, dim: prev.dim + (s.dim - prev.dim) * g, at: prev.at.map((v, k) => v + (a[k] * (k < 2 ? 1 : 1) - v) * g) }; }
+    if (scene) { const s = SC[scene], g = ease((now - t0) / DUR), a = s.at(); prev = { edge: prev.edge + (s.edge - prev.edge) * g, lat: prev.lat + (s.lat - prev.lat) * g, col: prev.col + (s.col - prev.col) * g, dim: prev.dim + (s.dim - prev.dim) * g, at: prev.at.map((v, k) => v + (a[k] - v) * g), tint: prev.tint.map((v, k) => v + ((s.tint || GOLD)[k] - v) * g) }; }
     if (scene) from.set(wp); scene = name; t0 = now; DUR = REDUCED ? 1 : name === "worm" || name === "lattice" ? 2400 : 1700; pulses.length = 0;
     document.documentElement.dataset.sky = name;
   }
@@ -94,7 +96,8 @@
   // ---------------------------------------------------------------- drawing
   const sprite = (rgb) => { const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d"), gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
     gr.addColorStop(0, `rgba(${rgb},.55)`); gr.addColorStop(0.18, `rgba(${rgb},.22)`); gr.addColorStop(0.5, `rgba(${rgb},.06)`); gr.addColorStop(1, `rgba(${rgb},0)`); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); return c; };
-  const SP = { gold: sprite(GOLD.join(",")), carm: sprite(CARM.join(",")) };
+  const SP = { gold: sprite(GOLD.join(",")), carm: sprite(CARM.join(",")) }, SPT = {};
+  const haloOf = (name) => (SC[name].tint ? SPT[name] || (SPT[name] = sprite(SC[name].tint.join(","))) : SP.gold);
   const STARS = Array.from({ length: 170 }, () => ({ x: rnd(), y: rnd(), z: 0.25 + rnd() * 0.75, s: rnd() }));
   const mixc = (a, b, m) => `${Math.round(a[0] + (b[0] - a[0]) * m)},${Math.round(a[1] + (b[1] - a[1]) * m)},${Math.round(a[2] + (b[2] - a[2]) * m)}`;
   let QUAL = 2, slow = 0, lastT = 0;
@@ -131,19 +134,19 @@
     lines(E, NE, 0.2 * edge * dim, mixc(BONE, GOLD, 0.35), 0.6, s.longK);
     lines(LE, LE.length / 2, 0.34 * lat * dim, CARM.join(","), 0.7);
     if (s.chain && g > 0.5) { const pth = new Path2D(), lim = S * 0.11; for (let k = 0; k < N - 1; k++) { const a = order[k], b = order[k + 1]; if (Math.abs(sx[a] - sx[b]) + Math.abs(sy[a] - sy[b]) < lim) { pth.moveTo(sx[a], sy[a]); pth.lineTo(sx[b], sy[b]); } }
-      ctx.lineWidth = 1; ctx.strokeStyle = `rgba(${GOLD.join(",")},${(0.42 * (g - 0.5) * 2 * dim).toFixed(3)})`; ctx.stroke(pth); }
+      ctx.lineWidth = 1; ctx.strokeStyle = `rgba(${(s.tint || GOLD).join(",")},${(0.42 * (g - 0.5) * 2 * dim).toFixed(3)})`; ctx.stroke(pth); }
     // signals in flight
     const pc = mixc(GOLD, [255, 190, 205], col);
     for (let k = pulses.length - 1; k >= 0; k--) { const q = pulses[k], u = (now - q.t0) / q.d; if (u >= 1) { en[q.b] = Math.max(en[q.b], q.p); pulses.splice(k, 1); continue; } if (u < 0) continue;
       const x = sx[q.a] + (sx[q.b] - sx[q.a]) * u, y = sy[q.a] + (sy[q.b] - sy[q.a]) * u, x0 = sx[q.a] + (sx[q.b] - sx[q.a]) * Math.max(0, u - 0.16), y0 = sy[q.a] + (sy[q.b] - sy[q.a]) * Math.max(0, u - 0.16);
       ctx.strokeStyle = `rgba(${pc},${(0.85 * q.p * dim).toFixed(3)})`; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x, y); ctx.stroke(); }
     // the neurons: a soft halo, then a hard bright core
-    const base = mixc(GOLD, CARM, col);
+    const tgt = s.tint || GOLD, tint = [0, 1, 2].map((k) => Math.round(prev.tint[k] + (tgt[k] - prev.tint[k]) * g)), base = mixc(tint, CARM, col), halo0 = haloOf(scene);
     for (let i = 0; i < N; i++) { const pf = sf[i], e = en[i], d = Math.min(1, deg[i] / 45), rr = (1.15 + 1.5 * d + 2.4 * e) * pf * (1 + ((s.pt || 1) - 1) * g) * Math.max(0.55, Math.min(1.2, S / 190)), a = Math.min(1, (0.55 + 0.45 * d + e) * dim) * Math.min(1, Math.max(0.25, (pf - 0.72) * 2.6));
       const h = rr * (5.5 + 5 * e + 2 * d), halo = d > 0.22 || e > 0.04 || s.pt; ctx.globalAlpha = Math.min(1, a * (0.5 + 0.7 * e + 0.35 * d));
-      if (!halo) { /* small quiet neurons are a bare point */ } else if (col < 0.98) { ctx.globalAlpha *= 1 - col; ctx.drawImage(SP.gold, sx[i] - h, sy[i] - h, 2 * h, 2 * h); ctx.globalAlpha = Math.min(1, a * (0.5 + 0.7 * e + 0.35 * d)); }
+      if (!halo) { /* small quiet neurons are a bare point */ } else if (col < 0.98) { ctx.globalAlpha *= 1 - col; ctx.drawImage(halo0, sx[i] - h, sy[i] - h, 2 * h, 2 * h); ctx.globalAlpha = Math.min(1, a * (0.5 + 0.7 * e + 0.35 * d)); }
       if (halo && col > 0.02) { ctx.globalAlpha *= col; ctx.drawImage(SP.carm, sx[i] - h, sy[i] - h, 2 * h, 2 * h); }
-      ctx.globalAlpha = a; ctx.fillStyle = e > 0.05 ? `rgb(${mixc(col > 0.5 ? CARM : GOLD, [255, 250, 235], Math.min(1, e))})` : `rgb(${i % 3 === 0 || d > 0.4 ? base : mixc(BONE, CARM, col * 0.8)})`;
+      ctx.globalAlpha = a; ctx.fillStyle = e > 0.05 ? `rgb(${mixc(col > 0.5 ? CARM : tint, [255, 250, 235], Math.min(1, e))})` : `rgb(${i % 3 === 0 || d > 0.4 ? base : mixc(BONE, CARM, col * 0.8)})`;
       ctx.beginPath(); ctx.arc(sx[i], sy[i], rr, 0, 6.2832); ctx.fill(); }
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
     // a neuron's name under the pointer

@@ -8,8 +8,8 @@
   --page: #ece6d6; --plate: #f4efe2; --rule: #c7bfa9; --rule-soft: #dbd4c1;
   --ink: #0c2a55; --ink-2: #3a5078; --ink-3: #4f6085;
   --live: #8a6d12; --live-tint: #e3d8ae; --live-wash: #ebe3c4; --copy: #a90959; --copy-tint: #f0d3df;
-  --field: #0c2a55; --field-2: #10336a; --field-ink: #ece6d6; --field-ink-2: rgba(236, 230, 214, .74);
-  --night: #0c2a55; --deep: #081f42; --bone: #ece6d6; --gilt: #dcbc62;
+  --field: #07122e; --field-2: #0e2350; --field-ink: #ece6d6; --field-ink-2: rgba(236, 230, 214, .74);
+  --night: #07122e; --deep: #040a1c; --bone: #ece6d6; --gilt: #f0cf78;
   --display: "Cormorant", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
 }
 body { background: var(--page); color: var(--ink); }
@@ -35,7 +35,7 @@ a { text-decoration-color: var(--live); }
 
 /* the masthead: a blue plate with the atlas's seal */
 .masthead {
-  background: var(--night) !important; color: var(--bone) !important; position: relative; overflow: hidden;
+  background: radial-gradient(90vw 120% at 88% -20%, rgba(46, 96, 200, .4), transparent 62%), radial-gradient(70vw 120% at -10% 120%, rgba(170, 40, 100, .2), transparent 60%), linear-gradient(180deg, #040a1c, #071839) !important; color: var(--bone) !important; position: relative; overflow: hidden;
   margin-top: 0 !important; padding: clamp(72px, 9vw, 128px) var(--gutter) clamp(56px, 7vw, 104px) !important;
 }
 .masthead::before, .masthead.grain::before { content: "" !important; display: block !important; position: absolute !important; inset: 18px max(8px, calc(var(--gutter) - 22px)) 18px !important;

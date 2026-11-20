@@ -403,3 +403,15 @@ main, .foot { position: relative; z-index: 1; }
 @keyframes cue { from { transform: translateY(-20px); } to { transform: translateY(50px); } }
 @media (max-width: 980px) { .scroll-cue { display: none; } .chapter::before { font-size: 16rem; top: 34%; -webkit-text-stroke-color: rgba(240, 207, 120, .1); } }
 @media (prefers-reduced-motion: reduce) { .fig circle.rv { transform: none; } .scroll-cue::after { animation: none; } }
+
+/* each part of the page breathes its own light: the planet's metal, behind its sign */
+@property --aura { syntax: "<color>"; inherits: true; initial-value: rgba(0, 0, 0, 0); }
+html { --aura: rgba(0, 0, 0, 0); transition: --aura 1.8s ease; }
+html[data-sky="lattice"] { --aura: rgba(255, 79, 126, .16); } html[data-sky="worm"] { --aura: rgba(240, 207, 120, .08); }
+html[data-sky="ring"] { --aura: rgba(240, 207, 120, .12); } html[data-sky="star"] { --aura: rgba(240, 207, 120, .15); }
+html[data-sky="mercury"] { --aura: rgba(120, 170, 255, .2); } html[data-sky="mars"] { --aura: rgba(255, 84, 60, .2); }
+html[data-sky="venus"] { --aura: rgba(255, 150, 90, .17); } html[data-sky="saturn"] { --aura: rgba(130, 150, 200, .18); }
+html[data-sky="sun"] { --aura: rgba(255, 200, 80, .22); } html[data-sky="moon"] { --aura: rgba(190, 205, 255, .17); } html[data-sky="jupiter"] { --aura: rgba(160, 200, 230, .16); }
+#aura { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(70vh circle at 76% 48%, var(--aura), transparent 72%); }
+html[data-sky="worm"] #aura, html[data-sky="lattice"] #aura, html[data-sky="ring"] #aura { background: radial-gradient(90vh 60vh at 50% 58%, var(--aura), transparent 72%); }
+@media (max-width: 900px) { #aura { background: radial-gradient(60vh circle at 50% 30%, var(--aura), transparent 72%); } }
