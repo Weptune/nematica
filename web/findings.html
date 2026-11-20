@@ -10,6 +10,13 @@
 <link rel="icon" href="favicon.svg?v=4" type="image/svg+xml">
 <meta name="theme-color" content="#040a1c">
 <meta property="og:site_name" content="NEMATICA">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Evidence: NEMATICA">
+<meta property="og:description" content="What happens when artificial brains are watched and poked like living worms: results on 113 recorded C. elegans.">
+<meta property="og:image" content="assets/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="assets/site.css?v=21">
 <link rel="stylesheet" href="assets/theme.css?v=4">
 </head>
@@ -27,14 +34,13 @@
     <a href="index.html#answer">The answer</a>
     <a href="findings.html" aria-current="page">Evidence</a>
     <a href="method.html">Method</a>
-    <a href="sim.html">Simulations</a>
     <a href="log.html">Research log</a>
     <a href="test/">Test a network</a>
   </nav>
 </header>
 
 <section class="masthead grain" data-index="01"><div class="in"><div class="folio" aria-hidden="true" style="--step:1"><div class="folio-head"><span>NEMATICA / FIELD INDEX</span><span>01 / 04</span></div><strong class="folio-number">01</strong><div class="folio-foot"><span>FINDINGS</span><i class="folio-track"></i></div></div><h1 class="title">Looking like a brain and working like one are different things.</h1>
-    <p class="standfirst">Every finding here answers part of one question: what makes biological neural networks measurably different from artificial ones? Our tool is a test of copies, run the same way on both: we fitted artificial brains to living worms and tested them on worms they had never seen, by watching and by switching single neurons on with light, then repeated the test on artificial networks whose truth is known, untrained and trained on tasks, then took the comparison to mouse visual cortex and seven families of artificial network, from recurrent and spiking networks to transformers, each recorded through the animal's own instrument. Predictions were written down before the experiments ran, exploratory results are labelled, and the results that went against us are kept.</p><a class="mast-jump" href="#watching">Explore the evidence <span aria-hidden="true">↓</span></a></div></section>
+    <p class="standfirst">Every finding here answers part of one question: what makes biological neural networks measurably different from artificial ones? Our tool is a test of copies, run the same way on both: we fitted artificial brains to living worms and tested them on worms they had never seen, by watching and by switching single neurons on with light, then repeated the test on artificial networks whose truth is known, untrained and trained on tasks, then took the comparison to mouse visual cortex and seven families of artificial network, from recurrent and spiking networks to transformers, each recorded through the animal's own instrument, and finally switched single kinds of cell on with light in 39 more mice. Predictions were written down before the experiments ran, exploratory results are labelled, and the results that went against us are kept.</p><a class="mast-jump" href="#watching">Explore the evidence <span aria-hidden="true">↓</span></a></div></section>
 
 <main class="page">
 
@@ -59,6 +65,7 @@
         <li class="part">Beyond the worm</li>
         <li><a href="#instrument">The instrument matters</a></li>
         <li><a href="#internal">Internal state in cortex</a></li>
+        <li><a href="#push">Which way a cell pushes</a></li>
         <li><a href="#mouse">Mouse hippocampus</a></li>
         <li class="part">Taken together</li>
         <li><a href="#reading">What it adds up to</a></li>
@@ -271,6 +278,18 @@
       <figcaption>Each bar is the middle half of a network's recordings (one per mouse), the dot its median; the brass band, line and ticks are the 49 mice. Grey rings are medians at each of eight input gains for the two film-driven families, which were not counted because changing their playback speed moved them by about one ruler unit. Verdicts under each name use margins set in advance (1.15 ruler units on internal share, 2.12 on log relative slowness). Hover a row for the numbers.</figcaption>
     </figure>
 
+    <h2 id="push">In mouse cortex, watching cannot tell which way a cell pushes the brain.</h2>
+    <p>The worm result says a copy that only watched answers a poke wrongly. We asked the same of mouse cortex, using the Allen Brain Observatory's optotagging sessions: mice in which one kind of inhibitory cell (Sst, Vip or Pvalb) carries a light-sensitive channel, recorded with Neuropixels probes while a one-second pulse of light switched those cells on. For each mouse we built two copies from the classes of cells recorded (brain area by waveform): one fitted to resting activity only, one fitted to the mouse's other light conditions. Neither ever saw the test condition.</p>
+    <p><strong>The first test missed its bar.</strong> Its primary claim, that the stimulation-fitted copy beats the watching copy by a large margin mouse by mouse, was written down first, checked on synthetic networks recorded through three real mice's instruments, reviewed independently, and frozen before any response was read. The checks caught two flaws in our own method (a baseline overlapping the previous light, and light artefacts that tagged cells in mice without the channel), and both were fixed before any data. On the 9 mice that entered (8 of them reliable enough to score), the median gap cleared its bar (0.47 against 0.4) but its lower bound did not (&minus;0.08 against 0.3), so the claim is reported as not supported.</p>
+    <p><strong>What it showed instead.</strong> The copy fitted at rest predicted that switching on the inhibitory cells would raise activity in most regions. In all 8 Pvalb and Sst mice most regions fell; in the one Vip mouse, whose cells mainly inhibit other inhibitory cells, most rose. That was found after looking, so it needed new mice. A retest on the 15 unused mice of the same dataset could not decide: 14 of them had no light-responsive cells.</p>
+    <p><strong>The registered retest (Figure 14).</strong> In a second dataset, Allen Visual Behavior Neuropixels, we wrote five claims down and froze them before computing any response, then ran them once on the 39 mice with enough light-responsive cells. All five held. Switching on Sst cells lowered most regions in 29 of 29 mice (a median 13% rose); the copy fitted at rest predicted the wrong direction in 28 of 29 (it expected 77% to rise); Sst cells rose and fell with the rest of the brain at rest in 28 of 29; switching on Vip cells raised most regions in 10 of 10; and the copy's error was larger for Sst than for Vip mice. The first two hold with visual cortex only and with broad-waveform cells only.</p>
+    <figure class="plate wide">
+      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 14</span>What the copy fitted at rest predicted, and what driving the cells did, mouse by mouse</p></div>
+      <div data-chart="push"></div>
+      <figcaption>Allen Visual Behavior Neuropixels, the earliest session of each mouse; tests registered before any response was computed. One column per mouse: the ring is the share of brain-region classes the copy fitted at rest predicted would rise, the filled mark the share that did. The shaded band is the middle half of what the light alone does in 27 mice without the channel (measured after the run). Hover a column for its numbers.</figcaption>
+    </figure>
+    <p>Two checks narrow what this means. An independent check found no error and confirmed the result under other timing choices, but showed that the copy fitted at rest predicts a rise for almost any group of cells: chosen at random, visual-cortex units give the same prediction. So the failure is not peculiar to Sst cells; rather, resting co-activity carries no information about the sign of a cell's effect. And the light alone raises about two thirds of regions in mice without the channel, so the Vip effect beyond the light is real but small; the Sst effect is far beyond it. One session per mouse, one rig, two cell types, and the tests are about direction: on the detailed pattern, a copy fitted to light pulses does better than the watcher (median agreement 0.57 against &minus;0.06 in Sst mice) but has not been shown to answer like a second mouse.</p>
+
     <h2 id="mouse">Beyond the worm: in mouse hippocampus, the test is not yet sharp enough.</h2>
     <p>The same question in mice: hundreds of cells imaged in hippocampal area CA1 for about 20 untouched minutes, then one inhibitory neuron stimulated about ten times with light (open data from the Cossart lab). Each session is its own individual. The prediction, analysis and expectations were written down before any trace was opened; amendments made later are listed with the results.</p>
     <p>In the 16 sessions that passed every check, ranking cells by how they moved together with the stimulated neuron while it was only being watched ordered their responses to stimulation weakly (rank correlation about 0.15), where distance from the stimulated neuron ordered nothing. A dynamical copy added nothing over that simple correlation, and accounting for running changed nothing. Two of our three predictions were not borne out as written.</p>
@@ -280,7 +299,7 @@
 
     <h2 id="reading">What it adds up to.</h2>
     <p>No property we measured separates brains from artificial networks in kind. In the worm, each difference either dissolved when a network was given the right ingredient, or turned out to measure ongoing activity rather than the brain's answer to a poke. In mouse cortex, the broad form of our earlier reading, that brains carry more and slower internal state, failed a direct, pre-registered test: the networks span the mice.</p>
-    <p>What survives is narrower, and practical. A copy of a brain cannot be judged by watching it; it has to be stimulated, and it has to be recorded the way the animal was. Judged that way, every gap we could close closed when the network was given the right data, drive or training. So far the difference looks like information, what a network was shown and built to carry, rather than material. That is a reading across these results, not a law, and two gaps remain open: whether a neuron or the light tool tires on a repeated poke, and why a copy built on still worms fails on moving ones. Both need data that is not public.</p>
+    <p>What survives is narrower, and practical. A copy of a brain cannot be judged by watching it; it has to be stimulated, and it has to be recorded the way the animal was. Judged that way, every gap we could close closed when the network was given the right data, drive or training. So far the difference looks like information, what a network was shown and built to carry, rather than material. In mouse cortex the same lesson holds in its plainest form: a copy fitted at rest cannot even tell which way switching on a cell pushes the brain. That is a reading across these results, not a law, and three gaps remain open: whether a neuron or the light tool tires on a repeated poke, why a copy built on still worms fails on moving ones, and whether a copy taught by stimulation can answer like a second mouse. Each needs data that is not public.</p>
 
     <h2 id="wall">Where the data runs out.</h2>
     <p>Everything that can be done with existing data has now been tried at least once. The last test asked whether recording more of one worm helps it be copied by watching. The atlas names a median of 72 neurons per worm but tracks about 123, and the unnamed ones are recorded, only not identifiable across worms. Within single worms, a watching copy that includes them does slightly better than one with named neurons only (better in 26 of 44 worms), and taking out slow patterns adds nothing. But each worm offers only about 3 usable minutes of unpoked activity, and the average of other worms' pokes predicts each worm's own echoes far better (0.22 against 0.05) in 43 of 44 worms.</p>
@@ -317,6 +336,8 @@
           <tr><td>Worms respond downstream even when the stimulated neuron shows nothing</td><td>Moderate; mostly not specific to the target</td><td>Exploratory; misidentification or light reaching neighbours not excluded</td></tr>
           <tr><td>The shared slow signals are not neuropeptides</td><td>Weak to moderate</td><td>15 worms; watching already near its floor</td></tr>
           <tr><td>Nothing transfers across contexts</td><td>Moderate, for the tests run</td><td>Small samples, one stimulus</td></tr>
+          <tr><td>In mouse cortex, switching on Sst cells lowers most regions while a copy fitted at rest predicts a rise (29 of 29 mice; Vip cells raise most regions, 10 of 10)</td><td>Strong, for direction</td><td>Registered and run once on a new dataset, but one rig and one session per mouse; the copy predicts a rise for almost any cells, so this shows resting co-activity says nothing about the sign of an effect, not an Sst-specific failure; the Vip effect is small beyond the light itself</td></tr>
+          <tr><td>A copy fitted to stimulation beats one fitted at rest by a large margin, mouse by mouse (mouse cortex)</td><td>Not supported</td><td>9 usable mice; in two of them neither copy predicted the response</td></tr>
           <tr><td>Mouse hippocampus</td><td>Inconclusive</td><td>A sham control matches much of the effect</td></tr>
           <tr><td>The emulator recipe passes rest and pokes on the atlas worms</td><td>Moderate, on those worms only</td><td>Built and tuned on them, some tests by thin margins; fails its pre-set bar on unseen mutant worms and fails on moving worms</td></tr>
           <tr><td>In mouse cortex, a network's measurements depend on the recording instrument by more than mice differ</td><td>Moderate</td><td>Shown for one network on one measure (slow memory at rest)</td></tr>
@@ -349,13 +370,12 @@
   <div class="in">
     <p class="big" aria-hidden="true">NEMATICA</p>
     <p>NEMATICA. Every prediction is written down before the experiment runs, and results that went against us are kept.</p>
-    <nav aria-label="Footer"><a href="index.html">Home</a><a href="sim.html">Simulations</a><a href="method.html">Method</a><a href="log.html">Research log</a><a href="https://github.com/Weptune/nematica">Code on GitHub</a></nav>
+    <nav aria-label="Footer"><a href="index.html">Home</a><a href="method.html">Method</a><a href="log.html">Research log</a><a href="https://github.com/Weptune/nematica">Code on GitHub</a></nav>
   </div>
 </footer>
 
-<script src="data/results.js"></script>
-<script src="assets/charts.js?v=7"></script>
-<script src="data/local.js" onerror="void 0"></script>
+<script src="data/results.js?v=5"></script>
+<script src="assets/charts.js?v=9"></script>
 <script src="assets/site.js?v=3"></script>
 </body>
 </html>

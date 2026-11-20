@@ -10,6 +10,13 @@
 <link rel="icon" href="favicon.svg?v=4" type="image/svg+xml">
 <meta name="theme-color" content="#040a1c">
 <meta property="og:site_name" content="NEMATICA">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Research log: NEMATICA">
+<meta property="og:description" content="The questions NEMATICA has asked so far, in the order they were asked, with what came back.">
+<meta property="og:image" content="assets/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="assets/site.css?v=21">
 <link rel="stylesheet" href="assets/theme.css?v=4">
 </head>
@@ -27,7 +34,6 @@
     <a href="index.html#answer">The answer</a>
     <a href="findings.html">Evidence</a>
     <a href="method.html">Method</a>
-    <a href="sim.html">Simulations</a>
     <a href="log.html" aria-current="page">Research log</a>
     <a href="test/">Test a network</a>
   </nav>
@@ -59,7 +65,7 @@
         <p class="when">Arc 5</p>
         <h3>A worm that senses copper</h3>
         <p>A brain model connected to a simulated body in each real worm's own arena, with copper fed back as the body moves. The first version spent 40% of its time near copper, against 3% for real worms. By the eleventh version, with copper entering the brain only through the sensory neuron ASH, simulated worms are inside on 9 of 10 activity tests and all three behaviour tests. It still spends more time near copper than real worms do (13% against 3%).</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">9 of 10</span><span class="l">activity tests, and all three behaviour tests, for the eleventh version</span></div><a href="sim.html">Watch it in the simulations</a></aside></li>
+      </div><aside class="log-aside"><div class="measure"><span class="v">9 of 10</span><span class="l">activity tests, and all three behaviour tests, for the eleventh version</span></div><a href="https://github.com/Weptune/nematica#results-so-far-copper-set-oct-31-2026">Watch it in the simulations</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">Arc 4, the headline</p>
         <h3>The causal Turing test</h3>
@@ -74,7 +80,7 @@
         <p class="when">Arc 6</p>
         <h3>From one brain to a swarm</h3>
         <p>Many simulated worms in one arena, touching and avoiding each other. Does a crowd of identical average worms behave differently from a crowd of distinct individuals? The earlier exported run crossed its intended copper escape limit. A live behavioral sandbox now contains the worms and exposes the contact rule, but its crowd statistics are not yet evidence about real swarms; the mixed-versus-clone difference is not established across seeds.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">32</span><span class="l">model-informed worms in a live crowd prototype</span></div><a href="sim.html#swarm">Run the live prototype</a></aside></li>
+      </div><aside class="log-aside"><div class="measure"><span class="v">32</span><span class="l">model-informed worms in a live crowd prototype</span></div><a href="https://github.com/Weptune/nematica#what-is-built">Run the live prototype</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">1 Nov 2026 · Data</p>
         <h3>Three recordings were broken, and are repaired</h3>
@@ -215,6 +221,51 @@
         <h3>A preprint draft and a reading of the whole</h3>
         <p>The benchmark results are written up as a preprint draft. Across 30 models, realism at rest and realism under pokes are unrelated (rank correlation -0.12). Our reading of everything so far: what separates a brain from an ordinary artificial network is state outside its units' activity.</p>
       </div><aside class="log-aside"><div class="measure"><span class="v">-0.12</span><span class="l">rank correlation between rest realism and poke realism over 30 models</span></div><a href="findings.html#reading">Details</a></aside></li>
+      <li class="done"><div class="log-main">
+        <p class="when">8 Nov 2026 · One model for both halves</p>
+        <h3>A recipe passes rest and pokes, but only on the worms it was built on</h3>
+        <p>Four ingredients together pass both halves of the test on the atlas worms in every noise draw: slow brain-wide states, each worm its own dynamics, causal links learned from pokes, and neuron-level observation. Refitted on unseen mutant worms it passes three of five draws, one short of the bar set in advance, and on another lab's freely moving worms it passes one of six activity tests.</p>
+      </div><aside class="log-aside"><div class="measure"><span class="v">1 of 6</span><span class="l">activity tests passed on freely moving worms, in every draw</span></div><a href="findings.html#emulator">Details</a></aside></li>
+      <li class="done"><div class="log-main">
+        <p class="when">8 Nov 2026 · An open test</p>
+        <h3>Anyone can put a network through the same test</h3>
+        <p>The test became a website: upload recordings or a model, and it measures eight signatures of activity at rest and under single-unit pushes against 113 real worms. Groups of real worms it never saw land at 0.29 to 0.60 from the reference; the worm emulator at 0.84 to 1.04; a trained transformer at 3.25.</p>
+      </div><aside class="log-aside"><div class="measure"><span class="v">0.29 to 0.60</span><span class="l">distance of held-out real worm groups from the reference</span></div><a href="test/">Details</a></aside></li>
+      <li class="done"><div class="log-main">
+        <p class="when">13 to 15 Nov 2026 · Mouse cortex</p>
+        <h3>The instrument matters more than the mouse</h3>
+        <p>Recorded through five different mice's instruments, one artificial network moved by 1.8 times the spread between mice. Compared mouse by mouse through each mouse's own simulated instrument, a random network has less slow memory than the mouse in 33 of 35; with strong slow drives it has more than all 31 measured.</p>
+      </div><aside class="log-aside"><div class="measure"><span class="v">33 of 35</span><span class="l">mice with more slow memory than a random network recorded like them</span></div><a href="findings.html#instrument">Details</a></aside></li>
+      <li class="done"><div class="log-main">
+        <p class="when">17 Nov 2026 · Internal state in cortex</p>
+        <h3>Cortex does not carry more, slower internal state than artificial networks</h3>
+        <p>Pre-registered, with three reviews before the data: 49 mice watching the same film against recurrent, gated, liquid, spiking, transformer and state-space networks, each recorded the way the mouse was. None of the four claims held. The networks land on both sides of the mice.</p>
+      </div><aside class="log-aside"><div class="measure"><span class="v">0 of 4</span><span class="l">claims of more, slower internal state that held</span></div><a href="findings.html#internal">Details</a></aside></li>
+      <li class="done"><div class="log-main">
+        <p class="when">17 Nov 2026 · Two studies stopped</p>
+        <h3>Stopped before they could mislead</h3>
+        <p>A study of whether cortex generates its own variability failed its calibration on networks where the answer was known, so nothing was ever measured in the mice. A study of a cortical hierarchy was stopped after its review found its claims would likely restate published results and that its headline test could not fail.</p>
+      </div><aside class="log-aside"><div class="measure"><span class="v">Stopped</span><span class="l">at calibration and at review, as the rules said</span></div><a href="findings.html#reading">Details</a></aside></li>
+      <li class="done"><div class="log-main">
+        <p class="when">19 Nov 2026 · Mouse cortex, switching cells on</p>
+        <h3>The first stimulation test misses its bar, and points somewhere else</h3>
+        <p>Calibrated through three real mice's instruments, reviewed independently and frozen before any response was read. Calibration caught two flaws in our own method first. The primary claim, a large gap between a copy fitted to stimulation and one fitted at rest, was not supported in the 9 mice that entered. Looking afterwards: the copy fitted at rest predicted that switching on inhibitory cells would raise most regions, and in all 8 Pvalb and Sst mice most fell.</p>
+      </div><aside class="log-aside"><div class="measure"><span class="v">Not supported</span><span class="l">the registered primary claim; the sign pattern was found afterwards</span></div><a href="findings.html#push">Details</a></aside></li>
+      <li class="done"><div class="log-main">
+        <p class="when">19 Nov 2026 · Held-out mice</p>
+        <h3>A retest on unused mice cannot decide</h3>
+        <p>14 of the 15 mice the first test did not use had no light-responsive cells, so the retest was undecided as written. Counting responsive cells before registering would have shown this; it is noted as a planning miss.</p>
+      </div><aside class="log-aside"><div class="measure"><span class="v">Undecided</span><span class="l">only 1 of 15 mice had enough responsive cells</span></div><a href="findings.html#push">Details</a></aside></li>
+      <li class="done"><div class="log-main">
+        <p class="when">19 Nov 2026 · A second dataset</p>
+        <h3>Watching cannot tell which way a cell pushes the brain</h3>
+        <p>Five claims written down and frozen before any response, then run once on 39 new mice. All held. Switching on Sst cells lowered most regions in 29 of 29 mice while the copy fitted at rest predicted a rise; switching on Vip cells raised most regions in 10 of 10. An independent check found no error, and showed that the copy predicts a rise for almost any cells: resting co-activity carries no information about the sign of an effect.</p>
+      </div><aside class="log-aside"><div class="measure"><span class="v">29 of 29</span><span class="l">mice where switching on Sst cells lowered most regions</span></div><a href="findings.html#push">Details</a></aside></li>
+      <li class="done"><div class="log-main">
+        <p class="when">20 Nov 2026 · Reading</p>
+        <h3>What separates them is what they were shown</h3>
+        <p>This replaces the reading of 8 Nov. Across seven questions in worms and mice, three differences closed once a network was given what it lacked (pokes to learn from, its own individuality, a slow drive), one was never there, and three remain open, each waiting on data that is not public. So far, what separates these networks from real brains is what they were shown and built to carry, not that they are artificial.</p>
+      </div><aside class="log-aside"><div class="measure"><span class="v">3, 1, 3</span><span class="l">differences closed, never there, still open</span></div><a href="index.html#answer">Details</a></aside></li>
     </ol>
   </div>
 </main>
@@ -223,10 +274,9 @@
   <div class="in">
     <p class="big" aria-hidden="true">NEMATICA</p>
     <p>NEMATICA. Every prediction is written down before the experiment runs, and results that went against us are kept.</p>
-    <nav aria-label="Footer"><a href="index.html">Home</a><a href="sim.html">Simulations</a><a href="findings.html">Evidence</a><a href="method.html">Method</a><a href="https://github.com/Weptune/nematica">Code on GitHub</a></nav>
+    <nav aria-label="Footer"><a href="index.html">Home</a><a href="findings.html">Evidence</a><a href="method.html">Method</a><a href="https://github.com/Weptune/nematica">Code on GitHub</a></nav>
   </div>
 </footer>
-<script src="data/local.js" onerror="void 0"></script>
 <script src="assets/site.js?v=3"></script>
 </body>
 </html>

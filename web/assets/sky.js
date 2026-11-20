@@ -5,7 +5,7 @@
    density; nothing is a bitmap. Pointer: parallax everywhere, and on the worm, touch a neuron to send a signal. */
 (function () {
   "use strict";
-  const B = window.NEMATICA_BRAIN, cv = document.getElementById("sky"); if (!B || !cv) return;
+  const B = window.NEMATICA_WIRING || window.NEMATICA_BRAIN, cv = document.getElementById("sky"); if (!B || !cv) return;
   const ctx = cv.getContext("2d"), N = B.names.length, REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const GOLD = [240, 207, 120], BONE = [236, 230, 214], CARM = [255, 79, 126];
   let W = 0, H = 0, DPR = 1;
@@ -15,10 +15,12 @@
   const rank = new Uint16Array(N); order.forEach((id, k) => (rank[id] = k));
   const E = B.edges, NE = E.length / 2, deg = new Uint16Array(N), adj = Array.from({ length: N }, () => []);
   for (let k = 0; k < NE; k++) { const a = E[2 * k], b = E[2 * k + 1]; deg[a]++; deg[b]++; adj[a].push(b); adj[b].push(a); }
-  // an artificial net: ten layers of thirty units, each wired to three units of the next layer
-  const LAYERS = 10, ROWS = 6, COLS = 5, LE = [], lnext = Array.from({ length: N }, () => []);
-  for (let k = 0; k < N - ROWS * COLS; k++) { const l = Math.floor(k / 30), w = k % 30, r = Math.floor(w / COLS), c = w % COLS;
-    [[r, c], [(r + 1) % ROWS, c], [r, (c + 1) % COLS]].forEach(([r2, c2]) => { const t = (l + 1) * 30 + r2 * COLS + c2; LE.push(order[k], order[t]); lnext[order[k]].push(order[t]); }); }
+  // an artificial net: layers of thirty units, each wired to three units of the next, and a small output layer
+  const ROWS = 6, COLS = 5, FULL = Math.floor(N / 30), REST = N - FULL * 30, LAYERS = FULL + (REST ? 1 : 0), LE = [], lnext = Array.from({ length: N }, () => []);
+  const link = (a, b) => { LE.push(order[a], order[b]); lnext[order[a]].push(order[b]); };
+  for (let k = 0; k < FULL * 30; k++) { const l = Math.floor(k / 30), w = k % 30, r = Math.floor(w / COLS), c = w % COLS;
+    if (l < FULL - 1) [[r, c], [(r + 1) % ROWS, c], [r, (c + 1) % COLS]].forEach(([r2, c2]) => link(k, (l + 1) * 30 + r2 * COLS + c2));
+    else if (REST) link(k, FULL * 30 + (w % REST)); }
 
   // ---------------------------------------------------------------- formations (unit: the figure's half height is about 1)
   let seed = 11; const rnd = () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
@@ -27,8 +29,10 @@
     const f = (F.worm = mk()), x0 = B.pos[3 * order[0]], x1 = B.pos[3 * order[N - 1]];
     for (let i = 0; i < N; i++) { const u = 0.5 * (rank[i] / (N - 1)) + 0.5 * ((B.pos[3 * i] - x0) / (x1 - x0)), tp = 0.26 + 0.74 * Math.pow(Math.sin(Math.PI * Math.min(1, u * 1.55)), 0.8);   // narrow nose, full head, long thin tail
       f[3 * i] = (u - 0.5) * 5.2; f[3 * i + 1] = (B.pos[3 * i + 1] / 20) * 0.5 * tp; f[3 * i + 2] = (B.pos[3 * i + 2] / 12) * 0.5 * tp; } }
-  { const f = (F.lattice = mk()); for (let k = 0; k < N; k++) { const i = order[k], l = Math.floor(k / 30), w = k % 30, r = Math.floor(w / COLS), c = w % COLS;
-      f[3 * i] = (l - 4.5) * 0.52; f[3 * i + 1] = (r - 2.5) * 0.32; f[3 * i + 2] = (c - 2) * 0.32; } }
+  { const f = (F.lattice = mk()), mid = (LAYERS - 1) / 2, side = Math.ceil(Math.sqrt(REST || 1));
+    for (let k = 0; k < N; k++) { const i = order[k];
+      if (k < FULL * 30) { const l = Math.floor(k / 30), w = k % 30, r = Math.floor(w / COLS), c = w % COLS; f[3 * i] = (l - mid) * 0.56; f[3 * i + 1] = (r - 2.5) * 0.32; f[3 * i + 2] = (c - 2) * 0.32; }
+      else { const w = k - FULL * 30, r = Math.floor(w / side), c = w % side; f[3 * i] = (FULL - mid) * 0.56; f[3 * i + 1] = (r - (side - 1) / 2) * 0.32; f[3 * i + 2] = (c - (side - 1) / 2) * 0.32; } } }
   { const f = (F.ring = mk()); for (let k = 0; k < N; k++) { const i = order[k], a = -Math.PI / 2 + 0.15 + (k / N) * (2 * Math.PI - 0.3); f[3 * i] = Math.cos(a); f[3 * i + 1] = -Math.sin(a); f[3 * i + 2] = 0; } }
   { const f = (F.wave = mk()); for (let k = 0; k < N; k++) { const i = order[k]; f[3 * i] = ((k % 30) - 14.5) * 0.2; f[3 * i + 1] = 0; f[3 * i + 2] = (Math.floor(k / 30) - 4.5) * 0.42; } }
   { const f = (F.scatter = mk()); for (let i = 0; i < N; i++) { const a = rnd() * 6.283, z = rnd() * 2 - 1, r = 1.9 * Math.cbrt(rnd()), s = Math.sqrt(1 - z * z); f[3 * i] = r * s * Math.cos(a) * 1.5; f[3 * i + 1] = r * s * Math.sin(a); f[3 * i + 2] = r * z; } }
@@ -160,8 +164,8 @@
 
   // ---------------------------------------------------------------- the page drives it
   const marks = Array.from(document.querySelectorAll("[data-sky]")), cap = document.getElementById("hero-cap"), words = Array.from(document.querySelectorAll("[data-form]"));
-  const CAP = { worm: "The 300 neurons of one worm, where they really sit, wired as they are really wired. Touch one to send a signal.", lattice: "The same 300 units, wired as an artificial network. Signals march one way, layer by layer." };
-  function setHero(name, now, auto) { heroForm = name; if (!auto) heroHold = now + 24000; lastAuto = now; words.forEach((w) => w.classList.toggle("on", w.dataset.form === name)); if (cap) cap.textContent = CAP[name];
+  const CAP = { worm: "The worm\u2019s 279 connected neurons, head to tail, wired as they really are. Touch one to send a signal.", lattice: "The same 279 units, wired as an artificial network. Signals march one way, layer by layer." };
+  function setHero(name, now, auto) { heroForm = name; if (!auto) heroHold = now + 24000; lastAuto = now; words.forEach((w) => { w.classList.toggle("on", w.dataset.form === name); w.setAttribute("aria-pressed", String(w.dataset.form === name)); }); if (cap) cap.textContent = CAP[name];
     if (scene === "worm" || scene === "lattice") go(name, now); }
   function onScroll() { const now = performance.now(), mid = H * 0.5; let hit = null;
     for (const m of marks) { const r = m.getBoundingClientRect(); if (r.top <= mid && r.bottom > mid) hit = m; }

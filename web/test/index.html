@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test your own network: NEMATICA</title>
+<meta name="description" content="Put any artificial network through the same brain-likeness test as 113 real C. elegans nervous systems: eight signatures of activity, at rest and under single-unit pushes.">
+<link rel="preload" href="../fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="../favicon.svg?v=4" type="image/svg+xml">
+<meta name="theme-color" content="#040a1c">
+<meta property="og:site_name" content="NEMATICA">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Test your own network: NEMATICA">
+<meta property="og:description" content="Put any artificial network through the same brain-likeness test as 113 real C. elegans nervous systems: eight signatures of activity, at rest and under single-unit pushes.">
+<meta property="og:image" content="../assets/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="../assets/site.css?v=21">
+<link rel="stylesheet" href="../assets/theme.css?v=4">
+<style>
+.run { margin: 18px 0 8px; background: var(--deep); color: var(--bone); padding: 18px 22px; border-radius: 3px; font: 500 .92rem/1.7 ui-monospace, SFMono-Regular, Menlo, monospace; overflow-x: auto; white-space: pre; }
+.run .c { color: rgba(236, 230, 214, .64); }
+.skip { position: absolute; left: 12px; top: -60px; z-index: 50; background: var(--bone); color: var(--ink); padding: 10px 16px; }
+.skip:focus { top: 12px; }
+table.data td small { color: var(--ink-3); font-size: .82rem; }
+</style>
+</head>
+<body>
+<a class="skip" href="#test">Skip to the test</a>
+<header class="bar on-field" id="bar">
+  <a class="wordmark" href="../index.html" aria-label="NEMATICA home">
+    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 44c10 0 11-23 23-23 11 0 11 22 20 22 5 0 7-7 9-13-1 11-5 18-11 18-12 0-10-22-19-22-8 0-11 23-22 23z" fill="currentColor"/><circle cx="29" cy="23.5" r="4.2" fill="#dcbc62"/></svg>
+    NEMATICA
+  </a>
+  <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu"><span class="menu-lines" aria-hidden="true"></span><span>Menu</span></button>
+  <nav id="site-nav" aria-label="Site">
+    <a href="../index.html#seven">The seven questions</a>
+    <a href="../index.html#how">How we ask</a>
+    <a href="../index.html#answer">The answer</a>
+    <a href="../findings.html">Evidence</a>
+    <a href="../method.html">Method</a>
+    <a href="../log.html">Research log</a>
+    <a href="./" aria-current="page">Test a network</a>
+  </nav>
+</header>
+
+<section class="masthead grain" data-index="05"><div class="in"><h1 class="title">Test your own network.</h1>
+    <p class="standfirst">A rate network, a transformer run step by step, a spiking simulation, neuromorphic hardware, a brain emulation: the test records it at rest and while briefly pushing single units, measures eight signatures of its activity, and checks each against recordings of 113 real <i>C. elegans</i> nervous systems probed the same way.</p><a class="mast-jump" href="#run">Run the test <span aria-hidden="true">↓</span></a></div></section>
+
+<main class="page" id="test">
+  <div class="sheet">
+    <h2 id="what">What it measures.</h2>
+    <p>Each signature is a property of activity anyone can check: how few patterns the resting activity uses, how slow it is, how much units move together, its timescale, how far a push to one unit spreads, how much the pushed unit stands out, whether a second push gets a weaker answer, and how well the system can be copied by watching it. For each, the reference is the range that groups of real worms span. A system's distance is how far it sits outside those ranges, on average.</p>
+    <figure class="plate wide">
+      <div class="plate-head"><p class="plate-title"><span class="fn">Figure 1</span>Eight signatures, three systems</p></div>
+      <div data-chart="testSky"></div>
+      <figcaption>Each row is one signature, in units of the real-worm range (the shaded band, from &minus;1 to +1). A group of real worms the test never saw lands inside on every row; the worm emulator lands close; a random recurrent network lands far outside on almost all of them. Values beyond &plusmn;6 are drawn at the edge. Hover a mark for its number.</figcaption>
+    </figure>
+
+    <h2 id="board">The reference board.</h2>
+    <p>The systems the test was calibrated on, ranked by distance from real worms. Groups of real worms held out of the reference sit at 0.29 to 0.60; that is the mark to beat.</p>
+    <div data-chart="testBoard"></div>
+
+    <h2 id="run">Run it.</h2>
+    <p>The test needs its server, which this copy of the site does not run. When the site is served with it, this page is the live test: upload recordings, weights (<code>.npz</code> or ONNX) or a Python class, and get a result page and a place on the board. To run it on your own machine:</p>
+    <div class="run"><span class="c"># the site and the live test, at http://localhost:8642</span>
+git clone https://github.com/Weptune/nematica
+cd nematica
+python3 -m pip install -r deploy/brainlike/requirements.txt
+web/serve.sh
+
+<span class="c"># or test one system from the command line</span>
+python -m nematica brainlike my_rnn.npz
+python -m nematica brainlike model.onnx
+python -m nematica brainlike my_system.py --class System</div>
+    <p>Reference data: Randi et al. 2023, the signal propagation atlas of <i>C. elegans</i> (CC BY 4.0), summary numbers only. The protocol, its calibration and every amendment are in the repository.</p>
+  </div>
+</main>
+
+<footer class="foot grain">
+  <div class="in">
+    <p class="big" aria-hidden="true">NEMATICA</p>
+    <p>NEMATICA. Every prediction is written down before the experiment runs, and results that went against us are kept.</p>
+    <nav aria-label="Footer"><a href="../index.html">Home</a><a href="../findings.html">Evidence</a><a href="../log.html">Research log</a><a href="https://github.com/Weptune/nematica">Code on GitHub</a></nav>
+  </div>
+</footer>
+
+<script src="../data/results.js?v=5"></script>
+<script src="../assets/charts.js?v=9"></script>
+<script src="../assets/site.js?v=3"></script>
+</body>
+</html>

@@ -284,6 +284,15 @@ def beyond() -> dict:
     out["shrinkage"] = [{"lam": r["lam"], "r2": num(r["within_worm_r2"]), "ind": num(r["individuality"]),
                          "typical": sum(v == "too typical" for k, v in r.items() if k.endswith("_verdict")),
                          "outside": sum(v == "outside" for k, v in r.items() if k.endswith("_verdict"))} for r in rows("shrinkage.csv")]
+    # the open brain-likeness test: its calibration systems, for the static page at web/test/
+    board = []
+    for f in sorted((ROOT / "nematica" / "brainlike" / "calibration").glob("*.json")):
+        d = json.loads(f.read_text()); r = d["result"]
+        if not r.get("valid") or r.get("mean_abs_distance") is None:
+            continue
+        board.append({"name": d["name"], "about": d.get("description", ""), "score": r["score"], "outOf": r["out_of"], "distance": round(float(r["mean_abs_distance"]), 2),
+                      "sig": {k: {"d": round(float(v["distance"]), 2), "in": bool(v["inside"]), "label": v["label"]} for k, v in r["signatures"].items() if v.get("distance") is not None}})
+    out["testBoard"] = sorted(board, key=lambda b: (b["distance"], -b["score"]))
     # a repeat poke: response as a share of the previous one, by the time between pokes
     import math
     out["recovery"] = [{"gap": r["gap_min"], "worms": int(r["worms"]), "pairs": int(r["pairs"]), "pct": round(math.exp(float(r["decline"])), 3),
@@ -493,6 +502,38 @@ def brain() -> dict:
             "pos": [round(v, 1) for n in names for v in atlas[n]], "edges": edges}
 
 
+def wiring() -> dict:
+    """The worm's wiring for the home page's scene, from data the repository ships (Kunert et al. 2014 matrices via
+    the C. elegans Neural Interactome, BSD 3-Clause): 279 connected somatic neurons, their chemical synapses and gap
+    junctions. Positions are schematic, from anatomy alone: the matrices list neurons from head to tail, so the
+    order sets each neuron's place along the body (head ganglia, ventral cord, tail ganglia), and its name sets its
+    side (left or right) and, where the name says so, dorsal or ventral. No measured coordinates are used."""
+    import ast
+    import hashlib
+    names = [str(n) for n in ast.literal_eval((ROOT / "data_assets" / "kunert2014" / "neuron_names.txt").read_text())]
+    Gs, Gg = np.load(ROOT / "data_assets" / "kunert2014" / "Gs.npy"), np.load(ROOT / "data_assets" / "kunert2014" / "Gg.npy")
+    N, have = len(names), set(names)
+    i_cord, i_tail = names.index("VA01"), names.index("PVPR")
+    jit = lambda n, k: int(hashlib.md5(f"{n}{k}".encode()).hexdigest()[:8], 16) / 2 ** 32 - 0.5  # noqa: E731
+    pos = []
+    for i, n in enumerate(names):
+        if i < i_cord:   ap, half = 18 + 120 * i / i_cord, 1.0                                  # head ganglia
+        elif i < i_tail: ap, half = 150 + 560 * (i - i_cord) / (i_tail - i_cord), 0.45           # ventral cord and mid-body
+        else:            ap, half = 730 + 70 * (i - i_tail) / (N - i_tail), 0.7                   # tail ganglia
+        side = 1 if n.endswith("L") and n[:-1] + "R" in have else -1 if n.endswith("R") and n[:-1] + "L" in have else 0
+        dv = 1 if len(n) > 3 and n[-2:-1] == "D" and side else -1 if len(n) > 3 and n[-2:-1] == "V" and side else 0
+        cord = i_cord <= i < i_tail and n[:2] in ("VA", "VB", "VC", "VD", "DA", "DB", "DD", "AS")
+        y = -15 + 3 * jit(n, "y") if cord else (dv * 9 + 14 * jit(n, "y")) * half
+        z = 3 * jit(n, "z") if cord else (side * 7 + 6 * jit(n, "z")) * half
+        pos += [round(ap + 6 * jit(n, "x"), 1), round(y, 1), round(z, 1)]
+    edges = []
+    for i, a in enumerate(names):
+        for j, b in enumerate(names):
+            if i != j and (Gs[i, j] > 0 or (Gg[i, j] > 0 and i < j)):
+                edges += [j, i]                     # from b onto a
+    return {"names": names, "pos": pos, "edges": edges, "source": "Kunert et al. 2014 via the C. elegans Neural Interactome (BSD 3-Clause); schematic positions"}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--local", action="store_true")
@@ -506,6 +547,8 @@ def main() -> int:
     (OUT / "results.js").write_text("window.NEMATICA_RESULTS = " + json.dumps({**results(), **beyond()}, separators=(",", ":")) + ";\n",
                                     encoding="utf-8")
     print("wrote", OUT / "results.js")
+    (OUT / "wiring.js").write_text("window.NEMATICA_WIRING = " + json.dumps(wiring(), separators=(",", ":")) + ";\n", encoding="utf-8")
+    print("wrote", OUT / "wiring.js")
     if args.sims:
         sims()
     if args.local:

@@ -34,7 +34,7 @@ classical planets whose meaning fits them. The symbolism is visual only: all cop
 ## Files
 - `index.html`: the page, plus the SVG sprite of planet signs and verdict marks.
 - `assets/atlas.css`: tokens and components, in page order.
-- `assets/sky.js`: the scene behind the page. A section chooses its figure with `data-sky="..."`
+- `assets/sky.js`: the scene behind the page (reads `data/wiring.js`). A section chooses its figure with `data-sky="..."`
   (`hero`, `ring`, `wave`, a planet name, `star`, `scatter`).
 - `assets/atlas.js`: the opening diagram, seals, emblems, the seven figures, the ledger, the great seal.
   Figures read `data/results.js` (exported by `scripts/export_site.py`) and `data/brain.js`.
@@ -43,6 +43,20 @@ classical planets whose meaning fits them. The symbolism is visual only: all cop
 - `assets/charts.js`: inner-page figures (reads the theme's CSS variables).
 - Unused since the redesign, kept until someone confirms removal: `assets/home.css`,
   `assets/showcase.js`, `assets/specimen.js`, `assets/img/fig-*.png`.
+
+## Publishing
+- Publish `web/` as it is in git: `.github/workflows/pages.yml` runs only when started by hand.
+- Only files in git are published. `data/local.js`, `data/echo.js`, `data/brain.js`, `data/sim/` and
+  `lab/data/` hold third-party recordings or positions and stay local, so `sim.html` and `lab/` work only
+  when served locally; they are not linked from the published navigation.
+- The scene uses `data/wiring.js` (committed): the Kunert et al. 2014 wiring (BSD 3-Clause) with schematic,
+  anatomy-only positions. Rebuild with `python -I scripts/export_site.py`.
+- `test/index.html` is the open test's static page (reference board, how to run it). When the site runs
+  with its server (`web/serve.sh`), the live test is mounted at `/test/` instead.
+- Social preview: `assets/img/og.jpg` (1200 x 630), referenced relatively; once the site has a domain,
+  make `og:image` an absolute URL.
+- To check what will be published: copy `git ls-files -co --exclude-standard web` to a folder, serve it,
+  and look for 404s.
 
 ## Adding a result
 Add a card to `.arcana` (its `.back` holds the headline number and one sentence, shown on hover), a plate (`section.plate` with a seal, "How we asked", "What we saw", numbers, a

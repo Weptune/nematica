@@ -977,7 +977,64 @@
     if (!narrow) { text(s, W - m.r + 16, y(1) + 4, "the same as before", { "font-size": 12, fill: C.ink2 }); text(s, W - m.r + 16, y(D[0].pct) + 4, "about half, at first", { "font-size": 12, fill: C.ink, "font-weight": 600 }); }
   }
 
-  const FIGS = { rulerStrip, scorecard, restPoke, power, signalNoise, fingerprint, echoShape, calibration, mind, gallery, ceiling, law, rulerTruth, permouse, slowFamilies, emulator, gaps, restAvg, recovery };
+  // which way driving a cell pushes the brain: the copy fitted at rest against what happened, mouse by mouse
+  function push(host) {
+    const O = R.optoSign; if (!O) return;
+    const order = ["Sst", "Vip"], D = O.mice.filter((d) => order.includes(d.line)).sort((a, b) => order.indexOf(a.line) - order.indexOf(b.line) || a.real - b.real);
+    const W = widthOf(host, 300), narrow = W < 680, H = narrow ? 400 : 440, m = { l: 48, r: narrow ? 12 : 210, t: narrow ? 64 : 18, b: 64 };
+    const s = svg(host, W, H, `For ${D.length} mice, the share of brain regions a copy fitted at rest predicted would rise when the cells were switched on, and the share that did`);
+    const gapG = narrow ? 14 : 30, step = (W - m.l - m.r - gapG) / D.length, y = lin(0, 1, H - m.b, m.t);
+    el("rect", { x: m.l, y: y(O.wt[2]), width: W - m.l - m.r, height: y(O.wt[0]) - y(O.wt[2]), fill: C.soft }, s);
+    [0, 0.25, 0.5, 0.75, 1].forEach((v) => { hline(s, m.l, W - m.r, y(v), { stroke: v === 0.5 ? C.ink3 : C.soft, "stroke-dasharray": v === 0.5 ? "3 4" : null }); text(s, m.l - 8, y(v) + 4, Math.round(v * 100) + "%", { "text-anchor": "end", "font-size": 11, fill: C.ink3 }); });
+    let xi = m.l, g = null, gx0 = 0; const groups = [], r = narrow ? 3.2 : 4.4;
+    D.forEach((d) => { if (d.line !== g) { if (g) { groups.push([g, gx0, xi]); xi += gapG; } g = d.line; gx0 = xi; }
+      const cx = xi + step / 2;
+      vline(s, cx, y(d.w), y(d.real), { stroke: C.rule });
+      el("circle", { cx, cy: y(d.w), r: r - 0.4, fill: C.plate, stroke: C.copy, "stroke-width": 1.6 }, s);
+      el("circle", { cx, cy: y(d.real), r, fill: C.live, stroke: C.plate, "stroke-width": 1 }, s);
+      const hit = el("rect", { x: xi, y: m.t, width: step, height: H - m.t - m.b, class: "hit", tabindex: 0, "aria-label": `${d.line} mouse: copy predicted ${Math.round(d.w * 100)}% rising, ${Math.round(d.real * 100)}% rose` }, s);
+      hover(hit, `<b>${d.line} mouse ${d.id.replace("sub-", "")}</b>${row("Copy fitted at rest predicted rising", Math.round(d.w * 100) + "%")}${row("Rose when the cells were driven", Math.round(d.real * 100) + "%")}${row("Light alone, median", Math.round(O.wt[1] * 100) + "%")}`);
+      xi += step; });
+    groups.push([g, gx0, xi]);
+    groups.forEach(([gn, a, b]) => { hline(s, a + 2, b - 2, H - m.b + 12, { stroke: C.ink3 }); const n = D.filter((d) => d.line === gn).length;
+      text(s, (a + b) / 2, H - m.b + 30, narrow ? `${gn}, ${n}` : `${gn} cells, ${n} mice`, { "text-anchor": "middle", "font-size": 12.5, fill: C.ink, "font-weight": 650 });
+      text(s, (a + b) / 2, H - m.b + 46, gn === "Sst" ? (narrow ? "inhibit neighbours" : "inhibit their neighbours") : (narrow ? "inhibit inhibitors" : "inhibit other inhibitors"), { "text-anchor": "middle", "font-size": 11.5, fill: C.ink3 }); });
+    const key = (x0, y0, k, t) => { if (k === "ring") el("circle", { cx: x0 + 5, cy: y0 - 4, r: 4.4, fill: C.plate, stroke: C.copy, "stroke-width": 1.6 }, s);
+      else if (k === "dot") el("circle", { cx: x0 + 5, cy: y0 - 4, r: 4.8, fill: C.live }, s); else el("rect", { x: x0, y: y0 - 10, width: 11, height: 11, fill: C.soft, stroke: C.rule }, s);
+      t.forEach((u, j) => text(s, x0 + 19, y0 + j * 15, u, { "font-size": 12, fill: j ? C.ink2 : C.ink, "font-weight": j ? 500 : 600 })); };
+    if (narrow) { key(0, 14, "ring", ["copy fitted at rest"]); key(W / 2, 14, "dot", ["what happened"]); key(0, 38, "band", ["light alone, mice without the channel"]); }
+    else { const lx = W - m.r + 22; key(lx, y(0.92), "ring", ["What the copy fitted", "at rest predicted"]); key(lx, y(O.wt[1]) + 4, "band", ["Light alone, in mice", "without the channel"]); key(lx, y(0.12), "dot", ["What happened when", "the cells were driven"]); }
+  }
+
+  // the open test: eight signatures for three systems, each against the band real worms span
+  function testSky(host) {
+    const Bd = R.testBoard || []; if (!Bd.length) return;
+    const pick = [Bd.find((b) => /^Real worms/.test(b.name)), Bd.find((b) => /emulator/i.test(b.name)), Bd.find((b) => /Random tanh/.test(b.name))].filter(Boolean);
+    const keys = Object.keys(pick[0].sig), W = widthOf(host, 300), narrow = W < 680, rowH = 34, m = { l: narrow ? 128 : 190, r: 14, t: narrow ? 92 : 46, b: 34 };
+    const H = m.t + keys.length * rowH + m.b + 16, s = svg(host, W, H, "Eight signatures of activity for a held-out group of real worms, the worm emulator and a random network, each against the range real worm groups span");
+    const cap = 6, x = lin(-cap, cap, m.l, W - m.r);
+    el("rect", { x: x(-1), y: m.t - 6, width: x(1) - x(-1), height: keys.length * rowH + 6, fill: C.liveWash }, s);
+    vline(s, x(-1), m.t - 6, m.t + keys.length * rowH, { stroke: C.live, "stroke-opacity": .6 }); vline(s, x(1), m.t - 6, m.t + keys.length * rowH, { stroke: C.live, "stroke-opacity": .6 });
+    text(s, x(0), m.t - 14, "real worm groups", { "text-anchor": "middle", "font-size": 11.5, fill: C.live, "font-weight": 650 });
+    [-6, -3, 0, 3, 6].forEach((v) => text(s, x(v), H - 28, (v > 0 ? "+" : "") + v, { "text-anchor": "middle", "font-size": 11, fill: C.ink3 }));
+    if (!narrow) { text(s, m.l, H - 12, "lower", { "font-size": 11, fill: C.ink3 }); text(s, W - m.r, H - 12, "higher", { "text-anchor": "end", "font-size": 11, fill: C.ink3 }); }
+    const ST = [{ f: C.live, k: "dot" }, { f: C.ink, k: "sq" }, { f: C.copy, k: "ring" }];
+    const mark = (k, cx, cy, i) => { const st = ST[i]; if (st.k === "dot") return el("circle", { cx, cy, r: 5, fill: st.f }, s);
+      if (st.k === "sq") return el("rect", { x: cx - 4.3, y: cy - 4.3, width: 8.6, height: 8.6, fill: st.f }, s); return el("circle", { cx, cy, r: 4.6, fill: C.plate, stroke: st.f, "stroke-width": 1.7 }, s); };
+    keys.forEach((k, j) => { const yy = m.t + j * rowH + rowH / 2; hline(s, m.l, W - m.r, yy, { stroke: C.soft });
+      text(s, m.l - 12, yy + 4, pick[0].sig[k].label, { "text-anchor": "end", "font-size": 12, fill: C.ink2 });
+      pick.forEach((p, i) => { const v = p.sig[k]; if (!v) return; const dv = Math.max(-cap, Math.min(cap, v.d)); mark(k, x(dv), yy + (i - 1) * 7, i);
+        const c = el("circle", { cx: x(dv), cy: yy + (i - 1) * 7, r: 9, class: "hit" }, s); hover(c, `<b>${p.name}</b>${row(v.label, (v.d > 0 ? "+" : "") + fmt(v.d, 2))}${row("Inside the real-worm range", v.in ? "yes" : "no")}`); }); });
+    const lab = pick.map((p) => p.name.replace(/, group \d/, "").replace(" held out of the reference", " the test never saw").replace(" (minimal recipe)", ""));
+    pick.forEach((p, i) => { const lx = narrow ? 8 : m.l + i * ((W - m.l) / 3), ly = narrow ? 14 + i * 22 : 16; mark(null, lx + 5, ly - 4, i); text(s, lx + 16, ly, lab[i], { "font-size": 12, fill: C.ink, "font-weight": 600 }); });
+  }
+  function testBoard(host) {
+    const Bd = R.testBoard || []; if (!Bd.length) return;
+    host.innerHTML = `<div class="table-wrap"><table class="data"><thead><tr><th>#</th><th>System</th><th>Distance from real worms</th><th>Signatures inside</th></tr></thead><tbody>${
+      Bd.map((b, i) => `<tr><td>${i + 1}</td><td><b>${b.name}</b><br><small>${b.about}</small></td><td>${fmt(b.distance, 2)}</td><td>${b.score} of ${b.outOf}</td></tr>`).join("")}</tbody></table></div>`;
+  }
+
+  const FIGS = { push, testSky, testBoard, rulerStrip, scorecard, restPoke, power, signalNoise, fingerprint, echoShape, calibration, mind, gallery, ceiling, law, rulerTruth, permouse, slowFamilies, emulator, gaps, restAvg, recovery };
   window.NematicaCharts = Object.assign({ verdictLegend, name }, FIGS);
 
   // mount every <div data-chart="..."> and redraw when its width changes
@@ -988,7 +1045,8 @@
   }
   function mount() {
     const nodes = [...document.querySelectorAll("[data-chart]")];
-    const run = () => nodes.forEach(draw);
+    const run = () => { nodes.forEach(draw);       // figures change the page's height; land on the linked section again
+      const t = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1))); if (t) requestAnimationFrame(() => t.scrollIntoView()); };
     (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(run);
     const seen = new WeakMap();
     const ro = new ResizeObserver((entries) => entries.forEach((e) => {

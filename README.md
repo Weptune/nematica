@@ -1,7 +1,36 @@
 # NEMATICA
 
-**Real and artificial brains, neuron by neuron. We built artificial brains that pass for
-real. Then we poked them.**
+**What makes a real brain different from an artificial one?** We put living nervous systems and
+artificial neural networks through the same tests, and judge both against one yardstick: how much real
+animals differ from each other. A copy passes when it sits no further from an animal than another animal
+would.
+
+## The answer so far (20 Nov 2026)
+
+Seven questions, in worms (*C. elegans*) and mice. Each was tested on public data; most were written down
+before the data was opened, and the results that went against us are kept.
+
+| | Question | What we saw | Outcome |
+|---|---|---|---|
+| I | Touch one neuron: does the copy answer like a real brain? | Copies fitted by watching pass up to 5 of 6 tests of resting activity, then answer pokes almost at random (agreement 0.004 to 0.014; real worms 0.087 to 0.121). Copies that also learned from pokes answer like a second worm. 113 worms. | Closed by learning from pokes |
+| II | Can watching tell which way a cell pushes the brain? | Switching on Sst cells lowered most regions of mouse cortex in 29 of 29 mice; a copy fitted at rest predicted a rise. Vip cells raised activity in 10 of 10. Registered, 39 mice. | Open: watching points the wrong way |
+| III | Is a good copy still an individual, or an average? | The best forecaster is the least individual (0.78, real worms 1); keeping each worm's own dynamics restores it (0.99) for under 0.01 of forecasting skill. 27 worms. | Closed by keeping individuals |
+| IV | Does a brain hold the past longer than a network? | Recorded through each mouse's own instrument, a random network has less slow memory than the mouse in 33 of 35; a slow drive closes the gap. | Closed by a slow drive |
+| V | Does a brain carry more inner state than a network? | Seven kinds of network land on both sides of 49 mice; 0 of 4 registered claims held. | Never there |
+| VI | Ask the same thing twice: does the answer fade? | A worm neuron poked again within 2 minutes answers at about half; networks answer the same. Neuron or light tool: not separable in this data. | Open |
+| VII | Does a copy of a still animal hold once it moves? | The recipe that passes on held-still worms passes 1 of 6 tests on freely moving worms. | Open |
+
+So far, what separates these artificial networks from real brains is what they were shown and built to
+carry, not that they are artificial. That is a reading of seven results in two species, not a law.
+
+- **The site** (results, evidence, method, research log, the open test): run `web/serve.sh` and open
+  http://localhost:8642, or publish `web/` with the manual workflow in `.github/workflows/pages.yml`.
+- **Test your own network:** `python -m nematica brainlike my_rnn.npz` (or `.onnx`, or a Python class).
+- **Every registration and amendment:** `docs/`. The evidence page lists how much to trust each finding.
+
+The rest of this file is the project's working record, oldest first.
+
+## The original framing (Oct 2026)
 
 People are building digital nervous systems, and one day someone will claim an artificial
 brain is a faithful copy of a real one. Nobody agrees how to check that claim. NEMATICA is

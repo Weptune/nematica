@@ -10,8 +10,14 @@
 <link rel="icon" href="favicon.svg?v=4" type="image/svg+xml">
 <meta name="theme-color" content="#040a1c">
 <meta property="og:site_name" content="NEMATICA">
-<meta property="og:title" content="What makes a real brain different from an artificial one?">
-<link rel="stylesheet" href="assets/atlas.css?v=2">
+<meta property="og:type" content="website">
+<meta property="og:title" content="NEMATICA: what makes a real brain different from an artificial one?">
+<meta property="og:description" content="One question, asked seven ways. Real nervous systems and artificial neural networks are put through the same tests and judged against how much real animals differ from each other.">
+<meta property="og:image" content="assets/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="assets/atlas.css?v=3">
 </head>
 <body>
 <a class="skip" href="#seven">Skip to the seven questions</a>
@@ -60,7 +66,8 @@
 <section class="hero" id="hero" data-sky="hero" aria-labelledby="h1">
   <div class="hero-top">
     <p class="lede">An atlas of one question, in seven parts</p>
-    <h1 id="h1" class="kin">What makes a <button type="button" class="tw r on" data-form="worm" aria-label="real: show the worm's nervous system">real</button> brain different from an <button type="button" class="tw a" data-form="lattice" aria-label="artificial: show an artificial network">artificial</button> one?</h1>
+    <p class="sr" id="tw-help">Switches the picture behind the page between the worm's real nervous system and an artificial network.</p>
+    <h1 id="h1" class="kin">What makes a <button type="button" class="tw r on" data-form="worm" aria-pressed="true" aria-describedby="tw-help">real</button> brain different from an <button type="button" class="tw a" data-form="lattice" aria-pressed="false" aria-describedby="tw-help">artificial</button> one?</h1>
   </div>
   <div class="hero-foot">
     <p class="prose stand">We put living nervous systems and artificial networks through the same tests, and judge both against how much real animals differ from each other. Seven questions follow. Each has an answer you can see.</p>
@@ -68,7 +75,7 @@
       <a class="btn" href="#seven">See the seven questions <svg aria-hidden="true"><use href="#o-arrow"/></svg></a>
       <a class="btn ghost" href="#answer">Read the answer</a>
     </div>
-    <p class="hero-cap" id="hero-cap" aria-live="polite">The 300 neurons of one worm, where they really sit, wired as they are really wired. Touch one to send a signal.</p>
+    <p class="hero-cap" id="hero-cap" aria-live="polite">The worm’s 279 connected neurons, head to tail, wired as they really are. Touch one to send a signal.</p>
   </div>
   <span class="scroll-cue" aria-hidden="true"></span>
 </section>
@@ -285,7 +292,7 @@
     <li><a href="findings.html"><b>The evidence</b><span>Every result with its figures, numbers and caveats</span></a></li>
     <li><a href="method.html"><b>How the test works</b><span>A yardstick for brains, measured in real animals</span></a></li>
     <li><a href="test/"><b>Test your own network</b><span>Put any artificial brain through the same test</span></a></li>
-    <li><a href="sim.html"><b>Simulations</b><span>Model worms in the copper arena, and a swarm</span></a></li>
+    <li><a href="https://github.com/Weptune/nematica/tree/main/docs"><b>Every registration</b><span>Each test's predictions as written before it ran, with every amendment</span></a></li>
     <li><a href="log.html"><b>Research log</b><span>Every experiment, in the order it was run</span></a></li>
     <li><a href="https://github.com/Weptune/nematica"><b>Code and data</b><span>Everything on GitHub, MIT licence</span></a></li>
   </ul>
@@ -293,15 +300,15 @@
 </main>
 
 <footer class="foot">
-  <nav aria-label="Footer"><a href="#seven">The seven questions</a><a href="#how">How we ask</a><a href="#answer">The answer</a><a href="findings.html">Evidence</a><a href="method.html">Method</a><a href="sim.html">Simulations</a><a href="log.html">Research log</a><a href="test/">Test a network</a><a href="https://github.com/Weptune/nematica">GitHub</a></nav>
+  <nav aria-label="Footer"><a href="#seven">The seven questions</a><a href="#how">How we ask</a><a href="#answer">The answer</a><a href="findings.html">Evidence</a><a href="method.html">Method</a><a href="log.html">Research log</a><a href="test/">Test a network</a><a href="https://github.com/Weptune/nematica">GitHub</a></nav>
   <p>NEMATICA is an open project. Predictions are written down before experiments run, independent reviews are reported with the results, and results that went against us are kept.</p>
-  <p>Worm data: Randi et al. 2023 (DANDI 001075, CC BY 4.0); Baskoylu et al. 2026 (Dryad, CC0); Atanas et al. 2023. Worm wiring: Varshney et al. 2011, as compiled by Kunert et al. 2014; neuron positions: Skuhersky et al. 2022. Mouse data: Allen Brain Observatory Visual Coding Neuropixels (DANDI 000021 and 000022) and Visual Behavior Neuropixels (DANDI 000713); Bocchio, Vorobyev et al. (Zenodo 11500028); Dalgleish et al. 2020. Human data: van Blooijs et al. 2023 (OpenNeuro ds004080). Language models: Pythia (EleutherAI) and Mamba (state-spaces). Typefaces: Cormorant and Schibsted Grotesk (SIL Open Font License). Code: MIT licence.</p>
+  <p>Worm data: Randi et al. 2023 (DANDI 001075, CC BY 4.0); Baskoylu et al. 2026 (Dryad, CC0); Atanas et al. 2023. Worm wiring: Varshney et al. 2011, as compiled by Kunert et al. 2014 and the C. elegans Neural Interactome (BSD 3-Clause); neuron positions on this page are schematic, from anatomy. Mouse data: Allen Brain Observatory Visual Coding Neuropixels (DANDI 000021 and 000022) and Visual Behavior Neuropixels (DANDI 000713); Bocchio, Vorobyev et al. (Zenodo 11500028); Dalgleish et al. 2020. Human data: van Blooijs et al. 2023 (OpenNeuro ds004080). Language models: Pythia (EleutherAI) and Mamba (state-spaces). Typefaces: Cormorant and Schibsted Grotesk (SIL Open Font License). Code: MIT licence.</p>
 </footer>
 
-<script src="data/results.js?v=3"></script>
-<script src="data/brain.js?v=1"></script>
-<script src="assets/sky.js?v=1"></script>
-<script src="assets/atlas.js?v=2"></script>
+<script src="data/results.js?v=5"></script>
+<script src="data/wiring.js?v=1"></script>
+<script src="assets/sky.js?v=2"></script>
+<script src="assets/atlas.js?v=3"></script>
 <script src="assets/bench.js?v=1"></script>
 </body>
 </html>
