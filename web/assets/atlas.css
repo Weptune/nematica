@@ -375,11 +375,11 @@ main, .foot { position: relative; z-index: 1; }
 .open .sec-head h2 { font-size: clamp(2.8rem, 1rem + 6vw, 7.4rem); line-height: .9; text-shadow: 0 2px 40px rgba(4, 10, 28, .9); }
 .open .sec-head .prose { margin-top: clamp(18px, 3vh, 34px); }
 /* the seven questions: the orrery beside the heading, the deck right under it, so a card and its sphere can be seen together */
-.seven { padding-top: clamp(76px, 10vh, 124px); padding-bottom: clamp(36px, 5vw, 84px); }
-.seven .open { min-height: 0; height: clamp(300px, 43svh, 480px); grid-template-columns: minmax(0, .82fr) minmax(0, 1fr); margin-bottom: clamp(18px, 3vh, 34px); }
+.seven { padding-top: clamp(28px, 4vh, 56px); padding-bottom: clamp(36px, 5vw, 84px); }
+.seven .open { min-height: 0; height: clamp(280px, 40svh, 460px); grid-template-columns: minmax(0, .82fr) minmax(0, 1fr); margin-bottom: clamp(18px, 3vh, 34px); }
 .seven .open .sec-head h2 { font-size: clamp(2.6rem, 1rem + 4.5vw, 5.7rem); }
 .seven .open .sec-head .prose { font-size: clamp(1.1rem, 1rem + .3vw, 1.3rem); margin-top: clamp(12px, 2vh, 22px); }
-.seven .card { min-height: 25.5rem; }
+.seven .card { min-height: 25rem; }
 .how .open { min-height: 66svh; margin-bottom: clamp(20px, 4vh, 48px); grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); }
 .answer .open { min-height: 88svh; margin-bottom: clamp(20px, 4vh, 48px); grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); }
 @media (max-width: 900px) {
