@@ -435,6 +435,8 @@
       rowEl.innerHTML = `<svg class="g" aria-hidden="true"><use href="#g-${names[i][0]}"/></svg><div class="t"><b>${names[i][1]}</b><span>${g.where}</span></div><div class="strip"></div>
         <div class="st"><svg aria-hidden="true" viewBox="0 0 48 24"><use href="#v-${g.status.kind}"/></svg><div><b>${g.status.text}</b>${g.status.sub}</div></div>`;
       host.appendChild(rowEl);
+      if (ORBS) { const ic = rowEl.querySelector("svg.g"), nm = names[i][0]; ic.innerHTML = ""; ic.setAttribute("viewBox", "0 0 100 100"); ic.classList.add("orb");      // the row's sign is its planet
+        orbImage(ic, nm, 50, 50, { mercury: 40, venus: 42, mars: 40, jupiter: 45, saturn: 22, sun: 21, moon: 42 }[nm], { light: nm === "moon" ? [0.86, 0.3, 0.12] : [-0.6, 0.5, 0.62], roll: nm === "saturn" ? 0.36 : nm === "mars" ? 0.4 : 0.08, lean: nm === "saturn" ? 0.42 : 0.12, spin: nm === "jupiter" ? 0.25 : 0.9, time: 4 }, "card", 420); }
       const sh = rowEl.querySelector(".strip"), w = Math.max(240, Math.floor(sh.clientWidth)), H = 110;
       const s = el("svg", { viewBox: `0 0 ${w} ${H}`, width: w, height: H, role: "img", "aria-label": `${g.scale}. ${g.status.text}.` }), L = LUM ? LUM.layer(sh, w, H) : null, S = { s, L }; sh.appendChild(s);
       const x = lin(g.domain[0], g.domain[1], 10, w - 10), ya = 52, fmt = (v) => (g.pct ? pc(v) : g.tickFmt === "int" ? String(v) : f2(v, g.dp));
@@ -442,7 +444,10 @@
       band(s, x(g.band[0]), ya - 15, bw, 30, true, L);
       el("path", { d: `M10 ${px(ya)}H${w - 10}`, stroke: C.b3 }, s);
       g.ticks.forEach((v) => { el("path", { d: `M${px(x(v))} ${ya}v6`, stroke: C.b2 }, s); tx(s, x(v), ya + 31, fmt(v), num({ "font-size": 13.5, "text-anchor": "middle" })); });
-      tx(s, 10, 12, g.scale, small({ "font-size": 11.5, fill: C.b3 }));
+      const lab = tx(s, 10, 12, g.scale, small({ "font-size": 11.5, fill: C.b3 }));
+      if (lab.getComputedTextLength() > w - 14) { const wd = g.scale.split(" "); let keep = "", k = 0;      // on a narrow strip the scale's name takes two lines
+        for (; k < wd.length; k++) { lab.textContent = (keep ? keep + " " : "") + wd[k]; if (lab.getComputedTextLength() > w - 14) break; keep = lab.textContent; }
+        lab.textContent = keep; lab.setAttribute("y", 3); tx(s, 10, 17, wd.slice(k).join(" "), small({ "font-size": 11.5, fill: C.b3 })); }
       const place = (o, filled) => { if (!o) return;
         if (o.range) el("path", { d: `M${x(o.range[0])} ${px(ya)}H${x(o.range[1])}`, stroke: C.lit, "stroke-width": 3, "stroke-linecap": "round" }, s);
         const vals = o.values || (o.value != null ? [o.value] : o.range ? [(o.range[0] + o.range[1]) / 2] : []);
