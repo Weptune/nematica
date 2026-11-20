@@ -115,3 +115,47 @@ median 0.99, minimum 0.78), and single neurons stay less skewed than real ones (
 6. No change needed: ties, missing values and constant traces behave in `normal_scores`.
 7. **Accepted.** Named neurons are 77 to 116, and one worm's frame is 0.595 s.
 8. **Accepted.** The full command is registered; "cannot be told from" replaced by what was measured.
+
+## Result (20 Nov 2026; the registered run, once)
+
+27 freely moving worms that no recipe of this family had met, three pools, six tests of ongoing activity.
+Tests passed, per seed (`results/journey_copper`, `docs/figures/journey_journey_copper.json`, from
+`scripts/journey_table.py --claims`):
+
+| recipe | seeds 0 to 4 | what it fails |
+|---|---|---|
+| C, plain copy fitted to rest | 3, 3, 3, 3, 3 | distribution, correlation (too typical), dimension |
+| R0, the frozen recipe | 2, 1, 2, 1, 3 | distribution, correlation and lead-lag in every seed; dimension in 4 of 5; timescale in 2 of 5 |
+| **R1, both changes** | **4, 4, 4, 4, 4** | timescale and reversal-bout timing, in every seed |
+| coupling only (seeds 0 to 2, descriptive) | 5, 4, 5 | distribution; timescale at seed 1 |
+| shape only (seeds 0 to 2, descriptive) | 1, 1, 2 | everything but distribution (and bout timing at seed 2) |
+
+- **Informative: yes.** The control misses the pass mark in 5 of 5 seeds.
+- **J1 holds.** The frozen recipe passes 1 to 3 of 6 on these worms too. The failure on moving worms is not
+  a quirk of one dataset.
+- **J2 holds, by the smallest margin the rule allows.** On the five tests other than distribution, R1 passes
+  3 in every seed and R0 passes 2, 1, 2, 1, 3: more in 4 of 5 seeds.
+- **J3 fails.** R1 passes 4 of 6 in every seed, one short of the pass mark.
+
+**Reading.** Coupling between neuron types is what the recipe lacked most on moving worms. With it restored,
+the correlation, dimension and lead-lag tests come inside, and with that change alone the recipe reaches 5
+of 6 in two of three seeds (descriptive: three seeds, not a registered claim). The shape ingredient does what
+it was built for, the distribution test is inside in every pool, but it slows the simulated activity: the
+median shift from real worms goes from 0.12 to 0.22 on the timescale test and from 0.07 to 0.11 on
+reversal-bout timing, enough to fail both. So the two changes together land one short, and no recipe here
+passes all six, though every test is passed by at least one of them.
+
+**Limits.** One lab. These worms meet a copper boundary the copies are never told about. Nine worms per pool.
+Ongoing activity only: there are no pokes in this data. The coupling-only recipe was not a registered
+contender, and no unseen set of moving worms is left in hand to test it on, since both are now seen. Whether
+movement or the lab is what breaks the frozen recipe stays untestable here.
+
+**On worms seen before (not a test).** R1 on the 30 Atanas worms, seeds 0 to 4: 4, 4, 3, 3, 3 of 6
+(the frozen recipe there: 1; the plain copy: 3). It fails timescale and reversal-bout timing in every seed, as on
+the copper worms, and dimension in three of five (`docs/figures/journey_journey_dev2.json`).
+
+**Record keeping.** The control's file for pool 0 at seed 0 dates from the adapter check before the freeze
+(20:27 UTC, unread until the table was made); every other file is from the registered run after it. The
+order fix means the frozen recipe's numbers here are not comparable draw for draw with those published
+before 20 Nov, only in distribution.
+

@@ -32,6 +32,19 @@
     "dimension": "IOO",
     "leadlag": "OOO",
     "dwell": "IOI"
+   },
+   "1": {
+    "passed": 0,
+    "others": 0,
+    "pools": [
+     0
+    ],
+    "distribution": "O--",
+    "timescale": "O--",
+    "correlation": "O--",
+    "dimension": "O--",
+    "leadlag": "O--",
+    "dwell": "I--"
    }
   },
   "hybrid_kernels_slow6d_indivslow1_hp_memfix_diag_hsd1_gcop": {
@@ -100,6 +113,66 @@
     "dimension": "IOI",
     "leadlag": "III",
     "dwell": "IOO"
+   },
+   "1": {
+    "passed": 4,
+    "others": 3,
+    "pools": [
+     0,
+     1,
+     2
+    ],
+    "distribution": "III",
+    "timescale": "OOO",
+    "correlation": "III",
+    "dimension": "IOI",
+    "leadlag": "III",
+    "dwell": "IOO"
+   },
+   "2": {
+    "passed": 3,
+    "others": 2,
+    "pools": [
+     0,
+     1,
+     2
+    ],
+    "distribution": "III",
+    "timescale": "OOO",
+    "correlation": "III",
+    "dimension": "OOO",
+    "leadlag": "III",
+    "dwell": "IOO"
+   },
+   "3": {
+    "passed": 3,
+    "others": 2,
+    "pools": [
+     0,
+     1,
+     2
+    ],
+    "distribution": "III",
+    "timescale": "OOO",
+    "correlation": "III",
+    "dimension": "IOO",
+    "leadlag": "III",
+    "dwell": "OOI"
+   },
+   "4": {
+    "passed": 3,
+    "others": 2,
+    "pools": [
+     0,
+     1,
+     2
+    ],
+    "distribution": "III",
+    "timescale": "OOO",
+    "correlation": "III",
+    "dimension": "IOO",
+    "leadlag": "III",
+    "dwell": "IOO"
    }
   },
   "var3_spontaneous": {
@@ -117,6 +190,19 @@
     "dimension": "OOO",
     "leadlag": "III",
     "dwell": "IOI"
+   },
+   "1": {
+    "passed": 0,
+    "others": 0,
+    "pools": [
+     0
+    ],
+    "distribution": "O--",
+    "timescale": "O--",
+    "correlation": "T--",
+    "dimension": "O--",
+    "leadlag": "I--",
+    "dwell": "I--"
    }
   }
  }
