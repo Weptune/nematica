@@ -1,12 +1,13 @@
 /* NEMATICA, the bench: two small networks you can watch and then touch. Both have the same visible wiring;
    the second also has links that stay silent at rest. A model fitted by watching knows only the visible
    links (with a little estimation error), so its predicted echo holds in the first network and fails in
-   the second. Everything is simulated here, in the page; nothing is recorded data. Crisp SVG, no blur. */
+   the second. Everything is simulated here, in the page; nothing is recorded data. Drawn as SVG, each cell a
+   small light (the gradients live in the sprite at the top of index.html). */
 (function () {
   "use strict";
   const hosts = Array.from(document.querySelectorAll("[data-net]")); if (!hosts.length) return;
   const NS = "http://www.w3.org/2000/svg", REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const C = { bone: "#ece6d6", b3: "rgba(236,230,214,.64)", line: "rgba(236,230,214,.26)", hair: "rgba(236,230,214,.13)", gilt: "#dcbc62", copy: "#e03063" };
+  const C = { bone: "#ece6d6", b3: "rgba(236,230,214,.64)", line: "rgba(236,230,214,.26)", hair: "rgba(236,230,214,.13)", gilt: "#f0cf78", copy: "#ff5d88" };
   function el(tag, a, p) { const n = document.createElementNS(NS, tag); for (const k in a || {}) if (a[k] != null) n.setAttribute(k, a[k]); if (p) p.appendChild(n); return n; }
   const N = 12;
   const POS = [[200, 66], [296, 102], [340, 196], [302, 294], [214, 340], [116, 308], [62, 214], [94, 118], [178, 150], [252, 188], [206, 252], [138, 216]];
@@ -40,9 +41,9 @@
     VIS.forEach(([a, b]) => el("path", { d: `M${POS[a][0]} ${POS[a][1]}L${POS[b][0]} ${POS[b][1]}`, stroke: C.line }, gL));
     if (quiet) SIL.forEach(([a, b]) => { sil[a + ">" + b] = el("path", { d: `M${POS[a][0]} ${POS[a][1]}L${POS[b][0]} ${POS[b][1]}`, stroke: C.gilt, "stroke-width": 1.6, "stroke-dasharray": "5 4", opacity: 0 }, gL); });
     const gP = el("g", {}, s), disc = [], ring = [], dot = [];
-    POS.forEach(([x, y], i) => { disc[i] = el("circle", { cx: x, cy: y, r: 0, fill: C.bone }, s); });
+    POS.forEach(([x, y], i) => { disc[i] = el("circle", { cx: x, cy: y, r: 0, fill: "url(#mk-bone)" }, s); });
     POS.forEach(([x, y], i) => { ring[i] = el("circle", { cx: x, cy: y, r: 0, fill: "none", stroke: C.copy, "stroke-width": 2, opacity: 0 }, s); });
-    POS.forEach(([x, y], i) => { dot[i] = el("circle", { cx: x, cy: y, r: 3.6, fill: C.bone }, s); });
+    POS.forEach(([x, y], i) => { el("circle", { cx: x, cy: y, r: 15, fill: "url(#gl-bone)" }, s); dot[i] = el("circle", { cx: x, cy: y, r: 4.2, fill: "url(#mk-bone)" }, s); });
     const halo = el("circle", { cx: 0, cy: 0, r: 0, fill: "none", stroke: C.gilt, "stroke-width": 1.5, opacity: 0 }, s);
     POS.forEach(([x, y], i) => { const h = el("circle", { cx: x, cy: y, r: 21, fill: "transparent", class: "n", tabindex: 0, role: "button", "aria-label": `Poke neuron ${i + 1}` }, s);
       h.addEventListener("click", () => poke(i));

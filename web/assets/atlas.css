@@ -386,23 +386,21 @@ main, .foot { position: relative; z-index: 1; }
 @media (max-width: 720px) { .card, .card:hover { transform: none; } }
 
 /* ---- light on the marks that stand for real animals, and on what a copy learned */
-.fig svg circle[fill="#b68f1b"] { filter: drop-shadow(0 0 5px rgba(240, 207, 120, .65)); }
-.fig svg circle[fill="#e03063"] { filter: drop-shadow(0 0 5px rgba(255, 79, 126, .5)); }
 .verdict svg, .chip svg, .card .v svg { filter: drop-shadow(0 0 6px rgba(240, 207, 120, .35)); }
 .bench { background: rgba(4, 10, 28, .5); }
 .rail a { background: rgba(4, 10, 28, .8); }
 @media (prefers-reduced-motion: reduce) { .kin .w { opacity: 1; transform: none; transition: none; } .card, .card:hover { transition: none; transform: none; } .tw::after { transition: none; } }
 
 /* marks land with a little spring; chapter numerals stand behind the question as outlines */
-.fig circle.rv { transform-box: fill-box; transform-origin: 50% 50%; transform: scale(.15); }
-.in circle.rv { transform: scale(1); transition: opacity .5s ease var(--d, 0ms), transform .8s cubic-bezier(.3, 1.7, .5, 1) var(--d, 0ms); }
+.fig circle.rv, .fig g.mk.rv { transform-box: fill-box; transform-origin: 50% 50%; transform: scale(.15); }
+.in circle.rv, .in g.mk.rv { transform: scale(1); transition: opacity .5s ease var(--d, 0ms), transform .8s cubic-bezier(.3, 1.7, .5, 1) var(--d, 0ms); }
 .chapter { position: relative; }
 .chapter::before { content: attr(data-n); position: absolute; left: -.06em; top: 50%; transform: translateY(-58%); z-index: -1; font: 400 clamp(18rem, 62vh, 44rem)/1 var(--serif); letter-spacing: -.04em; color: transparent; -webkit-text-stroke: 1px rgba(240, 207, 120, .13); pointer-events: none; white-space: nowrap; }
 .scroll-cue { position: absolute; left: 50%; bottom: 14px; width: 1px; height: 46px; overflow: hidden; background: rgba(236, 230, 214, .16); }
 .scroll-cue::after { content: ""; position: absolute; left: 0; top: 0; width: 1px; height: 18px; background: #f0cf78; animation: cue 2.2s cubic-bezier(.5, 0, .2, 1) infinite; }
 @keyframes cue { from { transform: translateY(-20px); } to { transform: translateY(50px); } }
 @media (max-width: 980px) { .scroll-cue { display: none; } .chapter::before { font-size: 16rem; top: 34%; -webkit-text-stroke-color: rgba(240, 207, 120, .1); } }
-@media (prefers-reduced-motion: reduce) { .fig circle.rv { transform: none; } .scroll-cue::after { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .fig circle.rv, .fig g.mk.rv { transform: none; } .scroll-cue::after { animation: none; } }
 
 /* ---- stages: the box in each section where the scene's figure sits. The figure travels with its box,
    so it never lies over the words beside it (assets/sky.js reads these boxes). */
@@ -427,3 +425,15 @@ main, .foot { position: relative; z-index: 1; }
   .how .open, .answer .open { min-height: 0; }
   .seven .stage { height: 40svh; }
 }
+
+/* ---- the three rules, each with a small living instrument (assets/emblems.js) */
+.tenet [data-emblem] { margin: 0 0 clamp(16px, 2.4vh, 28px); min-height: 210px; }
+.tenet [data-emblem] canvas { display: block; max-width: 100%; }
+
+/* ---- plates: serif numerals on the scales, notes written on the figure */
+.fig svg text.sf, .ledger svg text.sf { font-family: var(--serif); font-variant-numeric: lining-nums; }
+.fig svg .mk { cursor: default; }
+.card .num span svg { display: inline-block; width: 15px; height: 15px; vertical-align: -2px; margin-right: 5px; color: var(--gilt); }
+.card .seal { width: min(100%, 150px); }
+.card .seal .planet { transition: transform 1.2s cubic-bezier(.2, .7, .2, 1); transform-origin: 100px 100px; }
+.card:hover .seal .planet, .card.lit .seal .planet { transform: scale(1.12); }
