@@ -239,7 +239,8 @@
     el("circle", { cx, cy, r: Rg * 0.95, fill: "url(#gl-real)", opacity: 0.55 }, sky);
     // the rays
     all.forEach((v, i) => { const [x0, y0] = at(v, r0 + 12), [x1, y1] = at(v, Rg - 58); rv(el("path", { d: `M${x0.toFixed(1)} ${y0.toFixed(1)}L${x1.toFixed(1)} ${y1.toFixed(1)}`, stroke: C.gold, "stroke-width": 1.3, "stroke-opacity": 0.62, "stroke-linecap": "round" }, sky), i, 14); });
-    el("circle", { cx, cy, r: r0 * 2.6, fill: "url(#gl-real)" }, sky); el("circle", { cx, cy, r: r0, fill: "url(#mk-real)" }, sky);
+    if (ORBS) orbImage(sky, "sun", cx, cy, r0 * 1.05, { spin: 0.8, time: 5 }, "fig", 520);
+    else { el("circle", { cx, cy, r: r0 * 2.6, fill: "url(#gl-real)" }, sky); el("circle", { cx, cy, r: r0, fill: "url(#mk-real)" }, sky); }
     // the middle half of the mice, engraved outside the scale
     const [bx0, by0] = at(q[0], Rg + 8), [bx1, by1] = at(q[2], Rg + 8), [bx2, by2] = at(q[2], Rg + 26), [bx3, by3] = at(q[0], Rg + 26);
     const wedge = `M${bx0.toFixed(1)} ${by0.toFixed(1)}A${Rg + 8} ${Rg + 8} 0 0 1 ${bx1.toFixed(1)} ${by1.toFixed(1)}L${bx2.toFixed(1)} ${by2.toFixed(1)}A${Rg + 26} ${Rg + 26} 0 0 0 ${bx3.toFixed(1)} ${by3.toFixed(1)}Z`;
@@ -283,7 +284,12 @@
   }
 
   // ------------------------------------------------------------------ VI. the waning: a moon for each answer
+  const TINT = { real: [1.32, 1.05, 0.56], copy: [1.36, 0.45, 0.62] };
   function moon(s, cx, cy, r, f, kind) {
+    if (ORBS) { const g = el("g", { class: "mk" }, s), lz = 2 * f - 1;
+      el("circle", { cx, cy, r: r * 1.5, fill: `url(#gl-${kind})`, opacity: 0.3 + 0.45 * f }, g);
+      orbImage(g, "moon", cx, cy, r, { light: f > 0.99 ? [-0.38, 0.32, 0.86] : [-Math.sqrt(1 - lz * lz), 0.1, lz], tint: TINT[kind], amb: 0.07, air: 0, spin: kind === "real" ? 0.5 : 2.6 }, kind + f.toFixed(2), 320);
+      return g; }
     const g = el("g", { class: "mk" }, s), col = kind === "real" ? C.gold : C.lit;
     el("circle", { cx, cy, r: r * 1.5, fill: `url(#gl-${kind})`, opacity: 0.5 + 0.5 * f }, g);
     el("circle", { cx, cy, r, fill: C.paper, stroke: col, "stroke-width": 1.2, "stroke-opacity": 0.75 }, g);
@@ -321,7 +327,7 @@
     tx(s, px5 + 9, rowH * 3 + (nar ? 2 : 6), "the pass mark: 5 of 6", it(16, C.gold));
     rows.forEach(([a, b, v], k) => { const yy = y0 + k * rowH;
       for (let i = 0; i < 6; i++) { const cx = x0 + r + i * (2 * r + gap), on = i < v[2], maybe = i >= v[0] && i < v[1];
-        rv(on ? mark.full(s, cx, yy, r * 0.82) : el("circle", { cx, cy: yy, r: r - 1, fill: C.paper, stroke: maybe ? C.lit : C.line, "stroke-width": 1.4, "stroke-dasharray": maybe ? "3 3" : null }, s), k * 6 + i, 40); }
+        rv(on ? (ORBS ? moon(s, cx, yy, r * 0.94, 1, "copy") : mark.full(s, cx, yy, r * 0.82)) : el("circle", { cx, cy: yy, r: r - 1, fill: C.paper, stroke: maybe ? C.lit : C.line, "stroke-width": 1.4, "stroke-dasharray": maybe ? "3 3" : null }, s), k * 6 + i, 40); }
       const cnt = v[0] === v[1] ? `${v[0]} of 6 in all five runs` : `${v[0]} or ${v[1]} of 6 across five runs`;
       if (nar) { tx(s, x0, yy - 40, a, it(19.5)); tx(s, x0, yy - 23, b, small({ "font-size": 11.5 })); tx(s, x0 + 6 * (2 * r + gap) + 4, yy + 4, cnt.replace(" in all five runs", "").replace(" across five runs", ""), small({ "font-size": 12 })); }
       else { note(s, x0 + 6 * (2 * r + gap) + 18, yy - 2, a, [b], { size: 23 }); tx(s, x0, yy + r + 23, cnt, small({ fill: C.b3 })); }
@@ -356,7 +362,13 @@
     else { const u = el("use", { href: "#g-" + g, x: 72, y: 72, width: 56, height: 56 }, s); u.style.color = C.gilt; }
   }
   // the seven planets in small: each a lit body, with the one thing that makes it itself
+  const ORBS = window.NEMATICA_ORBS || null, PIC = {};
+  // a rendered body as a picture an SVG can hold: painted once per kind of light, then reused
+  function orbPic(name, size, o, key) { const k = name + (key || ""); if (!PIC[k]) { const c = ORBS.sprite(name, size, o); PIC[k] = { href: c.toDataURL("image/png"), R: c.R }; } return PIC[k]; }
+  function orbImage(p, name, cx, cy, r, o, key, size) { const pic = orbPic(name, size || 360, o, key), half = r / pic.R; return el("image", { href: pic.href, x: cx - half, y: cy - half, width: 2 * half, height: 2 * half }, p); }
   function planetArt(s, name) {
+    if (ORBS) { const g = el("g", { class: "planet p-" + name }, s), r = { mercury: 31, venus: 37, mars: 35, jupiter: 41, saturn: 23.5, sun: 25, moon: 37 }[name];
+      orbImage(g, name, 100, 100, r, { light: name === "moon" ? [0.86, 0.3, 0.12] : [-0.6, 0.5, 0.62], roll: name === "saturn" ? 0.36 : name === "mars" ? 0.4 : 0.08, lean: name === "saturn" ? 0.42 : 0.12, spin: name === "jupiter" ? 0.25 : 0.9, time: 4 }, "card", 420); return; }
     const g = el("g", { transform: "translate(100 100) scale(1.17) translate(-100 -100)" }, el("g", { class: "planet p-" + name }, s)), id = "pc" + Math.random().toString(36).slice(2, 7), cx = 100, cy = 100;
     const body = (r, ry) => el("ellipse", { cx, cy, rx: r, ry: ry || r, fill: `url(#pl-${name})` }, g);
     const clip = (r, ry) => { el("ellipse", { cx, cy, rx: r, ry: ry || r }, el("clipPath", { id }, el("defs", {}, g))); return el("g", { "clip-path": `url(#${id})` }, g); };

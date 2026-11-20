@@ -25,6 +25,7 @@
   let seed = 11;
   const rnd = () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
   let W = 0, H = 0, DPR = 1;
+  const ORBS = window.NEMATICA_ORBS || null;       // the shader that renders the planets as real bodies; without it they are drawn
 
   // ---------------------------------------------------------------- colour: brass for the living, carmine for copies, a metal for each planet
   const PAL = [
@@ -151,7 +152,13 @@
     const F = make(opt.ext || [1.12, 1.12], opt.rot || ((t) => [0.1 + 0.05 * sin(t * 0.37), 0.24 * sin(t * 0.3)]));
     F.name = name; F.tint = METAL[name]; F.R = opt.R; F.c = opt.c || [0, 0, 0]; F.tilt = opt.tilt || 0; F.spin = opt.spin || 0.3; F.light = lightOf(opt.light || [-0.55, 0.45, 0.7]);
     F.amb = opt.amb == null ? 0.14 : opt.amb; F.thru = opt.thru == null ? 0.06 : opt.thru; F.air = opt.air || 0; F.flat = opt.flat || 1; F.glow = opt.glow == null ? 0.5 : opt.glow; F.globe = true; F.seg = 0.12;
-    for (let k = 0; k < opt.n; k++) { const y = 1 - (2 * (k + 0.5)) / opt.n, r = Math.sqrt(1 - y * y), a = k * 2.399963, i = put(F, r * cos(a), y, r * sin(a), 1, opt.dot || 1.2, F.tint, 0); if (opt.paint) opt.paint(F, i, y, a); }
+    const onGlobe = [];
+    for (let k = 0; k < opt.n; k++) { let y = 1 - (2 * (k + 0.5)) / opt.n, a = k * 2.399963;
+      if (ORBS) { y = Math.max(-0.995, Math.min(0.995, y + (rnd() - 0.5) * 0.11)); a += (rnd() - 0.5) * 0.5; }      // on a rendered body the lights are scattered, not ruled
+      const r = Math.sqrt(1 - y * y), i = put(F, r * cos(a), y, r * sin(a), 1, opt.dot || 1.2, F.tint, 0); onGlobe.push(i); if (opt.paint) opt.paint(F, i, y, a);
+      if (ORBS) { F.lum[i] = 0.6 + 0.6 * hub(i); F.siz[i] = 0.85 + 0.9 * hub(i); F.col[i] = name === "sun" ? WHITE : hub(i) > 0.35 ? GOLD : WHITE; } }
+    F.web = []; if (ORBS && name !== "sun") onGlobe.forEach((i) => { const d = onGlobe.filter((j) => j !== i).map((j) => [Math.hypot(F.P[3 * i] - F.P[3 * j], F.P[3 * i + 1] - F.P[3 * j + 1], F.P[3 * i + 2] - F.P[3 * j + 2]), j]).sort((a, b) => a[0] - b[0]);
+      for (let q = 0; q < 2; q++) if (d[q] && d[q][0] < 0.42 && i < d[q][1] || d[q] && d[q][0] < 0.42 && !F.web.some((e, k2) => k2 % 2 === 0 && F.web[k2] === d[q][1] && F.web[k2 + 1] === i)) F.web.push(i, d[q][1]); });
     if (opt.more) opt.more(F);
     const cT = cos(F.tilt), sT = sin(F.tilt), L = F.light;
     F.turn = (x, y, z, a, o) => { const ca = cos(a), sa = sin(a), x1 = x * ca + z * sa, z1 = -x * sa + z * ca; o[0] = x1 * cT - y * sT; o[1] = (x1 * sT + y * cT) * F.flat; o[2] = z1; };
@@ -160,7 +167,8 @@
       if (g) return opt.extra(F, i, t, o, g);
       F.turn(F.P[3 * i], F.P[3 * i + 1], F.P[3 * i + 2], t * F.spin * (opt.wind ? opt.wind(F.P[3 * i + 1]) : 1), o);
       const d = o[0] * L[0] + o[1] * L[1] + o[2] * L[2];
-      o[3] = (F.amb + (1 - F.amb) * Math.pow(d > 0 ? d : 0, 0.75)) * (F.thru + (1 - F.thru) * smooth((o[2] + 0.2) / 0.5)) * 1.2;
+      if (ORBS && name !== "sun") o[3] = (0.07 + 1.25 * (1 - smooth((d + 0.14) / 0.42))) * smooth((o[2] + 0.05) / 0.3) * (REDUCED ? 1 : 0.78 + 0.22 * sin(t * 1.7 + i * 2.4));      // lights on the night side
+      else o[3] = (F.amb + (1 - F.amb) * Math.pow(d > 0 ? d : 0, 0.75)) * (F.thru + (1 - F.thru) * smooth((o[2] + 0.2) / 0.5)) * 1.2;
       o[0] = F.c[0] + F.R * o[0]; o[1] = F.c[1] + F.R * o[1]; o[2] = F.c[2] + F.R * o[2];
     };
     return F;
@@ -170,28 +178,28 @@
   const moonOf = (F, r, w, lum, siz, col) => { const i = put(F, 0, 0, 0, lum || 1.5, siz || 2.2, col == null ? WHITE : col, 1); F.aux[4 * i] = r; F.aux[4 * i + 1] = rnd() * TAU; F.aux[4 * i + 2] = w; (F.orbits = F.orbits || []).push(r); return i; };
 
   const FORMS = { hero, orrery: orr, balance: bal };
-  FORMS.mercury = planet("mercury", { n: 150, R: 0.5, c: [0.5, 0.22, 0], spin: 0.5, tilt: 0.03, ext: [1.2, 1.0],
+  FORMS.mercury = planet("mercury", { n: 150, R: 0.5, c: [0.5, 0.22, 0], spin: 0.25, tilt: 0.03, ext: [1.2, 1.0], light: ORBS ? [-0.86, 0.3, -0.05] : [-0.55, 0.45, 0.7],
     more: (F) => { for (let k = 0; k < N - 150; k++) { const i = put(F, rnd() - 0.5, rnd() - 0.5, rnd() - 0.5, 1, 0.75, k % 4 ? METAL.mercury : WHITE, 1); F.aux[4 * i] = rnd(); } },   // the swift one sheds a tail
     extra: (F, i, t, o) => { const s = frac(F.aux[4 * i] + (REDUCED ? 0 : t * 0.09)), sp = 0.05 + 0.5 * s;
       o[0] = F.c[0] - 0.42 - 1.9 * s + F.P[3 * i] * sp * 0.5; o[1] = F.c[1] - 0.3 * s - 0.7 * s * s + F.P[3 * i + 1] * sp; o[2] = F.c[2] - 0.7 * s + F.P[3 * i + 2] * sp; o[3] = (0.08 + 1.1 * Math.pow(1 - s, 1.3)) * smooth(s / 0.07); } });
   FORMS.mercury.streak = (s, a) => { const F = s.F; [-0.5, 0, 0.5].forEach((off, q) => { const p = new Path2D(); for (let k = 0; k <= 24; k++) { const v = k / 24; proj(s, F.c[0] - 2.3 * v, F.c[1] - 0.3 * v - 0.7 * v * v + off * F.R * (1 - 0.6 * v), F.c[2] - 0.7 * v, q3); if (k) p.lineTo(q3[0], q3[1]); else p.moveTo(q3[0], q3[1]); }
       proj(s, F.c[0], F.c[1], 0, q3); const x0 = q3[0], y0 = q3[1]; proj(s, F.c[0] - 2.3, F.c[1] - 1, -0.7, q3); const g = ctx.createLinearGradient(x0, y0, q3[0], q3[1]); g.addColorStop(0, rgba(F.tint, (q === 1 ? 0.3 : 0.16) * a)); g.addColorStop(1, rgba(F.tint, 0)); ctx.lineWidth = q === 1 ? 1.4 : 0.8; ctx.strokeStyle = g; ctx.stroke(p); }); };
-  FORMS.mars = planet("mars", { n: N - 2, R: 0.76, spin: 0.34, tilt: 0.44, paint: (F, i, y) => { if (Math.abs(y) > 0.93) F.col[i] = WHITE; },
+  FORMS.mars = planet("mars", { n: N - 2, R: 0.76, spin: 0.2, tilt: 0.44, light: ORBS ? [-0.8, 0.36, 0.16] : [-0.55, 0.45, 0.7], paint: (F, i, y) => { if (Math.abs(y) > 0.93) F.col[i] = WHITE; },
     more: (F) => { moonOf(F, 1.02, 0.9); moonOf(F, 1.3, 0.42); }, extra: circling });
-  FORMS.venus = planet("venus", { n: 196, R: 0.74, spin: -0.1, tilt: 0.05, light: [-0.4, 0.3, 0.86], amb: 0.2, glow: 0.7, air: 0.5,
+  FORMS.venus = planet("venus", { n: 196, R: 0.74, spin: -0.06, tilt: 0.05, light: ORBS ? [-0.74, 0.3, 0.3] : [-0.4, 0.3, 0.86], amb: 0.2, glow: 0.7, air: 0.5,
     more: (F) => { for (let k = 0; k < N - 196; k++) { const y = 1 - (2 * (k + 0.5)) / (N - 196), r = Math.sqrt(1 - y * y), a = k * 2.399963; put(F, r * cos(a), y, r * sin(a), 0.42, 0.75, WHITE, 1); } },   // a veil of cloud, turning faster than the ground
     extra: (F, i, t, o) => { F.turn(F.P[3 * i], F.P[3 * i + 1], F.P[3 * i + 2], -t * 0.3, o); const d = o[0] * F.light[0] + o[1] * F.light[1] + o[2] * F.light[2]; o[3] = (0.2 + 0.8 * (d > 0 ? d : 0)) * smooth((o[2] + 0.3) / 0.6); const R = F.R * 1.13; o[0] *= R; o[1] *= R; o[2] *= R; } });
-  FORMS.saturn = planet("saturn", { n: 148, R: 0.46, spin: 0.6, tilt: 0.42, flat: 0.92, ext: [1.14, 0.74], rot: (t) => [0.4 + 0.05 * sin(t * 0.3), 0.2 * sin(t * 0.24)],
+  FORMS.saturn = planet("saturn", { n: 148, R: 0.46, spin: 0.3, tilt: 0.42, flat: 0.92, light: ORBS ? [-0.72, 0.4, 0.3] : [-0.55, 0.45, 0.7], ext: [1.14, 0.74], rot: (t) => [0.4 + 0.05 * sin(t * 0.3), 0.2 * sin(t * 0.24)],
     more: (F) => { for (let k = 0; k < N - 148; k++) { const band = k < 18 ? 0 : k < 92 ? 1 : 2, r = band === 0 ? 0.58 + 0.11 * rnd() : band === 1 ? 0.71 + 0.2 * rnd() : 0.95 + 0.1 * rnd(), i = put(F, 0, 0, 0, band === 0 ? 0.35 : band === 1 ? 0.9 : 0.65, 0.8, band === 1 ? WHITE : METAL.saturn, 1);
       F.aux[4 * i] = r; F.aux[4 * i + 1] = rnd() * TAU; F.aux[4 * i + 2] = 0.16 * Math.pow(r / 0.58, -1.5); } F.bands = [[0.575, 0.695, 5, 0.1], [0.71, 0.915, 13, 0.3], [0.95, 1.055, 6, 0.2]]; F.stripes = [[7, 0.02], [11, 0.05], [7, 0.02], [11, 0.06], [7, 0.03], [11, 0.05], [7, 0.02]]; },
     extra: circling });
-  FORMS.sun = planet("sun", { n: 176, R: 0.55, spin: 0.16, tilt: 0.12, amb: 0.8, thru: 0.45, glow: 1, ext: [1.3, 1.3],
+  FORMS.sun = planet("sun", { n: 176, R: 0.55, spin: 0.07, tilt: 0.12, amb: 0.8, thru: 0.45, glow: 1, ext: [1.3, 1.3],
     more: (F) => { const rays = Array.from({ length: 11 }, () => norm3([rnd() - 0.5, rnd() - 0.5, (rnd() - 0.5) * 0.7]));
       for (let k = 0; k < N - 176; k++) { const d = rays[k % 11], v = norm3([d[0] + (rnd() - 0.5) * 0.16, d[1] + (rnd() - 0.5) * 0.16, d[2] + (rnd() - 0.5) * 0.16]), i = put(F, v[0], v[1], v[2], 1, 0.8, k % 3 ? METAL.sun : WHITE, 1); F.aux[4 * i] = rnd(); F.aux[4 * i + 1] = 0.05 + 0.05 * rnd(); } },
     extra: (F, i, t, o) => { const f = frac(F.aux[4 * i] + (REDUCED ? 0 : t * F.aux[4 * i + 1])), r = F.R * (1.04 + 1.25 * Math.pow(f, 1.15)), a = 0.55 * f, ca = cos(a), sa = sin(a), x = F.P[3 * i], y = F.P[3 * i + 1];
       o[0] = (x * ca - y * sa) * r; o[1] = (x * sa + y * ca) * r; o[2] = F.P[3 * i + 2] * r; o[3] = Math.pow(1 - f, 1.5) * 1.2 * smooth(f / 0.05); o[5] = 0.6 + 0.7 * (1 - f); } });
   FORMS.moon = planet("moon", { n: N, R: 0.8, spin: 0.045, tilt: 0.1, light: [0.86, 0.22, -0.46], amb: 0.13, glow: 0.42, rot: (t) => [0.06 + 0.04 * sin(t * 0.3), 0.16 * sin(t * 0.22)] });
-  FORMS.jupiter = planet("jupiter", { n: N - 12, R: 0.74, spin: 0.42, tilt: 0.055, flat: 0.935, ext: [1.3, 1.0], wind: (y) => 1 + 0.4 * sin(y * 9.5),
+  FORMS.jupiter = planet("jupiter", { n: N - 12, R: 0.74, spin: 0.22, tilt: 0.055, flat: 0.935, ext: [1.3, 1.0], light: ORBS ? [-0.78, 0.3, 0.2] : [-0.55, 0.45, 0.7], wind: (y) => 1 + 0.4 * sin(y * 9.5),
     paint: (F, i, y) => { F.col[i] = Math.floor((Math.asin(y) / PI + 0.5) * 11) % 2 ? BELT : METAL.jupiter; },
     more: (F) => { for (let k = 0; k < 8; k++) { const a = 0.9 + 0.1 * cos(k * 0.785), la = -0.38 + 0.06 * sin(k * 0.785), i = put(F, cos(la) * cos(a), sin(la), cos(la) * sin(a), 1.3, 1.25, METAL.mars, 0); F.del[i] = 0.5; }   // the great red spot
       [[1.02, 0.5], [1.22, 0.31], [1.5, 0.2], [1.84, 0.13]].forEach(([r, w]) => moonOf(F, r, w, 1.5, 2));
@@ -294,10 +302,30 @@
   function ringPath(s, F, r, yy, front, back, n) { let px = 0, py = 0, pz = 0;
     for (let k = 0; k <= n; k++) { const a = (k / n) * TAU; F.turn(r * cos(a), yy, r * sin(a), 0, q3); const z = proj(s, F.c[0] + q3[0], F.c[1] + q3[1], F.c[2] + q3[2], q3);
       if (k) { const p = z + pz > 0 ? front : back; p.moveTo(px, py); p.lineTo(q3[0], q3[1]); } px = q3[0]; py = q3[1]; pz = z; } }
+  const MA = new Float32Array(9), LV = [0, 0, 0];
   function globeUnder(s, a, t) {
     const F = s.F, c = F.tint, L = F.light, sun = F.name === "sun"; proj(s, F.c[0], F.c[1], F.c[2], q3); const x = q3[0], y = q3[1], R = F.R * s.S * q3[2];
     // what circles it: the far half first, so the body can hide it
     const of = new Path2D(), ob = new Path2D(); (F.orbits || []).forEach((r) => ringPath(s, F, r, 0, of, ob, 72));
+    if (ORBS) {
+      ctx.lineWidth = 0.6; ctx.strokeStyle = rgba(c, 0.1 * a); ctx.stroke(ob);
+      if (F.streak) F.streak(s, a, t);
+      // the body's attitude, as the points have it: spin about its axis, its tilt, then the view's turn. By rows, body to view.
+      const sp = (REDUCED ? 8 : t) * F.spin, ca = cos(sp), sa = sin(sp), cT = cos(F.tilt), sT = sin(F.tilt), cY = s.cY, sY = s.sY, cX = s.cX, sX = s.sX;
+      const b0 = cT * ca, b1 = -sT, b2 = cT * sa, b3 = sT * ca, b4 = cT, b5 = sT * sa, b6 = -sa, b8 = ca;                 // tilt after spin
+      const c0 = cY * b0 + sY * b6, c1 = cY * b1, c2 = cY * b2 + sY * b8, c6 = -sY * b0 + cY * b6, c7 = -sY * b1, c8 = -sY * b2 + cY * b8;   // then the turn about y
+      MA[0] = c0; MA[1] = c1; MA[2] = c2; MA[3] = cX * b3 - sX * c6; MA[4] = cX * b4 - sX * c7; MA[5] = cX * b5 - sX * c8; MA[6] = sX * b3 + cX * c6; MA[7] = sX * b4 + cX * c7; MA[8] = sX * b5 + cX * c8;
+      const lx = L[0] * cY + L[2] * sY, lz = -L[0] * sY + L[2] * cY; LV[0] = lx; LV[1] = L[1] * cX - lz * sX; LV[2] = L[1] * sX + lz * cX;
+      ctx.globalCompositeOperation = "source-over";
+      ORBS.draw(ctx, F.name, x, y, R, DPR, { A: MA, light: LV, time: REDUCED ? 8 : t, alpha: s.body });
+      ctx.globalCompositeOperation = "lighter";
+      if (F.web.length && a > 0.02) { const dim = new Path2D(), lit = new Path2D(); for (let k = 0; k < F.web.length; k += 2) { const i = F.web[k], j = F.web[k + 1], b = Math.min(sb[i], sb[j]); if (b > 0.3) { const pth = b > 0.75 ? lit : dim; pth.moveTo(sx[i], sy[i]); pth.lineTo(sx[j], sy[j]); } }
+        ctx.lineWidth = 0.6; ctx.strokeStyle = rgba(GOLD, 0.14 * a); ctx.stroke(dim); ctx.strokeStyle = rgba(GOLD, 0.34 * a); ctx.stroke(lit); }
+      const ax = new Path2D(); [[-1.4, -1.06], [1.06, 1.4]].forEach((e) => { F.turn(0, e[0] * F.R, 0, 0, q3); proj(s, F.c[0] + q3[0], F.c[1] + q3[1], F.c[2] + q3[2], q3); ax.moveTo(q3[0], q3[1]); F.turn(0, e[1] * F.R, 0, 0, q3); proj(s, F.c[0] + q3[0], F.c[1] + q3[1], F.c[2] + q3[2], q3); ax.lineTo(q3[0], q3[1]); });
+      if (!sun) { ctx.lineWidth = 0.8; ctx.strokeStyle = rgba(c, 0.34 * a); ctx.stroke(ax); }
+      ctx.lineWidth = 0.6; ctx.strokeStyle = rgba(c, 0.26 * a); ctx.stroke(of);
+      return;
+    }
     const bands = (F.bands || []).map((b) => { const f = new Path2D(), k = new Path2D(); for (let q = 0; q < b[2]; q++) ringPath(s, F, b[0] + ((b[1] - b[0]) * (q + 0.5)) / b[2], 0, f, k, 96); return [f, k, b[3]]; });
     ctx.lineWidth = 0.6; ctx.strokeStyle = rgba(c, 0.1 * a); ctx.stroke(ob); bands.forEach((b) => { ctx.strokeStyle = rgba(c, b[2] * 0.55 * a); ctx.stroke(b[1]); });
     if (F.streak) F.streak(s, a, t);
@@ -337,9 +365,18 @@
     const wide = new Path2D(), inner = new Path2D(), at = (k, R) => { const an = -PI / 2 + (k / 7) * TAU - r; proj(s, R * cos(an), -R * sin(an), 0, q3); };
     for (let k = 0; k < 7; k++) { at(k, 1); wide.moveTo(q3[0], q3[1]); at(k + 3, 1); wide.lineTo(q3[0], q3[1]); at(k + 0.5, 0.36); if (k) inner.lineTo(q3[0], q3[1]); else inner.moveTo(q3[0], q3[1]); } inner.closePath();
     ctx.lineWidth = 9; ctx.strokeStyle = rgba(GOLD, 0.07 * a); ctx.stroke(wide); ctx.lineWidth = 3; ctx.strokeStyle = rgba(GOLD, 0.1 * a); ctx.stroke(wide); ctx.fillStyle = rgba(GOLD, 0.06 * a); ctx.fill(inner); ctx.lineWidth = 0.8; ctx.strokeStyle = rgba(GOLD, 0.4 * a); ctx.stroke(inner); };
-  orr.over = (s, a) => { SPHERES.forEach((name, k) => { const i = orr.planets[k], on = orr.hl < 0 ? 0.85 : k === orr.hl ? 1 : 0.3; glyph(name, sx[i] + 20, sy[i] - 18, 21, METAL[name], a * on); });
-    if (orr.hl >= 0 && orr.label) { const i = orr.planets[orr.hl]; ctx.font = "italic 500 21px Cormorant, Georgia, serif"; ctx.textAlign = "left"; ctx.fillStyle = rgba(WHITE, a); ctx.fillText(orr.label, sx[i] + 38, sy[i] - 10); } };
-  star.over = (s, a, t) => { const r = REDUCED ? 0 : t * 0.04; WEEK.forEach((name, k) => { const an = -PI / 2 + (k / 7) * TAU, x = 1.24 * cos(an), y = -1.24 * sin(an); proj(s, x * cos(r) - y * sin(r), x * sin(r) + y * cos(r), 0, q3); glyph(name, q3[0], q3[1], Math.max(19, s.S * 0.125), METAL[name], a); }); };
+  // small rendered bodies for the orrery and the star's points, each painted once, lit from the left
+  const SMALL = {}, SIZE = { moon: 0.034, mercury: 0.03, venus: 0.042, sun: 0.052, mars: 0.036, jupiter: 0.066, saturn: 0.052 };
+  const small = (name) => SMALL[name] || (SMALL[name] = ORBS.sprite(name, 200, { light: [-1, 0.14, 0.4], roll: name === "saturn" ? 0.3 : 0.08, lean: name === "saturn" ? 0.44 : 0.12, spin: name === "jupiter" ? 0.2 : 1.1, time: 3 }));
+  function body(name, x, y, r, turn, alpha) { const im = small(name), half = r / im.R; ctx.save(); ctx.translate(x, y); if (name !== "sun") ctx.rotate(turn); ctx.globalAlpha = alpha; ctx.drawImage(im, -half, -half, 2 * half, 2 * half); ctx.restore(); }
+  orr.over = (s, a) => {
+    if (ORBS) { proj(s, 0, 0, 0, q3); const x0 = q3[0], y0 = q3[1];
+      SPHERES.forEach((name, k) => { const i = orr.planets[k], on = orr.hl < 0 ? 1 : k === orr.hl ? 1.45 : 0.8; body(name, sx[i], sy[i], s.S * SIZE[name] * on * sf[i], Math.atan2(y0 - sy[i], x0 - sx[i]) - PI, a * (orr.hl < 0 || k === orr.hl ? 1 : 0.55)); }); }
+    SPHERES.forEach((name, k) => { const i = orr.planets[k], on = orr.hl < 0 ? 0.85 : k === orr.hl ? 1 : 0.3, d = ORBS ? s.S * SIZE[name] + 12 : 20; glyph(name, sx[i] + d, sy[i] - d + 2, 21, METAL[name], a * on); });
+    if (orr.hl >= 0 && orr.label) { const i = orr.planets[orr.hl]; ctx.font = "italic 500 21px Cormorant, Georgia, serif"; ctx.textAlign = "left"; ctx.fillStyle = rgba(WHITE, a); ctx.fillText(orr.label, sx[i] + (ORBS ? s.S * SIZE[SPHERES[orr.hl]] + 32 : 38), sy[i] - (ORBS ? s.S * SIZE[SPHERES[orr.hl]] + 4 : 10)); } };
+  star.over = (s, a, t) => { const r = REDUCED ? 0 : t * 0.04;
+    if (ORBS) WEEK.forEach((name, k) => { const i = star.tips[k]; body(name, sx[i], sy[i], s.S * SIZE[name] * 1.25, PI / 4, a); });
+    WEEK.forEach((name, k) => { const an = -PI / 2 + (k / 7) * TAU, x = (ORBS ? 1.3 : 1.24) * cos(an), y = -(ORBS ? 1.3 : 1.24) * sin(an); proj(s, x * cos(r) - y * sin(r), x * sin(r) + y * cos(r), 0, q3); glyph(name, q3[0], q3[1], Math.max(19, s.S * 0.125), METAL[name], a); }); };
 
   let px = 0, py = 0, tpx = 0, tpy = 0, mx = -1e4, my = -1e4, hoverI = -1, lastAuto = 0, heroHold = 0, heroForm = "worm", born = 0, hit = -1;
   function frame(now) {
@@ -390,8 +427,10 @@
     // ---- each figure's light and line work, once its points have landed
     for (const s of live) { const F = s.F, a = smooth((s.w - 0.74) / 0.26), glow = F.glow * s.w * s.w, ax = F.ext[0] * s.S * 1.35, ay = F.ext[1] * s.S * 2;
       if (glow > 0.01) { ctx.globalAlpha = Math.min(1, glow); ctx.drawImage(aura(F === hero && hero.m > 0.5 ? CARM : F.tint), s.cx - ax, s.cy - ay, 2 * ax, 2 * ay); ctx.globalAlpha = 1; }
-      if (a < 0.01) continue;
+      s.body = F.globe && ORBS ? smooth((s.w - 0.34) / 0.5) : a;
+      if (a < 0.01 && s.body < 0.01) continue;
       if (F.under) F.under(s, a, t);
+      if (a < 0.01) continue;
       const lim = s.S * F.seg;
       for (const ch of F.chains) { const p = new Path2D(), id = ch.idx, n = id.length; for (let q = 0; q < (ch.closed ? n : n - 1); q++) { const i = id[q], j = id[(q + 1) % n]; if (Math.abs(sx[i] - sx[j]) + Math.abs(sy[i] - sy[j]) < lim) { p.moveTo(sx[i], sy[i]); p.lineTo(sx[j], sy[j]); } }
         ctx.lineWidth = ch.w; ctx.strokeStyle = rgba(ch.c, ch.a * a * (F === orr && orr.hl >= 0 ? 0.6 : 1)); ctx.stroke(p); }
