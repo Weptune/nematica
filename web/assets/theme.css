@@ -1,63 +1,87 @@
-/* Inner pages, brought into the home page's look (assets/home.css): a light mineral page, a light
-   header, quiet mastheads. Dark fields are kept only where a recording or simulation is shown. */
+/* Inner pages, in the atlas's positive print: bone paper, Prussian-blue ink, a blue masthead that carries
+   the home page's sheet over. Brass is real animals, carmine their copies (both checked for colour-blind
+   separation on this paper). Display type is Cormorant; running text stays in Newsreader for long reading.
+   Loaded after site.css, which it overrides. */
+@font-face { font-family: "Cormorant"; src: url("../fonts/cormorant-latin-wght-normal.woff2") format("woff2"); font-weight: 300 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Cormorant"; src: url("../fonts/cormorant-latin-wght-italic.woff2") format("woff2"); font-weight: 300 700; font-style: italic; font-display: swap; }
 :root {
-  --page: #edf1ef; --rule: #c9d3cf; --rule-soft: #d8dfdb; --ink: #13212a; --ink-2: #46565e; --ink-3: #6f7f86;
-  --live: #0a7a5a; --live-tint: #cfe8dc; --live-wash: #e3efe9; --copy: #b8357f; --copy-tint: #f3dcea;
+  --page: #ece6d6; --plate: #f4efe2; --rule: #c7bfa9; --rule-soft: #dbd4c1;
+  --ink: #0c2a55; --ink-2: #3a5078; --ink-3: #5d6f92;
+  --live: #8a6d12; --live-tint: #e3d8ae; --live-wash: #ebe3c4; --copy: #a90959; --copy-tint: #f0d3df;
+  --field: #0c2a55; --field-2: #10336a; --field-ink: #ece6d6; --field-ink-2: rgba(236, 230, 214, .74);
+  --night: #0c2a55; --deep: #081f42; --bone: #ece6d6; --gilt: #dcbc62;
+  --display: "Cormorant", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
 }
-body { background: var(--page); }
+body { background: var(--page); color: var(--ink); }
+::selection { background: var(--ink); color: var(--bone); }
+:focus-visible { outline-color: var(--ink) !important; }
+a { text-decoration-color: var(--live); }
+
+/* the bar: the same deep-blue strip as the home page */
 .bar, .bar.on-field {
-  background: color-mix(in srgb, #edf1ef 88%, transparent) !important; color: var(--ink) !important;
-  border-bottom: 1px solid rgba(201, 211, 207, .6) !important;
+  background: var(--deep) !important; color: var(--bone) !important;
+  border-bottom: 1px solid rgba(236, 230, 214, .16) !important; backdrop-filter: none !important;
 }
 .bar nav a::before { content: none !important; display: none !important; }
-.bar nav a { opacity: 1 !important; color: var(--ink-2) !important; font-weight: 500 !important; }
-.bar nav a:hover, .bar nav a[aria-current="page"] { color: var(--ink) !important; }
-.bar nav a[aria-current="page"]::after { background: var(--live) !important; }
-.bar .menu-toggle, .bar.on-field .menu-toggle { border-color: var(--rule) !important; color: var(--ink) !important; }
-.wordmark { letter-spacing: .06em !important; font-weight: 750 !important; }
-.wordmark circle { fill: var(--live); }
+.bar nav a { opacity: 1 !important; color: rgba(236, 230, 214, .74) !important; font-weight: 500 !important; }
+.bar nav a:hover, .bar nav a[aria-current="page"] { color: var(--bone) !important; }
+.bar nav a[aria-current="page"]::after { background: var(--gilt) !important; }
+.bar .menu-toggle, .bar.on-field .menu-toggle { border-color: rgba(236, 230, 214, .3) !important; color: var(--bone) !important; }
+.wordmark { letter-spacing: .14em !important; font-weight: 700 !important; color: var(--bone) !important; }
+.wordmark circle { fill: var(--gilt); }
+.bar.menu-open nav { background: var(--deep) !important; color: var(--bone) !important; }
+.bar.menu-open nav a { color: var(--bone) !important; border-color: rgba(236, 230, 214, .16) !important; }
+.bar.menu-open nav a[aria-current="page"] { color: var(--gilt) !important; }
 
+/* the masthead: a blue plate with the atlas's seal */
 .masthead {
-  background: #e2e8e5 !important; color: var(--ink) !important;
-  margin-top: 0 !important; padding: clamp(56px, 8vw, 112px) var(--gutter) clamp(48px, 6vw, 88px) !important;
+  background: var(--night) !important; color: var(--bone) !important; position: relative; overflow: hidden;
+  margin-top: 0 !important; padding: clamp(72px, 9vw, 128px) var(--gutter) clamp(56px, 7vw, 104px) !important;
 }
-.masthead::before, .masthead::after, .masthead.grain::before, .masthead.grain::after { display: none !important; }
+.masthead::before, .masthead.grain::before { content: "" !important; display: block !important; position: absolute !important; inset: 18px max(8px, calc(var(--gutter) - 22px)) 18px !important;
+  border: 1px solid rgba(236, 230, 214, .14) !important; background: none !important; opacity: 1 !important; pointer-events: none; mix-blend-mode: normal !important; }
+.masthead::after, .masthead.grain::after { content: "" !important; display: block !important; position: absolute !important; right: clamp(24px, 6vw, 110px) !important; top: 50% !important; left: auto !important; bottom: auto !important;
+  width: min(30vw, 400px) !important; height: auto !important; aspect-ratio: 1; transform: translateY(-50%); background: url("img/seal.svg") center / contain no-repeat !important; opacity: 1 !important; pointer-events: none; }
+@media (max-width: 980px) { .masthead::after, .masthead.grain::after { display: none !important; } }
 .masthead .folio, .masthead .mast-strip { display: none !important; }
-.masthead .in { display: block !important; min-height: 0 !important; max-width: 76rem !important; }
+.masthead .in { display: block !important; min-height: 0 !important; max-width: 76rem !important; position: relative; z-index: 1; }
 .masthead h1.title {
-  color: var(--ink) !important; font-size: clamp(2.8rem, 5.6vw, 5rem) !important; font-weight: 360 !important;
-  letter-spacing: -.025em !important; line-height: 1 !important; max-width: 17ch !important;
+  color: var(--bone) !important; font-family: var(--display) !important; font-size: clamp(3rem, 1.2rem + 5vw, 6.2rem) !important; font-weight: 400 !important;
+  letter-spacing: -.02em !important; line-height: .93 !important; max-width: 13ch !important; text-wrap: balance;
 }
-.masthead .standfirst { color: var(--ink-2) !important; border-left-color: var(--live) !important; font-size: clamp(1.2rem, 1.6vw, 1.42rem) !important; }
+.masthead .standfirst { color: rgba(236, 230, 214, .78) !important; border-left: 1px solid var(--gilt) !important; font: 500 clamp(1.25rem, 1.05rem + .5vw, 1.5rem)/1.4 var(--display) !important; max-width: 38rem !important; }
 .mast-jump {
-  color: var(--ink) !important; border-bottom: 2px solid var(--live) !important; text-transform: none !important;
-  letter-spacing: 0 !important; font: 650 .98rem var(--sans) !important; gap: 10px !important;
+  color: var(--bone) !important; border-bottom: 1px solid var(--gilt) !important; text-transform: none !important;
+  letter-spacing: 0 !important; font: 600 .98rem var(--sans) !important; gap: 10px !important;
 }
 
-footer.foot { background: transparent !important; color: var(--ink-3) !important; border-top: 1px solid var(--rule) !important; margin-top: clamp(64px, 8vw, 112px) !important; padding: 36px var(--gutter) 48px !important; }
-footer.foot .big { display: none !important; }
-footer.foot a { color: var(--ink) !important; }
+/* display type on paper */
+h2, .part-head .part-t, .interlude h2, .workbench-heading h2 { font-family: var(--display) !important; font-weight: 500 !important; letter-spacing: -.016em !important; line-height: 1.02 !important; }
+main h2 { font-size: clamp(2.3rem, 1.5rem + 2.3vw, 3.7rem) !important; color: var(--ink); }
+.finding h3, .log h3 { font-family: var(--display); font-weight: 600; letter-spacing: -.005em; }
+strong { color: var(--ink); }
 
-/* labels in sentence case, readable size; a light open menu on small screens */
+footer.foot { background: var(--deep) !important; color: rgba(236, 230, 214, .6) !important; border-top: 0 !important; margin-top: clamp(64px, 8vw, 112px) !important; padding: 44px var(--gutter) 56px !important; }
+footer.foot .big { display: none !important; }
+footer.foot a { color: var(--bone) !important; }
+
+/* labels in sentence case, readable size */
 .sec-name, .plate-title .fn, .log .when, table.data th, .summary-measures .measure .v small, .swarm-section-label, .arrival-top, .arrival-bottom, .arrival-motion-toggle {
   text-transform: none !important; letter-spacing: 0 !important;
 }
-.sec-name { font-size: .85rem !important; font-weight: 650 !important; }
+.sec-name { font-size: .85rem !important; font-weight: 650 !important; color: var(--live) !important; }
 .plate-title .fn, .log .when { font-size: .85rem !important; }
 table.data th { font-size: .8rem !important; font-weight: 650 !important; }
 .summary-measures .measure .v small { font-size: .75rem !important; }
 .swarm-section-label, .arrival-top, .arrival-bottom { font-size: .78rem !important; }
-figure.plate { background: #e7ece9 !important; }
+figure.plate { background: var(--plate) !important; border: 1px solid var(--rule-soft); }
 figure.plate::before, figure.plate::after { display: none !important; }
-.bar.menu-open nav { background: #edf1ef !important; color: var(--ink) !important; }
-.bar.menu-open nav a { color: var(--ink) !important; }
-.bar.menu-open nav a[aria-current="page"] { color: var(--live) !important; }
-.bar.menu-open nav a { border-color: var(--rule) !important; }
 
-/* parts of the evidence page (18 Nov 2026): the worm, beyond the worm, taken together */
-.with-toc > .part-head { margin: clamp(88px, 10vw, 140px) 0 clamp(8px, 1vw, 16px); padding-top: 26px; border-top: 6px solid var(--ink); }
+/* parts of the evidence page: the worm, beyond the worm, taken together */
+.with-toc > .part-head { margin: clamp(88px, 10vw, 140px) 0 clamp(8px, 1vw, 16px); padding-top: 26px; border-top: 2px solid var(--ink); position: relative; }
+.with-toc > .part-head::before { content: ""; position: absolute; left: 0; right: 0; top: 4px; border-top: 1px solid var(--rule); }
 .with-toc > .part-head:first-of-type { margin-top: 8px; }
-.part-head .part-n { margin: 0; font: 650 .95rem/1.3 var(--sans); color: var(--live); }
-.part-head .part-t { margin: 8px 0 0; font-family: var(--serif); font-size: clamp(1.9rem, 3.2vw, 2.7rem); line-height: 1.08; letter-spacing: -.012em; color: var(--ink); font-weight: 380; max-width: 22ch; }
+.part-head .part-n { margin: 0; font: italic 500 1.25rem/1.3 var(--display); color: var(--live); }
+.part-head .part-t { margin: 8px 0 0; font-size: clamp(2.2rem, 3.6vw, 3.2rem) !important; color: var(--ink); max-width: 22ch; }
 .toc li.part { padding: 16px 0 4px 14px; font-weight: 650; color: var(--ink); font-size: .82rem; }
 .toc li.part:first-child { padding-top: 2px; }

@@ -284,6 +284,10 @@ def beyond() -> dict:
     out["shrinkage"] = [{"lam": r["lam"], "r2": num(r["within_worm_r2"]), "ind": num(r["individuality"]),
                          "typical": sum(v == "too typical" for k, v in r.items() if k.endswith("_verdict")),
                          "outside": sum(v == "outside" for k, v in r.items() if k.endswith("_verdict"))} for r in rows("shrinkage.csv")]
+    # a repeat poke: response as a share of the previous one, by the time between pokes
+    import math
+    out["recovery"] = [{"gap": r["gap_min"], "worms": int(r["worms"]), "pairs": int(r["pairs"]), "pct": round(math.exp(float(r["decline"])), 3),
+                        "lo": round(math.exp(float(r["lo"])), 3), "hi": round(math.exp(float(r["hi"])), 3)} for r in rows("recovery_curve.csv")]
     # Study V: the watching copy's predicted direction vs the real direction, per mouse (39 held-out mice)
     vr = json.loads((FIG / "opto/vbn_result.json").read_text())
     wt = json.loads((FIG / "opto/vbn_wt_control.json").read_text())["wt_real_up"]

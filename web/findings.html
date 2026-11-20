@@ -7,28 +7,29 @@
 <meta name="description" content="What happens when artificial brains are watched and poked like living worms: results on 113 recorded C. elegans.">
 <link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
-<meta name="theme-color" content="#edf1ef">
+<link rel="icon" href="favicon.svg?v=4" type="image/svg+xml">
+<meta name="theme-color" content="#0c2a55">
 <meta property="og:site_name" content="NEMATICA">
 <link rel="stylesheet" href="assets/site.css?v=21">
-<link rel="stylesheet" href="assets/theme.css?v=1">
+<link rel="stylesheet" href="assets/theme.css?v=3">
 </head>
 <body>
 
 <header class="bar on-field" id="bar">
   <a class="wordmark" href="index.html" aria-label="NEMATICA home">
-    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 44c10 0 11-23 23-23 11 0 11 22 20 22 5 0 7-7 9-13-1 11-5 18-11 18-12 0-10-22-19-22-8 0-11 23-22 23z" fill="currentColor"/><circle cx="29" cy="23.5" r="4.2" fill="#0a7a5a"/></svg>
+    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 44c10 0 11-23 23-23 11 0 11 22 20 22 5 0 7-7 9-13-1 11-5 18-11 18-12 0-10-22-19-22-8 0-11 23-22 23z" fill="currentColor"/><circle cx="29" cy="23.5" r="4.2" fill="#dcbc62"/></svg>
     NEMATICA
   </a>
   <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu"><span class="menu-lines" aria-hidden="true"></span><span>Menu</span></button>
   <nav id="site-nav" aria-label="Site">
-    <a href="index.html#r1">Results</a>
-    <a href="index.html#answer">The answer so far</a>
+    <a href="index.html#seven">The seven questions</a>
+    <a href="index.html#how">How we ask</a>
+    <a href="index.html#answer">The answer</a>
     <a href="findings.html" aria-current="page">Evidence</a>
     <a href="method.html">Method</a>
     <a href="sim.html">Simulations</a>
     <a href="log.html">Research log</a>
-    <a href="test/">Brain-likeness test</a>
+    <a href="test/">Test a network</a>
   </nav>
 </header>
 
@@ -76,8 +77,8 @@
     <p>That might be one unlucky model, so we scored every brain we built on both. In 88 model-group scores, the number of watching tests passed had a weak association with echo agreement (rank correlation about +0.09). Using the pre-specified continuous rest score instead, the correlation with poke-pattern distance was &minus;0.06 (p = 0.56). The 88 scores include repeated results from 30 model variants across held-out groups, so this does not prove that rest and poke performance are unrelated in general. It shows that passing these watching tests does not reliably identify the models that answer pokes correctly. Averaging each model over the held-out groups first, so that each of the 30 models counts once, gives &minus;0.12 (p = 0.54).</p>
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 1b</span>One point per model: rest realism against poke realism</p></div>
-      <img src="assets/img/fig-rest-vs-poke.png" alt="Scatter of 30 models: distance from real worms at rest against poke-pattern distance; no relation; only hybrids with poke-learned links reach the real-worm band." style="width:100%;height:auto">
-      <figcaption>Each point is one model, averaged over three held-out groups of the atlas. The green band is real worm against real worm. Only models whose causal links were learned from pokes reach it, whatever their realism at rest.</figcaption>
+      <div data-chart="restAvg"></div>
+      <figcaption>Each point is one model, averaged over three held-out groups of the atlas. The shaded band is real worm against real worm. Only models whose causal links were learned from pokes reach it, whatever their realism at rest.</figcaption>
     </figure>
     <aside class="note">
       <div class="measure copy"><span class="v">0.01</span><span class="l">echo agreement of the linear brain that watched, with real worms</span></div>
@@ -86,7 +87,7 @@
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 3</span>How alive a brain looks against how it answers a poke</p></div>
       <div data-chart="restPoke"></div>
-      <figcaption>Each dot is one artificial brain scored on one held-out group of worms. Horizontal: how many of the six watching tests it passes. Vertical: how well its echoes, across all stimulated pairs of neurons, correlate with a real worm's. The green line and band mark how well two real worms agree. Brains that look most alive at rest are no better at the poke test.</figcaption>
+      <figcaption>Each dot is one artificial brain scored on one held-out group of worms. Horizontal: how many of the six watching tests it passes. Vertical: how well its echoes, across all stimulated pairs of neurons, correlate with a real worm's. The brass line and band mark how well two real worms agree. Brains that look most alive at rest are no better at the poke test.</figcaption>
     </figure>
 
     <!-- gallery -->
@@ -96,7 +97,7 @@
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 4</span>Artificial networks against real worms</p></div>
       <div data-chart="gallery"></div>
-      <figcaption>Each row is one family of network; the dot is its median echo agreement with real worms over six held-out groups, the bar its range. Filled dots learned from pokes. The green line is how well two real worms agree. Hover a row for how many groups it is shown to match on the echo pattern and how many tests of ongoing activity it passes. The published model takes a unit input at each stimulation, while the other networks are given the stimulated neuron's measured response, so the comparison is not like for like on response size.</figcaption>
+      <figcaption>Each row is one family of network; the dot is its median echo agreement with real worms over six held-out groups, the bar its range. Filled dots learned from pokes. The brass line is how well two real worms agree. Hover a row for how many groups it is shown to match on the echo pattern and how many tests of ongoing activity it passes. The published model takes a unit input at each stimulation, while the other networks are given the stimulated neuron's measured response, so the comparison is not like for like on response size.</figcaption>
     </figure>
 
     <!-- why -->
@@ -129,7 +130,7 @@
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 5c</span>What the test said, against how close each copy truly is</p></div>
       <div data-chart="rulerTruth"></div>
-      <figcaption>One species of artificial individuals (connections varying by about 30% between individuals, slow hidden signals at 5% of input). Bars: how closely each copy's noise-averaged echo matches real individuals', as a share of how closely individuals match each other; the green line is an individual, the band within 20% of one. Right: in how many of three held-out groups the test showed the copy to agree. One draw of each copy per species, so the three groups are not independent replicates.</figcaption>
+      <figcaption>One species of artificial individuals (connections varying by about 30% between individuals, slow hidden signals at 5% of input). Bars: how closely each copy's noise-averaged echo matches real individuals', as a share of how closely individuals match each other; the brass line is an individual, the band within 20% of one. Right: in how many of three held-out groups the test showed the copy to agree. One draw of each copy per species, so the three groups are not independent replicates.</figcaption>
     </figure>
 
     <!-- ladder (6 Nov 2026) -->
@@ -174,7 +175,7 @@
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 7</span>Each worm against itself, and against other worms</p></div>
       <div data-chart="fingerprint"></div>
-      <figcaption>Each row is one worm. Its pokes are split into two halves; the green dot is the distance between the halves' echo patterns, the open dot is the median distance from that worm to every other worm. Rows are sorted by the gap. Median 0.85 against 0.92. Identification from echoes alone is still weak: a worm's own half ranks first among 43 in only 2 cases.</figcaption>
+      <figcaption>Each row is one worm. Its pokes are split into two halves; the brass dot is the distance between the halves' echo patterns, the open dot is the median distance from that worm to every other worm. Rows are sorted by the gap. Median 0.85 against 0.92. Identification from echoes alone is still weak: a worm's own half ranks first among 43 in only 2 cases.</figcaption>
     </figure>
 
     <!-- 4 -->
@@ -220,7 +221,7 @@
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 9</span>Who joins the echo after a poke</p></div>
       <div data-chart="echoShape"></div>
-      <figcaption>Diagnostic on held-out group 1. The hybrid is the brain that passes the poke test. To watch echoes spread in a small network, <a href="index.html#try">poke one yourself</a> on the home page.</figcaption>
+      <figcaption>Diagnostic on held-out group 1. The hybrid is the brain that passes the poke test. To watch echoes spread in a small network, <a href="index.html#bench">poke one yourself</a> on the home page.</figcaption>
     </figure>
 
     <!-- 6 -->
@@ -229,7 +230,7 @@
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 10</span>Complexity, integration and repertoire of ongoing activity</p><div class="legend" data-legend="noband"></div></div>
       <div class="table-wrap" style="margin:0"><div data-chart="mind"></div></div>
-      <figcaption>Each mark is one held-out group. Rings show the outcome designed in advance for each calibration: green where it was met in every group, magenta where it was missed in at least one. The calibrations hit 24 of 27 designed outcomes on the copper dataset; the misses are all integration, where real worms differ a lot from each other.</figcaption>
+      <figcaption>Each mark is one held-out group. Rings show the outcome designed in advance for each calibration: brass where it was met in every group, carmine where it was missed in at least one. The calibrations hit 24 of 27 designed outcomes on the copper dataset; the misses are all integration, where real worms differ a lot from each other.</figcaption>
     </figure>
 
     <!-- 8 Nov -->
@@ -238,7 +239,7 @@
     <p>Is it the neuron or the light-activated tool? We tried two ways of separating them, written down first, and checked both on synthetic worms where we knew the answer. Both failed, so neither was used on the real worms: every direct poke delivers light and activity together. Two things do come through. A neuron driven by other neurons, with no light on it, answers a little less next time (about 10% per unit of drive), beyond what synthetic worms without neuron fatigue produce; and the decline persists in mutants with reduced neuropeptide release. So probably both contribute. (An independent review caught that our first version included repeats only 30 seconds apart, whose baseline still held the previous response; it said 40% instead of about half.)</p>
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 11</span>Recovery after a repeat poke</p></div>
-      <img src="assets/img/fig-repeat-recovery.png" alt="Repeat response as a percentage of the previous one, by time between pokes: 47% at 0.6 to 2 minutes, 64% at 2 to 5, 89% at 5 to 10, about 100% after." style="width:100%;height:auto">
+      <div data-chart="recovery"></div>
       <figcaption>113 wild-type atlas worms. Geometric-mean ratio to the previous response, gap-matched controls subtracted; 90% intervals over worms.</figcaption>
     </figure>
 
@@ -267,7 +268,7 @@
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 13</span>Seven families of network against 49 mice</p></div>
       <div class="table-wrap" style="margin:0"><div data-chart="slowFamilies"></div></div>
-      <figcaption>Each bar is the middle half of a network's recordings (one per mouse), the dot its median; the green band, line and ticks are the 49 mice. Grey rings are medians at each of eight input gains for the two film-driven families, which were not counted because changing their playback speed moved them by about one ruler unit. Verdicts under each name use margins set in advance (1.15 ruler units on internal share, 2.12 on log relative slowness). Hover a row for the numbers.</figcaption>
+      <figcaption>Each bar is the middle half of a network's recordings (one per mouse), the dot its median; the brass band, line and ticks are the 49 mice. Grey rings are medians at each of eight input gains for the two film-driven families, which were not counted because changing their playback speed moved them by about one ruler unit. Verdicts under each name use margins set in advance (1.15 ruler units on internal share, 2.12 on log relative slowness). Hover a row for the numbers.</figcaption>
     </figure>
 
     <h2 id="mouse">Beyond the worm: in mouse hippocampus, the test is not yet sharp enough.</h2>
@@ -353,7 +354,7 @@
 </footer>
 
 <script src="data/results.js"></script>
-<script src="assets/charts.js?v=3"></script>
+<script src="assets/charts.js?v=7"></script>
 <script src="data/local.js" onerror="void 0"></script>
 <script src="assets/site.js?v=3"></script>
 </body>

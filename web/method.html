@@ -7,28 +7,29 @@
 <meta name="description" content="How NEMATICA scores an artificial brain: a ruler built from the differences between real worms, calibrated before any model is scored.">
 <link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
-<meta name="theme-color" content="#edf1ef">
+<link rel="icon" href="favicon.svg?v=4" type="image/svg+xml">
+<meta name="theme-color" content="#0c2a55">
 <meta property="og:site_name" content="NEMATICA">
 <link rel="stylesheet" href="assets/site.css?v=21">
-<link rel="stylesheet" href="assets/theme.css?v=1">
+<link rel="stylesheet" href="assets/theme.css?v=3">
 </head>
 <body>
 
 <header class="bar on-field" id="bar">
   <a class="wordmark" href="index.html" aria-label="NEMATICA home">
-    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 44c10 0 11-23 23-23 11 0 11 22 20 22 5 0 7-7 9-13-1 11-5 18-11 18-12 0-10-22-19-22-8 0-11 23-22 23z" fill="currentColor"/><circle cx="29" cy="23.5" r="4.2" fill="#0a7a5a"/></svg>
+    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 44c10 0 11-23 23-23 11 0 11 22 20 22 5 0 7-7 9-13-1 11-5 18-11 18-12 0-10-22-19-22-8 0-11 23-22 23z" fill="currentColor"/><circle cx="29" cy="23.5" r="4.2" fill="#dcbc62"/></svg>
     NEMATICA
   </a>
   <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open menu"><span class="menu-lines" aria-hidden="true"></span><span>Menu</span></button>
   <nav id="site-nav" aria-label="Site">
-    <a href="index.html#r1">Results</a>
-    <a href="index.html#answer">The answer so far</a>
+    <a href="index.html#seven">The seven questions</a>
+    <a href="index.html#how">How we ask</a>
+    <a href="index.html#answer">The answer</a>
     <a href="findings.html">Evidence</a>
     <a href="method.html" aria-current="page">Method</a>
     <a href="sim.html">Simulations</a>
     <a href="log.html">Research log</a>
-    <a href="test/">Brain-likeness test</a>
+    <a href="test/">Test a network</a>
   </nav>
 </header>
 
@@ -57,7 +58,7 @@
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 9</span>One test, one held-out group, every brain</p><div class="legend" data-legend="noband"></div></div>
       <div data-chart="rulerStrip" data-metric="C1.pattern" data-fold="0"></div>
-      <figcaption>The echo pattern test on held-out group 1. The green band is the middle 90% of distances between two real worms. Each mark is one artificial brain's median distance from the real worms. Hover a mark for its name. The verdict uses the full distribution, not only the median, so marks near the band edge can land either way.</figcaption>
+      <figcaption>The echo pattern test on held-out group 1. The brass band is the middle 90% of distances between two real worms. Each mark is one artificial brain's median distance from the real worms. Hover a mark for its name. The verdict uses the full distribution, not only the median, so marks near the band edge can land either way.</figcaption>
     </figure>
 
     <h2 id="tests">Five families of tests.</h2>
@@ -88,7 +89,7 @@
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 10</span>Designed outcomes for the poke tests</p><div class="legend" data-legend="noband"></div></div>
       <div class="table-wrap" style="margin:0"><div data-chart="calibration"></div></div>
-      <figcaption>Each mark is one held-out group. Rings mark the outcome written down before running: green where it was met in every group, magenta where it was missed in at least one. No ring: either outcome was acceptable. Responses played backwards keep their size and pattern, so only the time course should fail; responses at random times should fail the pattern.</figcaption>
+      <figcaption>Each mark is one held-out group. Rings mark the outcome written down before running: brass where it was met in every group, carmine where it was missed in at least one. No ring: either outcome was acceptable. Responses played backwards keep their size and pattern, so only the time course should fail; responses at random times should fail the pattern.</figcaption>
     </figure>
 
     <h2 id="power">How sharp the poke test is.</h2>
@@ -160,7 +161,7 @@
 </footer>
 
 <script src="data/results.js"></script>
-<script src="assets/charts.js?v=3"></script>
+<script src="assets/charts.js?v=7"></script>
 <script src="data/local.js" onerror="void 0"></script>
 <script src="assets/site.js?v=3"></script>
 </body>
