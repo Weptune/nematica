@@ -6,7 +6,7 @@
   "use strict";
   const hosts = Array.from(document.querySelectorAll("[data-net]")); if (!hosts.length) return;
   const NS = "http://www.w3.org/2000/svg", REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const C = { bone: "#ece6d6", b3: "rgba(236,230,214,.52)", line: "rgba(236,230,214,.26)", hair: "rgba(236,230,214,.13)", gilt: "#dcbc62", copy: "#e03063" };
+  const C = { bone: "#ece6d6", b3: "rgba(236,230,214,.64)", line: "rgba(236,230,214,.26)", hair: "rgba(236,230,214,.13)", gilt: "#dcbc62", copy: "#e03063" };
   function el(tag, a, p) { const n = document.createElementNS(NS, tag); for (const k in a || {}) if (a[k] != null) n.setAttribute(k, a[k]); if (p) p.appendChild(n); return n; }
   const N = 12;
   const POS = [[200, 66], [296, 102], [340, 196], [302, 294], [214, 340], [116, 308], [62, 214], [94, 118], [178, 150], [252, 188], [206, 252], [138, 216]];

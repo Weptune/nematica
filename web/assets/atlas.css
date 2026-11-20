@@ -8,7 +8,7 @@
 
 :root {
   --night: #0c2a55; --deep: #081f42; --wash: #10336a;
-  --bone: #ece6d6; --bone-2: rgba(236, 230, 214, .74); --bone-3: rgba(236, 230, 214, .52);
+  --bone: #ece6d6; --bone-2: rgba(236, 230, 214, .74); --bone-3: rgba(236, 230, 214, .64);
   --line: rgba(236, 230, 214, .26); --hair: rgba(236, 230, 214, .13); --ghost: rgba(236, 230, 214, .06);
   --real: #b68f1b; --real-wash: rgba(182, 143, 27, .27); --gilt: #dcbc62;
   --copy: #e03063; --copy-soft: #f0718f;

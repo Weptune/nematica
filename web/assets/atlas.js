@@ -6,7 +6,7 @@
   const R = window.NEMATICA_RESULTS || {}, B = window.NEMATICA_BRAIN;
   const NS = "http://www.w3.org/2000/svg";
   const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const C = { bone: "#ece6d6", b2: "rgba(236,230,214,.74)", b3: "rgba(236,230,214,.52)", line: "rgba(236,230,214,.26)",
+  const C = { bone: "#ece6d6", b2: "rgba(236,230,214,.74)", b3: "rgba(236,230,214,.64)", line: "rgba(236,230,214,.26)",
     hair: "rgba(236,230,214,.13)", ghost: "rgba(236,230,214,.06)", real: "#b68f1b", wash: "rgba(182,143,27,.27)",
     gilt: "#dcbc62", copy: "#e03063", night: "#0c2a55" };
   const HATCH = "url(#hatch)";   // real animals' spread is engraved, not tinted

@@ -6,7 +6,7 @@
 @font-face { font-family: "Cormorant"; src: url("../fonts/cormorant-latin-wght-italic.woff2") format("woff2"); font-weight: 300 700; font-style: italic; font-display: swap; }
 :root {
   --page: #ece6d6; --plate: #f4efe2; --rule: #c7bfa9; --rule-soft: #dbd4c1;
-  --ink: #0c2a55; --ink-2: #3a5078; --ink-3: #5d6f92;
+  --ink: #0c2a55; --ink-2: #3a5078; --ink-3: #4f6085;
   --live: #8a6d12; --live-tint: #e3d8ae; --live-wash: #ebe3c4; --copy: #a90959; --copy-tint: #f0d3df;
   --field: #0c2a55; --field-2: #10336a; --field-ink: #ece6d6; --field-ink-2: rgba(236, 230, 214, .74);
   --night: #0c2a55; --deep: #081f42; --bone: #ece6d6; --gilt: #dcbc62;
