@@ -14,7 +14,8 @@ from opto_run import named_profile  # noqa: E402
 V = json.loads((ROOT / "docs/figures/opto/vbn_result.json").read_text())
 FEAS = [json.loads(l) for l in (ROOT / "docs/figures/opto/feasibility_vbn.jsonl").read_text().splitlines()]
 WT = [d["id"] for d in FEAS if d.get("opto_n") and d["genotype"].split("-")[0].split("/")[0] == "wt"]
-FLAGGED = {"sub-556021", "sub-578257"}      # a driven unit silent at rest (Study V's independent check)
+AFFECTED = {"sub-556021", "sub-578257",      # a driven unit silent at rest (Study V's independent check)
+            "sub-554013", "sub-563323", "sub-564012"}   # a class unit silent at rest (this study's review before the freeze)
 LOW_LIGHT = 0.2                             # a class counts as little moved by light alone below this (SD units)
 
 
@@ -37,27 +38,33 @@ def main():
     wt = light_alone()
     rules = {"primary": lambda k: True, "visual_only": lambda k: k.startswith("VIS"), "broad_only": lambda k: k.endswith("|b"),
              "low_light": lambda k: k in wt and abs(wt[k]) <= LOW_LIGHT}
-    M = {r: {} for r in rules}
+    M = {r: {} for r in list(rules) + ["untouched"]}
+    left = {}
     for m, v in V["mice"].items():
         d = real.load(m)
         t = real.tag(d)
         every = real.classes(d, t)[1]
-        for r, keep in rules.items():
+        for r in M:
+            keep = rules.get(r, rules["primary"])
             cls, names = named_profile(d, t, [k for k in every if k in V["dropped_classes"] or not keep(k)])
             if len(names) < 4:
                 continue
-            M[r][m] = {"line": v["line"], "names": names, **second.answers(real.recording(d, cls, len(names)))}
-        print(m, v["line"], {r: len(M[r][m]["names"]) for r in rules if m in M[r]}, flush=True)
-    M["with_flagged"] = M["primary"]
-    out = {"flagged_left_out_of_primary": sorted(FLAGGED), "low_light_classes": sorted(k for k in wt if abs(wt[k]) <= LOW_LIGHT)}
-    for r in ("primary", "with_flagged", "visual_only", "broad_only", "low_light"):
-        pop = {m: x for m, x in M[r].items() if r == "with_flagged" or m not in FLAGGED}
+            a = second.answers(real.recording(d, cls, len(names)), drop_silent=r != "untouched")
+            if a is None:
+                left[f"{m} ({r})"] = "fewer than 3 driven units or an empty class once silent units are dropped"; continue
+            M[r][m] = {"line": v["line"], "names": names, **a}
+        print(m, v["line"], {r: len(M[r][m]["names"]) for r in M if m in M[r]}, flush=True)
+    M["untouched_without_affected"] = {m: x for m, x in M["untouched"].items() if m not in AFFECTED}
+    out = {"left_out": left, "affected_mice": sorted(AFFECTED), "low_light_classes": sorted(k for k in wt if abs(wt[k]) <= LOW_LIGHT)}
+    for r in ("primary", "untouched", "untouched_without_affected", "visual_only", "broad_only", "low_light"):
+        pop = M[r]
         S = second.pairwise(pop, np.random.default_rng(20261121))
         out[r] = {}
         for line in ("Sst", "Vip"):
             o = second.claims(S, line)
             if not o.get("undecided"):
                 o["verdict"] = {k: second.verdict(o, k) for k in ("P", "W", "X")}
+                o["P_within_a_quarter_of_the_average_mouse"] = second.beats_average(o)
             out[r][line] = o
         if r == "primary":
             out["mice"] = {m: {k: (round(x, 3) if isinstance(x, float) else x) for k, x in s.items()} for m, s in S.items()}

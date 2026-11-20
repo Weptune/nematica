@@ -14,10 +14,23 @@ from . import core, real
 MIN_SHARED = 8      # classes two mice must share for the pair to count
 MIN_PARTNERS = 5    # pairs a mouse needs to enter
 MARGIN = 0.75       # "like a second mouse": at least three quarters of a second mouse's agreement
+ALPHA = 0.05        # the sign tests and the margin test against a second mouse (size checked in calibration)
+ALPHA_WORSE = 0.01  # "worse than a second mouse": at 0.05 a literal second mouse was called worse in up to 14.5% of draws
+ALPHA_AVERAGE = 0.01  # the margin test against the average of the other mice: at 0.05 it fired in up to 13% on the margin
 
 
-def answers(rec):
-    """As real.analyse, but returning the profile and the two copies' predictions themselves (same units)."""
+def answers(rec, drop_silent=True):
+    """As real.analyse, but returning the profile and the two copies' predictions themselves (same units).
+    drop_silent: units with no spread in their 1 s spontaneous counts cannot be put in SD units; the earlier
+    pipeline floored their SD at 1e-9, which lets one such unit swamp its class's mean rate (found by the
+    review before the freeze). They are left out here. Returns None if fewer than 3 driven units remain or a
+    class is left empty."""
+    if drop_silent:
+        live = real.spont_sd(rec["spont"]) > 0
+        if not live.all():
+            rec = {**rec, "spont": [x[:, live] for x in rec["spont"]], "block": rec["block"][:, live], "cls": rec["cls"][live]}
+            if (rec["cls"] == -1).sum() < 3 or any((rec["cls"] == k).sum() == 0 for k in range(rec["n_classes"])):
+                return None
     cls, n = rec["cls"], rec["n_classes"]
     sd = np.maximum(real.spont_sd(rec["spont"]), 1e-9)
     resp = real.unit_responses(rec["block"], rec["on_test"], sd)
@@ -89,13 +102,13 @@ def pairwise(M, rng=None):
             continue
         cons = consensus(M, m); ok = np.isfinite(cons)
         A, PA = (core.agree(cons[ok], a["prof"][ok]), core.agree(a["pp"][ok], a["prof"][ok])) if ok.sum() >= MIN_SHARED else (np.nan, np.nan)
+        up = lambda x: float(np.mean(x[np.isfinite(x)] > 0)) if np.isfinite(x).any() else np.nan  # noqa: E731
         h = int(rng.integers(len(rows)))
         rest = np.delete(rows, h, 0)
         out[m] = {"line": a["line"], "partners": len(rows), "B": float(np.median(rows[:, 0])), "P": float(np.nanmedian(rows[:, 1])),
                   "W": float(np.nanmedian(rows[:, 2])), "X": float(np.nanmedian(rows[:, 3])) if np.isfinite(rows[:, 3]).any() else np.nan,
                   "N": float(rows[h, 0]), "B_rest": float(np.median(rest[:, 0])), "A": A, "PA": PA,
-                  "real_up": float(np.mean(a["prof"] > 0)), "p_up": float(np.mean(a["pp"] > 0)), "w_up": float(np.mean(a["pw"] > 0)),
-                  "x_up": float(np.mean(px[np.isfinite(px)] > 0)) if np.isfinite(px).any() else np.nan, "c": a["c"]}
+                  "real_up": up(a["prof"]), "p_up": up(a["pp"]), "w_up": up(a["pw"]), "x_up": up(px), "c": a["c"]}
     return out
 
 
@@ -142,10 +155,15 @@ def verdict(o, key="P"):
     not like one: the mice agree, and the copy gets the direction wrong or its pattern is worse than a second
       mouse's (the direction counts as wrong when the opposite direction is significant).
     Otherwise undecided."""
-    if o.get("undecided") or not o["mice_agree"] < 0.05:
+    if o.get("undecided") or not o["mice_agree"] < ALPHA:
         return "undecided"
-    if o[key + "_like"] < 0.05 and o[key + "_direction"] < 0.05:
+    if o[key + "_like"] < ALPHA and o[key + "_direction"] < ALPHA:
         return "like a second mouse"
-    if o[key + "_worse"] < 0.05 or o[key + "_direction_wrong"] < 0.05:
+    if o[key + "_worse"] < ALPHA_WORSE or o[key + "_direction_wrong"] < ALPHA:
         return "not like a second mouse"
     return "undecided"
+
+
+def beats_average(o):
+    """The stricter bar, for P only: within a quarter of what the average of the other mice achieves."""
+    return bool(not o.get("undecided") and o["mice_agree"] < ALPHA and o["P_like_average"] < ALPHA_AVERAGE)
