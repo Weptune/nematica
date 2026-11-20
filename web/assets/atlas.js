@@ -9,6 +9,7 @@
   const C = { bone: "#ece6d6", b2: "rgba(236,230,214,.74)", b3: "rgba(236,230,214,.52)", line: "rgba(236,230,214,.26)",
     hair: "rgba(236,230,214,.13)", ghost: "rgba(236,230,214,.06)", real: "#b68f1b", wash: "rgba(182,143,27,.27)",
     gilt: "#dcbc62", copy: "#e03063", night: "#0c2a55" };
+  const HATCH = "url(#hatch)";   // real animals' spread is engraved, not tinted
   const $ = (q, r) => (r || document).querySelector(q), $$ = (q, r) => Array.from((r || document).querySelectorAll(q));
   function el(tag, a, p) { const n = document.createElementNS(NS, tag); for (const k in a || {}) if (a[k] != null) n.setAttribute(k, a[k]); if (p) p.appendChild(n); return n; }
   function tx(p, x, y, s, a) { const t = el("text", Object.assign({ x, y }, a || {}), p); t.textContent = s; return t; }
@@ -44,7 +45,7 @@
     if (mark === "real") el("circle", { cx: x + 6, cy: y - 5, r: 5.5, fill: C.real }, s);
     else if (mark === "ring") el("circle", { cx: x + 6, cy: y - 5, r: 5, fill: "none", stroke: C.copy, "stroke-width": 1.8 }, s);
     else if (mark === "copy") el("circle", { cx: x + 6, cy: y - 5, r: 5.5, fill: C.copy }, s);
-    else if (mark === "band") el("rect", { x: x, y: y - 11, width: 12, height: 12, fill: C.wash, stroke: C.real, "stroke-width": 1 }, s);
+    else if (mark === "band") el("rect", { x: x, y: y - 11, width: 12, height: 12, fill: HATCH, stroke: C.real, "stroke-width": 1 }, s);
     else if (mark === "light") el("rect", { x: x, y: y - 11, width: 12, height: 12, fill: C.hair }, s);
     else if (mark === "ink") el("path", { d: `M${x} ${y - 5}h12`, stroke: C.bone, "stroke-width": 2 }, s);
     const tx0 = x + (mark ? 22 : 0);
@@ -202,7 +203,7 @@
       tx(s, 4, 82, "animal", small); tx(s, 4, 148, "network", small);
     } else if (k === "rule") {
       const x = lin(0, 1, 14, 286), y = 74;
-      el("rect", { x: x(0.34), y: y - 26, width: x(0.66) - x(0.34), height: 52, fill: C.wash }, s);
+      el("rect", { x: x(0.34), y: y - 26, width: x(0.66) - x(0.34), height: 52, fill: HATCH }, s);
       el("path", { d: `M${x(0.34)} ${y - 26}V${y + 26}M${x(0.66)} ${y - 26}V${y + 26}`, stroke: C.real }, s);
       el("path", { d: `M14 ${y}H286`, stroke: C.bone, "stroke-width": 1.4 }, s);
       let t = ""; for (let i = 0; i <= 40; i++) t += `M${x(i / 40).toFixed(1)} ${y}v${i % 5 ? 5 : 10}`;
@@ -236,7 +237,7 @@
     const m = { l: narrow ? 42 : 76, r: narrow ? 12 : 270, t: narrow ? 82 : 22, b: 66 };
     if (narrow) { label(s, 2, 18, ["two real worms agree this well"], "band"); label(s, 2, 42, ["copies that also learned from pokes"], "copy"); label(s, 2, 66, ["copies that only watched"], "ring"); }
     const x = lin(0.5, 6.5, m.l, w - m.r), y = lin(-0.008, 0.135, H - m.b, m.t), mid = (G.band[0] + G.band[1]) / 2;
-    el("rect", { x: m.l, y: y(G.band[1]), width: w - m.r - m.l, height: y(G.band[0]) - y(G.band[1]), fill: C.wash }, s);
+    el("rect", { x: m.l, y: y(G.band[1]), width: w - m.r - m.l, height: y(G.band[0]) - y(G.band[1]), fill: HATCH }, s);
     el("path", { d: `M${m.l} ${px(y(G.band[1]))}H${w - m.r}M${m.l} ${px(y(G.band[0]))}H${w - m.r}`, stroke: C.real, "stroke-opacity": 0.7 }, s);
     [0, 0.04, 0.08, 0.12].forEach((v) => { el("path", { d: `M${m.l} ${px(y(v))}H${w - m.r}`, stroke: v ? C.hair : C.line }, s); tx(s, m.l - 12, y(v) + 4, f2(v), Object.assign({ "text-anchor": "end" }, axisText)); });
     for (let k = 1; k <= 6; k++) { el("path", { d: `M${px(x(k))} ${H - m.b}v6`, stroke: C.line }, s); tx(s, x(k), H - m.b + 24, String(k), Object.assign({ "text-anchor": "middle" }, axisText)); }
@@ -303,7 +304,7 @@
       el("path", { d: `M${px(xx)} ${m.t - 10}V${H - m.b + 6}`, stroke: C.line, "stroke-dasharray": "3 5" }, s);
       tx(s, xx, m.t - 18, narrow ? t.replace("the ", "") : t, Object.assign({ "font-size": narrow ? 15 : 18, fill: C.bone, "text-anchor": "middle" }, SF)); });
     [0.7, 0.73, 0.76].forEach((v) => { el("path", { d: `M${m.l} ${px(yA(v))}H${w - m.r}`, stroke: C.hair }, s); tx(s, m.l - 12, yA(v) + 4, f2(v), Object.assign({ "text-anchor": "end" }, axisText)); });
-    el("rect", { x: m.l, y: yB(1.05), width: w - m.r - m.l, height: yB(0.95) - yB(1.05), fill: C.wash }, s);
+    el("rect", { x: m.l, y: yB(1.05), width: w - m.r - m.l, height: yB(0.95) - yB(1.05), fill: HATCH }, s);
     el("path", { d: `M${m.l} ${px(yB(1))}H${w - m.r}`, stroke: C.real }, s);
     [0.5, 0.75, 1].forEach((v) => { if (v !== 1) el("path", { d: `M${m.l} ${px(yB(v))}H${w - m.r}`, stroke: C.hair }, s); tx(s, m.l - 12, yB(v) + 4, f2(v), Object.assign({ "text-anchor": "end" }, axisText)); });
     const curve = (yy, k, col) => { const p = D.map((d) => [x(lx(d.lam)), yy(d[k])]);
@@ -355,7 +356,7 @@
     const narrow = host.clientWidth < 820, H = narrow ? 440 : 400;
     const { s, w, bg } = stage(host, H, "Share of state that is internal, in 49 mice and in each kind of network");
     const m = { l: narrow ? 14 : 34, r: narrow ? 14 : 34 }, ya = Math.round(H * 0.5), x = lin(0, 1, m.l, w - m.r), q = S.mice.M1;
-    el("rect", { x: x(q[0]), y: ya - 78, width: x(q[2]) - x(q[0]), height: 156, fill: C.wash }, s);
+    el("rect", { x: x(q[0]), y: ya - 78, width: x(q[2]) - x(q[0]), height: 156, fill: HATCH }, s);
     el("path", { d: `M${px(x(q[0]))} ${ya - 78}V${ya + 78}M${px(x(q[2]))} ${ya - 78}V${ya + 78}`, stroke: C.real, "stroke-opacity": 0.7 }, s);
     S.mice.M1all.forEach((v, i) => rv(el("path", { d: `M${px(x(v))} ${ya - 13}V${ya + 13}`, stroke: C.real, "stroke-width": 1.6 }, s), i, 12));
     tx(s, x(q[1]), ya - 90, `${S.mice.n} mice`, Object.assign({ "font-size": 20, fill: C.bone, "text-anchor": "middle" }, SF));
@@ -456,7 +457,7 @@
       const s = el("svg", { viewBox: `0 0 ${w} ${H}`, width: w, height: H, role: "img", "aria-label": `${g.scale}. ${g.status.text}.` }); sh.appendChild(s);
       const x = lin(g.domain[0], g.domain[1], 10, w - 10), ya = 52, fmt = (v) => (g.pct ? pc(v) : g.tickFmt === "int" ? String(v) : f2(v, g.dp));
       const bw = Math.max(4, x(g.band[1]) - x(g.band[0]));
-      el("rect", { x: x(g.band[0]), y: ya - 14, width: bw, height: 28, fill: C.wash }, s);
+      el("rect", { x: x(g.band[0]), y: ya - 14, width: bw, height: 28, fill: HATCH }, s);
       el("path", { d: `M${px(x(g.band[0]))} ${ya - 14}v28M${px(x(g.band[0]) + bw)} ${ya - 14}v28`, stroke: C.real }, s);
       el("path", { d: `M10 ${px(ya)}H${w - 10}`, stroke: C.line }, s);
       g.ticks.forEach((v) => { el("path", { d: `M${px(x(v))} ${ya}v5`, stroke: C.b3 }, s); tx(s, x(v), ya + 19, fmt(v), { "font-size": 11, fill: C.b3, "text-anchor": "middle" }); });

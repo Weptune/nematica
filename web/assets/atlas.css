@@ -112,7 +112,8 @@ ol, ul { padding: 0; list-style: none; }
 .card:hover, .card:focus-visible { transform: translateY(-10px); border-color: var(--gilt); background: var(--wash); }
 .card:hover::before { border-color: rgba(220, 188, 98, .4); }
 .card .num { font: 500 1.05rem/1 var(--serif); letter-spacing: .12em; color: var(--gilt); display: flex; justify-content: space-between; align-items: baseline; }
-.card .num span { font: italic 500 .92rem var(--serif); letter-spacing: 0; color: var(--bone-3); }
+.card .num span { font: italic 500 .92rem var(--serif); letter-spacing: 0; color: var(--bone-3); margin: 0; max-width: none; display: inline; }
+.card .num { border-top: 0; padding-top: 0; }
 .card .seal { width: min(100%, 132px); margin: 20px auto 18px; aspect-ratio: 1; }
 .card h3 { font: italic 500 1.72rem/1 var(--serif); text-align: center; margin-bottom: 14px; }
 .card p { font: 500 1.12rem/1.24 var(--serif); color: var(--bone-2); text-align: center; text-wrap: balance; }
@@ -188,6 +189,7 @@ ol, ul { padding: 0; list-style: none; }
 .duo .half + .half { border-left: 1px solid var(--hair); }
 .duo .plate-head { grid-template-columns: clamp(76px, 8vw, 120px) minmax(0, 1fr); }
 .duo .plate-head h2 { font-size: clamp(2rem, 1rem + 2.6vw, 3.5rem); }
+.duo .plate[data-n]::before { font-size: clamp(11rem, 22vw, 24rem); top: -.12em; }
 .duo .plate-body { grid-template-columns: 1fr; gap: 26px; }
 .duo .plate-body > * { grid-column: 1 / -1 !important; }
 @media (max-width: 960px) { .duo { grid-template-columns: 1fr; } .duo .half + .half { border-left: 0; border-top: 1px solid var(--hair); } }

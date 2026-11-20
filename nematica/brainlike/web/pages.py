@@ -44,6 +44,28 @@ pre code{{background:none;padding:0}}
 @media (prefers-reduced-motion:reduce){{*{{transition:none!important}}}}
 """
 
+# The site's print (web/assets/theme.css): bone paper, Prussian-blue ink, Cormorant for display. Web pages
+# only; a standalone report file keeps report.CSS. The fonts load when the test sits inside the NEMATICA site.
+CSS += """
+@font-face{font-family:Cormorant;src:url(/fonts/cormorant-latin-wght-normal.woff2) format('woff2');font-weight:300 700;font-display:swap}
+@font-face{font-family:'Schibsted Grotesk';src:url(/fonts/schibsted-grotesk-latin-wght-normal.woff2) format('woff2');font-weight:400 900;font-display:swap}
+body{background:#ece6d6;color:#0c2a55;font:16px/1.55 'Schibsted Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;border-top:8px solid #0c2a55}
+h1,h2,.big,.score,.status,nav .home{font-family:Cormorant,Georgia,'Iowan Old Style',serif}
+h1{font-weight:500;font-size:38px;line-height:1.04;letter-spacing:-.015em} h1.hero{font-size:54px;font-weight:400;line-height:.98;max-width:16ch}
+h2{font-weight:600;font-size:28px;line-height:1.1} .big{font-weight:400;font-size:56px} .status{font-weight:500;font-size:30px} .score{font-weight:600;font-size:22px}
+nav{border-bottom:1px solid #0c2a55;padding-bottom:14px} nav a{color:#0c2a55} nav .home{font:600 23px Cormorant,Georgia,serif} nav .site{color:#3a5078}
+a{color:#0c2a55;text-decoration-color:#8a6d12;text-underline-offset:.2em} a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #0c2a55;outline-offset:2px}
+.meta,figcaption,.ref,label.f small,.inline label,.way span,.score small,footer{color:#3a5078}
+.lede{font:500 22px/1.4 Cormorant,Georgia,serif;color:#3a5078}
+.note{background:#f4efe2;border-left-color:#8a6d12} .warn{background:#f6e3e3}
+th,td{border-bottom-color:#dbd4c1} footer{border-top-color:#c7bfa9}
+code,pre{background:#e2dbc7}
+.way{border-color:#c7bfa9;border-radius:2px;background:#f4efe2} .way:has(input:checked){border-color:#0c2a55;background:#fbf8ef}
+input[type=text],input[type=number],textarea{border-color:#b3aa92;border-radius:2px;background:#fbf8ef;color:#0c2a55}
+button{background:#0c2a55;border-radius:999px;padding:11px 24px} button:hover{background:#10336a}
+@media (max-width:600px){h1.hero{font-size:38px}}
+"""
+
 
 def _e(s) -> str:
     return html.escape(str(s), quote=True)

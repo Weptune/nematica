@@ -13,7 +13,7 @@ visual layer only: all copy stays plain and exact.
 - **Every graphic is hairline vector (SVG).** No blur, no glow, no drop shadows, no raster charts.
 - **Two prints of one sheet.** Home page: cyanotype negative (`assets/atlas.css`, blue ground, bone
   line work). Inner pages: positive (`assets/theme.css` over `site.css`, bone paper, blue ink, blue masthead).
-- **Colour has jobs.** Brass is real animals; carmine is their artificial copies; a ring is a plain
+- **Colour has jobs.** Brass is real animals (their spread is drawn as brass hatching, `url(#hatch)`, never a tint); carmine is their artificial copies; a ring is a plain
   copy, a filled carmine mark is a copy given what it lacked. Bone/ink is text. Gilt (`--gilt`) is for
   ornament and emphasis only, never data. Both data pairs pass the colour-blind checks on their own
   ground: `#b68f1b` / `#e03063` on blue, `#8a6d12` / `#a90959` on paper. Do not swap them.
