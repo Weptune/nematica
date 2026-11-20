@@ -25,8 +25,8 @@
   const F = {}, mk = () => new Float32Array(N * 3);
   { // the worm: real cross-section, body axis stretched so the crowded head opens up
     const f = (F.worm = mk()), x0 = B.pos[3 * order[0]], x1 = B.pos[3 * order[N - 1]];
-    for (let i = 0; i < N; i++) { const u = 0.5 * (rank[i] / (N - 1)) + 0.5 * ((B.pos[3 * i] - x0) / (x1 - x0)), tp = 1 - 0.45 * u;
-      f[3 * i] = (u - 0.5) * 5.2; f[3 * i + 1] = (B.pos[3 * i + 1] / 20) * 0.4 * tp; f[3 * i + 2] = (B.pos[3 * i + 2] / 12) * 0.4 * tp; } }
+    for (let i = 0; i < N; i++) { const u = 0.5 * (rank[i] / (N - 1)) + 0.5 * ((B.pos[3 * i] - x0) / (x1 - x0)), tp = 0.26 + 0.74 * Math.pow(Math.sin(Math.PI * Math.min(1, u * 1.55)), 0.8);   // narrow nose, full head, long thin tail
+      f[3 * i] = (u - 0.5) * 5.2; f[3 * i + 1] = (B.pos[3 * i + 1] / 20) * 0.5 * tp; f[3 * i + 2] = (B.pos[3 * i + 2] / 12) * 0.5 * tp; } }
   { const f = (F.lattice = mk()); for (let k = 0; k < N; k++) { const i = order[k], l = Math.floor(k / 30), w = k % 30, r = Math.floor(w / COLS), c = w % COLS;
       f[3 * i] = (l - 4.5) * 0.52; f[3 * i + 1] = (r - 2.5) * 0.32; f[3 * i + 2] = (c - 2) * 0.32; } }
   { const f = (F.ring = mk()); for (let k = 0; k < N; k++) { const i = order[k], a = -Math.PI / 2 + 0.15 + (k / N) * (2 * Math.PI - 0.3); f[3 * i] = Math.cos(a); f[3 * i + 1] = -Math.sin(a); f[3 * i + 2] = 0; } }
