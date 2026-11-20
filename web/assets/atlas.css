@@ -392,3 +392,14 @@ main, .foot { position: relative; z-index: 1; }
 .bench { background: rgba(4, 10, 28, .5); }
 .rail a { background: rgba(4, 10, 28, .8); }
 @media (prefers-reduced-motion: reduce) { .kin .w { opacity: 1; transform: none; transition: none; } .card, .card:hover { transition: none; transform: none; } .tw::after { transition: none; } }
+
+/* marks land with a little spring; chapter numerals stand behind the question as outlines */
+.fig circle.rv { transform-box: fill-box; transform-origin: 50% 50%; transform: scale(.15); }
+.in circle.rv { transform: scale(1); transition: opacity .5s ease var(--d, 0ms), transform .8s cubic-bezier(.3, 1.7, .5, 1) var(--d, 0ms); }
+.chapter { position: relative; }
+.chapter::before { content: attr(data-n); position: absolute; left: -.06em; top: 50%; transform: translateY(-58%); z-index: -1; font: 400 clamp(18rem, 62vh, 44rem)/1 var(--serif); letter-spacing: -.04em; color: transparent; -webkit-text-stroke: 1px rgba(240, 207, 120, .13); pointer-events: none; white-space: nowrap; }
+.scroll-cue { position: absolute; left: 50%; bottom: 14px; width: 1px; height: 46px; overflow: hidden; background: rgba(236, 230, 214, .16); }
+.scroll-cue::after { content: ""; position: absolute; left: 0; top: 0; width: 1px; height: 18px; background: #f0cf78; animation: cue 2.2s cubic-bezier(.5, 0, .2, 1) infinite; }
+@keyframes cue { from { transform: translateY(-20px); } to { transform: translateY(50px); } }
+@media (max-width: 980px) { .scroll-cue { display: none; } .chapter::before { font-size: 16rem; top: 34%; -webkit-text-stroke-color: rgba(240, 207, 120, .1); } }
+@media (prefers-reduced-motion: reduce) { .fig circle.rv { transform: none; } .scroll-cue::after { animation: none; } }

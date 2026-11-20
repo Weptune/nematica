@@ -97,14 +97,16 @@
   const SP = { gold: sprite(GOLD.join(",")), carm: sprite(CARM.join(",")) };
   const STARS = Array.from({ length: 170 }, () => ({ x: rnd(), y: rnd(), z: 0.25 + rnd() * 0.75, s: rnd() }));
   const mixc = (a, b, m) => `${Math.round(a[0] + (b[0] - a[0]) * m)},${Math.round(a[1] + (b[1] - a[1]) * m)},${Math.round(a[2] + (b[2] - a[2]) * m)}`;
-  function resize() { DPR = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR); }
+  let QUAL = 2, slow = 0, lastT = 0;
+  function resize() { DPR = Math.min(QUAL, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR); }
   function lines(list, n, alpha, rgb, lw, longK) {
     if (alpha < 0.012) return; const bk = [new Path2D(), new Path2D(), new Path2D(), new Path2D()], far = Math.max(W, H) * 0.3;
     for (let k = 0; k < n; k++) { const a = list[2 * k], b = list[2 * k + 1], f = (sf[a] + sf[b]) * 0.5, long = Math.abs(sx[a] - sx[b]) + Math.abs(sy[a] - sy[b]) > far, q = long ? 3 : f < 0.92 ? 0 : f < 1.08 ? 1 : 2; bk[q].moveTo(sx[a], sy[a]); bk[q].lineTo(sx[b], sy[b]); }
     ctx.lineWidth = lw; [0.45, 0.8, 1.25, longK || 0.16].forEach((m, q) => { ctx.strokeStyle = `rgba(${rgb},${(alpha * m).toFixed(3)})`; ctx.stroke(bk[q]); });
   }
   function frame(now) {
-    requestAnimationFrame(frame); if (document.hidden) return;
+    requestAnimationFrame(frame); if (document.hidden) { lastT = 0; return; }
+    if (lastT) { slow = now - lastT > 30 ? slow + 1 : Math.max(0, slow - 2); if (slow > 45 && QUAL > 1) { QUAL = QUAL > 1.5 ? 1.5 : 1; slow = 0; resize(); } } lastT = now;   // keep it smooth on slow machines
     const t = REDUCED ? 8 : now / 1000, s = SC[scene]; if (!s) return;
     // which part of the page is on screen decides the figure
     if (scene === "worm" || scene === "lattice") { if (!REDUCED && now > heroHold && now - lastAuto > 9000 && now - t0 > 8000) { lastAuto = now; heroForm = heroForm === "worm" ? "lattice" : "worm"; setHero(heroForm, now, true); } }
@@ -138,9 +140,9 @@
     // the neurons: a soft halo, then a hard bright core
     const base = mixc(GOLD, CARM, col);
     for (let i = 0; i < N; i++) { const pf = sf[i], e = en[i], d = Math.min(1, deg[i] / 45), rr = (1.15 + 1.5 * d + 2.4 * e) * pf * (1 + ((s.pt || 1) - 1) * g) * Math.max(0.55, Math.min(1.2, S / 190)), a = Math.min(1, (0.55 + 0.45 * d + e) * dim) * Math.min(1, Math.max(0.25, (pf - 0.72) * 2.6));
-      const h = rr * (5.5 + 5 * e + 2 * d); ctx.globalAlpha = Math.min(1, a * (0.5 + 0.7 * e + 0.35 * d));
-      if (col < 0.98) { ctx.globalAlpha *= 1 - col; ctx.drawImage(SP.gold, sx[i] - h, sy[i] - h, 2 * h, 2 * h); ctx.globalAlpha = Math.min(1, a * (0.5 + 0.7 * e + 0.35 * d)); }
-      if (col > 0.02) { ctx.globalAlpha *= col; ctx.drawImage(SP.carm, sx[i] - h, sy[i] - h, 2 * h, 2 * h); }
+      const h = rr * (5.5 + 5 * e + 2 * d), halo = d > 0.22 || e > 0.04 || s.pt; ctx.globalAlpha = Math.min(1, a * (0.5 + 0.7 * e + 0.35 * d));
+      if (!halo) { /* small quiet neurons are a bare point */ } else if (col < 0.98) { ctx.globalAlpha *= 1 - col; ctx.drawImage(SP.gold, sx[i] - h, sy[i] - h, 2 * h, 2 * h); ctx.globalAlpha = Math.min(1, a * (0.5 + 0.7 * e + 0.35 * d)); }
+      if (halo && col > 0.02) { ctx.globalAlpha *= col; ctx.drawImage(SP.carm, sx[i] - h, sy[i] - h, 2 * h, 2 * h); }
       ctx.globalAlpha = a; ctx.fillStyle = e > 0.05 ? `rgb(${mixc(col > 0.5 ? CARM : GOLD, [255, 250, 235], Math.min(1, e))})` : `rgb(${i % 3 === 0 || d > 0.4 ? base : mixc(BONE, CARM, col * 0.8)})`;
       ctx.beginPath(); ctx.arc(sx[i], sy[i], rr, 0, 6.2832); ctx.fill(); }
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = "source-over";
