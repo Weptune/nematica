@@ -109,7 +109,7 @@ ol, ul { padding: 0; list-style: none; }
 
 /* ------------------------------------------------------------------ the seven questions, as cards */
 .arcana { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: clamp(8px, 1vw, 16px); }
-.card { position: relative; display: flex; flex-direction: column; height: 100%; min-height: 25rem; padding: 22px 16px 18px; text-decoration: none; color: var(--bone);
+.card { position: relative; display: flex; flex-direction: column; height: 100%; min-height: 27rem; padding: 22px 16px 18px; text-decoration: none; color: var(--bone);
   border: 1px solid var(--line); background: var(--night); transition: transform .35s cubic-bezier(.2, .7, .2, 1), border-color .25s, background-color .25s; }
 .card::before { content: ""; position: absolute; inset: 5px; border: 1px solid var(--hair); pointer-events: none; transition: border-color .25s; }
 .card:hover, .card:focus-visible { transform: translateY(-10px); border-color: var(--gilt); background: var(--wash); }
@@ -120,6 +120,17 @@ ol, ul { padding: 0; list-style: none; }
 .card .seal { width: min(100%, 132px); margin: 20px auto 18px; aspect-ratio: 1; }
 .card h3 { font: italic 500 1.72rem/1 var(--serif); text-align: center; margin-bottom: 14px; }
 .card p { font: 500 1.12rem/1.24 var(--serif); color: var(--bone-2); text-align: center; text-wrap: balance; }
+.card .txt { position: relative; display: block; }
+.card .txt > h3, .card .txt > p { transition: opacity .25s; }
+.card .back { position: absolute; inset: -4px 0 auto 0; min-height: calc(100% + 8px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; opacity: 0; transition: opacity .3s; pointer-events: none; }
+.card .back b { font: 400 clamp(1.9rem, 2.3vw, 2.7rem)/1 var(--serif); color: var(--gilt); font-variant-numeric: lining-nums; white-space: nowrap; }
+.card .back b i { font-style: italic; font-size: .55em; color: var(--bone-2); margin: 0 .1em; }
+.card .back > span { font: 500 1.02rem/1.24 var(--serif); color: var(--bone); text-wrap: balance; }
+@media (hover: hover) {
+  .card:hover .txt > h3, .card:hover .txt > p, .card:focus-visible .txt > h3, .card:focus-visible .txt > p { opacity: 0; }
+  .card:hover .back, .card:focus-visible .back { opacity: 1; }
+}
+@media (hover: none) { .card .back { display: none; } }
 .card .v { margin-top: auto; padding-top: 16px; display: flex; align-items: center; justify-content: center; gap: 9px; font: 600 .8rem var(--sans); color: var(--bone-2); }
 .card .v svg { width: 40px; height: 20px; flex: none; }
 .seal svg { width: 100%; height: 100%; overflow: visible; }
@@ -127,7 +138,7 @@ ol, ul { padding: 0; list-style: none; }
 .seal .ticks { transform-origin: 100px 100px; }
 .card .seal .ticks { transition: transform 1.2s cubic-bezier(.2, .7, .2, 1); }
 .card:hover .seal .ticks { transform: rotate(25deg); }
-@media (max-width: 1180px) { .arcana { grid-template-columns: repeat(4, minmax(0, 1fr)); } .card { min-height: 23rem; } }
+@media (max-width: 1180px) { .arcana { grid-template-columns: repeat(4, minmax(0, 1fr)); } .card { min-height: 24rem; } }
 @media (max-width: 720px) {
   .arcana { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px; margin: 0 calc(-1 * var(--gutter)); padding: 12px var(--gutter) 18px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
   .arcana li { flex: 0 0 68vw; max-width: 280px; scroll-snap-align: center; }
@@ -178,7 +189,7 @@ ol, ul { padding: 0; list-style: none; }
 .in .rv { opacity: 1; transition: opacity .5s ease var(--d, 0ms); }
 .draw { stroke-dasharray: var(--len, 2000); stroke-dashoffset: var(--len, 2000); }
 .in .draw { stroke-dashoffset: 0; transition: stroke-dashoffset 1.6s cubic-bezier(.3, .6, .2, 1) var(--d, 0ms); }
-@media (prefers-reduced-motion: reduce) { .rv { opacity: 1; } .draw { stroke-dashoffset: 0; } html { scroll-behavior: auto; } .card, .seal .ticks { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .card .back, .card .txt > h3, .card .txt > p { transition: none; } .rv { opacity: 1; } .draw { stroke-dashoffset: 0; } html { scroll-behavior: auto; } .card, .seal .ticks { transition: none; } }
 
 .verdict { display: flex; align-items: center; gap: clamp(14px, 2vw, 26px); margin-top: clamp(30px, 4vw, 56px); padding-top: 22px; border-top: 1px solid var(--line); }
 .verdict svg { width: clamp(64px, 7vw, 96px); height: auto; flex: none; }
