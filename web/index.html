@@ -11,10 +11,12 @@
 <meta name="theme-color" content="#0c2a55">
 <meta property="og:site_name" content="NEMATICA">
 <meta property="og:title" content="What makes a real brain different from an artificial one?">
-<link rel="stylesheet" href="assets/atlas.css?v=1">
+<link rel="stylesheet" href="assets/atlas.css?v=2">
 </head>
 <body>
 <a class="skip" href="#seven">Skip to the seven questions</a>
+<canvas id="sky" aria-hidden="true"></canvas>
+<div class="progress" id="progress" aria-hidden="true"></div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -54,27 +56,24 @@
 <nav class="rail" id="rail" aria-label="Jump to a question"><a href="#q1" data-name="I. The Echo" aria-label="I. The Echo"><svg aria-hidden="true"><use href="#g-mercury"/></svg></a><a href="#q2" data-name="II. The Push" aria-label="II. The Push"><svg aria-hidden="true"><use href="#g-mars"/></svg></a><a href="#q3" data-name="III. The Face" aria-label="III. The Face"><svg aria-hidden="true"><use href="#g-venus"/></svg></a><a href="#q4" data-name="IV. The Long Memory" aria-label="IV. The Long Memory"><svg aria-hidden="true"><use href="#g-saturn"/></svg></a><a href="#q5" data-name="V. The Inner Light" aria-label="V. The Inner Light"><svg aria-hidden="true"><use href="#g-sun"/></svg></a><a href="#q6" data-name="VI. The Waning" aria-label="VI. The Waning"><svg aria-hidden="true"><use href="#g-moon"/></svg></a><a href="#q7" data-name="VII. The Journey" aria-label="VII. The Journey"><svg aria-hidden="true"><use href="#g-jupiter"/></svg></a></nav>
 
 <main>
-<section class="hero" aria-labelledby="h1">
-  <div class="hero-text">
+<section class="hero" id="hero" data-sky="hero" aria-labelledby="h1">
+  <div class="hero-top">
     <p class="lede">An atlas of one question, in seven parts</p>
-    <h1 id="h1">What makes a <em class="r">real</em> brain different from an <em class="a">artificial</em> one?</h1>
-    <p class="prose stand">We put living nervous systems and artificial neural networks through the same tests, and judge both against one yardstick: how much real animals differ from each other. Seven questions follow. Each has an answer you can see.</p>
+    <h1 id="h1" class="kin">What makes a <button type="button" class="tw r on" data-form="worm" aria-label="real: show the worm's nervous system">real</button> brain different from an <button type="button" class="tw a" data-form="lattice" aria-label="artificial: show an artificial network">artificial</button> one?</h1>
+  </div>
+  <div class="hero-foot">
+    <p class="prose stand">We put living nervous systems and artificial networks through the same tests, and judge both against how much real animals differ from each other. Seven questions follow. Each has an answer you can see.</p>
     <div class="hero-links">
       <a class="btn" href="#seven">See the seven questions <svg aria-hidden="true"><use href="#o-arrow"/></svg></a>
       <a class="btn ghost" href="#answer">Read the answer</a>
     </div>
-  </div>
-  <div class="cosmos-wrap">
-    <div class="cosmos" id="cosmos">
-      <div class="cosmos-center" aria-live="polite"><span class="nm" id="cosmos-name">C. elegans</span><span class="ct" id="cosmos-count">300 neurons, 2,045 connections</span></div>
-    </div>
-    <p class="cosmos-note"><span>One worm's whole nervous system: 300 neurons, head to tail around the ring, and the wiring between them. Select a neuron to trace its connections.</span><button type="button" id="cosmos-pause" aria-pressed="false">Pause</button></p>
+    <p class="hero-cap" id="hero-cap" aria-live="polite">The 300 neurons of one worm, where they really sit, wired as they are really wired. Touch one to send a signal.</p>
   </div>
 </section>
 
-<section class="sec seven" id="seven" aria-labelledby="seven-t">
-  <div class="sec-head">
-    <h2 id="seven-t">One question, asked seven ways.</h2>
+<section class="sec seven" id="seven" data-sky="ring" aria-labelledby="seven-t">
+  <div class="sec-head opening">
+    <h2 id="seven-t" class="kin">One question, asked seven ways.</h2>
     <p class="prose">A difference between a brain and a network has to show up somewhere you can measure. These are the seven places we looked, in worms and in mice. Each tick on a seal is one animal. The mark at the foot of each card says how it came out.<span class="hov"> Rest the pointer on a card to see what we found.</span></p>
   </div>
   <ol class="arcana">
@@ -88,9 +87,9 @@
   </ol>
 </section>
 
-<section class="sec how" id="how" aria-labelledby="how-t">
+<section class="sec how" id="how" data-sky="wave" aria-labelledby="how-t">
   <div class="sec-head">
-    <h2 id="how-t">How we ask.</h2>
+    <h2 id="how-t" class="kin">How we ask.</h2>
     <p class="prose">The same three rules run through every question. They are what makes a brain and a network comparable at all.</p>
   </div>
   <div class="tenets">
@@ -100,11 +99,14 @@
   </div>
 </section>
 
-<section class="sec plate" data-n="I" id="q1" aria-labelledby="q1-t">
-  <div class="plate-head">
+<section class="sec plate" data-n="I" id="q1" data-sky="mercury" aria-labelledby="q1-t">
+  <header class="chapter">
     <div class="seal" data-legend="113 worms, one tick each" data-g="mercury" data-n="113"></div>
-    <div><p class="over"><b>I</b> The Echo, under Mercury, the messenger</p><h2 id="q1-t">Touch one neuron. Does the copy answer the way a real brain does?</h2></div>
-  </div>
+    <p class="over"><b>I</b> The Echo <span>under Mercury, the messenger</span></p>
+    <h2 id="q1-t" class="kin">Touch one neuron. Does the copy answer the way a real brain does?</h2>
+    <p class="chip"><svg viewBox="0 0 48 24" aria-hidden="true"><use href="#v-closed"/></svg>Closed by learning from pokes</p>
+  </header>
+  <div class="panel">
   <div class="plate-body">
     <div class="how-we"><h3>How we asked</h3><p>In 113 worms, single neurons were switched on with light, one at a time, while the rest of the brain was recorded. We built copies of the worm brain. Some learned only by watching its ongoing activity. Some also learned from those pokes. Then we scored each copy's answers against real worms.</p></div>
     <div class="saw"><h3>What we saw</h3><p>Copies that only watched pass up to 5 of 6 tests of how a brain <em>looks</em>, then answer a poke almost at random. Copies that also learned from pokes answer <b>as well as a second worm would</b>.</p></div>
@@ -133,13 +135,17 @@
   </div>
 
   <div class="verdict"><svg viewBox="0 0 48 24" aria-hidden="true"><use href="#v-closed"/></svg><p><i>Closed</i> by learning from pokes.<span>The pattern of answers matched real worms in 6 of 6 held-out groups. The size of the answers, and ongoing activity, match less well.</span></p></div>
+  </div>
 </section>
 
-<section class="sec plate" data-n="II" id="q2" aria-labelledby="q2-t">
-  <div class="plate-head">
+<section class="sec plate" data-n="II" id="q2" data-sky="mars" aria-labelledby="q2-t">
+  <header class="chapter">
     <div class="seal" data-legend="39 mice, one tick each" data-g="mars" data-n="39"></div>
-    <div><p class="over"><b>II</b> The Push, under Mars, who acts</p><h2 id="q2-t">Can watching a brain tell you which way a cell pushes it?</h2></div>
-  </div>
+    <p class="over"><b>II</b> The Push <span>under Mars, who acts</span></p>
+    <h2 id="q2-t" class="kin">Can watching a brain tell you which way a cell pushes it?</h2>
+    <p class="chip"><svg viewBox="0 0 48 24" aria-hidden="true"><use href="#v-open"/></svg>Open: watching points the wrong way</p>
+  </header>
+  <div class="panel">
   <div class="plate-body">
     <div class="how-we"><h3>How we asked</h3><p>For each of 39 mice we built a copy of its cortex from resting activity alone, and asked it what would happen if one kind of inhibitory cell were switched on. Then light switched those cells on. Every test was written down before the data was opened.</p></div>
     <div class="saw"><h3>What we saw</h3><p>At rest everything rises and falls together, so the copy expected activity to rise, as it would for almost any cell. Switching on Sst cells did the opposite <b>in 29 of 29 mice</b>. Switching on Vip cells, which silence other inhibitors, did raise activity, in 10 of 10. The copy could not tell the two apart.</p></div>
@@ -150,13 +156,17 @@
   </div>
   <figure class="fig"><div class="fig-host" data-fig="push"></div><figcaption>One column per mouse. The ring is what the copy fitted at rest predicted; the filled mark is what happened when the cells were driven. The shaded band is what the light alone does in 27 mice whose cells cannot respond to it.</figcaption></figure>
   <div class="verdict"><svg viewBox="0 0 48 24" aria-hidden="true"><use href="#v-open"/></svg><p><i>Open.</i> Watching points the wrong way.<span>A copy taught by light pulses recovers part of the pattern (0.57 against &minus;0.06 for the watcher in Sst mice), but no copy has yet been shown to answer like a second mouse.</span></p></div>
+  </div>
 </section>
 
-<section class="sec plate" data-n="III" id="q3" aria-labelledby="q3-t">
-  <div class="plate-head">
+<section class="sec plate" data-n="III" id="q3" data-sky="venus" aria-labelledby="q3-t">
+  <header class="chapter">
     <div class="seal" data-legend="27 worms, one tick each" data-g="venus" data-n="27"></div>
-    <div><p class="over"><b>III</b> The Face, under Venus, who holds the mirror</p><h2 id="q3-t">Is a good copy of an animal still that animal, or just an average one?</h2></div>
-  </div>
+    <p class="over"><b>III</b> The Face <span>under Venus, who holds the mirror</span></p>
+    <h2 id="q3-t" class="kin">Is a good copy of an animal still that animal, or just an average one?</h2>
+    <p class="chip"><svg viewBox="0 0 48 24" aria-hidden="true"><use href="#v-closed"/></svg>Closed by keeping individuals</p>
+  </header>
+  <div class="panel">
   <div class="plate-body">
     <div class="how-we"><h3>How we asked</h3><p>Each of 27 freely moving worms got its own model. We then pulled every model toward the average worm, step by step, and measured two things: how well it forecasts the worm's next moment, and how individual it stays, where 1 means as distinct as real worms are from each other.</p></div>
     <div class="saw"><h3>What we saw</h3><p>The best forecaster is the least individual. It sits closer to every worm than worms sit to each other. Let each worm keep its own dynamics and the copy is as individual as a real worm, <b>for a forecasting cost of under one percentage point</b>.</p></div>
@@ -167,13 +177,17 @@
   </div>
   <figure class="fig"><div class="fig-host" data-fig="face"></div><figcaption>Left to right, each worm's model is pulled harder toward the average worm. Forecasting skill barely moves. Individuality falls away.</figcaption></figure>
   <div class="verdict"><svg viewBox="0 0 48 24" aria-hidden="true"><use href="#v-closed"/></svg><p><i>Closed</i> by keeping individuals.<span>The faithful copy passes 7 of 8 tests in a nested check. One lab's worms; not written down in advance.</span></p></div>
+  </div>
 </section>
 
-<section class="sec plate" data-n="IV" id="q4" aria-labelledby="q4-t">
-  <div class="plate-head">
+<section class="sec plate" data-n="IV" id="q4" data-sky="saturn" aria-labelledby="q4-t">
+  <header class="chapter">
     <div class="seal" data-legend="35 mice, one tick each" data-g="saturn" data-n="35"></div>
-    <div><p class="over"><b>IV</b> The Long Memory, under Saturn, the slow one</p><h2 id="q4-t">Does a brain hold on to the past longer than a network does?</h2></div>
-  </div>
+    <p class="over"><b>IV</b> The Long Memory <span>under Saturn, the slow one</span></p>
+    <h2 id="q4-t" class="kin">Does a brain hold on to the past longer than a network does?</h2>
+    <p class="chip"><svg viewBox="0 0 48 24" aria-hidden="true"><use href="#v-closed"/></svg>Closed by a slow drive</p>
+  </header>
+  <div class="panel">
   <div class="plate-body">
     <div class="how-we"><h3>How we asked</h3><p>In 35 mice at rest we measured slow memory: how much of the brain's activity drifts slowly, over seconds, instead of flickering from moment to moment. Then the same in an artificial network, recorded through a simulated copy of each mouse's own instrument, mouse by mouse.</p></div>
     <div class="saw"><h3>What we saw</h3><p>The instrument matters more than the mouse: seen through five mice's instruments, one network moved by 1.8 times the spread between mice. Compared fairly, a random network has less slow memory than the mouse <b>in 33 of 35</b>. Given strong slow drives it has more than every mouse measured. Cortex sits in between.</p></div>
@@ -184,13 +198,17 @@
   </div>
   <figure class="fig"><div class="fig-host" data-fig="memory"></div><figcaption>One column per mouse, ordered by the mouse's own slow memory. Each network is recorded through that mouse's own simulated instrument.</figcaption></figure>
   <div class="verdict"><svg viewBox="0 0 48 24" aria-hidden="true"><use href="#v-closed"/></svg><p><i>Closed</i> by a slow drive.<span>A drive carrying about 6% of each unit's variance brings the network to within 0.03 of the spread between mice in 18 held-out animals, though the interval is still wide.</span></p></div>
+  </div>
 </section>
 
-<section class="sec plate" data-n="V" id="q5" aria-labelledby="q5-t">
-  <div class="plate-head">
+<section class="sec plate" data-n="V" id="q5" data-sky="sun" aria-labelledby="q5-t">
+  <header class="chapter">
     <div class="seal" data-legend="49 mice, one tick each" data-g="sun" data-n="49"></div>
-    <div><p class="over"><b>V</b> The Inner Light, under the Sun</p><h2 id="q5-t">Does a brain carry more of its own inner state than a network?</h2></div>
-  </div>
+    <p class="over"><b>V</b> The Inner Light <span>under the Sun</span></p>
+    <h2 id="q5-t" class="kin">Does a brain carry more of its own inner state than a network?</h2>
+    <p class="chip"><svg viewBox="0 0 48 24" aria-hidden="true"><use href="#v-none"/></svg>Never there: networks sit on both sides</p>
+  </header>
+  <div class="panel">
   <div class="plate-body">
     <div class="how-we"><h3>How we asked</h3><p>While 49 mice watched the same film, we measured how much of the brain's state is its own and not locked to what it sees. Then the same for recurrent, gated, liquid, spiking, transformer and state-space networks, each recorded the way the mouse was. The claims were written down in advance.</p></div>
     <div class="saw"><h3>What we saw</h3><p>Artificial networks land on both sides of the brain. Some carry far less inner state than cortex, some more, and transformers of different sizes straddle the median mouse. <b>The brain is not at the end of the scale.</b></p></div>
@@ -201,14 +219,17 @@
   </div>
   <figure class="fig"><div class="fig-host" data-fig="light"></div><figcaption>Each tick is one mouse. Each ring is one network, at its median across mice. Hover a mark for its numbers.</figcaption></figure>
   <div class="verdict"><svg viewBox="0 0 48 24" aria-hidden="true"><use href="#v-none"/></svg><p><i>Never there.</i> Networks sit on both sides of the brain.<span>Written down in advance: none of four claims of more, slower internal state held.</span></p></div>
+  </div>
 </section>
 
-<section class="duo" aria-label="Two questions still open">
-  <div class="half plate" data-n="VI" id="q6" aria-labelledby="q6-t">
-    <div class="plate-head">
-      <div class="seal" data-legend="37 worms, one tick each" data-g="moon" data-n="37"></div>
-      <div><p class="over"><b>VI</b> The Waning, under the Moon</p><h2 id="q6-t">Ask the same thing twice. Does the answer fade?</h2></div>
-    </div>
+<section class="sec plate compact" data-n="VI" id="q6" data-sky="moon" aria-labelledby="q6-t">
+    <header class="chapter">
+    <div class="seal" data-legend="37 worms, one tick each" data-g="moon" data-n="37"></div>
+    <p class="over"><b>VI</b> The Waning <span>under the Moon</span></p>
+    <h2 id="q6-t" class="kin">Ask the same thing twice. Does the answer fade?</h2>
+    <p class="chip"><svg viewBox="0 0 48 24" aria-hidden="true"><use href="#v-open"/></svg>Open: the neuron, or the tool?</p>
+  </header>
+  <div class="panel">
     <div class="plate-body">
       <div class="how-we"><h3>How we asked</h3><p>Whenever the same worm neuron was poked twice within two minutes, we compared the second answer with the first: 56 pairs in 37 animals.</p></div>
       <div class="saw"><h3>What we saw</h3><p>A real worm's second answer is <b>about half</b> the first. An artificial network answers the same every time. A network whose input tires with use reproduces the fade, but this data cannot say whether it is the neuron that tires or the light tool.</p></div>
@@ -216,11 +237,16 @@
     <figure class="fig"><div class="fig-host" data-fig="waning"></div></figure>
     <div class="verdict"><svg viewBox="0 0 48 24" aria-hidden="true"><use href="#v-open"/></svg><p><i>Open.</i> The neuron, or the tool?<span>Every direct poke delivers light and activity together.</span></p></div>
   </div>
-  <div class="half plate" data-n="VII" id="q7" aria-labelledby="q7-t">
-    <div class="plate-head">
-      <div class="seal" data-legend="30 worms, one tick each" data-g="jupiter" data-n="30"></div>
-      <div><p class="over"><b>VII</b> The Journey, under Jupiter, the far traveller</p><h2 id="q7-t">Does a copy of a still animal hold once the animal moves?</h2></div>
-    </div>
+</section>
+
+<section class="sec plate compact" data-n="VII" id="q7" data-sky="jupiter" aria-labelledby="q7-t">
+    <header class="chapter">
+    <div class="seal" data-legend="30 worms, one tick each" data-g="jupiter" data-n="30"></div>
+    <p class="over"><b>VII</b> The Journey <span>under Jupiter, the far traveller</span></p>
+    <h2 id="q7-t" class="kin">Does a copy of a still animal hold once the animal moves?</h2>
+    <p class="chip"><svg viewBox="0 0 48 24" aria-hidden="true"><use href="#v-open"/></svg>Open: still and moving worms differ</p>
+  </header>
+  <div class="panel">
     <div class="plate-body">
       <div class="how-we"><h3>How we asked</h3><p>The recipe that passes on held-still worms was refitted from scratch on 30 freely moving worms from another lab, and put through the same six tests of ongoing activity.</p></div>
       <div class="saw"><h3>What we saw</h3><p>On the worms it was built on, the recipe passes 5 or 6 of 6. On moving worms it passes <b>1 of 6</b>, fewer than a plain copy fitted to rest alone. Movement, or the lab, changes what a brain's activity looks like.</p></div>
@@ -230,9 +256,9 @@
   </div>
 </section>
 
-<section class="sec answer" id="answer" aria-labelledby="answer-t">
-  <div class="sec-head">
-    <h2 id="answer-t">The answer so far.</h2>
+<section class="sec answer" id="answer" data-sky="star" aria-labelledby="answer-t">
+  <div class="sec-head opening">
+    <h2 id="answer-t" class="kin">The answer so far.</h2>
     <p class="prose">All seven on one sheet. Brass is the spread between real animals. A ring is a plain network. A filled mark is the same network once it was given what it lacked.</p>
   </div>
   <p class="keys"><span><svg viewBox="0 0 30 14" aria-hidden="true"><rect x="1" y="2" width="28" height="10" fill="url(#hatch)" stroke="var(--real)"/></svg>real animals</span><span><svg viewBox="0 0 30 14" aria-hidden="true"><circle cx="15" cy="7" r="4.5" fill="none" stroke="var(--copy)" stroke-width="1.8"/></svg>a plain artificial network</span><span><svg viewBox="0 0 30 14" aria-hidden="true"><circle cx="15" cy="7" r="5" fill="var(--copy)"/></svg>given what it lacked</span></p>
@@ -251,7 +277,7 @@
   </div>
 </section>
 
-<section class="sec deeper" aria-labelledby="deeper-t">
+<section class="sec deeper" data-sky="scatter" aria-labelledby="deeper-t">
   <div class="sec-head"><h2 id="deeper-t">Go deeper.</h2><p class="prose">Every figure on this page is drawn from the project's published result tables.</p></div>
   <ul>
     <li><a href="findings.html"><b>The evidence</b><span>Every result with its figures, numbers and caveats</span></a></li>
@@ -272,7 +298,8 @@
 
 <script src="data/results.js?v=3"></script>
 <script src="data/brain.js?v=1"></script>
-<script src="assets/atlas.js?v=1"></script>
+<script src="assets/sky.js?v=1"></script>
+<script src="assets/atlas.js?v=2"></script>
 <script src="assets/bench.js?v=1"></script>
 </body>
 </html>

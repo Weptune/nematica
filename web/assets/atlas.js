@@ -8,7 +8,7 @@
   const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const C = { bone: "#ece6d6", b2: "rgba(236,230,214,.74)", b3: "rgba(236,230,214,.64)", line: "rgba(236,230,214,.26)",
     hair: "rgba(236,230,214,.13)", ghost: "rgba(236,230,214,.06)", real: "#b68f1b", wash: "rgba(182,143,27,.27)",
-    gilt: "#dcbc62", copy: "#e03063", night: "#0c2a55" };
+    gilt: "#dcbc62", copy: "#e03063", night: "#07122e", deep: "#040a1c" };
   const HATCH = "url(#hatch)";   // real animals' spread is engraved, not tinted
   const $ = (q, r) => (r || document).querySelector(q), $$ = (q, r) => Array.from((r || document).querySelectorAll(q));
   function el(tag, a, p) { const n = document.createElementNS(NS, tag); for (const k in a || {}) if (a[k] != null) n.setAttribute(k, a[k]); if (p) p.appendChild(n); return n; }
@@ -491,7 +491,7 @@
     let star = ""; for (let i = 0, k = 0; i < 7; i++, k = (k + 3) % 7) star += (i ? "L" : "M") + V[k][0].toFixed(1) + " " + V[k][1].toFixed(1);
     el("path", { d: star + "Z", fill: "none", stroke: C.line, "stroke-linejoin": "round" }, s);
     el("circle", { cx, cy, r: RV, fill: "none", stroke: C.hair, "stroke-dasharray": "2 5" }, s);
-    el("circle", { cx, cy, r: 46, fill: C.deep || "#081f42", stroke: C.line }, s);
+    el("circle", { cx, cy, r: 46, fill: C.deep, stroke: C.line }, s);
     el("path", { d: "M6 44c10 0 11-23 23-23 11 0 11 22 20 22 5 0 7-7 9-13-1 11-5 18-11 18-12 0-10-22-19-22-8 0-11 23-22 23z", fill: C.bone, transform: `translate(${cx - 29} ${cy - 31}) scale(.9)` }, s);
     el("circle", { cx: cx - 29 + 29 * 0.9, cy: cy - 31 + 23.5 * 0.9, r: 3.8, fill: C.gilt }, s);
     cards.forEach((c, i) => { const [x, y] = V[i], kind = (c.querySelector(".v use").getAttribute("href") || "").replace("#v-", "");
@@ -516,6 +516,21 @@
       const inside = y < ans.getBoundingClientRect().top + scrollY;      // plates set side by side light up together
       railA.forEach((a, i) => a.setAttribute("aria-current", String(inside && cur >= 0 && Math.abs(tops[i] - tops[cur]) < 2))); };
     addEventListener("scroll", onRail, { passive: true }); onRail();
+    // words rise, numbers count, cards tilt, a line across the top keeps the place
+    $$(".kin").forEach((h) => { let i = 0; Array.from(h.childNodes).forEach((n) => {
+        if (n.nodeType === 3) { const f = document.createDocumentFragment(); n.textContent.split(/(\s+)/).forEach((w) => { if (!w.trim()) { f.appendChild(document.createTextNode(w)); return; } const sp = document.createElement("span"); sp.className = "w"; sp.style.setProperty("--i", i++); sp.textContent = w; f.appendChild(sp); }); h.replaceChild(f, n); }
+        else if (n.nodeType === 1) { n.classList.add("w"); n.style.setProperty("--i", i++); } }); });
+    const kio = !REDUCED && "IntersectionObserver" in window ? new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); kio.unobserve(e.target); } }), { threshold: 0.35 }) : null;
+    $$(".kin").forEach((h) => (kio ? kio.observe(h) : h.classList.add("in")));
+    const count = (b) => Array.from(b.childNodes).forEach((n) => { if (n.nodeType !== 3 || !/^[\d.]+$/.test(n.textContent.trim())) return; const txt = n.textContent.trim(), v = +txt, dp = (txt.split(".")[1] || "").length, t0 = performance.now();
+      const step = (now) => { const u = Math.min(1, (now - t0) / 1300), q = 1 - Math.pow(1 - u, 3); n.textContent = (v * q).toFixed(dp); if (u < 1) requestAnimationFrame(step); else n.textContent = txt; }; requestAnimationFrame(step); });
+    const cio = !REDUCED && "IntersectionObserver" in window ? new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { count(e.target); cio.unobserve(e.target); } }), { threshold: 0.6 }) : null;
+    if (cio) $$(".num b, .tally b").forEach((b) => cio.observe(b));
+    if (!REDUCED && matchMedia("(hover: hover)").matches) $$(".card").forEach((c) => { c.addEventListener("pointermove", (e) => { const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        c.style.setProperty("--ry", ((x - 0.5) * 16).toFixed(2) + "deg"); c.style.setProperty("--rx", ((0.5 - y) * 10).toFixed(2) + "deg"); c.style.setProperty("--mx", (x * 100).toFixed(1) + "%"); c.style.setProperty("--my", (y * 100).toFixed(1) + "%"); });
+      c.addEventListener("pointerleave", () => { c.style.setProperty("--ry", "0deg"); c.style.setProperty("--rx", "0deg"); }); });
+    const prog = $("#progress"), onProg = () => prog && prog.style.setProperty("--p", (scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)).toFixed(4));
+    addEventListener("scroll", onProg, { passive: true }); onProg();
     const top = $("#top"), menu = $(".menu");
     const onScroll = () => top.classList.toggle("stuck", scrollY > 24); onScroll(); addEventListener("scroll", onScroll, { passive: true });
     menu.addEventListener("click", () => { const o = top.classList.toggle("open"); menu.setAttribute("aria-expanded", o); });
