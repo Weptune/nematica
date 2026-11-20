@@ -1109,7 +1109,8 @@ class HybridKernel:
         nrn = [j for j, c in enumerate(rec.classes) if c in row]
         cls = [rec.classes[j] for j in nrn]
         y = np.vstack([x[row[c]] for c in cls])
-        for c in set(cls):
+        for c in sorted(set(cls)):   # [J] sorted: a set of strings iterates in an order that changes from one process to the next,
+            # so the member noise was drawn in a different order each run and a seed did not fix the result (review of Study J, 20 Nov)
             mem = [n for n, cc in enumerate(cls) if cc == c]
             m = len(mem)
             if m < 2:

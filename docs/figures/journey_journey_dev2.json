@@ -1,0 +1,123 @@
+{
+ "table": {
+  "hybrid_kernels_slow6d_hp_memfix_gcop": {
+   "0": {
+    "passed": 5,
+    "others": 4,
+    "pools": [
+     0,
+     1,
+     2
+    ],
+    "distribution": "III",
+    "timescale": "III",
+    "correlation": "III",
+    "dimension": "OOO",
+    "leadlag": "OII",
+    "dwell": "IOI"
+   }
+  },
+  "hybrid_kernels_slow6d_indivslow1_hp_memfix_diag_hsd1": {
+   "0": {
+    "passed": 1,
+    "others": 1,
+    "pools": [
+     0,
+     1,
+     2
+    ],
+    "distribution": "OOO",
+    "timescale": "OOO",
+    "correlation": "IOO",
+    "dimension": "IOO",
+    "leadlag": "OOO",
+    "dwell": "IOI"
+   }
+  },
+  "hybrid_kernels_slow6d_indivslow1_hp_memfix_diag_hsd1_gcop": {
+   "0": {
+    "passed": 1,
+    "others": 0,
+    "pools": [
+     0,
+     1,
+     2
+    ],
+    "distribution": "III",
+    "timescale": "OOO",
+    "correlation": "IOO",
+    "dimension": "OOO",
+    "leadlag": "OOO",
+    "dwell": "IOO"
+   }
+  },
+  "hybrid_kernels_slow6d_indivslow1_hp_memfix_hsd0.5_gcop": {
+   "0": {
+    "passed": 5,
+    "others": 4,
+    "pools": [
+     0,
+     1,
+     2
+    ],
+    "distribution": "III",
+    "timescale": "OOO",
+    "correlation": "ITI",
+    "dimension": "IOI",
+    "leadlag": "III",
+    "dwell": "IOI"
+   }
+  },
+  "hybrid_kernels_slow6d_indivslow1_hp_memfix_hsd1": {
+   "0": {
+    "passed": 4,
+    "others": 4,
+    "pools": [
+     0,
+     1,
+     2
+    ],
+    "distribution": "OOO",
+    "timescale": "OOO",
+    "correlation": "III",
+    "dimension": "IOI",
+    "leadlag": "III",
+    "dwell": "IOI"
+   }
+  },
+  "hybrid_kernels_slow6d_indivslow1_hp_memfix_hsd1_gcop": {
+   "0": {
+    "passed": 4,
+    "others": 3,
+    "pools": [
+     0,
+     1,
+     2
+    ],
+    "distribution": "III",
+    "timescale": "OOO",
+    "correlation": "III",
+    "dimension": "IOI",
+    "leadlag": "III",
+    "dwell": "IOO"
+   }
+  },
+  "var3_spontaneous": {
+   "0": {
+    "passed": 3,
+    "others": 3,
+    "pools": [
+     0,
+     1,
+     2
+    ],
+    "distribution": "OOO",
+    "timescale": "III",
+    "correlation": "TTT",
+    "dimension": "OOO",
+    "leadlag": "III",
+    "dwell": "IOI"
+   }
+  }
+ }
+}
