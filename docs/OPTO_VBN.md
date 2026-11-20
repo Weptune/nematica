@@ -74,14 +74,36 @@ react to the light. Against that baseline, driving Sst cells lowers far more (12
 p 3e-10) and driving Vip cells raises somewhat more (79%; p 0.001). So V4's "most regions rise" is partly
 the light itself; the Vip effect beyond light is real but smaller than the Sst effect.
 
-**What this says.** At rest, both kinds of inhibitory cell rise and fall slightly with the rest of the
-brain, so a copy built by watching predicts that driving either one raises activity. Driving Sst cells
-does the opposite in every mouse; driving Vip cells, which mostly inhibit other inhibitory cells, does
-raise activity. Watching cannot tell the two apart; the effect of driving a cell depends on what its links
-do, and those links do not show in its resting co-activity. This confirms, in 39 new mice and with
-pre-registered tests, the exploratory pattern from Study O, and it is the mouse-cortex counterpart of the
-worm result: a copy that only watched answers stimulation wrongly.
+**What this says (revised after the independent check below).** At rest, both kinds of inhibitory cell
+rise and fall slightly with the rest of the brain, and a copy built by watching turns that into "driving
+them raises activity". It would say the same for almost any group of cells: the check found that randomly
+chosen visual-cortex units, used as a fake driven group, give the same predicted share of rising regions
+(about 0.6 to 0.8). So V2 and V5 do not show a failure peculiar to Sst cells; they show that resting
+co-activity carries no information about the sign of a cell's effect. Driving Sst cells lowered most
+regions in every mouse; driving Vip cells, which mostly inhibit other inhibitory cells, raised slightly
+more than light alone. The difference between the two lives in what each cell's links do, and watching
+does not reveal it. This confirms, in 39 new mice and with pre-registered tests, the exploratory pattern from
+Study O, and it is the mouse-cortex counterpart of the worm result: a copy that only watched answers
+stimulation wrongly.
 
 **Limits.** One session per mouse, one lab's rig, two cell types. The tests are about direction (share of
 regions up or down), not the detailed pattern, where both copies were weak. The light-alone effect was
 measured after the run.
+
+## Independent check (20 Nov 2026, 00:05 UTC)
+
+A separate Claude agent, given the registration, result and code, with read access to the cached data.
+- No bug found that pushes real_up down. V1 survives splitting trials by the time since the previous light
+  (at least 1.5 s or less: 29 of 29 both), a 1 s baseline on trials with at least 2 s of darkness before
+  (28 of 29, median 0.14), and using only 0.5 to 1 s after onset (median 0.18). Vip stays above 0.5 in 10 of
+  10 under every variant. The tagged class's own response is positive in all 39 mice (median 3.4 SD).
+  Recomputed real_up and w_up match the result file.
+- **Correction, accepted:** W's prediction is linear, so its sign does not depend on the light's time course
+  at all (replacing it with a constant gives the same sign in 96 to 100% of classes); w_up is the sign of
+  the resting gain from the tagged class. With random broad visual-cortex units as the "tagged" class, w_up
+  is about 0.6 to 0.8. V2 and V5 are reworded above accordingly; V5 is driven by real_up, since median w_up
+  is similar in both lines (0.77 and 0.69).
+- The light-alone effect weakens V4 and V5; their wording stays "beyond light, small".
+- Two mice (sub-556021, sub-578257) have a tagged unit silent during spontaneous activity, which makes the
+  descriptive W and P agreements unreliable there; signs, and so V1 to V5, are unaffected. Not fixed, since
+  the claims do not use those numbers; flagged for any later use of W or P agreement.
