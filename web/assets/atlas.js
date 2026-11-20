@@ -194,7 +194,8 @@
         pts.forEach((p, i) => { el("circle", { cx: p[0], cy: p[1] + dy, r: 4, fill: filled ? col : "none", stroke: col, "stroke-width": 1.6 }, s);
           const gone = lost.includes(i);
           el("circle", { cx: p[0] + 190, cy: p[1] + dy, r: gone ? 3.2 : 4, fill: gone ? "none" : filled ? col : "none", stroke: gone ? C.line : col, "stroke-width": gone ? 1 : 1.6, "stroke-dasharray": gone ? "1.5 2" : null }, s); });
-        el("path", { d: `M112 ${40 + dy}H132M168 ${40 + dy}H184M178 ${35 + dy}l6 5-6 5`, stroke: C.b3, fill: "none" }, s);
+        el("path", { d: `M104 ${22 + dy}L150 ${40 + dy}L198 ${22 + dy}M104 ${40 + dy}H198M104 ${58 + dy}L150 ${40 + dy}L198 ${58 + dy}`, stroke: C.hair, fill: "none" }, s);
+        el("path", { d: `M192 ${35 + dy}l6 5-6 5`, stroke: C.b3, fill: "none" }, s);
       });
       el("path", { d: "M150 8Q170 75 150 142Q130 75 150 8Z", fill: "none", stroke: C.bone, "stroke-width": 1.4 }, s);
       el("path", { d: "M150 2V8M150 142V148", stroke: C.bone }, s);
@@ -229,7 +230,7 @@
   // ------------------------------------------------------------------ I. the echo
   function echo(host) {
     const pts = (R.restPoke || []).filter((d) => d.poke != null), G = (R.gaps || [])[0] || { band: [0.087, 0.121] };
-    const narrow = host.clientWidth < 680;
+    const narrow = host.clientWidth < 820;
     const H = narrow ? 490 : Math.round(Math.min(580, Math.max(460, host.clientWidth * 0.4)));
     const { s, w, bg } = stage(host, H, "Each copy of the worm brain: how many resting-activity tests it passes, against how well its answers to a poke agree with real worms");
     const m = { l: narrow ? 42 : 76, r: narrow ? 12 : 270, t: narrow ? 82 : 22, b: 66 };
@@ -260,7 +261,7 @@
   // ------------------------------------------------------------------ II. the push
   function push(host) {
     const O = R.optoSign; if (!O) return;
-    const narrow = host.clientWidth < 680, H = narrow ? 440 : 500, order = ["Sst", "Vip"];
+    const narrow = host.clientWidth < 820, H = narrow ? 440 : 500, order = ["Sst", "Vip"];
     const D = O.mice.filter((d) => order.includes(d.line)).sort((a, b) => order.indexOf(a.line) - order.indexOf(b.line) || a.real - b.real);
     const { s, w, bg } = stage(host, H, `For ${D.length} mice: the share of brain regions a copy fitted at rest predicted would rise when one kind of inhibitory cell was driven, and the share that did`);
     const m = { l: narrow ? 42 : 76, r: narrow ? 12 : 270, t: narrow ? 58 : 22, b: 78 }, gapG = narrow ? 18 : 44, n = D.length;
@@ -291,7 +292,7 @@
   // ------------------------------------------------------------------ III. the face
   function face(host) {
     const D = R.shrinkage || []; if (!D.length) return;
-    const narrow = host.clientWidth < 680, H = narrow ? 470 : 520;
+    const narrow = host.clientWidth < 820, H = narrow ? 470 : 520;
     const { s, w, bg } = stage(host, H, "As each worm's model is pulled toward the average worm, forecasting skill barely changes while individuality collapses");
     const m = { l: narrow ? 46 : 76, r: narrow ? 14 : 270, t: 40, b: 70 }, lx = (v) => Math.log10(+v);
     const x = lin(lx(D[0].lam), lx(D[D.length - 1].lam), m.l + 8, w - m.r - 8);
@@ -325,7 +326,7 @@
   // ------------------------------------------------------------------ IV. the long memory
   function memory(host) {
     const PM = R.permouse; if (!PM) return;
-    const D = PM.mice, n = D.length, narrow = host.clientWidth < 680, H = narrow ? 430 : 520;
+    const D = PM.mice, n = D.length, narrow = host.clientWidth < 820, H = narrow ? 430 : 520;
     const { s, w, bg } = stage(host, H, `Slow memory in ${n} mice, in a random network recorded through each mouse's own instrument, and in the same network with strong slow drives`);
     const m = { l: narrow ? 42 : 76, r: narrow ? 12 : 270, t: narrow ? 58 : 24, b: 58 };
     const x = (i) => m.l + 12 + (i * (w - m.l - m.r - 24)) / (n - 1), y = lin(0, 0.34, H - m.b, m.t);
@@ -351,7 +352,7 @@
   // ------------------------------------------------------------------ V. the inner light
   function light(host) {
     const S = R.slowStudy; if (!S) return;
-    const narrow = host.clientWidth < 680, H = narrow ? 440 : 400;
+    const narrow = host.clientWidth < 820, H = narrow ? 440 : 400;
     const { s, w, bg } = stage(host, H, "Share of state that is internal, in 49 mice and in each kind of network");
     const m = { l: narrow ? 14 : 34, r: narrow ? 14 : 34 }, ya = Math.round(H * 0.5), x = lin(0, 1, m.l, w - m.r), q = S.mice.M1;
     el("rect", { x: x(q[0]), y: ya - 78, width: x(q[2]) - x(q[0]), height: 156, fill: C.wash }, s);
@@ -387,18 +388,24 @@
   }
   function waning(host) {
     const G = (R.gaps || []).find((g) => /same poke/i.test(g.title)) || { band: [0.34, 0.64] };
-    const lo = G.band[0], hi = G.band[1], mid = (lo + hi) / 2, narrow = host.clientWidth < 440, H = 330;
+    const lo = G.band[0], hi = G.band[1], mid = (lo + hi) / 2, narrow = host.clientWidth < 470, H = narrow ? 320 : 330;
     const { s, w, bg } = stage(host, H, `A real worm's second answer to the same poke is about half its first (between ${lo} and ${hi}); an artificial network's second answer equals its first`);
-    const r = narrow ? 34 : 46, x1 = narrow ? r + 6 : r + 10, x2 = x1 + r * 2 + (narrow ? 44 : 70), yA = 86, yB = 234;
+    const r = narrow ? 30 : 46, x1 = r + (narrow ? 4 : 10), x2 = x1 + r * 2 + (narrow ? 40 : 70), yA = narrow ? 70 : 86, yB = narrow ? 226 : 234;
     [[yA, C.real, mid, "A real worm"], [yB, C.copy, 1, "An artificial network"]].forEach(([yy, col, f, name], k) => {
       moon(s, x1, yy, r, 1, col, bg); moon(s, x2, yy, r, f, col, bg);
-      el("path", { d: `M${x1 + r + 10} ${yy}H${x2 - r - 12}m-7 -5l7 5-7 5`, fill: "none", stroke: C.b3 }, s);
+      el("path", { d: `M${x1 + r + 9} ${yy}H${x2 - r - 11}m-7 -5l7 5-7 5`, fill: "none", stroke: C.b3 }, s);
       if (!k) [lo, hi].forEach((v) => { const rx = r * Math.abs(1 - 2 * v);
         el("path", { d: `M${x2} ${yy - r}A${rx.toFixed(2)} ${r} 0 0 ${v < 0.5 ? 0 : 1} ${x2} ${yy + r}`, fill: "none", stroke: C.bone, "stroke-dasharray": "2 4", "stroke-opacity": 0.8 }, s); });
       const lx = x2 + r + (narrow ? 14 : 28);
-      tx(s, lx, yy - 12, name, Object.assign({ "font-size": narrow ? 19 : 24, fill: C.bone }, SF));
-      tx(s, lx, yy + 10, k ? "answers the same every time" : "second answer: about half", { "font-size": 13, fill: C.b2 });
-      if (!k) tx(s, lx, yy + 29, `between ${f2(lo)} and ${f2(hi)} of the first`, { "font-size": 12, fill: C.b3 });
+      if (narrow) {
+        tx(s, 0, yy - r - 14, name, Object.assign({ "font-size": 20, fill: C.bone }, SF));
+        tx(s, lx, yy - 4, k ? "the same" : "about half", { "font-size": 13, fill: C.b2 });
+        tx(s, lx, yy + 14, k ? "every time" : `${f2(lo)} to ${f2(hi)}`, { "font-size": 12, fill: C.b3 });
+      } else {
+        tx(s, lx, yy - 12, name, Object.assign({ "font-size": 24, fill: C.bone }, SF));
+        tx(s, lx, yy + 10, k ? "answers the same every time" : "second answer: about half", { "font-size": 13, fill: C.b2 });
+        if (!k) tx(s, lx, yy + 29, `between ${f2(lo)} and ${f2(hi)} of the first`, { "font-size": 12, fill: C.b3 });
+      }
       tx(s, x1, yy + r + 20, "first answer", Object.assign({ "text-anchor": "middle" }, axisText)); tx(s, x2, yy + r + 20, "asked again", Object.assign({ "text-anchor": "middle" }, axisText));
     });
   }
@@ -408,18 +415,26 @@
     const E = R.emulator; if (!E) return;
     const mode = (k) => { const v = (E[k] || []).map((d) => d.rest), c = {}; v.forEach((n) => (c[n] = (c[n] || 0) + 1)); return [Math.min(...v), Math.max(...v), +Object.keys(c).sort((a, b) => c[b] - c[a])[0]]; };
     const rows = [["On the worms it was built on", "the recipe, held-still worms", mode("atlas_cv3")], ["On worms that move", "the same recipe, refitted, another lab", mode("atanas")], ["On worms that move", "a plain copy fitted to rest alone", mode("atanas_control_rest")]];
-    const narrow = host.clientWidth < 440, H = 330, { s, w, bg } = stage(host, H, "Of six tests of ongoing activity, the recipe passes five or six on the worms it was built on, one on freely moving worms, where a plain copy fitted to rest passes three");
-    const r = narrow ? 11 : 15, gap = narrow ? 8 : 12, x0 = 4, rowH = 96;
+    const narrow = host.clientWidth < 470, rowH = narrow ? 118 : 96, H = rowH * 3 + (narrow ? 26 : 42);
+    const { s, bg } = stage(host, H, "Of six tests of ongoing activity, the recipe passes five or six on the worms it was built on, one on freely moving worms, where a plain copy fitted to rest passes three");
+    const r = narrow ? 13 : 15, gap = narrow ? 10 : 12, x0 = 4, y0 = narrow ? 62 : 34;
     const px5 = x0 + 4 * (2 * r + gap) - gap / 2;
-    el("path", { d: `M${px(px5)} 8V${rowH * 3 - 8}`, stroke: C.gilt, "stroke-dasharray": "3 5" }, s);
-    tx(s, px5 + 8, rowH * 3 + 14, "pass mark: 5 of 6", { "font-size": 12, fill: C.gilt });
-    rows.forEach(([a, b, v], k) => { const yy = 34 + k * rowH;
+    el("path", { d: narrow ? rows.map((_, k) => `M${px(px5)} ${y0 + k * rowH - r - 5}v${2 * r + 10}`).join("") : `M${px(px5)} 8V${rowH * 3 - 8}`, stroke: C.gilt, "stroke-dasharray": "3 5" }, s);
+    tx(s, px5 + 8, rowH * 3 + (narrow ? 0 : 14), "pass mark: 5 of 6", { "font-size": 12, fill: C.gilt });
+    rows.forEach(([a, b, v], k) => { const yy = y0 + k * rowH;
       for (let i = 0; i < 6; i++) { const cx = x0 + r + i * (2 * r + gap), on = i < v[2], maybe = i >= v[0] && i < v[1];
         rv(el("circle", { cx, cy: yy, r: on ? r : r - 1, fill: on ? C.copy : bg, stroke: on ? "none" : maybe ? C.copy : C.line, "stroke-width": 1.5, "stroke-dasharray": !on && maybe ? "3 3" : null }, s), k * 6 + i, 40); }
-      const lx = x0 + 6 * (2 * r + gap) + (narrow ? 6 : 18);
-      tx(s, lx, yy - 4, a, Object.assign({ "font-size": narrow ? 18 : 22, fill: C.bone }, SF));
-      tx(s, lx, yy + 16, b, { "font-size": narrow ? 11.5 : 12.5, fill: C.b2 });
-      tx(s, x0, yy + r + 22, v[0] === v[1] ? `${v[0]} of 6 in all five runs` : `${v[0]} or ${v[1]} of 6 across five runs`, axisText);
+      const cnt = v[0] === v[1] ? `${v[0]} of 6 in all five runs` : `${v[0]} or ${v[1]} of 6 across five runs`;
+      if (narrow) {
+        tx(s, x0, yy - 38, a, Object.assign({ "font-size": 19, fill: C.bone }, SF));
+        tx(s, x0, yy - 22, b, { "font-size": 11.5, fill: C.b2 });
+        tx(s, x0 + 6 * (2 * r + gap) + 4, yy + 4, cnt.replace(" in all five runs", "").replace(" across five runs", ""), { "font-size": 12, fill: C.b2 });
+      } else {
+        const lx = x0 + 6 * (2 * r + gap) + 18;
+        tx(s, lx, yy - 4, a, Object.assign({ "font-size": 22, fill: C.bone }, SF));
+        tx(s, lx, yy + 16, b, { "font-size": 12.5, fill: C.b2 });
+        tx(s, x0, yy + r + 22, cnt, axisText);
+      }
     });
   }
 
@@ -492,6 +507,13 @@
     const io = "IntersectionObserver" in window && !REDUCED ? new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.2 }) : null;
     $$("[data-fig]").forEach((h) => (io ? io.observe(h) : h.classList.add("in")));
     let lastW = innerWidth; addEventListener("resize", () => { if (Math.abs(innerWidth - lastW) > 30) { lastW = innerWidth; drawAll(); $$("[data-fig]").forEach((h) => h.classList.add("in")); } });
+    const rail = $("#rail"), railA = $$("#rail a"), plates = railA.map((a) => $(a.getAttribute("href"))), ans = $("#answer");
+    const onRail = () => { if (!rail || !plates[0]) return; const y = scrollY + innerHeight * 0.45;
+      const top0 = plates[0].getBoundingClientRect().top + scrollY, end = ans.getBoundingClientRect().bottom + scrollY;
+      rail.classList.toggle("on", y > top0 && scrollY + innerHeight * 0.3 < end);
+      let cur = -1; plates.forEach((p, i) => { if (p.getBoundingClientRect().top + scrollY <= y) cur = i; });
+      railA.forEach((a, i) => a.setAttribute("aria-current", String(i === cur && y < ans.getBoundingClientRect().top + scrollY))); };
+    addEventListener("scroll", onRail, { passive: true }); onRail();
     const top = $("#top"), menu = $(".menu");
     const onScroll = () => top.classList.toggle("stuck", scrollY > 24); onScroll(); addEventListener("scroll", onScroll, { passive: true });
     menu.addEventListener("click", () => { const o = top.classList.toggle("open"); menu.setAttribute("aria-expanded", o); });

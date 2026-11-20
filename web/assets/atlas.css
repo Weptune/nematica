@@ -82,7 +82,7 @@ ol, ul { padding: 0; list-style: none; }
 @media (prefers-reduced-motion: reduce) { .cosmos .orbit, .cosmos .planet { animation: none; } }
 .cosmos-center { position: absolute; left: 50%; top: 50%; width: 27%; aspect-ratio: 1; transform: translate(-50%, -50%); display: grid; place-content: center; text-align: center; pointer-events: none; }
 .cosmos-center .nm { font: italic 500 clamp(1.5rem, 3.3vw, 3.3rem)/1 var(--serif); color: var(--gilt); }
-.cosmos-center .ct { font: 500 clamp(.62rem, .9vw, .86rem)/1.3 var(--sans); color: var(--bone-2); margin-top: .5em; }
+.cosmos-center .ct { font: 500 clamp(.62rem, .9vw, .86rem)/1.3 var(--sans); color: var(--bone-2); margin: .5em auto 0; max-width: 9.5em; }
 .cosmos-note { display: flex; gap: 16px; align-items: baseline; justify-content: center; margin: 14px auto 0; max-width: 40rem; font: 500 .82rem/1.45 var(--sans); color: var(--bone-3); text-align: center; }
 .cosmos-note button { flex: none; font: 600 .8rem var(--sans); color: var(--bone-2); background: none; border: 0; border-bottom: 1px solid var(--line); padding: 2px 0; cursor: pointer; }
 .cosmos-note button:hover { color: var(--gilt); border-color: var(--gilt); }
@@ -135,7 +135,7 @@ ol, ul { padding: 0; list-style: none; }
 .tenets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line); }
 .tenet { padding: clamp(24px, 3vw, 44px) clamp(18px, 2.6vw, 40px) 8px; border-left: 1px solid var(--hair); }
 .tenet:first-child { border-left: 0; padding-left: 0; }
-.tenet svg { width: 100%; max-width: 300px; height: auto; margin-bottom: 22px; overflow: visible; }
+.tenet svg { width: min(100%, 340px); height: auto; margin-bottom: 26px; overflow: visible; }
 .tenet h3 { font: 500 clamp(1.7rem, 1.3rem + 1.2vw, 2.4rem)/1.02 var(--serif); margin-bottom: 12px; }
 .tenet p { font: 500 1.2rem/1.38 var(--serif); color: var(--bone-2); max-width: 26rem; }
 @media (max-width: 860px) { .tenets { grid-template-columns: 1fr; } .tenet { border-left: 0; border-top: 1px solid var(--hair); padding-left: 0; padding-bottom: 28px; } .tenet:first-child { border-top: 0; } }
@@ -268,3 +268,14 @@ ol, ul { padding: 0; list-style: none; }
 .tip b { display: block; font: 600 1.12rem/1.15 var(--serif); margin-bottom: 5px; }
 .tip .row { display: flex; justify-content: space-between; gap: 18px; border-top: 1px solid rgba(8, 31, 66, .16); padding-top: 4px; margin-top: 4px; }
 .tip .row span:last-child { font-weight: 650; white-space: nowrap; }
+
+/* ------------------------------------------------------------------ the rail: seven signs down the right edge, the current one lit */
+.rail { position: fixed; right: 16px; top: 50%; transform: translateY(-50%); z-index: 30; display: none; flex-direction: column; gap: 7px; opacity: 0; pointer-events: none; transition: opacity .3s; }
+.rail.on { opacity: 1; pointer-events: auto; }
+.rail a { position: relative; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--hair); background: var(--night); color: var(--bone-3); display: grid; place-items: center; transition: color .2s, border-color .2s; }
+.rail a svg { width: 18px; height: 18px; }
+.rail a:hover, .rail a[aria-current="true"] { color: var(--gilt); border-color: var(--gilt); }
+.rail a::after { content: attr(data-name); position: absolute; right: 44px; top: 50%; transform: translateY(-50%); white-space: nowrap; font: italic 500 1.05rem var(--serif); color: var(--bone); background: var(--deep); padding: 4px 12px; border: 1px solid var(--line); opacity: 0; pointer-events: none; transition: opacity .15s; }
+.rail a:hover::after, .rail a:focus-visible::after { opacity: 1; }
+@media (min-width: 1280px) { .rail { display: flex; } }
+@media (prefers-reduced-motion: reduce) { .rail { transition: none; } }
