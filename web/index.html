@@ -86,7 +86,7 @@
     <p class="prose">A difference between a brain and a network has to show up somewhere you can measure. These are the seven places we looked, in worms and in mice. Each tick on a seal is one animal. The mark at the foot of each card says how it came out.<span class="hov"> Rest the pointer on a card to see what we found.</span></p>
   </div>
   <ol class="arcana">
-    <li><a class="card" href="#q1"><span class="num">I <span>Mercury</span></span><div class="seal" data-g="mercury" data-n="113"></div><span class="txt"><h3>The Echo</h3><p>Touch one neuron. Does the copy answer the way a real brain does?</p><span class="back"><b>0.01 <i>to</i> 0.10</b><span>Copies that only watched answer at random. Copies that learned from pokes answer like a second worm.</span></span></span><span class="v"><svg aria-hidden="true"><use href="#v-closed"/></svg>Closed</span></a></li>
+    <li><a class="card" href="#q1"><span class="num">I <span>Mercury</span></span><div class="seal" data-g="mercury" data-n="113"></div><span class="txt"><h3>The Echo</h3><p>Touch one neuron. Does the copy answer the way a real brain does?</p><span class="back"><b>0.01 <i>to</i> 0.10</b><span>Copies that only watched answer almost at random. Copies that learned from pokes answer like a second worm.</span></span></span><span class="v"><svg aria-hidden="true"><use href="#v-closed"/></svg>Closed</span></a></li>
     <li><a class="card" href="#q2"><span class="num">II <span>Mars</span></span><div class="seal" data-g="mars" data-n="39"></div><span class="txt"><h3>The Push</h3><p>Can watching a brain tell you which way a cell pushes it?</p><span class="back"><b>29 <i>of</i> 29</b><span>Switching on Sst cells lowered activity in every mouse. The copy that watched expected a rise.</span></span></span><span class="v"><svg aria-hidden="true"><use href="#v-open"/></svg>Open</span></a></li>
     <li><a class="card" href="#q3"><span class="num">III <span>Venus</span></span><div class="seal" data-g="venus" data-n="27"></div><span class="txt"><h3>The Face</h3><p>Is a good copy of an animal still that animal, or just an average one?</p><span class="back"><b>0.78 <i>to</i> 0.99</b><span>The best forecaster is an average worm. Keeping each worm's own dynamics brings the individual back.</span></span></span><span class="v"><svg aria-hidden="true"><use href="#v-closed"/></svg>Closed</span></a></li>
     <li><a class="card" href="#q4"><span class="num">IV <span>Saturn</span></span><div class="seal" data-g="saturn" data-n="35"></div><span class="txt"><h3>The Long Memory</h3><p>Does a brain hold on to the past longer than a network does?</p><span class="back"><b>33 <i>of</i> 35</b><span>A random network holds less of the past than the mouse. A slow drive closes the gap.</span></span></span><span class="v"><svg aria-hidden="true"><use href="#v-closed"/></svg>Closed</span></a></li>
@@ -156,8 +156,8 @@
   </header>
   <div class="panel">
   <div class="plate-body">
-    <div class="how-we"><h3>How we asked</h3><p>For each of 39 mice we built a copy of its cortex from resting activity alone, and asked it what would happen if one kind of inhibitory cell were switched on. Then light switched those cells on. Every test was written down before the data was opened.</p></div>
-    <div class="saw"><h3>What we saw</h3><p>At rest everything rises and falls together, so the copy expected activity to rise, as it would for almost any cell. Switching on Sst cells did the opposite <b>in 29 of 29 mice</b>. Switching on Vip cells, which silence other inhibitors, did raise activity, in 10 of 10. The copy could not tell the two apart.</p></div>
+    <div class="how-we"><h3>How we asked</h3><p>For each of 39 mice we built a copy of its recorded brain regions from five minutes of resting activity, and asked it what would happen if one kind of inhibitory cell were switched on. Then light switched those cells on. Every test was written down before any response to the light was computed.</p></div>
+    <div class="saw"><h3>What we saw</h3><p>At rest everything rises and falls together, so the copy expected activity to rise, as it would for almost any cell. Switching on Sst cells lowered most regions instead, <b>in 29 of 29 mice</b>. Switching on Vip cells, which silence other inhibitors, did raise activity, in 10 of 10. The copy could not tell the two apart.</p></div>
     <div class="nums">
       <div class="num"><b>77<i>%</i></b><span>of brain regions the copy expected to rise when Sst cells were switched on</span></div>
       <div class="num"><b>13<i>%</i></b><span>that did</span></div>
@@ -206,7 +206,7 @@
     </div>
   </div>
   <figure class="fig"><div class="fig-host" data-fig="memory"></div><figcaption>One column per mouse, ordered by the mouse's own slow memory. Each network is recorded through that mouse's own simulated instrument.</figcaption></figure>
-  <div class="verdict"><svg viewBox="0 0 48 24" aria-hidden="true"><use href="#v-closed"/></svg><p><i>Closed</i> by a slow drive.<span>A drive carrying about 6% of each unit's variance brings the network to within 0.03 of the spread between mice in 18 held-out animals, though the interval is still wide.</span></p></div>
+  <div class="verdict"><svg viewBox="0 0 48 24" aria-hidden="true"><use href="#v-closed"/></svg><p><i>Closed</i> by a slow drive.<span>A drive carrying about 6% of each unit's variance brings the network to the typical mouse in 18 held-out animals (median difference 0.03 of the spread between mice), though the interval is still too wide to show they match.</span></p></div>
   </div>
 </section>
 
@@ -240,7 +240,7 @@
   </header>
   <div class="panel">
     <div class="plate-body">
-      <div class="how-we"><h3>How we asked</h3><p>Whenever the same worm neuron was poked twice within two minutes, we compared the second answer with the first: 56 pairs in 37 animals.</p></div>
+      <div class="how-we"><h3>How we asked</h3><p>Whenever the same worm neuron was poked twice, 0.6 to 2 minutes apart, we compared the second answer with the first: 56 pairs in 37 animals.</p></div>
       <div class="saw"><h3>What we saw</h3><p>A real worm's second answer is <b>about half</b> the first. An artificial network answers the same every time. A network whose input tires with use reproduces the fade, but this data cannot say whether it is the neuron that tires or the light tool.</p></div>
     </div>
     <figure class="fig"><div class="fig-host" data-fig="waning"></div></figure>
@@ -282,7 +282,7 @@
   <div class="why">
     <p>Three differences closed once the network was given what it lacked: pokes to learn from, its own individuality, a slow drive. One was never there.</p>
     <p>Three are open, and each waits on data that is not yet public: stimulation in more animals, in animals that move, and with tools that can tell the cell from the light.</p>
-    <p>This is a reading of seven results in two species, not a law. A pass on our yardstick means within about a quarter of the spread between real animals, not identical. The <a href="findings.html">evidence</a> has every number and every caveat.</p>
+    <p>This is a reading of seven results in two species, not a law. On the worm tests, a pass means within about a quarter of a real worm, not identical. The <a href="findings.html">evidence</a> has every number and every caveat.</p>
   </div>
 </section>
 
@@ -294,7 +294,7 @@
     <li><a href="test/"><b>Test your own network</b><span>Put any artificial brain through the same test</span></a></li>
     <li><a href="https://github.com/Weptune/nematica/tree/main/docs"><b>Every registration</b><span>Each test's predictions as written before it ran, with every amendment</span></a></li>
     <li><a href="log.html"><b>Research log</b><span>Every experiment, in the order it was run</span></a></li>
-    <li><a href="https://github.com/Weptune/nematica"><b>Code and data</b><span>Everything on GitHub, MIT licence</span></a></li>
+    <li><a href="https://github.com/Weptune/nematica"><b>Code and results</b><span>The code, every result table and figure, MIT licence</span></a></li>
   </ul>
 </section>
 </main>
