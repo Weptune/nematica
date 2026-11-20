@@ -160,11 +160,14 @@ All 39 mice entered (no mouse was left out once silent units were dropped). Sst 
 - Vip mice (descriptive, n = 10): P 0.48 against 0.31, like a second mouse in the primary and low-light rows,
   undecided on visual-cortex or broad-waveform classes alone. The watching copy is undecided there.
 
-**What this says.** In Sst mice, a copy taught by brief light pulses gets right what the watching copy gets
-wrong: the direction of the slow drive's effect. Its pattern across brain regions agrees with the mouse
-better than a second mouse's own response does, and at least about as well as the average of the other mice.
-A copy that never saw this mouse's stimulation, only other mice's pulses, also passes. By the project's
-ruler, the question on the home page is answered: a copy taught by stimulation answers like a second mouse.
+**What this says (revised after the independent check below).** In Sst mice, a mouse's own answer to brief
+light pulses tells what watching cannot: which way a slow drive of the same cells pushes the brain (right in
+27 of 29), and its pattern across regions, better than a second mouse's own response gives it (0.60 against
+0.36). By the registered rule the pulse-taught copy answers like a second mouse, and the watching copy does
+not. But the copy is not a model that explains anything: in this dataset its prediction is exactly a
+time-weighted version of each region's own pulse response, and the raw pulse response does as well without
+any fitting (0.63). So the result is that knowledge from stimulation is enough, and that almost none is
+needed. A copy that never saw this mouse's stimulation, only other mice's pulses, also passes (0.51).
 
 **What it does not say.**
 - The copy is far from perfect. Its pattern agreement is 0.60 where the recording's own reliability would
@@ -180,3 +183,37 @@ ruler, the question on the home page is answered: a copy taught by stimulation a
 **Record keeping.** The commit that added the last calibration records says it includes the reviewer's
 reruns; it does not. The reviewer's reruns were not saved to the files, and are quoted in the calibration
 section from the review itself.
+
+## Independent check (20 Nov 2026, 19:46 to 19:57 UTC)
+
+A separate Claude agent, given the registration, the result and the code, with read access to the cached
+data and told to look for reasons the headline is wrong, fragile or overstated. Its key finding was
+re-run here with a separate short script and reproduced (raw pulse profile 0.625 against a second mouse's
+0.357; the pulses say "fall" in 26 of 29).
+1. **Reproduction: exact.** Its own script gives every primary number and p-value in the result file. It
+   adds that P is above the average of the other mice in 18 of 29 (p = 0.07): S4's "within a quarter" holds,
+   "better than the average mouse" is not shown.
+2. **Correction, accepted: the fitted copy adds nothing beyond the raw pulse response.** Scored as a copy,
+   each mouse's own class profile to the square pulses reaches 0.63 (P 0.60, a second mouse 0.36) and passes
+   the registered rule by itself (direction right in 26 of 29; S2 p = 1.6e-7). P beats it in 16 of 29
+   (p = 0.72). Cause: with no 10 Hz train in this protocol the kernel has as many parameters as time points,
+   the fit is exact, and P's prediction is a time-weighted sum of each class's own pulse response. "What
+   this says" is reworded above.
+3. **The light itself does not explain the Sst pattern, but a same-mouse advantage exists without any
+   opsin.** Wild-type mice agree with each other at 0.12, and an Sst mouse agrees with the wild-type pattern
+   at -0.09 (against 0.54 with the other Sst mice on the same classes); wild-type responses are five times
+   smaller; with the wild-type patterns partialled out P still reaches 0.59. However, in wild-type mice a
+   mouse's raw pulse profile predicts its own slow-light profile at 0.33 against a second wild-type mouse's
+   0.12 (18 of 27; p = 0.026). So part of clearing the pattern bar is what any predictor taken from the same
+   mouse and the same units gets for free. The direction result has no such counterpart in wild-type mice.
+4. **Not fragile.** The verdict is unchanged with at least 5 or at least 12 shared classes, the mean over
+   partners, rank agreement, and with each pair's two largest classes dropped (P 0.53 to 0.66 against 0.32 to
+   0.39; S2 p between 4e-7 and 9e-5).
+5. **Not carry-over.** P rebuilt only from pulses that follow another pulse gives 0.53 against 0.36 (25 of
+   29). The driven cells' measured course only sets a time weighting common to all classes.
+
+**Where this leaves The Push.** Settled: watching cannot tell which way these cells push; the mouse's own
+answer to a brief pulse can, and by the project's ruler that answer is as good as a second mouse's. Not
+shown: a copy that explains the response (a model that is taught some stimulation and predicts a kind it was
+not shown beyond replaying it), and how much of the pattern match is specific to the driven cells. Whether
+the home page calls the question closed is the owner's decision; until then it stays as it was.
