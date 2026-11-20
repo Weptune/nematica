@@ -360,7 +360,7 @@ main, .foot { position: relative; z-index: 1; }
 .chapter h2 { font: 400 clamp(2.6rem, 1rem + 5.3vw, 6.8rem)/.92 var(--serif); letter-spacing: -.024em; text-wrap: balance; text-shadow: 0 2px 40px rgba(4, 10, 28, .9); }
 .chip { display: inline-flex; align-items: center; gap: 12px; margin-top: clamp(22px, 4vh, 40px); font: 600 1rem var(--sans); border: 1px solid var(--line); border-radius: 999px; padding: 10px 22px 10px 14px; background: rgba(4, 10, 28, .55); }
 .chip svg { width: 44px; height: 22px; flex: none; }
-@media (max-width: 900px) { .chapter { max-width: none; justify-content: flex-end; min-height: 90svh; padding: 0 0 7vh; } }
+@media (max-width: 900px) { .chapter { max-width: none; justify-content: flex-end; min-height: 92svh; padding: 0 0 6vh; } .chapter .seal { display: none; } }
 .panel { position: relative; background: linear-gradient(180deg, rgba(8, 20, 52, .9), rgba(4, 11, 30, .95)); border: 1px solid var(--hair); padding: clamp(22px, 4.2vw, 68px); box-shadow: 0 50px 140px rgba(0, 0, 0, .45); }
 .panel::before { content: ""; position: absolute; left: -1px; top: -1px; width: min(42%, 420px); height: 2px; background: linear-gradient(90deg, #f0cf78, rgba(240, 207, 120, 0)); }
 .panel .fig { margin-top: clamp(30px, 4vw, 60px); }

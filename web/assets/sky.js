@@ -58,7 +58,7 @@
   // each sign shines in its planet's metal: quicksilver, iron, copper, lead, gold, silver, tin
   const METAL = { mercury: [196, 222, 255], mars: [255, 122, 92], venus: [255, 170, 118], saturn: [176, 190, 214], sun: [255, 214, 110], moon: [226, 234, 250], jupiter: [214, 226, 236] };
   const sign = (name) => ({ tint: METAL[name], f: F[name], def: (i, p, t, o) => { o[0] = p[0]; o[1] = p[1]; o[2] = p[2] + 0.025 * Math.sin(t * 1.2 + i); },
-    rot: (t) => [0.12 * Math.sin(t * 0.37), 0.5 * Math.sin(t * 0.45)], at: () => (wide() ? [0.76, 0.5, H * 0.3] : [0.5, 0.3, Math.min(W, H) * 0.22]), edge: 0, lat: 0, col: 0, dim: wide() ? 1 : 0.5, pt: 1.5, chain: 1 });
+    rot: (t) => [0.12 * Math.sin(t * 0.37), 0.5 * Math.sin(t * 0.45)], at: () => (wide() ? [0.76, 0.5, H * 0.3] : [0.5, 0.24, Math.min(W * 0.2, H * 0.13)]), edge: 0, lat: 0, col: 0, dim: wide() ? 1 : 0.5, pt: 1.5, chain: 1 });
   const SC = {
     worm: { f: F.worm, def: (i, p, t, o) => { const u = p[0] / 5.2 + 0.5, a = t * 0.3, c = Math.cos(a), s = Math.sin(a), ph = 6.283 * 1.3 * u - t * 1.0, A = 0.38 * (0.3 + 0.7 * u);
         o[0] = p[0]; o[1] = p[1] * c - p[2] * s + A * Math.sin(ph); o[2] = p[1] * s + p[2] * c + 0.3 * Math.cos(ph) * (0.3 + 0.7 * u); },
