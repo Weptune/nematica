@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /sim.html
+Disallow: /lab/
 
 Sitemap: https://nematica.weptune.dev/sitemap.xml

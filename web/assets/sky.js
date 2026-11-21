@@ -90,7 +90,7 @@
     else near[w >= 8 ? 2 : w >= 3 ? 1 : 0].push(a, b); }
   { let m = 0; for (let q = 0; q <= CORD; q++) m = Math.max(m, traffic[q]); for (let q = 0; q <= CORD; q++) traffic[q] = Math.pow(traffic[q] / m, 0.6); }
 
-  const hero = make([2.62, 0.72], (t) => { const q = ease(hero.m); return [0.14 + 0.05 * sin(t * 0.2) + 0.06 * q, (0.16 * sin(t * 0.13)) * (1 - q) + (0.3 + 0.12 * sin(t * 0.22)) * q]; });
+  const hero = make([3.0, 0.72], (t) => { const q = ease(hero.m); return [0.14 + 0.05 * sin(t * 0.2) + 0.06 * q, (0.16 * sin(t * 0.13)) * (1 - q) + (0.3 + 0.12 * sin(t * 0.22)) * q]; });
   hero.m = 0; hero.to = 0; hero.glow = 0.34;
   for (let i = 0; i < N; i++) { const d = hub(i); hero.del[i] = rank[i] / N; hero.lum[i] = 0.5 + 0.5 * d; hero.siz[i] = 1 + 1.5 * d; hero.col[i] = i % 3 === 0 || d > 0.4 ? GOLD : BONE; hero.alt[i] = CARM; }
   const tA = [0, 0, 0];
@@ -485,6 +485,7 @@
     for (const s of stages) { s.w += (seen(s, y0) - s.w) * k; if (s.w < 0.003) continue; live.push(s); if (!top || s.w > top.w) top = s;
       const F = s.F, c = (s.top + s.bot) / 2 - y0, r = F.rot(t), rx = r[0] + py * 0.1, ry = r[1] + px * 0.16;
       s.cx = (s.left + s.right) / 2; s.cy = H * 0.5 + (c - H * 0.5) * 0.92; s.S = Math.min((s.right - s.left) / (2 * F.ext[0]), (s.bot - s.top) / (2 * F.ext[1]));
+      if (F === hero) s.cx -= 0.12 * s.S * (1 - ease(hero.m));                                                              // the glass body runs further past the last neuron at the tail than at the nose
       s.cX = cos(rx); s.sX = sin(rx); s.cY = cos(ry); s.sY = sin(ry); s.unit = Math.max(0.62, Math.min(1.3, s.S / 190)); }
     if (heroStage) { const d = hero.to - hero.m; hero.m = REDUCED ? hero.to : hero.m + Math.sign(d) * Math.min(Math.abs(d), dt / 2300);
       if (!REDUCED && heroStage.w > 0.95 && now > heroHold && now - lastAuto > 9000) { lastAuto = now; setHero(heroForm === "worm" ? "lattice" : "worm", now, true); } }

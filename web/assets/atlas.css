@@ -21,6 +21,8 @@
 }
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 72px; }
+/* on screens wider than 1920 px the type grows with the screen (to 22 px at about 2900), so the page does not shrink into a corner of a large monitor */
+@media (min-width: 1921px) { html { font-size: clamp(100%, calc(100% + (100vw - 1920px) * 0.006), 137.5%); } }
 body { margin: 0; background: var(--night); color: var(--bone); font: 500 1.02rem/1.5 var(--sans); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: hidden; }
 img, svg { display: block; max-width: 100%; }
 a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: .22em; }
