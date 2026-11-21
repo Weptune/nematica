@@ -268,3 +268,20 @@ state within a repeat*, does not separate mouse cortex from standard networks. S
 data and untested, are the current leads: the mice's internal share holds up along the clip while
 context-driven networks' share fades within about 20 tokens, and on the relative-slowness measure only
 networks with internal noise come near the mice.
+
+## Update, 21 Nov 2026: two registered follow-ups
+
+**Moving worms (`docs/JOURNEY.md`, Study J).** On 27 freely moving worms that no version of the emulator
+recipe had met, the recipe as built passes 1 to 3 of 6 tests of ongoing activity, so its failure on moving
+worms repeats. Given the coupling between neuron types it had dropped and the skew of real activity, both
+named in advance, it passes 4 of 6 in all five draws: better, and one short of the pass mark. Coupling alone
+reached 5 of 6 in two of three draws (descriptive, not the registered recipe). The review before the freeze
+found that part of the simulator's noise was drawn in an order that changed between runs; fixed.
+
+**Tiring, in a second animal (`docs/OPTO_WANING.md`, Study W).** In 39 mice whose cells were driven by light
+300 times, two seconds apart, the driven cells give 0.98 as many spikes in the last third of the block as in
+the first (registered). An unregistered look by the independent check found that the very first flash draws
+about a fifth more than later ones, with the drop over by the third pulse. The surrounding cortex answers
+about a tenth less by the end (registered, both versions), but the response to the light alone in mice with
+no channel also tends to shrink, so that tenth cannot be pinned on use. **The tiring row for the worm is
+unchanged: cause open.** A mouse's cells, under a different tool, tire less and faster than the worm's.
