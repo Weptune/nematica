@@ -1039,11 +1039,22 @@
   const FIGS = { push, testSky, testBoard, rulerStrip, scorecard, restPoke, power, signalNoise, fingerprint, echoShape, calibration, mind, gallery, ceiling, law, rulerTruth, permouse, slowFamilies, emulator, gaps, restAvg, recovery };
   window.NematicaCharts = Object.assign({ verdictLegend, name }, FIGS);
 
+  // One stop for the Tab key per figure: a figure can hold hundreds of marks. The arrow keys move between them.
+  function rove(n) {
+    const marks = () => Array.from(n.querySelectorAll("svg [tabindex]")), ms = marks(); if (ms.length < 2) return;
+    ms.forEach((m, i) => m.setAttribute("tabindex", i ? -1 : 0));
+    if (n.__rove) return; n.__rove = true;
+    n.addEventListener("keydown", (e) => { const k = e.key, d = k === "ArrowRight" || k === "ArrowDown" ? 1 : k === "ArrowLeft" || k === "ArrowUp" ? -1 : 0; if (!d && k !== "Home" && k !== "End") return;
+      const all = marks(), i = all.indexOf(document.activeElement); if (i < 0) return; e.preventDefault();
+      const j = k === "Home" ? 0 : k === "End" ? all.length - 1 : (i + d + all.length) % all.length;
+      all[i].setAttribute("tabindex", -1); all[j].setAttribute("tabindex", 0); all[j].focus(); });
+  }
   // mount every <div data-chart="..."> and redraw when its width changes
   function draw(n) {
     const fn = FIGS[n.dataset.chart];
     if (!fn) return;
     try { fn(n, { compact: n.hasAttribute("data-compact") }); } catch (e) { console.error(n.dataset.chart, e); n.textContent = "This figure could not be drawn."; }
+    rove(n);
     // a figure wider than its frame scrolls sideways; on a phone nothing showed that, so its caption now says so
     requestAnimationFrame(() => { const fig = n.closest("figure"), cap = fig && fig.querySelector("figcaption"); if (!cap) return;
       const wide = n.scrollWidth > n.clientWidth + 1, had = cap.querySelector(".swipe-hint");

@@ -33,7 +33,7 @@
 
   const nets = hosts.map((host) => {
     const quiet = host.dataset.net === "quiet", W = quiet ? Wt : Wv, links = quiet ? VIS.concat(SIL) : VIS;
-    const s = el("svg", { viewBox: "0 0 400 400", class: "net", role: "group", "aria-label": quiet ? "A network with some links silent at rest. Select a neuron to poke it." : "A network whose links are all active at rest. Select a neuron to poke it." }); host.appendChild(s);
+    const s = el("svg", { viewBox: "0 0 400 400", class: "net", role: "group", "aria-label": quiet ? "A network with some links silent at rest. Select a neuron to poke it; the arrow keys move between neurons." : "A network whose links are all active at rest. Select a neuron to poke it; the arrow keys move between neurons." }); host.appendChild(s);
     el("circle", { cx: 200, cy: 200, r: 188, fill: "none", stroke: C.line }, s); el("circle", { cx: 200, cy: 200, r: 181, fill: "none", stroke: C.hair }, s);
     let tk = ""; for (let i = 0; i < 72; i++) { const a = (i / 72) * 2 * Math.PI, r2 = i % 6 ? 177 : 172; tk += `M${(200 + 181 * Math.cos(a)).toFixed(1)} ${(200 + 181 * Math.sin(a)).toFixed(1)}L${(200 + r2 * Math.cos(a)).toFixed(1)} ${(200 + r2 * Math.sin(a)).toFixed(1)}`; }
     el("path", { d: tk, stroke: C.b3, "stroke-width": .8 }, s);
@@ -45,9 +45,12 @@
     POS.forEach(([x, y], i) => { ring[i] = el("circle", { cx: x, cy: y, r: 0, fill: "none", stroke: C.copy, "stroke-width": 2, opacity: 0 }, s); });
     POS.forEach(([x, y], i) => { el("circle", { cx: x, cy: y, r: 15, fill: "url(#gl-bone)" }, s); dot[i] = el("circle", { cx: x, cy: y, r: 4.2, fill: "url(#mk-bone)" }, s); });
     const halo = el("circle", { cx: 0, cy: 0, r: 0, fill: "none", stroke: C.gilt, "stroke-width": 1.5, opacity: 0 }, s);
-    POS.forEach(([x, y], i) => { const h = el("circle", { cx: x, cy: y, r: 21, fill: "transparent", class: "n", tabindex: 0, role: "button", "aria-label": `Poke neuron ${i + 1}` }, s);
+    // one stop for the Tab key per network; the arrow keys move between its neurons
+    const hits = []; POS.forEach(([x, y], i) => { const h = el("circle", { cx: x, cy: y, r: 21, fill: "transparent", class: "n", tabindex: i ? -1 : 0, role: "button", "aria-label": `Poke neuron ${i + 1} of ${N}` }, s); hits.push(h);
       h.addEventListener("click", () => poke(i));
-      h.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); poke(i); } }); });
+      h.addEventListener("keydown", (e) => { const k = e.key; if (k === "Enter" || k === " ") { e.preventDefault(); poke(i); return; }
+        const j = k === "ArrowRight" || k === "ArrowDown" ? (i + 1) % N : k === "ArrowLeft" || k === "ArrowUp" ? (i + N - 1) % N : k === "Home" ? 0 : k === "End" ? N - 1 : -1;
+        if (j >= 0) { e.preventDefault(); h.setAttribute("tabindex", -1); hits[j].setAttribute("tabindex", 0); hits[j].focus(); } }); });
     return { quiet, W, links, s, gP, sil, disc, ring, dot, halo, scores: [], key: quiet ? "quiet" : "plain" };
   });
 

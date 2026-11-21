@@ -134,3 +134,36 @@ into a figure.
 - Inner-page figures wider than a phone scroll sideways, and their caption then opens with a swipe hint
   (added by `charts.js`, not written in the HTML).
 
+
+## Motion, speed and sizes (21 Nov 2026, second pass)
+- **One motion switch.** `assets/motion.js` is loaded in the head of the home page. Motion follows the
+  visitor's system setting ("reduce motion"; on Windows that is Settings, Accessibility, Visual effects,
+  Animation effects) until they press the round button in the header, or the play button beside the opening's
+  links, which shows only while motion is off. The choice is kept on the device. This exists because the
+  worm stood still on Windows machines with animation effects turned off, with no way to start it.
+  - Scripts read `NEMATICA_MOTION.on` and listen with `NEMATICA_MOTION.sub(fn)`. Do not read the media query
+    directly in a script again.
+  - Styles follow `html.still` (off) and `html.moving` (on). The media query is kept only as a fallback for a
+    page whose scripts did not run, scoped to `html:not(.moving)`.
+  - Pausing stops everything at once: signals in flight are dropped and the scene does not lean after the
+    pointer. A visitor can still touch a neuron to send one signal.
+- **Planet pictures are made after the page is up.** `orbImage()` in `atlas.js` places each picture's box at
+  once and queues the painting (a WebGL paint and a PNG each, about forty of them). The far cloud in `sky.js`
+  is painted the same way and faded in. Do not go back to painting them while the page loads: it held the
+  title back by seconds on a slow machine.
+- **Laptop windows.** Check 1366x650, 1280x600, 1536x730 and 1024x768 as well as the usual sizes.
+  - Below 820 px tall the opening's title also scales with the window's height, so the first screen holds the
+    whole opening.
+  - The header's links never wrap; the menu button takes over at 1060 px.
+  - Up to 1500 px wide the worm's caption has its own line under the worm.
+  - Above 1920 px wide the page's type grows with the screen.
+- **The worm is fitted as a whole body.** Its glass runs from 2.78 units before the middle to 3.02 after it
+  (the neurons only span 2.6 either side), so the box is 3.0 units each way and the body is shifted to sit
+  centred. Smaller numbers let the tail run off narrow screens.
+- **One Tab stop per figure.** Inner-page figures and the try-it networks can hold hundreds of named marks.
+  Tab reaches one of them; the arrow keys move between the rest (`rove()` in `charts.js`, and the same idea
+  in `bench.js`). A named mark gets `role="img"` from `el()`, since a name is not allowed without a role.
+- **Gold ink on paper is `#745b0b`.** The lighter gold used before was below the contrast floor on every
+  paper tone.
+- **Publishing can fail for no reason of ours.** The deploy step sometimes cannot see the artifact uploaded a
+  moment before; the workflow waits and tries once more.
