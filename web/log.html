@@ -8,7 +8,9 @@
 <meta name="author" content="Weptune">
 <link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="favicon.ico" sizes="32x32">
 <link rel="icon" href="favicon.svg?v=4" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#040a1c">
 <meta property="og:site_name" content="NEMATICA">
 <meta property="og:type" content="website">
@@ -21,7 +23,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="assets/site.css?v=21">
-<link rel="stylesheet" href="assets/theme.css?v=5">
+<link rel="stylesheet" href="assets/theme.css?v=6">
 </head>
 <body>
 
@@ -42,248 +44,249 @@
   </nav>
 </header>
 
-<section class="masthead grain" data-index="04"><div class="in"><div class="folio" aria-hidden="true" style="--step:4"><div class="folio-head"><span>NEMATICA / FIELD INDEX</span><span>04 / 04</span></div><strong class="folio-number">04</strong><div class="folio-foot"><span>RESEARCH LOG</span><i class="folio-track"></i></div></div><h1 class="title">The research log.</h1>
+<section class="masthead grain" aria-labelledby="page-title" data-index="04"><div class="in"><div class="folio" aria-hidden="true" style="--step:4"><div class="folio-head"><span>NEMATICA / FIELD INDEX</span><span>04 / 04</span></div><strong class="folio-number">04</strong><div class="folio-foot"><span>RESEARCH LOG</span><i class="folio-track"></i></div></div><h1 class="title" id="page-title">The research log.</h1>
     <p class="standfirst">Can you tell a copied brain from a real one? This log keeps the question, the prediction, the result and the miss together, one experiment at a time.</p><a class="mast-jump" href="#lab-notes">Read the research log <span aria-hidden="true">↓</span></a></div></section>
 
 <main class="page" id="lab-notes">
   <div class="sheet">
 
+    <h2 class="sr-only">The entries, in order</h2>
     <ol class="log wide" style="grid-column:text-start/note-end">
       <li class="done"><div class="log-main">
         <p class="when">Arc 1</p>
         <h3>Forecasting is not fidelity</h3>
         <p>Each worm gets its own model, pulled toward a shared one by a tunable penalty. The setting that forecasts best makes simulated worms too typical: they are closer to every real worm than real worms are to each other. A setting that forecasts almost as well (0.009 lower) sits right on the real-worm line. Good prediction and a faithful copy are different targets.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">0.009</span><span class="l">lower forecasting skill buys a model that sits on the real-worm line</span></div><a href="https://github.com/Weptune/nematica/blob/main/docs/RECORD.md#arc-1-forecasting-is-not-fidelity">Full record</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">0.009</span><span class="l">lower forecasting skill buys a model that sits on the real-worm line</span></div><a href="https://github.com/Weptune/nematica/blob/main/docs/RECORD.md#arc-1-forecasting-is-not-fidelity">Full record</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">Generalisation</p>
         <h3>Does a model learn worms, or one dataset?</h3>
         <p>Models trained on one set of recordings were scored against another lab's worms. The two sets of real worms differ from each other in ways the ruler can see, and the calibrations replicated in full (44 of 44). The models replicated in part: inside on 5 or 6 of 10 tests with every setting carried over unchanged.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">44 of 44</span><span class="l">calibration outcomes replicated on the second dataset</span></div><a href="https://github.com/Weptune/nematica/blob/main/docs/RECORD.md#generalisation-copper-trained-models-against-another-dataset">Full record</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">44 of 44</span><span class="l">calibration outcomes replicated on the second dataset</span></div><a href="https://github.com/Weptune/nematica/blob/main/docs/RECORD.md#generalisation-copper-trained-models-against-another-dataset">Full record</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">Arc 3</p>
         <h3>What the wiring buys</h3>
         <p>Restricting a model's connections to the anatomical wiring diagram, with everything else identical. Given the same number of connections, the real wiring beats random wiring, consistently. But any wiring constraint makes the model less realistic than letting the data choose the coupling. Anatomy carries real but small information about how these neurons drive each other.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">Small</span><span class="l">but real: the anatomical wiring beats random wiring of the same density</span></div><a href="https://github.com/Weptune/nematica/blob/main/docs/RECORD.md#arc-3-what-the-wiring-buys">Full record</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">Small</span><span class="l">but real: the anatomical wiring beats random wiring of the same density</span></div><a href="https://github.com/Weptune/nematica/blob/main/docs/RECORD.md#arc-3-what-the-wiring-buys">Full record</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">Arc 5</p>
         <h3>A worm that senses copper</h3>
         <p>A brain model connected to a simulated body in each real worm's own arena, with copper fed back as the body moves. The first version spent 40% of its time near copper, against 3% for real worms. By the eleventh version, with copper entering the brain only through the sensory neuron ASH, simulated worms are inside on 9 of 10 activity tests and all three behaviour tests. It still spends more time near copper than real worms do (13% against 3%).</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">9 of 10</span><span class="l">activity tests, and all three behaviour tests, for the eleventh version</span></div><a href="https://github.com/Weptune/nematica/blob/main/docs/RECORD.md#results-so-far-copper-set-oct-31-2026">Watch it in the simulations</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">9 of 10</span><span class="l">activity tests, and all three behaviour tests, for the eleventh version</span></div><a href="https://github.com/Weptune/nematica/blob/main/docs/RECORD.md#results-so-far-copper-set-oct-31-2026">Watch it in the simulations</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">Arc 4, the headline</p>
         <h3>The causal Turing test</h3>
         <p>Watch a brain, then poke it. Brains that pass the watching tests fail the poke tests, and passing our rest checks has not reliably identified good poke responses. Each worm seemed to have its own causal fingerprint (downgraded on 8 Nov: possibly partly off-target stimulation). One hybrid brain now passes the poke test in all three held-out groups; none yet matches the echo's complexity while staying realistic at rest.</p>
-      </div><aside class="log-aside"><div class="measure copy"><span class="v">−0.06</span><span class="l">rest-score/poke-distance correlation across 88 model-group scores; variants repeat across groups</span></div><a href="findings.html">Read the evidence</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure copy"><span class="v">−0.06</span><span class="l">rest-score/poke-distance correlation across 88 model-group scores; variants repeat across groups</span></div><a href="findings.html">Read the evidence</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">Signatures of a mind</p>
         <h3>Measures from consciousness science</h3>
         <p>At rest, simple models match real worms on complexity, integration and repertoire of brain states, on two datasets. Under perturbation, the echo's complexity separates every model from real worms: real brains keep a third of their neuron classes out of each echo, and models let almost all of them flicker in.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">66%</span><span class="l">of a real worm’s neuron classes join an echo; models let in over 90%</span></div><a href="findings.html#complexity">Read the evidence</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">66%</span><span class="l">of a real worm’s neuron classes join an echo; models let in over 90%</span></div><a href="findings.html#complexity">Read the evidence</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">Arc 6</p>
         <h3>From one brain to a swarm</h3>
         <p>Many simulated worms in one arena, touching and avoiding each other. Does a crowd of identical average worms behave differently from a crowd of distinct individuals? The earlier exported run crossed its intended copper escape limit. A live behavioral sandbox now contains the worms and exposes the contact rule, but its crowd statistics are not yet evidence about real swarms; the mixed-versus-clone difference is not established across seeds.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">32</span><span class="l">model-informed worms in a live crowd prototype</span></div><a href="https://github.com/Weptune/nematica/blob/main/docs/RECORD.md#what-is-built">Run the live prototype</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">32</span><span class="l">model-informed worms in a live crowd prototype</span></div><a href="https://github.com/Weptune/nematica/blob/main/docs/RECORD.md#what-is-built">Run the live prototype</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">1 Nov 2026 · Data</p>
         <h3>Three recordings were broken, and are repaired</h3>
         <p>Rebuilding the stimulated-worm data from the original archive with a script anyone can run showed that 3 of the 113 recordings had been cut short when the archive was unpacked, and had been scored as about a minute of scrambled data each. The other 110 rebuild exactly. The headline brains were rerun on the repaired data: 16 of 132 verdicts changed, almost all on activity tests near the boundary, and the poke-pattern result held.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">110 of 113</span><span class="l">recordings rebuilt exactly from the original archive</span></div><a href="https://github.com/Weptune/nematica/blob/main/docs/RECORD.md">Full record</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">110 of 113</span><span class="l">recordings rebuilt exactly from the original archive</span></div><a href="https://github.com/Weptune/nematica/blob/main/docs/RECORD.md">Full record</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">1 Nov 2026 · Gallery</p>
         <h3>Every kind of network that skipped pokes fails</h3>
         <p>Networks fitted to recordings, randomly wired, built from the wiring diagram, trained on a worm task with or without the real wiring, and a published model with its own stimulation: on six held-out groups, all answer a poke four to a hundred times worse than real worms answer each other. Only networks that learned from pokes reach the real-worm level, and on a stricter test fixed in advance the best of them is shown to agree in all six groups.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">6 of 6</span><span class="l">groups where the brain that learned from pokes is shown to agree; the brain that watched, 0</span></div><a href="findings.html#gallery">Read the evidence</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">6 of 6</span><span class="l">groups where the brain that learned from pokes is shown to agree; the brain that watched, 0</span></div><a href="findings.html#gallery">Read the evidence</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">1 Nov 2026 · Why</p>
         <h3>Watching hits a ceiling that more data does not lift</h3>
         <p>In synthetic worms whose cause and effect is known, watching learns it until a few slow, shared, unrecorded signals cap it within hours; poking keeps improving and overtakes it at about the atlas's size. On real worms, a watching copy is no better after 58 worms than after 6, while pokes from 6 worms already beat it four to seven times over.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">0.20</span><span class="l">ceiling on what watching recovers, at 2.5 hours and at 70</span></div><a href="findings.html#why">Read the evidence</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">0.20</span><span class="l">ceiling on what watching recovers, at 2.5 hours and at 70</span></div><a href="findings.html#why">Read the evidence</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">1 Nov 2026 · Resolution</p>
         <h3>How sharp the test is</h3>
         <p>Errors of known size put into real worms: no false alarms, a copy that credits the wrong neuron for half its pokes or gets response size wrong by half is always caught, and errors of about a quarter often pass. A pass means within about 25% of a real worm on these tests.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">25%</span><span class="l">the size of error the test often misses</span></div><a href="method.html#resolution">Read the method</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">25%</span><span class="l">the size of error the test often misses</span></div><a href="method.html#resolution">Read the method</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">1 Nov 2026 · Individuals</p>
         <h3>Can one particular worm be copied?</h3>
         <p>A worm's echoes agree with themselves twice as well as with other worms, but one recording barely beats the average worm at predicting them: the atlas rarely pokes the same neuron twice in one animal. Worms that cannot release neuropeptides still look fully real (63 of 66 verdicts).</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">+0.007</span><span class="l">what a worm's own first half adds over the average worm</span></div><a href="findings.html#fingerprints">Read the evidence</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">+0.007</span><span class="l">what a worm's own first half adds over the average worm</span></div><a href="findings.html#fingerprints">Read the evidence</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">2 Nov 2026 · Why</p>
         <h3>No sign that the hidden signals are neuropeptides</h3>
         <p>We predicted watching would do better in worms with neuropeptide release much reduced, the obvious suspect for the shared signals that defeat it. The prediction failed: watching stays near zero, and the shared slow structure is as strong as in normal worms, about seven patterns with a timescale near 90 seconds. A synthetic worm given slow drives of that shape still shows the ceiling; if they are weak, poking needs more than 70 hours to overtake watching.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">0.009</span><span class="l">echo agreement of a watching copy with neuropeptide release reduced (normal worms: 0.017)</span></div><a href="findings.html#context">Read the evidence</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">0.009</span><span class="l">echo agreement of a watching copy with neuropeptide release reduced (normal worms: 0.017)</span></div><a href="findings.html#context">Read the evidence</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">2 Nov 2026 · Design</p>
         <h3>How many pokes a lab needs</h3>
         <p>Exploratory. One worm's echo agrees with another's at only 0.07, and averaging helps slowly. Pinning one neuron's echo down takes at least about 160 worms poking it, against a median of 22 in the atlas. The feeding organ's own neurons give echoes three times as reproducible as the rest.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">160+</span><span class="l">worms per neuron for a reliable echo</span></div><a href="findings.html#context">Read the evidence</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">160+</span><span class="l">worms per neuron for a reliable echo</span></div><a href="findings.html#context">Read the evidence</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">2 Nov 2026 · Context</p>
         <h3>Copies of moving worms fail the poke test, and copper is not like poking its sensor</h3>
         <p>Copies fitted by watching freely moving worms predict their activity well and answer pokes at about chance. In the other direction, the brain-wide response of moving worms to copper does not resemble the echo of poking the copper sensor in still worms. One stimulus, so a warning rather than a law.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">36th of 74</span><span class="l">where the copper sensor's echo ranks in matching the copper response</span></div><a href="findings.html#context">Read the evidence</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">36th of 74</span><span class="l">where the copper sensor's echo ranks in matching the copper response</span></div><a href="findings.html#context">Read the evidence</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">2 Nov 2026 · Artificial lab</p>
         <h3>The same test on brains whose truth is known</h3>
         <p>Nonlinear artificial brains, tuned so that their single-poke echoes are as noisy as real worms', with cause and effect known by construction. Copies that learned by watching, including neural networks with memory, stop short; averaging pokes passes all of them by 40 hours of recording in every setting. Run on a species of artificial individuals, the unchanged ruler rejects badly wrong copies, certifies copies within about 20% of an individual, and repeats the worm verdicts: the watching copy fails, the poke-trained copy mostly passes. When individuals differ a lot or hidden drives dominate, atlas-sized data cannot certify anything.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">0.62</span><span class="l">best any watching copy reached with slow hidden drives; poking 0.82</span></div><a href="findings.html#lab">Read the evidence</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">0.62</span><span class="l">best any watching copy reached with slow hidden drives; poking 0.82</span></div><a href="findings.html#lab">Read the evidence</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">2 Nov 2026 · Data</p>
         <h3>Where the data runs out</h3>
         <p>In artificial brains, taking the hidden drives out of a watching copy works only when every neuron is recorded: from 0.61 to 0.77 with everything recorded, no change with atlas-like recording, and on real worms no change either. What is left needs new experiments: complete, fully identified recordings in worms that are then poked; repeated pokes of the same neurons in one worm; many more pokes per neuron; pokes in freely moving worms; and reporters for whatever carries the slow shared signals.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">72</span><span class="l">neurons identified in a median atlas worm, of 302</span></div><a href="findings.html#wall">Read the evidence</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">72</span><span class="l">neurons identified in a median atlas worm, of 302</span></div><a href="findings.html#wall">Read the evidence</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">2 Nov 2026 · Individuals</p>
         <h3>Recording more of one worm helps watching, a little</h3>
         <p>The atlas names about 72 neurons per worm but tracks about 123. Within single worms, a watching copy that uses every tracked neuron beats one limited to named neurons in 26 of 44 worms, as the explanation predicts, but by very little, and other worms' pokes still predict each worm far better. With about 3 usable unpoked minutes per worm, existing data cannot settle it.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">26 of 44</span><span class="l">worms where every tracked neuron beat named neurons only</span></div><a href="findings.html#wall">Read the evidence</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">26 of 44</span><span class="l">worms where every tracked neuron beat named neurons only</span></div><a href="findings.html#wall">Read the evidence</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">3 Nov 2026 · Artificial lab, correction</p>
         <h3>Much of the watching ceiling was our method; worms are still different</h3>
         <p>Every watching copy we had built filled the neurons a recording missed with zeros. Built to learn each pair of neurons only from recordings where both were seen, with slow drift removed, a watching copy of artificial brains recorded like the atlas climbs from 0.34 to 0.79, close to drift-corrected poking at 0.85. Scored exactly as worms are, it reaches 62% to 82% of how well individuals agree, beside 75% to 89% for the poke-trained copy. On real worms the same copies reach 4% to 22%, the poke-trained copy 76% to 97%. So worms are far harder to copy by watching than these artificial brains, and the artificial brains no longer explain why. An independent review of a first draft caught an unfair comparison with poking, which is corrected here. Earlier entries that call the ceiling a law are kept as written.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">62&ndash;82%</span><span class="l">watching, artificial brains scored like worms; real worms 4&ndash;22%</span></div><a href="findings.html#lab">Read the evidence</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">62&ndash;82%</span><span class="l">watching, artificial brains scored like worms; real worms 4&ndash;22%</span></div><a href="findings.html#lab">Read the evidence</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">3 Nov 2026 · Mouse hippocampus</p>
         <h3>The first test beyond the worm: not sharp enough yet</h3>
         <p>In mouse CA1, in the 16 sessions that passed every pre-registered check, how cells moved with a stimulated interneuron while only watched ordered their responses to stimulation weakly (about 0.15), where distance ordered nothing. A sham control, at times when nothing was poked, gives a smaller but similar pattern, and the difference is not significant, so this does not yet show that watching predicts pokes here. An independent review caught a duplicated-stimulation bug that had inflated the ceiling; it is fixed, and every change made after pre-registration is listed.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">16 of 127</span><span class="l">single-cell sessions passing every check</span></div><a href="findings.html#mouse">Read the evidence</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">16 of 127</span><span class="l">single-cell sessions passing every check</span></div><a href="findings.html#mouse">Read the evidence</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">3 Nov 2026 · Artificial lab, exploratory</p>
         <h3>Looking for why worms resist watching</h3>
         <p>We built candidate explanations into artificial brains and scored each exactly as worms are. A slow calcium indicator changed nothing. Worm-like smooth, low-dimensional resting activity left them easy to copy by watching. Only connections that are silent at rest but carry most of a poke's response brought watching down to near the worms' level (19% to 28% of individuals' agreement, against 4% to 22% in worms). This is a lead about what is possible, not evidence about worms; the review that checked it asked for that wording and for more controls. The first, adding the same silent links to brains whose resting activity looks like a worm's, gives the same pattern (watching 19% to 28%, poke-trained 93% to 96%).</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">19&ndash;28%</span><span class="l">watching, artificial brains with silent links; worms 4&ndash;22%</span></div><a href="findings.html#lab">Read the evidence</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">19&ndash;28%</span><span class="l">watching, artificial brains with silent links; worms 4&ndash;22%</span></div><a href="findings.html#lab">Read the evidence</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">3 Nov 2026 · Checks</p>
         <h3>The headline survives two hard checks</h3>
         <p>A copy that answers every poke with the average response to any poke, knowing that something was poked but not what, fails the test as badly as watching copies do, so the test measures which neuron causes what, not a stereotyped response to stimulation. A standalone recomputation with independent code gives the same order: watching does a fifth to a quarter as well as other worms' pokes. We also simulated the experiment that could test our lead about silent pathways: it needs many neurons each stimulated at several strengths, with 20 or more trials per strength.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">0.001&ndash;0.012</span><span class="l">a copy that knows only that something was poked; poke-trained 0.08&ndash;0.09</span></div><a href="findings.html#checks">Read the evidence</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">0.001&ndash;0.012</span><span class="l">a copy that knows only that something was poked; poke-trained 0.08&ndash;0.09</span></div><a href="findings.html#checks">Read the evidence</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">4 Nov 2026 · Human brains, interim</p>
         <h3>In people, watching predicts stimulation responses worse than distance does</h3>
         <p>An early look at the pre-registered human test, on 100 of 117 recordings from 63 epilepsy patients with electrodes on the brain's surface. A copy built from the activity between stimulation pulses predicts each patient's own responses less well than simple distance from the stimulated site, in 62 of 63 patients, and less well than other patients' measured responses, in 50 of 63. Both predictions written down beforehand hold. The final result on every recording, and its independent review, follow when the download finishes.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">0.28</span><span class="l">watching copy; distance 0.47; other patients 0.37; ceiling 0.70</span></div><a href="findings.html#trust">How sure we are</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">0.28</span><span class="l">watching copy; distance 0.47; other patients 0.37; ceiling 0.70</span></div><a href="findings.html#trust">How sure we are</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">4 Nov 2026 · Human brains, final</p>
         <h3>The human result holds as computed, but the measurement is partly artefact</h3>
         <p>On all 74 patients (the last recording downloaded a day later and changed nothing material) the numbers matched the interim look: the watching copy predicted each patient's responses worse than distance (in 73 of 74 patients) and worse than other patients' measured responses (56 of 74). The independent review then found that the measured "response" partly contains the electrical artefact of the stimulation pulse itself, spread by our filtering: it is present even before the pulse and falls off with distance. So distance looks strong partly because it predicts the artefact, and we do not claim anything about human cortex until the recordings are re-extracted with the pulse blanked out. The watching copy was weak but not broken: it reproduced how responses fall off with distance and added a little beyond it.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">56 of 74</span><span class="l">patients where other people's pokes beat the watching copy</span></div><a href="findings.html#trust">How sure we are</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">56 of 74</span><span class="l">patients where other people's pokes beat the watching copy</span></div><a href="findings.html#trust">How sure we are</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">5 Nov 2026 · Silent pathways, tested in worms</p>
         <h3>Pokes do push neurons past their resting range; the decisive comparison could not be made</h3>
         <p>Our best explanation for why worms resist watching is pathways that stay silent until a neuron is pushed beyond the range it visits at rest. We pre-registered a test in the worm data. Its first part holds: in 64% of stimulations the target goes beyond its resting range (6% would by chance). Its second part, whether a unit of drive does more beyond that range, failed its check on artificial brains, so it says nothing either way. An exploratory follow-up found that in worms, stimulations after which the stimulated neuron shows no measurable change at all are still followed by responses in other neurons. The independent review showed that most of this response is not specific to the stimulated neuron, so it does not yet reveal a hidden pathway; light reaching neighbouring cells or misidentified neurons could explain it.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">64%</span><span class="l">of worm pokes push the target beyond its resting range</span></div><a href="findings.html#trust">How sure we are</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">64%</span><span class="l">of worm pokes push the target beyond its resting range</span></div><a href="findings.html#trust">How sure we are</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">5 Nov 2026 · Trained networks</p>
         <h3>Training a network on a task does not make it hide its cause and effect</h3>
         <p>Our artificial brains so far were random, untrained networks, and those can be copied by watching. The networks people usually mean by "artificial neural networks" are trained. We trained the same kind of network on two classic tasks (holding three bits in memory, and integrating noisy evidence depending on context) and put each one, and the identical network before training, through the exact worm pipeline. All four can be copied by watching: the trained ones reach 75% to 91% of what another individual of the same network achieves, against 4% to 22% for worms. So the difference between worms and these artificial networks is not simply that worms are trained by evolution and development. The next test builds the worm experiment's own imperfections (misidentified neurons, pooled classes, light reaching neighbours, short rest) into the artificial networks to see whether any of them recreates the worm gap.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">75 to 91%</span><span class="l">trained networks copied by watching (worms: 4 to 22%)</span></div><a href="findings.html#trust">How sure we are</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">75 to 91%</span><span class="l">trained networks copied by watching (worms: 4 to 22%)</span></div><a href="findings.html#trust">How sure we are</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">5 Nov 2026 · Biology or experiment?</p>
         <h3>One of the worm experiment's flaws could explain the gap; testing whether it is big enough</h3>
         <p>Before calling "worms hide their cause and effect from an observer" a difference between biological and artificial networks, we had to rule out the worm experiment itself. We built its flaws into artificial networks: mislabelled neurons, left and right neurons pooled together, and stimulation spreading to neighbouring cells. Strong spread did recreate the worm pattern, so we measured it in the real worms, using the 3D positions of every neuron in the original archive. It is there: a stimulated neuron's nearest neighbours carry about 0.3 of its response, only when it responds, for reasons we cannot yet identify. We first concluded that this measured spread was far too weak to matter. An independent review showed that our comparison was not like for like: measured over the same 15 seconds the test uses, the worms' spread sits between two strengths we had not run, one that leaves artificial networks easy to watch and one that makes them worm-like. Those runs are under way. Until they finish, stimulation spread is the leading experimental explanation of the worm gap, and the claim that worms differ from artificial networks in their biology waits on it.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">0.3</span><span class="l">of a stimulated neuron's response carried by its nearest neighbours in worms; whether that is enough is being tested</span></div><a href="findings.html#trust">How sure we are</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">0.3</span><span class="l">of a stimulated neuron's response carried by its nearest neighbours in worms; whether that is enough is being tested</span></div><a href="findings.html#trust">How sure we are</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">5 Nov 2026 · How much does the spread explain?</p>
         <h3>Stimulation spread explains a large part of the worm gap, not all of it</h3>
         <p>We ran the artificial networks with stimulation spreading to neighbours at the strengths that bracket what the worms show. Watching copies, which recover 63% to 72% without spread, fall to 27% to 49% with it: about half the gap to the worms' 4% to 22%. If the worms' spread is the light really activating neighbouring cells, a large part of why worms resist watching is the experiment; if it is a quirk of how the neurons were tracked, little of it is. Telling these apart is the next test: really activated neighbours should pass the signal on to their own partners.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">27&ndash;49%</span><span class="l">watching in artificial networks with the worms' spread (no spread: 63&ndash;72%; worms: 4&ndash;22%)</span></div><a href="findings.html#trust">How sure we are</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">27&ndash;49%</span><span class="l">watching in artificial networks with the worms' spread (no spread: 63&ndash;72%; worms: 4&ndash;22%)</span></div><a href="findings.html#trust">How sure we are</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">6 Nov 2026 · Ingredients</p>
         <h3>No single biological ingredient makes a network look like a worm</h3>
         <p>Five ingredients in every combination (slow hidden signals, silent links, stimulation spread, stimulation that tires, modules), each measured on six properties beside the worms. Hidden signals do most to defeat watching; silent links make echoes as reproducible as worms'. The closest networks need several at once, at strengths that show what is sufficient, not what the worm has.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">0 of 32</span><span class="l">on-off combinations match the worm on more than three of six properties</span></div><a href="findings.html#ladder">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">0 of 32</span><span class="l">on-off combinations match the worm on more than three of six properties</span></div><a href="findings.html#ladder">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">6 Nov 2026 · Transformers</p>
         <h3>Being hard to copy by watching is not a brain-only property</h3>
         <p>Trained transformers hide their cause and effect in the units that compute: correlations recover 0.05 to 0.47 of the true effects there, and training lowers it. Watching separates worms from simple artificial networks, not biology from artificial networks.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">0.05&ndash;0.47</span><span class="l">of true cause and effect recovered by watching a transformer's computing units</span></div><a href="findings.html#trust">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">0.05&ndash;0.47</span><span class="l">of true cause and effect recovered by watching a transformer's computing units</span></div><a href="findings.html#trust">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">7 Nov 2026 · A control without pokes</p>
         <h3>The worm's narrow, lasting echo is withdrawn</h3>
         <p>Moving every poke to a moment with nothing stimulated gave nearly the same echo measures in worms and networks: they were reading the slow pace of ongoing activity. A follow-up claiming a small difference survived was itself confounded, as an independent review showed, and is withdrawn too. The worm's kind of state dependence passed the same control.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">0.70</span><span class="l">echo breadth with no poke at all (0.65 with real pokes)</span></div><a href="findings.html#complexity">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">0.70</span><span class="l">echo breadth with no poke at all (0.65 with real pokes)</span></div><a href="findings.html#complexity">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">8 Nov 2026 · Spiking networks and the reverse question</p>
         <h3>Plain networks keep their rules; brains drift</h3>
         <p>Spiking networks behave like the rate networks: copyable by watching, no tiring. Asked what artificial networks do that brains do not, the first answer is that networks without slow processes keep the same rules over a recording, while worms and human cortex drift. Slow processes make networks drift too, but less.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">+0.059</span><span class="l">drift in worms (networks without slow processes: 0)</span></div><a href="findings.html#drift">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">+0.059</span><span class="l">drift in worms (networks without slow processes: 0)</span></div><a href="findings.html#drift">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">8 Nov 2026 · Tiring</p>
         <h3>A repeat poke gets about half, and recovers within minutes</h3>
         <p>0.6 to 2 minutes after its previous poke, a worm neuron answers at about half its previous response, recovering within 5 to 10 minutes. Two pre-registered ways of telling the tool from the neuron failed their checks on synthetic worms, so the split is not measurable in this atlas; activity without light also lowers the next response a little. An independent review corrected our first figure (40%) by removing repeats 30 seconds apart.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">About half</span><span class="l">of the previous response, 0.6 to 2 minutes after a poke</span></div><a href="findings.html#tiring">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">About half</span><span class="l">of the previous response, 0.6 to 2 minutes after a poke</span></div><a href="findings.html#tiring">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">8 Nov 2026 · Hidden state</p>
         <h3>Sixteen minutes of rest is too short to measure slow hidden state</h3>
         <p>A cheap measure of how much slow hidden state drives a brain failed its calibration on networks where we built the hidden state in, so it was never run on brain data, as written down in advance. Measuring hidden state from rest needs much longer recordings.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">Stopped</span><span class="l">at the calibration stage, as pre-registered</span></div><a href="findings.html#reading">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">Stopped</span><span class="l">at the calibration stage, as pre-registered</span></div><a href="findings.html#reading">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">8 Nov 2026 · Write-up</p>
         <h3>A preprint draft and a reading of the whole</h3>
         <p>The benchmark results are written up as a preprint draft. Across 30 models, realism at rest and realism under pokes are unrelated (rank correlation -0.12). Our reading of everything so far: what separates a brain from an ordinary artificial network is state outside its units' activity.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">-0.12</span><span class="l">rank correlation between rest realism and poke realism over 30 models</span></div><a href="findings.html#reading">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">-0.12</span><span class="l">rank correlation between rest realism and poke realism over 30 models</span></div><a href="findings.html#reading">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">8 Nov 2026 · One model for both halves</p>
         <h3>A recipe passes rest and pokes, but only on the worms it was built on</h3>
         <p>Four ingredients together pass both halves of the test on the atlas worms in every noise draw: slow brain-wide states, each worm its own dynamics, causal links learned from pokes, and neuron-level observation. Refitted on unseen mutant worms it passes three of five draws, one short of the bar set in advance, and on another lab's freely moving worms it passes one of six activity tests.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">1 of 6</span><span class="l">activity tests passed on freely moving worms, in every draw</span></div><a href="findings.html#emulator">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">1 of 6</span><span class="l">activity tests passed on freely moving worms, in every draw</span></div><a href="findings.html#emulator">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">8 Nov 2026 · An open test</p>
         <h3>Anyone can put a network through the same test</h3>
         <p>The test became a website: upload recordings or a model, and it measures eight signatures of activity at rest and under single-unit pushes against 113 real worms. Groups of real worms it never saw land at 0.29 to 0.60 from the reference; the worm emulator at 0.84 to 1.04; a trained transformer at 3.25.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">0.29 to 0.60</span><span class="l">distance of held-out real worm groups from the reference</span></div><a href="test/">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">0.29 to 0.60</span><span class="l">distance of held-out real worm groups from the reference</span></div><a href="test/">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">13 to 15 Nov 2026 · Mouse cortex</p>
         <h3>The instrument matters more than the mouse</h3>
         <p>Recorded through five different mice's instruments, one artificial network moved by 1.8 times the spread between mice. Compared mouse by mouse through each mouse's own simulated instrument, a random network has less slow memory than the mouse in 33 of 35; with strong slow drives it has more than all 31 measured.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">33 of 35</span><span class="l">mice with more slow memory than a random network recorded like them</span></div><a href="findings.html#instrument">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">33 of 35</span><span class="l">mice with more slow memory than a random network recorded like them</span></div><a href="findings.html#instrument">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">17 Nov 2026 · Internal state in cortex</p>
         <h3>Cortex does not carry more, slower internal state than artificial networks</h3>
         <p>Pre-registered, with three reviews before the data: 49 mice watching the same film against recurrent, gated, liquid, spiking, transformer and state-space networks, each recorded the way the mouse was. None of the four claims held. The networks land on both sides of the mice.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">0 of 4</span><span class="l">claims of more, slower internal state that held</span></div><a href="findings.html#internal">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">0 of 4</span><span class="l">claims of more, slower internal state that held</span></div><a href="findings.html#internal">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">17 Nov 2026 · Two studies stopped</p>
         <h3>Stopped before they could mislead</h3>
         <p>A study of whether cortex generates its own variability failed its calibration on networks where the answer was known, so nothing was ever measured in the mice. A study of a cortical hierarchy was stopped after its review found its claims would likely restate published results and that its headline test could not fail.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">Stopped</span><span class="l">at calibration and at review, as the rules said</span></div><a href="findings.html#reading">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">Stopped</span><span class="l">at calibration and at review, as the rules said</span></div><a href="findings.html#reading">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">19 Nov 2026 · Mouse cortex, switching cells on</p>
         <h3>The first stimulation test misses its bar, and points somewhere else</h3>
         <p>Calibrated through three real mice's instruments, reviewed independently and frozen before any response was read. Calibration caught two flaws in our own method first. The primary claim, a large gap between a copy fitted to stimulation and one fitted at rest, was not supported in the 9 mice that entered. Looking afterwards: the copy fitted at rest predicted that switching on inhibitory cells would raise most regions, and in all 8 Pvalb and Sst mice most fell.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">Not supported</span><span class="l">the registered primary claim; the sign pattern was found afterwards</span></div><a href="findings.html#push">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">Not supported</span><span class="l">the registered primary claim; the sign pattern was found afterwards</span></div><a href="findings.html#push">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">19 Nov 2026 · Held-out mice</p>
         <h3>A retest on unused mice cannot decide</h3>
         <p>14 of the 15 mice the first test did not use had no light-responsive cells, so the retest was undecided as written. Counting responsive cells before registering would have shown this; it is noted as a planning miss.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">Undecided</span><span class="l">only 1 of 15 mice had enough responsive cells</span></div><a href="findings.html#push">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">Undecided</span><span class="l">only 1 of 15 mice had enough responsive cells</span></div><a href="findings.html#push">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">19 Nov 2026 · A second dataset</p>
         <h3>Watching cannot tell which way a cell pushes the brain</h3>
         <p>Five claims written down and frozen before any response, then run once on 39 new mice. All held. Switching on Sst cells lowered most regions in 29 of 29 mice while the copy fitted at rest predicted a rise; switching on Vip cells raised most regions in 10 of 10. An independent check found no error, and showed that the copy predicts a rise for almost any cells: resting co-activity carries no information about the sign of an effect.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">29 of 29</span><span class="l">mice where switching on Sst cells lowered most regions</span></div><a href="findings.html#push">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">29 of 29</span><span class="l">mice where switching on Sst cells lowered most regions</span></div><a href="findings.html#push">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">20 Nov 2026 · Reading</p>
         <h3>What separates them is what they were shown</h3>
         <p>This replaces the reading of 8 Nov. Across seven questions in worms and mice, three differences went away once a network was given what it lacked (pokes to learn from, its own individuality, a slow drive), one was never there, and three could not be settled with the data in hand. So far, what separates these networks from real brains is what they were shown and built to carry, not that they are artificial.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">7</span><span class="l">questions, in worms and mice</span></div><a href="index.html#answer">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">7</span><span class="l">questions, in worms and mice</span></div><a href="index.html#answer">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">20 Nov 2026 · A registered follow-up</p>
         <h3>A brief pulse is enough to know which way a cell pushes</h3>
         <p>The rule was frozen before any agreement between two mice was computed, after a review that caught a flaw in the earlier pipeline (units silent at rest could wreck a region&rsquo;s prediction). In 29 Sst mice a copy taught by brief light pulses gets the direction of a slow drive right in 27, and matches its pattern better than a second mouse does (0.60 against 0.36). The independent check reproduced every number and corrected the reading: the copy is the pulse response replayed, and the raw pulse response does as well. A little stimulation is enough; no model yet explains it.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">27 of 29</span><span class="l">mice where a copy given brief pulses gets the direction right</span></div><a href="findings.html#push">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">27 of 29</span><span class="l">mice where a copy given brief pulses gets the direction right</span></div><a href="findings.html#push">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">20 Nov 2026 · A registered follow-up</p>
         <h3>Given what it lacked, the recipe comes one test short on moving worms</h3>
         <p>The recipe that passes on held-still worms had failed on moving ones, and an exploratory look had named what it lacked there: coupling between neuron classes, and the lopsided shape of real activity. We gave it both, froze the rule, and ran it once on 27 moving worms that no version of it had met. As built it passes 1 to 3 of 6 tests of ongoing activity, so the failure repeats. With both changes it passes 4 of 6 in all five draws, one short of the pass mark. Coupling alone reached 5 in two of three draws, but that was not the registered recipe. The review before the freeze found that one source of simulated noise was drawn in an order that changed between runs; that is fixed, and a seed now fixes a result.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">4 of 6</span><span class="l">activity tests passed on moving worms, once given coupling and skew</span></div><a href="findings.html#emulator">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">4 of 6</span><span class="l">activity tests passed on moving worms, once given coupling and skew</span></div><a href="findings.html#emulator">Details</a></aside></li>
       <li class="done"><div class="log-main">
         <p class="when">21 Nov 2026 · A registered follow-up</p>
         <h3>A mouse's driven cells lose a fifth of their answer in three flashes, then hold</h3>
         <p>The worm's second answer is half its first, and its data cannot say whether the neuron or the light tool tires. We asked a second animal. In 39 mice, cells driven by light 300 times give 98% as many spikes at the end of ten minutes as at the start; that was registered, reviewed and run once. The review before the freeze caught a way for a drifting resting rate to pass for a fade, and the measure was rebuilt to resist it. The independent check after the result reproduced every number, corrected two overstatements in our reading, and found what the registered measure could not see: the very first flash draws about a fifth more than later ones. The surrounding cortex answers a tenth less by the end, but so, roughly, does the response to light alone in mice with no channel. The worm's question stays open.</p>
-      </div><aside class="log-aside"><div class="measure"><span class="v">0.98</span><span class="l">of a mouse cell's answer left after ten minutes of light</span></div><a href="findings.html#tiring">Details</a></aside></li>
+      </div><aside class="log-aside" role="note"><div class="measure"><span class="v">0.98</span><span class="l">of a mouse cell's answer left after ten minutes of light</span></div><a href="findings.html#tiring">Details</a></aside></li>
     </ol>
   </div>
 </main>

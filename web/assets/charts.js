@@ -69,6 +69,7 @@
   function el(tag, attrs, parent) {
     const n = document.createElementNS(NS, tag);
     for (const k in attrs || {}) if (attrs[k] !== undefined && attrs[k] !== null) n.setAttribute(k, attrs[k]);
+    if (attrs && attrs["aria-label"] && !attrs.role) n.setAttribute("role", "img");                 // a name is only allowed on a mark that has a role
     if (parent) parent.appendChild(n);
     return n;
   }
@@ -1047,7 +1048,9 @@
     requestAnimationFrame(() => { const fig = n.closest("figure"), cap = fig && fig.querySelector("figcaption"); if (!cap) return;
       const wide = n.scrollWidth > n.clientWidth + 1, had = cap.querySelector(".swipe-hint");
       if (wide && !had) { const h = document.createElement("span"); h.className = "swipe-hint"; h.textContent = "Swipe sideways to see the whole figure. "; cap.insertBefore(h, cap.firstChild); }
-      else if (!wide && had) had.remove(); });
+      else if (!wide && had) had.remove();
+      if (wide) { n.tabIndex = 0; n.setAttribute("role", "group"); n.setAttribute("aria-label", "Figure, scrolls sideways"); }   // so the keyboard can scroll it too
+      else if (n.getAttribute("aria-label") === "Figure, scrolls sideways") { n.removeAttribute("tabindex"); n.removeAttribute("role"); n.removeAttribute("aria-label"); } });
   }
   function mount() {
     const nodes = [...document.querySelectorAll("[data-chart]")];

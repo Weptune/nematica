@@ -8,7 +8,9 @@
 <meta name="author" content="Weptune">
 <link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="favicon.ico" sizes="32x32">
 <link rel="icon" href="favicon.svg?v=4" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#040a1c">
 <meta property="og:site_name" content="NEMATICA">
 <meta property="og:type" content="website">
@@ -21,7 +23,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="assets/site.css?v=21">
-<link rel="stylesheet" href="assets/theme.css?v=5">
+<link rel="stylesheet" href="assets/theme.css?v=6">
 </head>
 <body>
 
@@ -42,7 +44,7 @@
   </nav>
 </header>
 
-<section class="masthead grain" data-index="01"><div class="in"><div class="folio" aria-hidden="true" style="--step:1"><div class="folio-head"><span>NEMATICA / FIELD INDEX</span><span>01 / 04</span></div><strong class="folio-number">01</strong><div class="folio-foot"><span>FINDINGS</span><i class="folio-track"></i></div></div><h1 class="title">Looking like a brain and working like one are different things.</h1>
+<section class="masthead grain" aria-labelledby="page-title" data-index="01"><div class="in"><div class="folio" aria-hidden="true" style="--step:1"><div class="folio-head"><span>NEMATICA / FIELD INDEX</span><span>01 / 04</span></div><strong class="folio-number">01</strong><div class="folio-foot"><span>FINDINGS</span><i class="folio-track"></i></div></div><h1 class="title" id="page-title">Looking like a brain and working like one are different things.</h1>
     <p class="standfirst">Every finding here answers part of one question: what makes biological neural networks measurably different from artificial ones? Our tool is a test of copies, run the same way on both: we fitted artificial brains to living worms and tested them on worms they had never seen, by watching and by switching single neurons on with light, then repeated the test on artificial networks whose truth is known, untrained and trained on tasks, then took the comparison to mouse visual cortex and seven families of artificial network, from recurrent and spiking networks to transformers, each recorded through the animal's own instrument, and finally switched single kinds of cell on with light in 39 more mice. Predictions were written down before the experiments ran, exploratory results are labelled, and the results that went against us are kept.</p><a class="mast-jump" href="#watching">Explore the evidence <span aria-hidden="true">↓</span></a></div></section>
 
 <main class="page">
@@ -90,7 +92,7 @@
       <div data-chart="restAvg"></div>
       <figcaption>Each point is one model, averaged over three held-out groups of the atlas. The shaded band is real worm against real worm. Only models whose causal links were learned from pokes reach it, whatever their realism at rest.</figcaption>
     </figure>
-    <aside class="note">
+    <aside class="note" role="note">
       <div class="measure copy"><span class="v">0.01</span><span class="l">echo agreement of the linear brain that watched, with real worms</span></div>
       <div class="measure"><span class="v">0.10</span><span class="l">agreement between two real worms, and of the brain that also learned from pokes</span></div>
     </aside>
@@ -115,7 +117,7 @@
     <p>A real worm cannot tell us its true cause and effect, so a model brain stands in: a published model of 154 neurons in which ongoing activity and responses to pokes come from the same dynamics. We record it the way the atlas was recorded, with half the neurons seen per recording, some never seen, and measurement noise, and try to learn its cause and effect from the recordings.</p>
     <p>Watching works in principle. When each neuron's fluctuations are its own, it recovers cause and effect well, better than poking at the atlas's size. But add a few slow, shared, brain-wide signals that no recording captures, at a level that matches real resting worms, and watching hits a ceiling within a few hours that more data never lifts. Poking is not fooled by those signals: it keeps improving and overtakes watching between 40 and 70 hours of recording, the size of the atlas. A second published model as ground truth gives the same picture, and removing the strongest shared patterns before learning does not reliably help.</p>
     <p>The real worms behave as predicted. A copy that learns by watching is no better after watching 58 worms than after 6 (echo agreement 0.004 to 0.014 throughout), while a copy given the pokes of just 6 worms already beats it four to seven times over, and keeps improving with more worms.</p>
-    <aside class="note"><p><span class="fig">What this would mean.</span> If real brains are driven by strong shared signals that recordings miss, a brain cannot be copied by watching it, however long. Intervention is then not a refinement but a necessity. These stand-in brains are linear and were themselves fitted to this atlas; the nonlinear test that follows confirms the ceiling and refines the explanation.</p></aside>
+    <aside class="note" role="note"><p><span class="fig">What this would mean.</span> If real brains are driven by strong shared signals that recordings miss, a brain cannot be copied by watching it, however long. Intervention is then not a refinement but a necessity. These stand-in brains are linear and were themselves fitted to this atlas; the nonlinear test that follows confirms the ceiling and refines the explanation.</p></aside>
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 5</span>Watching hits a ceiling; poking keeps climbing</p></div>
       <div data-chart="ceiling"></div>
@@ -165,7 +167,7 @@
     <p><strong>How many pokes a lab needs (exploratory).</strong> One worm's echo agrees with another's at only 0.07, and averaging helps more slowly than textbook noise would. Projecting from the largest groups we can measure, pinning one neuron's echo down takes at least about 160 worms poking it, against a median of 22 in the atlas. The feeding organ's own small nervous system gives echoes three times as reproducible as the rest; beyond it there is no clean rule.</p>
     <p><strong>Copies learned from freely moving worms fail the poke test.</strong> Fitted by watching 27 to 57 moving worms, they predict the next moment of activity well and answer a poke at about chance, like every other watching copy.</p>
     <p><strong>Meeting copper is not like poking its sensor.</strong> In moving worms, the brain-wide response to the copper boundary does not resemble the echo of poking ASH, the copper sensor, in still worms (r = &minus;0.01), and no poked neuron's echo matches it better than chance would. This is one stimulus, and copper reaches other sensors too, so it is a warning rather than a law.</p>
-    <aside class="note"><p><span class="fig">What this would mean.</span> A faithful copy needs pokes, the brain state they were given in, and the context the copy will be used in. We know of no public dataset with all three for the same worms.</p></aside>
+    <aside class="note" role="note"><p><span class="fig">What this would mean.</span> A faithful copy needs pokes, the brain state they were given in, and the context the copy will be used in. We know of no public dataset with all three for the same worms.</p></aside>
 
     <!-- 2 -->
     <h2 id="noise">The failure is about cause and effect, not noise.</h2>
@@ -225,10 +227,10 @@
 
     <!-- 5 -->
     <h2 id="complexity">In a real brain, most of the brain stays out of the echo.</h2>
-    <aside class="note"><p><span class="fig">Suspended 7 November.</span> The per-poke complexity maps give nearly the same values at moments with no poke (worms 0.66 with a poke, 0.68 without), so this section describes ongoing activity, not a property of the echo. Results built on responses averaged over many pokes are unaffected.</p></aside>
+    <aside class="note" role="note"><p><span class="fig">Suspended 7 November.</span> The per-poke complexity maps give nearly the same values at moments with no poke (worms 0.66 with a poke, 0.68 without), so this section describes ongoing activity, not a property of the echo. Results built on responses averaged over many pokes are unaffected.</p></aside>
     <p>Consciousness research judges unresponsive patients by the complexity of the brain's echo to a magnetic pulse: the perturbational complexity index, which separates wakefulness from deep sleep, anaesthesia and coma. The optogenetic atlas is the same experiment in a worm, thousands of times over. Applied there, it is the one property no artificial brain matches yet.</p>
     <p>We expected models to fail by being too simple. They fail the other way: their echoes are more complex than real ones. After a poke, a third of a real worm's neuron classes never respond within 30 seconds, and the ones that do keep responding. In every model, almost every class flickers across the threshold at some point, briefly. The restlessness comes from the models' ongoing dynamics rather than their causal links, which is why it survived every fix to the links.</p>
-    <aside class="note"><p><span class="fig">Not a claim about consciousness.</span> Nothing here says a worm or a model is conscious. These are the measurable properties that, in people, separate a responsive brain from an unresponsive one.</p></aside>
+    <aside class="note" role="note"><p><span class="fig">Not a claim about consciousness.</span> Nothing here says a worm or a model is conscious. These are the measurable properties that, in people, separate a responsive brain from an unresponsive one.</p></aside>
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 9</span>Who joins the echo after a poke</p></div>
       <div data-chart="echoShape"></div>
@@ -387,7 +389,7 @@
 </footer>
 
 <script src="data/results.js?v=10"></script>
-<script src="assets/charts.js?v=10"></script>
+<script src="assets/charts.js?v=11"></script>
 <script src="assets/site.js?v=3"></script>
 </body>
 </html>

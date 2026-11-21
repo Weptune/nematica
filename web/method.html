@@ -8,7 +8,9 @@
 <meta name="author" content="Weptune">
 <link rel="preload" href="fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="favicon.ico" sizes="32x32">
 <link rel="icon" href="favicon.svg?v=4" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#040a1c">
 <meta property="og:site_name" content="NEMATICA">
 <meta property="og:type" content="website">
@@ -21,7 +23,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="assets/site.css?v=21">
-<link rel="stylesheet" href="assets/theme.css?v=5">
+<link rel="stylesheet" href="assets/theme.css?v=6">
 </head>
 <body>
 
@@ -42,7 +44,7 @@
   </nav>
 </header>
 
-<section class="masthead grain" data-index="02"><div class="in"><div class="folio" aria-hidden="true" style="--step:2"><div class="folio-head"><span>NEMATICA / FIELD INDEX</span><span>02 / 04</span></div><strong class="folio-number">02</strong><div class="folio-foot"><span>METHOD</span><i class="folio-track"></i></div></div><h1 class="title">A ruler for brains, measured in real worms.</h1>
+<section class="masthead grain" aria-labelledby="page-title" data-index="02"><div class="in"><div class="folio" aria-hidden="true" style="--step:2"><div class="folio-head"><span>NEMATICA / FIELD INDEX</span><span>02 / 04</span></div><strong class="folio-number">02</strong><div class="folio-foot"><span>METHOD</span><i class="folio-track"></i></div></div><h1 class="title" id="page-title">A ruler for brains, measured in real worms.</h1>
     <p class="standfirst">There is no single right answer for what a worm's brain should do; healthy worms differ. So NEMATICA never asks whether a brain matches a worm. It asks whether the brain differs from real worms by about as much as real worms differ from each other.</p><a class="mast-jump" href="#ruler">Read the method <span aria-hidden="true">↓</span></a></div></section>
 
 <main class="page">
@@ -63,7 +65,7 @@
     <h2 id="ruler">Inside, outside, or too typical.</h2>
     <p>For every test, we measure the distance between every pair of real worms in a held-out group. That spread of distances is the ruler. An artificial brain is run through the same experiment as each real worm (same length, same stimulation schedule) and the same distance is measured from its simulated worm to every real worm except the one it imitates.</p>
     <p>The verdict comes from resampling whole worms, so that one strange worm cannot decide it. A brain is <strong>outside</strong> when its distances are reliably larger than real worms' distances from each other, or its median lies beyond the 95th percentile. It is <strong>too typical</strong> when its distances are reliably smaller, or below the 5th percentile: it is closer to every worm than worms are to each other, which is what an average worm looks like. Otherwise it is <strong>inside</strong>.</p>
-    <aside class="note"><p><span class="fig">Why too typical is a failure.</span> A model trained to predict well converges on the average worm. No real worm is average, and a copy of a particular brain should not be either. In the first arc of this project, the model tuned to forecast best was too typical on several tests, while a slightly worse forecaster sat on the real-worm line.</p></aside>
+    <aside class="note" role="note"><p><span class="fig">Why too typical is a failure.</span> A model trained to predict well converges on the average worm. No real worm is average, and a copy of a particular brain should not be either. In the first arc of this project, the model tuned to forecast best was too typical on several tests, while a slightly worse forecaster sat on the real-worm line.</p></aside>
     <figure class="plate wide">
       <div class="plate-head"><p class="plate-title"><span class="fn">Figure 9</span>One test, one held-out group, every brain</p><div class="legend" data-legend="noband"></div></div>
       <div data-chart="rulerStrip" data-metric="C1.pattern" data-fold="0"></div>
@@ -104,7 +106,7 @@
     <h2 id="power">How sharp the poke test is.</h2>
     <p>Real worms agree only weakly on which neuron answers which poke, so it is fair to ask how much true cause and effect a brain needs before the test notices. We built synthetic brains whose echoes are a known blend of the true average echo and the same echoes reassigned to random pairs. The blend fixes exactly how strongly the brain's echoes correlate with the truth, and every echo keeps its real size and shape.</p>
     <p>The test turns out to be narrow and precise. Below a correlation of about 0.3 with the true average echo, a brain is outside: it does not know enough cause and effect. Above about 0.5, it is too typical: more stereotyped than any worm. The window is 0.15 to 0.2 wide, and it sits in the same place in all three held-out groups. A brain copy has to be right about cause and effect and as individual as a real worm.</p>
-    <aside class="note">
+    <aside class="note" role="note">
       <div class="measure"><span class="v">0.3 to 0.5</span><span class="l">correlation with the true average echo needed to pass</span></div>
       <div class="measure copy"><span class="v">0.05 to 0.20</span><span class="l">where the models learned from activity sit</span></div>
     </aside>
@@ -170,7 +172,7 @@
 </footer>
 
 <script src="data/results.js?v=10"></script>
-<script src="assets/charts.js?v=10"></script>
+<script src="assets/charts.js?v=11"></script>
 <script src="assets/site.js?v=3"></script>
 </body>
 </html>

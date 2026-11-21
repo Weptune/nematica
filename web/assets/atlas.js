@@ -395,7 +395,16 @@
   const ORBS = window.NEMATICA_ORBS || null, PIC = {};
   // a rendered body as a picture an SVG can hold: painted once per kind of light, then reused
   function orbPic(name, size, o, key) { const k = name + (key || ""); if (!PIC[k]) { const c = ORBS.sprite(name, size, o); PIC[k] = { href: c.toDataURL("image/png"), R: c.R }; } return PIC[k]; }
-  function orbImage(p, name, cx, cy, r, o, key, size) { const pic = orbPic(name, size || 360, o, key), half = r / pic.R; return el("image", { href: pic.href, x: cx - half, y: cy - half, width: 2 * half, height: 2 * half }, p); }
+  // Each picture is a WebGL paint and a PNG, and the page holds about thirty. They are made a few at a time once the page
+  // has drawn itself, in the order they were asked for (the cards first), so the opening is not held up by planets
+  // far below it. The place and size of each are known at once, so nothing moves when its picture arrives.
+  const ORBJOBS = []; let orbWait = false;
+  function orbRun(dl) { orbWait = false; let n = 0;
+    while (ORBJOBS.length && (n < 1 || (dl && dl.timeRemaining && dl.timeRemaining() > 8))) { const j = ORBJOBS.shift(); if (!j.img.isConnected) continue; j.img.setAttribute("href", orbPic(j.name, j.size, j.o, j.key).href); n++; }
+    if (ORBJOBS.length) orbKick(); }
+  function orbKick() { if (orbWait) return; orbWait = true; if (window.requestIdleCallback) requestIdleCallback(orbRun, { timeout: 150 }); else setTimeout(orbRun, 30); }
+  function orbImage(p, name, cx, cy, r, o, key, size) { const half = r / ORBS.share(name), img = el("image", { x: cx - half, y: cy - half, width: 2 * half, height: 2 * half }, p), k = name + (key || "");
+    if (PIC[k]) img.setAttribute("href", PIC[k].href); else { ORBJOBS.push({ img, name, size: size || 360, o, key }); orbKick(); } return img; }
   function planetArt(s, name) {
     if (ORBS) { const g = el("g", { class: "planet p-" + name }, s), r = { mercury: 31, venus: 37, mars: 35, jupiter: 41, saturn: 23.5, sun: 25, moon: 37 }[name];
       orbImage(g, name, 100, 100, r, { light: name === "moon" ? [0.86, 0.3, 0.12] : [-0.6, 0.5, 0.62], roll: name === "saturn" ? 0.36 : name === "mars" ? 0.4 : 0.08, lean: name === "saturn" ? 0.42 : 0.12, spin: name === "jupiter" ? 0.25 : 0.9, time: 4 }, "card", 420); return; }

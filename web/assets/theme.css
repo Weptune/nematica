@@ -7,7 +7,7 @@
 :root {
   --page: #ece6d6; --plate: #f4efe2; --rule: #c7bfa9; --rule-soft: #dbd4c1;
   --ink: #0c2a55; --ink-2: #3a5078; --ink-3: #4f6085;
-  --live: #8a6d12; --live-tint: #e3d8ae; --live-wash: #ebe3c4; --copy: #a90959; --copy-tint: #f0d3df;
+  --live: #745b0b; --live-tint: #e3d8ae; --live-wash: #ebe3c4; --copy: #a90959; --copy-tint: #f0d3df;
   --field: #07122e; --field-2: #0e2350; --field-ink: #ece6d6; --field-ink-2: rgba(236, 230, 214, .74);
   --night: #07122e; --deep: #040a1c; --bone: #ece6d6; --gilt: #f0cf78;
   --display: "Cormorant", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
@@ -88,3 +88,6 @@ figure.plate::before, figure.plate::after { display: none !important; }
 
 /* a figure too wide for a phone scrolls sideways; its caption opens by saying so */
 .swipe-hint { font-weight: 650; }
+
+/* read by screen readers, not shown */
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }

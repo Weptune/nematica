@@ -28,7 +28,9 @@
   const ORBS = window.NEMATICA_ORBS || null;       // the shader that renders the planets as real bodies; without it they are drawn
   // far behind everything, a band of cloud painted once by the same shader; it slides a little as the page scrolls
   let cloud = null, cloudY = 1e9;
-  if (ORBS) { cloud = ORBS.sprite("nebula", 768, {}); cloud.id = "nebula"; cloud.setAttribute("aria-hidden", "true"); cv.parentNode.insertBefore(cloud, cv); }
+  if (ORBS) { const mk = () => { const c = ORBS.sprite("nebula", 768, {}); c.id = "nebula"; c.setAttribute("aria-hidden", "true"); c.style.opacity = "0"; cv.parentNode.insertBefore(c, cv); cloud = c; cloudY = 1e9;
+      requestAnimationFrame(() => requestAnimationFrame(() => { c.style.opacity = ""; })); };                              // it is a large paint and nothing waits on it: made once the page is up, then faded in
+    if (window.requestIdleCallback) requestIdleCallback(mk, { timeout: 500 }); else setTimeout(mk, 80); }
 
   // ---------------------------------------------------------------- colour: brass for the living, carmine for copies, a metal for each planet
   const PAL = [
