@@ -116,3 +116,19 @@ Add a card to `.arcana` (its `.back` holds the headline number and one sentence,
 (`section.plate` with an `.open` holding the chapter header and a `.stage`, then a panel with "How we asked",
 "What we saw", numbers, a figure and one closing line), and a row in the ledger (`ledger()` in `atlas.js`). Numbers come from committed result tables through `export_site.py`, never typed by hand
 into a figure.
+
+## Small rules learned the hard way (21 Nov 2026)
+- The header's open-menu state is the class `menu-open`. Never `open`: `.open` is every section's opening
+  screen, and once gave the phone menu a header a whole screen tall.
+- A card's two faces (question and answer) share one grid cell, so the card grows to the taller face. Do not
+  go back to laying the answer over the question with absolute positioning: it ran into the card's foot.
+- Plates whose labels sit beside their marks (The Waning, The Journey) stack the labels above the marks once
+  the plate is too narrow to hold both. Check 1,000 to 1,300 px wide when changing a label.
+- A ledger row can carry a second band of real animals (`band2` in the exported data); each band is then
+  named under the line.
+- When removing a rule from `atlas.css`, remove the exact text. A pattern once cut through a media query and
+  left every later rule inside it. After any stylesheet edit, check that the braces balance and that a phone
+  page is as wide as its screen.
+- Inner-page figures wider than a phone scroll sideways, and their caption then opens with a swipe hint
+  (added by `charts.js`, not written in the HTML).
+

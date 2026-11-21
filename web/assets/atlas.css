@@ -337,7 +337,8 @@ main, .foot { position: relative; z-index: 1; }
 .num b i { -webkit-text-fill-color: rgba(236, 230, 214, .64); }
 .claim .big { font-size: clamp(2.2rem, 1.1rem + 3.6vw, 4.8rem); }
 .claim .big em { color: #f0cf78; text-shadow: 0 0 40px rgba(240, 207, 120, .35); }
-.claim .big .coda { display: block; text-wrap: balance; }   /* the last sentence stands on its own line and never leaves one word behind */
+.claim .big .coda { display: block; text-wrap: balance; }
+.hero-cap { text-wrap: balance; }   /* the last sentence stands on its own line and never leaves one word behind */
 /* running text avoids a lone last word where the browser can manage it */
 .prose, .plate-body p, .tenet p, .why p, .verdict p, .verdict span, .fig figcaption, .ledger .st, .deeper span, .foot p { text-wrap: pretty; }
 

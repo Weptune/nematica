@@ -1022,7 +1022,8 @@
     const mark = (k, cx, cy, i) => { const st = ST[i]; if (st.k === "dot") return el("circle", { cx, cy, r: 5, fill: st.f }, s);
       if (st.k === "sq") return el("rect", { x: cx - 4.3, y: cy - 4.3, width: 8.6, height: 8.6, fill: st.f }, s); return el("circle", { cx, cy, r: 4.6, fill: C.plate, stroke: st.f, "stroke-width": 1.7 }, s); };
     keys.forEach((k, j) => { const yy = m.t + j * rowH + rowH / 2; hline(s, m.l, W - m.r, yy, { stroke: C.soft });
-      text(s, m.l - 12, yy + 4, pick[0].sig[k].label, { "text-anchor": "end", "font-size": 12, fill: C.ink2 });
+      const ls = narrow ? wrapWords(pick[0].sig[k].label, 16) : [pick[0].sig[k].label];      // on a phone a long name takes two lines; it used to run off the left edge
+      ls.forEach((t, q) => text(s, m.l - 12, yy + 4 + (q - (ls.length - 1) / 2) * 13, t, { "text-anchor": "end", "font-size": 12, fill: C.ink2 }));
       pick.forEach((p, i) => { const v = p.sig[k]; if (!v) return; const dv = Math.max(-cap, Math.min(cap, v.d)); mark(k, x(dv), yy + (i - 1) * 7, i);
         const c = el("circle", { cx: x(dv), cy: yy + (i - 1) * 7, r: 9, class: "hit" }, s); hover(c, `<b>${p.name}</b>${row(v.label, (v.d > 0 ? "+" : "") + fmt(v.d, 2))}${row("Inside the real-worm range", v.in ? "yes" : "no")}`); }); });
     const lab = pick.map((p) => p.name.replace(/, group \d/, "").replace(" held out of the reference", " the test never saw").replace(" (minimal recipe)", ""));
@@ -1042,6 +1043,11 @@
     const fn = FIGS[n.dataset.chart];
     if (!fn) return;
     try { fn(n, { compact: n.hasAttribute("data-compact") }); } catch (e) { console.error(n.dataset.chart, e); n.textContent = "This figure could not be drawn."; }
+    // a figure wider than its frame scrolls sideways; on a phone nothing showed that, so its caption now says so
+    requestAnimationFrame(() => { const fig = n.closest("figure"), cap = fig && fig.querySelector("figcaption"); if (!cap) return;
+      const wide = n.scrollWidth > n.clientWidth + 1, had = cap.querySelector(".swipe-hint");
+      if (wide && !had) { const h = document.createElement("span"); h.className = "swipe-hint"; h.textContent = "Swipe sideways to see the whole figure. "; cap.insertBefore(h, cap.firstChild); }
+      else if (!wide && had) had.remove(); });
   }
   function mount() {
     const nodes = [...document.querySelectorAll("[data-chart]")];

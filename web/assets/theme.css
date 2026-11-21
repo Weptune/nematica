@@ -85,3 +85,6 @@ figure.plate::before, figure.plate::after { display: none !important; }
 .part-head .part-t { margin: 8px 0 0; font-size: clamp(2.2rem, 3.6vw, 3.2rem) !important; color: var(--ink); max-width: 22ch; }
 .toc li.part { padding: 16px 0 4px 14px; font-weight: 650; color: var(--ink); font-size: .82rem; }
 .toc li.part:first-child { padding-top: 2px; }
+
+/* a figure too wide for a phone scrolls sideways; its caption opens by saying so */
+.swipe-hint { font-weight: 650; }
