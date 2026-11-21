@@ -188,3 +188,85 @@ the ceiling check and its rider.
 Checked by the reviewer with no defect found: the thirds, the even-numbered rule against the tagging rule,
 the trial order passed to the split, the trial tables of all 39 mice, the baseline windows, and that the
 sequence of levels and kinds differs in every mouse.
+
+## Result (21 Nov 2026; the registered run, once)
+
+`docs/figures/opto/waning_result.json`. All 39 mice have every ratio.
+
+- **W1a holds: the answer fades, a little.** The driven units' answer to a brief pulse in the last third of
+  the block over the first third: median 0.978 (95% interval 0.954 to 0.995); below 1 in 27 mice, above in 9,
+  exactly 1 in 3 (sign test on the 36, p 0.002). The lowest mouse reads 0.78.
+- **W1b holds.** The ratio is above 0.64 in 39 of 39 mice.
+- **W2 holds, in both versions, and the ceiling rider does not apply.** The neighbours' ratio over the driven
+  units' own: 0.90 (0.82 to 0.97), below 1 in 27 of 39, p 0.012; as a fraction of the resting rate 0.91
+  (0.87 to 0.96), below 1 in 31 of 39, p 0.0001. The driven units answer the lowest light level at 0.42 of
+  the highest (0.47 for pulses) while the light itself is at 0.59, so they are not at their ceiling.
+
+Reported without a claim: the driven units on the half-cosines, 0.99 (0.97 to 1.01); the neighbours' ratio
+alone, 0.89 in both versions; the neighbours' resting rate, late over early, 1.00 (0.99 to 1.02); the driven
+units' resting rate 0.97 (0.92 to 1.04); the first two even-numbered pulses against the next thirteen at the
+same levels, 1.01 (0.96 to 1.06); the pulse fade by light level, 0.99, 0.98, 1.00. By line: Sst (29 mice)
+pulses 0.98, *beyond* 0.91 and 0.95 (p 0.031 and 0.001); Vip (10 mice) pulses 0.96, *beyond* 0.68 and 0.71
+(below 1 in 7 and 8 of 10; p 0.17 and 0.055).
+
+## After the result (21 Nov 2026; not registered)
+
+`scripts/opto_waning_control.py`, `docs/figures/opto/waning_control.json`. These were thought of only once the
+result was in, and the first of them should have been in the registration: Study V had already shown that
+the light alone moves the cortex of mice that carry no channel.
+
+1. **The light alone.** The neighbours' measure in the 27 wild-type mice, where nothing is driven. The
+   response to the light alone is less than half the size (0.17 SD per class against 0.41 in Sst and 0.43 in
+   Vip mice), far less repeatable (split-half 0.60 against 0.89 and 0.91), and mostly a rise (66% of classes,
+   against 12.5% in Sst and 73% in Vip mice). Late third over early third: 0.86 (0.62 to 1.10) and, as a
+   fraction of the resting rate, 0.76 (0.64 to 0.99); below 1 in 16 and 18 of the 27 mice (p 0.22 and 0.06;
+   the two mice with no ratio are ones whose response grew, and are counted as not below 1).
+2. **The class Study V and P leave out** because the light alone moves it (VIS|n) exists in 2 of the 66 mice
+   here; leaving it out changes no number above.
+3. **Falling and rising classes apart** (chosen by the middle third). In the 39 mice the falling classes read
+   0.89 (0.80 to 0.99; below 1 in 24 of 36, p 0.033), the rising ones 0.86 (0.65 to 1.03; 17 of 27, p 0.12).
+4. **The very first flash** (found by the independent check, reproduced here). No registered measure holds
+   the first answer to light. In the 24 mice whose block opens with a pulse, the driven units' answer to that
+   first pulse is 1.22 times (1.17 to 1.29; larger in 21 of 24 mice) their answer to later odd-numbered
+   pulses at the same light level; the second pulse reads 1.13 (1.04 to 1.21), the third 1.02 (0.96 to 1.09).
+   Put the worm's way round, later answers are 0.82 of the first. In the 15 mice whose block opens with a
+   half-cosine, the first pulse reads 0.97 (0.88 to 1.06). One trial per mouse.
+
+## Independent check (separate agent, 21 Nov 2026, after the result; own code from the cached spike times)
+
+Its scratch code is not in the repository; item 4 above reproduces its one new finding.
+
+1. **W1 reproduced exactly** in all 39 mice. *Correction accepted:* say 27 below, 9 above, 3 ties.
+2. **W2 reproduced** (0.903 and 0.911; largest per-mouse gap 0.007, from spikes that fall exactly on a bin
+   edge). With windows starting at the true onset: 0.92 (p 0.027) and 0.90.
+3. **How sturdy W2 is.** *Correction accepted: the fractional version passes every variant tried; the SD
+   version fails 2 of 6, and the pooled effect leans on the 10 Vip mice.* With a template from every other
+   trial, the neighbours' answer reads 0.95, 0.87, 0.89 over the three thirds: the fall comes between the
+   first and the middle third and does not go on. First 36 trials against last 36: 0.84 and 0.87. Leaving out
+   the highest light level: 0.94 (p 0.37) in the SD version, 0.89 (p 0.005) in the fractional one.
+4. **The light-alone control.** Computed as the script says. *Corrections accepted:* the first interval's
+   upper end was 1.03 by an accident of the resampling seed and is 1.10; the two mice without a ratio must be
+   counted, which takes p from 0.038 to 0.06; Vip profiles have the sign of the light-alone response, Sst
+   profiles the opposite, so in Sst mice a shrinking response to the light itself would deepen the falls, not
+   lift them. The control works as a control for time only.
+5. ***"Shrinks at least as much" was an overstatement* (my draft reading).** The wild-type ratio cannot be
+   told apart from the neighbours' tenth, nor, in one of the two versions, from no change.
+6. ***"Keep 98% of their answer, so do not tire the way the worm's does" was an overstatement.*** The 98% is
+   fair for the steady state: choosing the units on any third of the block gives 0.97 to 0.98. But the first
+   flash is larger by a fifth (item 4 above), and W1a itself says the answer fades.
+
+**Reading (as corrected).** In the mouse, cells driven by light 300 times, two seconds apart, give 98% as
+many spikes to a brief pulse in the last third of the block as in the first: a small, reliable fade, far from
+the worm's halving. That measure leaves out the first flashes. In an unregistered look at the 24 mice whose
+block opens with a pulse, the very first answer is about a fifth larger than later ones, and the drop is over
+by the third pulse. Their neighbours' answer is about a tenth smaller in the last third than in the first
+(more in the 10 Vip mice), gone by the middle third, while the driven units' own answer on the same trials
+is 1% smaller and resting rates do not move. That tenth cannot be pinned on anything after the driven cells
+tiring with use: in mice with no channel the response to the light alone also tends to shrink over the block,
+by an amount these data cannot tell apart from it. The cortex may simply answer less as the ten minutes pass.
+
+**Where this leaves The Waning.** The worm's question is not answered: nothing here can say whether the worm's
+neuron or its light tool tires. What is added is a second animal. With a different tool and spikes read
+directly, a mouse's driven cells lose about a fifth of their answer within three flashes and then hold it
+for ten minutes; the worm's answer halves and takes minutes to come back. In the mouse, too, the early drop
+could be the channel or the cell.

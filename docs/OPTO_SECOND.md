@@ -217,3 +217,6 @@ answer to a brief pulse can, and by the project's ruler that answer is as good a
 shown: a copy that explains the response (a model that is taught some stimulation and predicts a kind it was
 not shown beyond replaying it), and how much of the pattern match is specific to the driven cells. Whether
 the home page calls the question closed is the owner's decision; until then it stays as it was.
+
+*Note, 21 Nov 2026.* The owner removed the closed, open and never-there labels from the site altogether, so
+that decision no longer arises. The home page states the result and its limits in words.

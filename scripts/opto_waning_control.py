@@ -7,6 +7,11 @@
    (VIS|n). Here it is dropped, as there.
 3. In each mouse, the classes that fall and the classes that rise (by the middle third, which shares no
    trial with the thirds compared), each on their own.
+4. The very first flash (found by the independent check, reproduced here). No registered measure holds the
+   first answer to light: the first pulse is odd-numbered and was spent on choosing the units. Here the
+   driven units' answer to the first, second and third pulse of the block is set against their mean answer
+   to later odd-numbered pulses at the same light level (pulses 7 onward), separately for mice whose block
+   opens with a pulse and mice whose block opens with a half-cosine. One trial per mouse.
 
 python -I scripts/opto_waning_control.py -> docs/figures/opto/waning_control.json"""
 import json
@@ -60,7 +65,38 @@ def measures(d, rec):
 def summary(x):
     x = np.asarray(x, float)
     ok = np.isfinite(x)
-    return {"n": int(ok.sum()), "median": float(np.nanmedian(x)) if ok.any() else None, "interval": waning.boot(x), "below_one": int((x[ok] < 1).sum()), "p_below_one": waning.sign_p(1 - x)}
+    return {"n": int(ok.sum()), "median": float(np.nanmedian(x)) if ok.any() else None, "interval": waning.boot(x, n=20000), "below_one": int((x[ok] < 1).sum()), "p_below_one": waning.sign_p(1 - x)}
+
+
+def first_flash(d, t):
+    """(opens with a pulse?, [(answer, expected) for the 1st, 2nd, 3rd 10 ms pulse]): expected is the mean
+    answer to odd-numbered pulses 7 onward at the same light level."""
+    tr = real.square_pulses(d)
+    tr = tr[np.isclose(d["opto_duration"][tr], 0.01)]
+    tr = tr[np.argsort(d["opto_start"][tr])]
+    on, lv = d["opto_start"][tr], d["opto_level"][tr]
+    per = np.zeros(len(on))
+    for i in np.flatnonzero(t):
+        sp = d["trains"][i]
+        per += (np.searchsorted(sp, on + 0.009) - np.searchsorted(sp, on + 0.002)) - (np.searchsorted(sp, on) - np.searchsorted(sp, on - 0.007))
+    later = np.arange(len(on)) >= 6
+    odd = np.arange(len(on)) % 2 == 0
+    out = []
+    for k in (0, 1, 2):
+        same = per[later & odd & (lv == lv[k])]
+        out.append((float(per[k]), float(same.mean()) if len(same) else float("nan")))
+    return bool(on[0] == d["opto_start"].min()), out
+
+
+def pooled(pairs, seed=0):
+    """Sum of answers over sum of expected, over mice, with a 95% interval resampling mice."""
+    a = np.array([p for p in pairs if np.isfinite(p[1])], float)
+    if len(a) < 3:
+        return None
+    rng = np.random.default_rng(seed)
+    b = [(lambda ix: a[ix, 0].sum() / a[ix, 1].sum())(rng.integers(0, len(a), len(a))) for _ in range(20000)]
+    return {"n": int(len(a)), "ratio": float(a[:, 0].sum() / a[:, 1].sum()), "interval": [float(np.percentile(b, 2.5)), float(np.percentile(b, 97.5))],
+            "above_one": int((a[:, 0] > a[:, 1]).sum())}
 
 
 def main():
@@ -74,6 +110,8 @@ def main():
         else:
             continue
         r = {"line": line}
+        if line != "wt":
+            r["opens_with_pulse"], r["first"] = first_flash(d, t)
         for key, drop in (("all", ()), ("dropped", DROP)):
             rec = rec_of(d, t, drop)
             r[key] = None if rec is None else measures(d, rec)
@@ -86,7 +124,13 @@ def main():
     opsin = [r for r in rows.values() if r["line"] != "wt"]
     out["pooled_dropped"] = {q: summary([np.nan if r["dropped"] is None else r["dropped"][q] for r in opsin]) for q in ("beyond", "beyond_frac", "net", "net_frac", "falling", "rising")}
     out["pooled_all"] = {q: summary([np.nan if r["all"] is None else r["all"][q] for r in opsin]) for q in ("falling", "rising")}
+    out["first_flash"] = {name: {str(k + 1): pooled([r["first"][k] for r in opsin if r["opens_with_pulse"] == flag]) for k in (0, 1, 2)}
+                          for name, flag in (("opens_with_pulse", True), ("opens_with_half_cosine", False))}
+    out["counted_with_undefined"] = {q: {"below_one": out["by_line"]["wt"]["all"][q]["below_one"], "of": len([r for r in rows.values() if r["line"] == "wt"]),
+                                          "p": waning.sign_p([1 - (r["all"][q] if r["all"] and np.isfinite(r["all"][q]) else 2.0) for r in rows.values() if r["line"] == "wt"])} for q in ("net", "net_frac")}
     (ROOT / "docs/figures/opto/waning_control.json").write_text(json.dumps(out, indent=1))
+    print("first flash:", json.dumps(out["first_flash"]))
+    print("wild type, mice with no ratio counted as not below 1:", out["counted_with_undefined"])
     f = lambda s: f"{s['median']:.3f} [{s['interval'][0]:.2f}, {s['interval'][1]:.2f}] below 1 in {s['below_one']}/{s['n']} p {s['p_below_one']:.3f}" if s["median"] is not None else "none"   # noqa: E731
     for line, v in out["by_line"].items():
         for key in ("all", "dropped"):
