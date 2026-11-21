@@ -25,4 +25,4 @@ jobs:
         with:
           path: web
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5   # v4 can no longer find the uploaded artifact ("No artifacts named github-pages were found"); v5 is what GitHub's own starter workflow uses
