@@ -129,13 +129,6 @@ Where to read more:
 | `lab/` | A 3D replay of real worms (React and Three.js) |
 | `deploy/brainlike/` | A container for running the brain-likeness test as a web service |
 
-## The site
-
-`web/serve.sh` (or `web\serve.cmd` on Windows) serves the site at http://localhost:8642, with the
-brain-likeness test at `/test/` if the packages in `deploy/brainlike/requirements.txt` are installed.
-A push to `main` that changes `web/` publishes it to
-[nematica.weptune.dev](https://nematica.weptune.dev). Design notes are in
-[`web/DESIGN.md`](web/DESIGN.md).
 
 ## Licence
 
