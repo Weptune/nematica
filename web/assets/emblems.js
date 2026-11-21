@@ -42,7 +42,7 @@
       [-0.5, 0, 0.5].forEach((o) => { const gr = g.createLinearGradient(xs + sc, 0, xl, 0); gr.addColorStop(0, rgba(c, 0)); gr.addColorStop(1, rgba(c, 0.26)); g.strokeStyle = gr; g.lineWidth = 0.8; g.beginPath(); g.moveTo(xs + sc * 1.25, ys[k] + o * sc * 1.3); g.lineTo(xl, ys[k] + o * sc * 0.25); g.stroke();
         const g2 = g.createLinearGradient(xl, 0, x0, 0); g2.addColorStop(0, rgba(c, 0.26)); g2.addColorStop(1, rgba(c, 0.05)); g.strokeStyle = g2; g.beginPath(); g.moveTo(xl, ys[k] + o * sc * 0.25); g.lineTo(x0 - 6, ys[k] + o * sc * 1.2); g.stroke(); });
       // the record: one trace per cell the instrument can see; the ones it cannot are left blank, in both
-      for (let q = 0; q < 5; q++) { const y = ys[k] + (q - 2) * H * 0.068, blind = q === 1 || q === 3;
+      for (let q = 0; q < 5; q++) { const y = ys[k] + (q - 2) * H * 0.061, blind = q === 1 || q === 3;
         if (blind) { g.setLineDash([2, 5]); line(g, x0, y, x1, y, BONE, 0.2, 0.8); g.setLineDash([]); continue; }
         const src = pts[(q * 3 + 1) % pts.length], f = k ? 1.9 : src[2], ph = k ? -src[2] * 1.25 + src[1] * 0.5 : src[3]; g.beginPath();
         for (let x = x0; x <= x1; x += 2) { const tt = t - (x - x0) / 34, v = k ? Math.pow(0.5 + 0.5 * sin(tt * f + ph), 3) : Math.min(1, burst(tt, f, ph)), n = 0.9 * sin(x * 1.9 + q * 7 + Math.floor(t * 9) * 2.4); if (x === x0) g.moveTo(x, y - v * H * 0.05 + n); else g.lineTo(x, y - v * H * 0.05 + n); }
@@ -55,7 +55,7 @@
     g.beginPath(); g.moveTo(xl - bw * 0.45, H * 0.2); g.quadraticCurveTo(xl - bw * 0.9, H / 2, xl - bw * 0.45, H * 0.8); g.strokeStyle = rgba(BONE, 0.28); g.lineWidth = 0.8; g.stroke();
     line(g, xl - 9, top, xl + 9, top, BONE, 0.7, 1.2); line(g, xl - 9, bot, xl + 9, bot, BONE, 0.7, 1.2);
     for (let q = 1; q < 12; q++) { const y = top + ((bot - top) * q) / 12; line(g, xl - (q % 3 ? 2 : 4), y, xl + (q % 3 ? 2 : 4), y, BONE, 0.35, 0.8); }
-    text(g, "an animal", xs, ys[0] - sc * 1.3, 0.62, 14); text(g, "a network", xs, ys[1] + sc * 1.62, 0.62, 14); text(g, W < 360 ? "what it records" : "what the instrument records", x1, H * 0.515, 0.5, 13.5, "right");
+    text(g, "an animal", xs, ys[0] - sc * 1.3, 0.62, 14); text(g, "a network", xs, ys[1] + sc * 1.62, 0.62, 14); text(g, W < 360 ? "what it records" : "what the instrument records", x1, H * 0.493, 0.5, 13, "right");
   }
 
   // ---------------------------------------------------------------- the same yardstick

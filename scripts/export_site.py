@@ -216,6 +216,8 @@ def beyond() -> dict:
     # record (README sections named in each comment); the rest is computed above.
     counted = [mb["M1"][1] for f in fams if f["counted"] for mb in f["members"]]
     em = json.loads((FIG / "emulator_transfer.json").read_text())
+    _ff = json.loads((FIG / "opto" / "waning_control.json").read_text())["first_flash"]["opens_with_pulse"]["1"]   # Study W, the first flash (a later look)
+    mouse_later = [round(1 / _ff["interval"][1], 2), round(1 / _ff["interval"][0], 2)]                                # later flashes over the first, the worm's way round
     jt = json.loads((FIG / "journey_journey_copper.json").read_text())["table"]      # Study J, the registered run
     jm = "hybrid_kernels_slow6d_indivslow1_hp_memfix_"
     jr = {"frozen": [jt[jm + "diag_hsd1"][str(k)]["passed"] for k in range(5)], "given": [jt[jm + "hsd1_gcop"][str(k)]["passed"] for k in range(5)],
@@ -265,9 +267,10 @@ def beyond() -> dict:
                     ["Networks, medians", f"{min(counted):.2f} to {max(counted):.2f}"]],
             "note": "Task-trained RNN and Mamba carry more internal state than the mice; GRU and CfC less; transformer sizes span them."},
         {  # README "Light or activity: what tires a worm neuron?" (exploratory curve, corrected by review 7)
-            "title": "Answering the same poke again", "where": "Worm, 56 repeat pairs in 37 animals",
-            "scale": "Second response ÷ previous, 0.6 to 2 minutes apart", "domain": [0, 1.2], "ticks": [0, 0.5, 1], "dp": 1,
-            "band": [0.34, 0.64], "bandLabel": "real worms",
+            "title": "Answering the same poke again", "where": "Worm, 56 repeat pairs in 37 animals; mouse cortex, 39 animals",
+            "scale": "A later answer ÷ the first", "domain": [0, 1.2], "ticks": [0, 0.5, 1], "dp": 1,
+            "band": [0.34, 0.64], "bandLabel": "real worms", "bandShort": "worms, minutes apart",
+            "band2": {"range": mouse_later, "label": "mice, seconds apart"},
             "plain": {"value": 1.0, "label": "artificial networks"},
             "status": {"text": "The light tool, or the neuron?",
                        "sub": "Unknown in the worm. A mouse's driven cells, under a different tool, lose a fifth within three flashes and then hold"},

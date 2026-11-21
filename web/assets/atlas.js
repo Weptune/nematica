@@ -322,7 +322,7 @@
   }
   function waning(host) {
     const G = (R.gaps || []).find((g) => /same poke/i.test(g.title)) || { band: [0.34, 0.64] }, M = R.waning && R.waning.mouse;
-    const lo = G.band[0], hi = G.band[1], mid = (lo + hi) / 2, nar = host.clientWidth < 470;
+    const lo = G.band[0], hi = G.band[1], mid = (lo + hi) / 2, nar = host.clientWidth < 540;
     const rows = [{ kind: "real", f: mid, name: "A real worm", said: ["second answer: about half", `between ${f2(lo)} and ${f2(hi)} of the first`], short: ["about half", `${f2(lo)} to ${f2(hi)}`], under: ["first answer", "asked again"], band: [lo, hi] }];
     if (M && M.later) rows.push({ kind: "real", f: M.later, name: "A mouse's driven cells", said: ["later answers: about four fifths", `then steady: ${f2(M.fade)} over ten minutes`], short: ["four fifths,", "then steady"], under: ["first flash", "from the third on"] });
     rows.push({ kind: "copy", f: 1, name: "An artificial network", said: ["answers the same every time"], short: ["the same", "every time"], under: ["first answer", "asked again"] });
@@ -348,7 +348,7 @@
     const span = (v) => [Math.min(...v), Math.max(...v)];
     const rows = [["On the worms it was built on", "the recipe, held-still worms", span((E.atlas_cv3 || []).map((d) => d.rest))], ["On worms that move", "the same recipe, refitted, another lab", span(J.frozen)],
       ["On worms that move", "a plain copy fitted to rest alone", span(J.plain)], ["On worms that move", "the recipe, given what it lacked", span(J.given)]];
-    const nar = host.clientWidth < 470, rowH = nar ? 118 : 100, H = rowH * rows.length + (nar ? 26 : 34);
+    const nar = host.clientWidth < 580, rowH = nar ? 118 : 100, H = rowH * rows.length + (nar ? 26 : 34);
     const said = (v) => (v[0] === v[1] ? `${v[0]}` : v[1] - v[0] === 1 ? `${v[0]} or ${v[1]}` : `${v[0]} to ${v[1]}`);
     const { s } = stage(host, H, `Of six tests of ongoing activity, the recipe passes ${said(rows[0][2])} on the worms it was built on and ${said(rows[1][2])} on freely moving worms, where a plain copy fitted to rest passes ${said(rows[2][2])}; given the coupling and the skew it lacked, it passes ${said(rows[3][2])}, short of the pass mark of five`);
     const r = nar ? 13 : 16, gap = nar ? 10 : 13, x0 = 6, y0 = nar ? 64 : 40;
@@ -451,6 +451,13 @@
       const x = lin(g.domain[0], g.domain[1], 10, w - 10), ya = 52, fmt = (v) => (g.pct ? pc(v) : g.tickFmt === "int" ? String(v) : f2(v, g.dp));
       const bw = Math.max(4, x(g.band[1]) - x(g.band[0]));
       band(s, x(g.band[0]), ya - 15, bw, 30, true, L);
+      if (g.band2) {      // a second kind of real animal on the same scale: both spreads are named under the line
+        band(s, x(g.band2.range[0]), ya - 15, Math.max(4, x(g.band2.range[1]) - x(g.band2.range[0])), 30, true, L);
+        const la = tx(s, (x(g.band[0]) + x(g.band[1])) / 2, ya + 49, g.bandShort || g.bandLabel, it(15, C.b2, { "text-anchor": "middle" }));
+        const lb = tx(s, (x(g.band2.range[0]) + x(g.band2.range[1])) / 2, ya + 49, g.band2.label, it(15, C.b2, { "text-anchor": "middle" }));
+        const ba = la.getBBox(), bb = lb.getBBox();
+        if (ba.x + ba.width + 14 > bb.x) {      // on a short strip the two names would run together: each then hangs from its band's outer side
+          la.setAttribute("text-anchor", "end"); la.setAttribute("x", x(g.band[1])); lb.setAttribute("text-anchor", "start"); lb.setAttribute("x", x(g.band2.range[0])); } }
       el("path", { d: `M10 ${px(ya)}H${w - 10}`, stroke: C.b3 }, s);
       g.ticks.forEach((v) => { el("path", { d: `M${px(x(v))} ${ya}v6`, stroke: C.b2 }, s); tx(s, x(v), ya + 31, fmt(v), num({ "font-size": 13.5, "text-anchor": "middle" })); });
       const lab = tx(s, 10, 12, g.scale, small({ "font-size": 11.5, fill: C.b3 }));
@@ -540,8 +547,12 @@
     addEventListener("scroll", onProg, { passive: true }); onProg();
     const top = $("#top"), menu = $(".menu");
     const onScroll = () => top.classList.toggle("stuck", scrollY > 24); onScroll(); addEventListener("scroll", onScroll, { passive: true });
-    menu.addEventListener("click", () => { const o = top.classList.toggle("open"); menu.setAttribute("aria-expanded", o); });
-    $$("#nav a").forEach((a) => a.addEventListener("click", () => { top.classList.remove("open"); menu.setAttribute("aria-expanded", "false"); }));
+    // the state is "menu-open", not "open": ".open" is every section's opening screen, and gave the header a screen's height
+    const shut = () => { top.classList.remove("menu-open"); menu.setAttribute("aria-expanded", "false"); };
+    menu.addEventListener("click", () => { const o = top.classList.toggle("menu-open"); menu.setAttribute("aria-expanded", o); });
+    $$("#nav a").forEach((a) => a.addEventListener("click", shut));
+    addEventListener("keydown", (e) => { if (e.key === "Escape" && top.classList.contains("menu-open")) { shut(); menu.focus(); } });
+    addEventListener("resize", () => { if (innerWidth > 960) shut(); });
   }
   (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(init);
 })();
