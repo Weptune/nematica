@@ -88,8 +88,9 @@ is visual only: all copy stays plain and exact.
 - `assets/theme.css`, `assets/img/seal.svg`: the inner pages' print and masthead seal (the seal embeds the
   seven rendered planets as small pictures; it is generated, not hand-edited).
 - `assets/charts.js`: inner-page figures (reads the theme's CSS variables).
-- Unused since the redesign, kept until someone confirms removal: `assets/home.css`,
-  `assets/showcase.js`, `assets/specimen.js`, `assets/img/fig-*.png`.
+- The files left over from the earlier design (`assets/home.css`, `assets/showcase.js`,
+  `assets/specimen.js`, two `assets/img/fig-*.png`) were removed on 21 Nov 2026 with the owner's say-so.
+- The site is signed "Weptune", linking to weptune.dev, in every footer and in each page's author tag.
 
 ## Publishing
 - Publish `web/` as it is in git: `.github/workflows/pages.yml` runs only when started by hand.
