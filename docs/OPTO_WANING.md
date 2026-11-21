@@ -1,6 +1,7 @@
 # Study W: asked again and again, does a mouse neuron's answer fade? (registration)
 
-**Status: DRAFT** (written before any response of any unit was looked at as a function of trial order)
+**Status: FROZEN** (21 Nov 2026, 05:29 UTC; written, reviewed and frozen before any response of any unit was looked at as a
+function of trial order)
 
 **Why.** The Waning, question VI on the home page: in the worm atlas a neuron poked a second time, 0.6 to 2
 minutes after the first, answers at about half its first answer (0.47, interval 0.34 to 0.64; 56 pairs in 37
@@ -117,29 +118,73 @@ per row; 35 to 39 synthetic mice kept at least 3 tagged units.
 | falls to 0.8 by the end (0.86) | 0.86 | 0.86 to 0.87 | 40 of 40 | 40 of 40 |
 | falls to 0.5 by the end (0.64, the worm's top) | 0.64 | 0.64 | 40 of 40 | 1 of 40 |
 
-*The split* (`scripts/opto_waning_cal2.py`, `waning_cal2.json`, `waning_cal2b.json`). A known effect planted into
-each mouse's own spontaneous recording, where no light was shown: 150 pretend trials 1.9 s apart with the
-mouse's own sequence of levels. Driven units gain spikes, each class of neighbours is pushed down or up by
-its own link, the driven answer falls to `fd` of its start and the links to `fn` of theirs; then
-`waning.split`, unchanged. Three link sizes; the faintest gives class profiles less steady (split-half 0.69 to
-0.85 over runs) than the real ones (0.89 and 0.91), the other two as steady or steadier (0.88 to 0.98). 20 runs of 39 mice per row
-(10 for the faintest).
+*The split* (`scripts/opto_waning_cal2.py`, `docs/figures/opto/waning_cal2.json`; rerun in full with the final
+code after the review). A known effect planted into each mouse's own spontaneous recording, where no light
+was shown: 150 pretend trials 1.9 s apart with the mouse's own sequence of levels. Driven units gain spikes,
+each class of neighbours is pushed down or up by its own link, the driven answer falls to `fd` of its start
+and the links to `fn` of theirs; then `waning.split` and the registered rule, unchanged. Three link sizes;
+the faintest gives class profiles less steady (split-half 0.72 to 0.84, medians per row) than the real ones
+(0.89 and 0.91), the other two as steady or steadier (0.91 to 0.98). 6 runs of 39 mice per link size, so 18 per row.
 
-| driven falls to | links fall to | true *beyond* | measured *beyond* (median; range over runs) | "fades faster" called | interval inside 0.8 to 1.25 |
-|---|---|---|---|---|---|
-| 1.0 | 1.0 | 1.00 | 0.97 to 1.01; 0.92 to 1.06 | 0 of 50 | 50 of 50 |
-| 0.6 | 1.0 | 1.00 | 1.00 to 1.02; 0.96 to 1.13 | 0 of 50 | 49 of 50 |
-| 1.0 | 0.8 | 0.86 | 0.84 to 0.88; 0.81 to 0.91 | 50 of 50 | 36 of 50 |
-| 1.0 | 0.6 | 0.71 | 0.70 to 0.72; 0.66 to 0.76 | 50 of 50 | 0 of 50 |
-| 0.6 | 0.6 | 0.71 | 0.72 to 0.73; 0.65 to 0.79 | 50 of 50 | 0 of 50 |
+| driven falls to | links fall to | true *beyond* | measured, first version | measured, second version | "fades faster" | "follows within a quarter" |
+|---|---|---|---|---|---|---|
+| 1.0 | 1.0 | 1.00 | 0.98 to 1.01 | 0.99 to 1.01 | 0 of 18 | 18 of 18 |
+| 0.6 | 1.0 | 1.00 | 1.01 to 1.03 | 1.00 to 1.02 | 0 of 18 | 18 of 18 |
+| 1.0 | 0.8 | 0.86 | 0.84 to 0.88 | 0.84 to 0.86 | 18 of 18 | 0 of 18 |
+| 1.0 | 0.6 | 0.71 | 0.71 to 0.72 | 0.71 to 0.72 | 18 of 18 | 0 of 18 |
+| 0.6 | 0.6 | 0.71 | 0.70 to 0.74 | 0.70 to 0.71 | 18 of 18 | 0 of 18 |
 
-So: the measures return what was planted; a fade of the driven cells alone is not mistaken for a fade of the
-links (a slight lean the other way, up to 1.13 in one run); links that lose a fifth by the end of the block
-are caught every time, even at the faintest size. **"Within a quarter" is weak on its own:** a true 0.86 sits
-inside 0.8 to 1.25 in 36 of 50 runs, so that phrase will always be given with the median and its interval.
-At the faintest size a mouse had no ratio in 10 of 1,950 mouse-runs; at the other sizes, never. The planted effects are multiplicative and the same for every unit of a
-class; real links need not be.
+(Measured: the median over runs, at each of the three link sizes.) Rows added by the review, middle link size,
+6 runs each. *Drift* is the neighbours' resting rate at the end of the block over its start, with nothing
+fading unless said; a *fixed-fraction* link removes or adds a share of the spikes there are, a *fixed-number*
+link a set number whatever the rate.
 
-**Review before the freeze.**
+| case | first version | second version | resting rate reads | "fades faster" | undecided | "follows" |
+|---|---|---|---|---|---|---|
+| drift to 0.8, fixed-fraction links | 0.88 | 1.03 | 0.86 | 0 of 6 | 6 | 0 |
+| drift to 1.2, fixed-fraction links | 1.12 | 0.97 | 1.13 | 0 of 6 | 0 | 0 |
+| drift to 0.8, fixed-number links | 0.94 | 1.10 | 0.86 | 0 of 6 | 2 | 0 |
+| drift to 1.2, fixed-number links | 1.04 | 0.89 | 1.13 | 0 of 6 | 6 | 0 |
+| links fall to 0.8 while the rate drifts to 1.2 | 0.98 | 0.85 | 1.13 | 0 of 6 | 6 | 0 |
+| links fall to 0.8, fixed-number links, no drift | 0.86 | 0.85 | 1.00 | 4 of 6 | 2 | 0 |
+| nothing fading, background played backwards | 0.99 | 0.98 | 1.00 | 0 of 6 | 0 | 6 |
 
-*REVIEW*
+So: the measures return what was planted. A fade of the driven units alone is not mistaken for a fade of the
+links. Links that lose a fifth by the end of the block are caught in 18 of 18 runs when they act by a fixed
+fraction and in 4 of 6 when they act by a fixed number. **A drifting resting rate with nothing fading fools
+one version or the other, as the review said, and never both: "fades faster" was called in 0 of 24 such
+runs, and a real fade hidden by an upward drift came out undecided, not as "follows".** At the faintest
+size a mouse had no ratio in at most 3 of 234 mouse-runs per row. The planted links are the same for every
+unit of a class; real links need not be. No saturation of the driven units is planted: that case rests on
+the ceiling check and its rider.
+
+## Review before the freeze (independent agent, 20 Nov 2026; it read no response by trial order)
+
+1. **Blocking, accepted.** The neighbours' answer was a spike difference over a fixed spread, so a steady
+   fractional push on a resting rate that drifts down read as a fade while the driven measure stayed at 1
+   (reviewer's synthetic: *beyond* 0.86, "fades faster" called 8 of 8), and an upward drift could hide a real
+   fade. **Fixed:** W2 now needs two versions of the profile that fail in opposite directions under drift,
+   the neighbours' resting rate is reported and gates "follows", and the calibration has drift rows.
+2. **Accepted.** The tagged units are a chosen sample of the lit cells and the likeliest to be at their
+   ceiling. W2 is worded for "the recorded driven units", a ceiling check that uses no trial order is
+   registered with its rider, and the limit is stated.
+3. **Accepted.** Tagging over the whole block favours units that kept answering. Stated as a limit; W1b is
+   retitled to what it tests, and a failed W1b is said not to be evidence of a worm-like fade.
+4. **Accepted.** The first pulses held a different mix of light levels from the rest. They are now compared
+   with what later pulses at the same level say to expect, and the text says the very first answer to light
+   is in no measure.
+5. **Accepted.** A late answer that has reversed counts as below 1 and is no longer dropped; W2 has one
+   outcome, not two flags that could both be set.
+6. **Accepted.** The limits now say that every calibration run shares the same 39 backgrounds, recorded 66
+   minutes before the light. Drift, fixed-number links and a reversed background were added, and the whole
+   split calibration was rerun with the final code (6 runs per link size where the first pass had 20).
+7. **Accepted.** 23 to 25 trials, not 24; "the pulse fade at each light level"; the claims are about the
+   pooled set, with no correction across the three. The pulse calibration leaves out synthetic mice with
+   fewer than 3 tagged units; the registered run needs no such rule, since every real mouse has at least 3.
+8. **Accepted.** The run script prints nothing until the result file is written, and was dry-run end to end
+   on three synthetic mice that share only trial tables, unit lists and resting rates with real ones
+   (`scripts/opto_waning.py --dry`). Probe drift and the light before the resting window are in the limits.
+
+Checked by the reviewer with no defect found: the thirds, the even-numbered rule against the tagging rule,
+the trial order passed to the split, the trial tables of all 39 mice, the baseline windows, and that the
+sequence of levels and kinds differs in every mouse.
