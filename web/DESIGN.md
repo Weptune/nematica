@@ -93,7 +93,9 @@ is visual only: all copy stays plain and exact.
 - The site is signed "Weptune", linking to weptune.dev, in every footer and in each page's author tag.
 
 ## Publishing
-- Publish `web/` as it is in git: `.github/workflows/pages.yml` runs only when started by hand.
+- The site is live at https://nematica.weptune.dev. `.github/workflows/pages.yml` publishes `web/` as it is
+  in git on every push to `main` that changes `web/` (and can be started by hand). Anything pushed there
+  goes live, so keep unfinished work on another branch.
 - Only files in git are published. `data/local.js`, `data/echo.js`, `data/brain.js`, `data/sim/` and
   `lab/data/` hold third-party recordings or positions and stay local, so `sim.html` and `lab/` work only
   when served locally; they are not linked from the published navigation.
