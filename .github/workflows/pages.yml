@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.retry.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
@@ -32,4 +32,13 @@ jobs:
         with:
           path: web
       - id: deployment
-        uses: actions/deploy-pages@v5   # v4 can no longer find the uploaded artifact ("No artifacts named github-pages were found"); v5 is what GitHub's own starter workflow uses
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+      # The deploy step sometimes cannot see the artifact uploaded a moment earlier and fails with
+      # "No artifacts named github-pages were found" (seen on 21 Nov 2026 with both v4 and v5, in runs whose
+      # upload step had succeeded). GitHub's own message says to try again later, so wait and try once more.
+      - if: steps.deployment.outcome == 'failure'
+        run: sleep 45
+      - id: retry
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@v5
