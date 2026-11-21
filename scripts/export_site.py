@@ -270,8 +270,9 @@ def beyond() -> dict:
             "band": [0.34, 0.64], "bandLabel": "real worms",
             "plain": {"value": 1.0, "label": "artificial networks"},
             "status": {"text": "The light tool, or the neuron?",
-                       "sub": "A network whose input weakens with use reproduces it; this data cannot tell which the worm has"},
-            "tip": [["Real worms", "about half (interval 0.34 to 0.64)"], ["Artificial networks", "the same every time"]],
+                       "sub": "Unknown in the worm. A mouse's driven cells, under a different tool, lose a fifth within three flashes and then hold"},
+            "tip": [["Real worms", "about half (interval 0.34 to 0.64)"], ["Artificial networks", "the same every time"],
+                    ["Mouse cells, later flashes ÷ the first", "about four fifths (24 mice, a later look)"], ["Mouse cells, end of ten minutes ÷ start", "0.98 (39 mice)"]],
             "note": "Exploratory curve. About 9% of the atlas's stimulations are repeats within 5 minutes."},
         {  # docs/JOURNEY.md (Study J, registered): the copper set, which no recipe of this family had met
             "title": "Ongoing activity in moving worms", "where": "Worm, 27 freely moving animals the recipe had never met (another lab)",
@@ -317,6 +318,15 @@ def beyond() -> dict:
                        "claims": {k: vr[k] for k in ("V1", "V2", "V3", "V4", "V5")},
                        "median": {k: vr[f"median_{k}"] for k in ("Sst", "Vip")}}
     out["journey"] = jr
+    wn = json.loads((FIG / "opto" / "waning_result.json").read_text())                 # Study W, the registered run
+    wctl = json.loads((FIG / "opto" / "waning_control.json").read_text())             # controls added after it (not registered)
+    wc, ff = wctl["by_line"]["wt"]["all"], wctl["first_flash"]["opens_with_pulse"]["1"]
+    out["waning"] = {"mouse": {"fade": round(wn["pulse"]["median"], 2), "interval": [round(v, 3) for v in wn["pulse"]["interval"]], "mice": wn["pulse"]["n"],
+                               "below": wn["pulse"]["below_one"], "above": wn["pulse"]["above_worm"],
+                               # the very first flash against later ones, the worm's way round (later over first); unregistered, one trial per mouse
+                               "later": round(1 / ff["ratio"], 2), "laterInterval": [round(1 / ff["interval"][1], 2), round(1 / ff["interval"][0], 2)], "laterMice": ff["n"]},
+                     "beyond": [round(wn["beyond"]["median"], 2), round(wn["beyond_frac"]["median"], 2)],
+                     "lightAlone": [round(wc["net"]["median"], 2), round(wc["net_frac"]["median"], 2)]}
     # the emulator: passes on the worms it was built on, not on others
     out["emulator"] = json.loads((FIG / "emulator_transfer.json").read_text())
     out["emulator"].pop("note", None)

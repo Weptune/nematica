@@ -278,6 +278,11 @@
         <h3>Given what it lacked, the recipe comes one test short on moving worms</h3>
         <p>The recipe that passes on held-still worms had failed on moving ones, and an exploratory look had named what it lacked there: coupling between neuron classes, and the lopsided shape of real activity. We gave it both, froze the rule, and ran it once on 27 moving worms that no version of it had met. As built it passes 1 to 3 of 6 tests of ongoing activity, so the failure repeats. With both changes it passes 4 of 6 in all five draws, one short of the pass mark. Coupling alone reached 5 in two of three draws, but that was not the registered recipe. The review before the freeze found that one source of simulated noise was drawn in an order that changed between runs; that is fixed, and a seed now fixes a result.</p>
       </div><aside class="log-aside"><div class="measure"><span class="v">4 of 6</span><span class="l">activity tests passed on moving worms, once given coupling and skew</span></div><a href="findings.html#emulator">Details</a></aside></li>
+      <li class="done"><div class="log-main">
+        <p class="when">21 Nov 2026 · A registered follow-up</p>
+        <h3>A mouse's driven cells lose a fifth of their answer in three flashes, then hold</h3>
+        <p>The worm's second answer is half its first, and its data cannot say whether the neuron or the light tool tires. We asked a second animal. In 39 mice, cells driven by light 300 times give 98% as many spikes at the end of ten minutes as at the start; that was registered, reviewed and run once. The review before the freeze caught a way for a drifting resting rate to pass for a fade, and the measure was rebuilt to resist it. The independent check after the result reproduced every number, corrected two overstatements in our reading, and found what the registered measure could not see: the very first flash draws about a fifth more than later ones. The surrounding cortex answers a tenth less by the end, but so, roughly, does the response to light alone in mice with no channel. The worm's question stays open.</p>
+      </div><aside class="log-aside"><div class="measure"><span class="v">0.98</span><span class="l">of a mouse cell's answer left after ten minutes of light</span></div><a href="findings.html#tiring">Details</a></aside></li>
     </ol>
   </div>
 </main>

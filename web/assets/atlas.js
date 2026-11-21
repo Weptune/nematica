@@ -321,20 +321,24 @@
     return g;
   }
   function waning(host) {
-    const G = (R.gaps || []).find((g) => /same poke/i.test(g.title)) || { band: [0.34, 0.64] };
-    const lo = G.band[0], hi = G.band[1], mid = (lo + hi) / 2, nar = host.clientWidth < 470, H = nar ? 330 : 360;
-    const { s } = stage(host, H, `A real worm's second answer to the same poke is about half its first (between ${lo} and ${hi}); an artificial network's second answer equals its first`);
-    const r = nar ? 30 : 50, x1 = r * 1.5 + 2, x2 = x1 + r * 2 + (nar ? 44 : 76), yA = nar ? 74 : 96, yB = nar ? 232 : 256;
-    [[yA, "real", mid, "A real worm"], [yB, "copy", 1, "An artificial network"]].forEach(([yy, kind, f, name], k) => {
-      rv(moon(s, x1, yy, r, 1, kind), k * 4, 120); rv(moon(s, x2, yy, r, f, kind), k * 4 + 2, 120);
-      if (!k) moon(s, x2, yy, r, 1, kind).classList.add("wane");      // asked again, the real worm's answer is seen to fade: a full moon over the waned one, which then goes
+    const G = (R.gaps || []).find((g) => /same poke/i.test(g.title)) || { band: [0.34, 0.64] }, M = R.waning && R.waning.mouse;
+    const lo = G.band[0], hi = G.band[1], mid = (lo + hi) / 2, nar = host.clientWidth < 470;
+    const rows = [{ kind: "real", f: mid, name: "A real worm", said: ["second answer: about half", `between ${f2(lo)} and ${f2(hi)} of the first`], short: ["about half", `${f2(lo)} to ${f2(hi)}`], under: ["first answer", "asked again"], band: [lo, hi] }];
+    if (M && M.later) rows.push({ kind: "real", f: M.later, name: "A mouse's driven cells", said: ["later answers: about four fifths", `then steady: ${f2(M.fade)} over ten minutes`], short: ["four fifths,", "then steady"], under: ["first flash", "from the third on"] });
+    rows.push({ kind: "copy", f: 1, name: "An artificial network", said: ["answers the same every time"], short: ["the same", "every time"], under: ["first answer", "asked again"] });
+    const r = nar ? 30 : rows.length > 2 ? 42 : 50, step = nar ? 158 : rows.length > 2 ? 142 : 160, y0 = nar ? 74 : r + 46, H = y0 + step * (rows.length - 1) + r + 44;
+    const { s } = stage(host, H, `A real worm's second answer to the same poke is about half its first (between ${lo} and ${hi})${M && M.later ? `; a mouse's driven cells answer later flashes at about four fifths of the first (${f2(M.later)}) and then hold, ${f2(M.fade)} from the start of ten minutes of light to the end` : ""}; an artificial network's second answer equals its first`);
+    const x1 = r * 1.5 + 2, x2 = x1 + r * 2 + (nar ? 44 : 76);
+    rows.forEach((o, k) => { const yy = y0 + k * step;
+      rv(moon(s, x1, yy, r, 1, o.kind), k * 4, 120); rv(moon(s, x2, yy, r, o.f, o.kind), k * 4 + 2, 120);
+      if (!k) moon(s, x2, yy, r, 1, o.kind).classList.add("wane");      // asked again, the real worm's answer is seen to fade: a full moon over the waned one, which then goes
       el("path", { d: `M${x1 + r + 10} ${px(yy)}H${x2 - r - 12}m-7 -4.5l7 4.5-7 4.5`, fill: "none", stroke: C.b3 }, s);
-      if (!k) [lo, hi].forEach((v) => { const rx = r * Math.abs(1 - 2 * v);
+      if (o.band) o.band.forEach((v) => { const rx = r * Math.abs(1 - 2 * v);
         el("path", { d: `M${x2} ${yy - r}A${rx.toFixed(2)} ${r} 0 0 ${v < 0.5 ? 0 : 1} ${x2} ${yy + r}`, fill: "none", stroke: C.bone, "stroke-dasharray": "2 4", "stroke-opacity": 0.85 }, s); });
       const lx = x2 + r + (nar ? 14 : 30);
-      if (nar) { tx(s, 0, yy - r - 16, name, it(20)); tx(s, lx, yy - 4, k ? "the same" : "about half", small()); tx(s, lx, yy + 14, k ? "every time" : `${f2(lo)} to ${f2(hi)}`, small({ fill: C.b3 })); }
-      else note(s, lx, yy - 6, name, k ? ["answers the same every time"] : ["second answer: about half", `between ${f2(lo)} and ${f2(hi)} of the first`], { size: 25 });
-      tx(s, x1, yy + r + 24, "first answer", small({ "text-anchor": "middle", fill: C.b3 })); tx(s, x2, yy + r + 24, "asked again", small({ "text-anchor": "middle", fill: C.b3 }));
+      if (nar) { tx(s, 0, yy - r - 16, o.name, it(20)); tx(s, lx, yy - 4, o.short[0], small()); tx(s, lx, yy + 14, o.short[1], small({ fill: C.b3 })); }
+      else note(s, lx, yy - 6, o.name, o.said, { size: 25 });
+      tx(s, x1, yy + r + 24, o.under[0], small({ "text-anchor": "middle", fill: C.b3 })); tx(s, x2, yy + r + 24, o.under[1], small({ "text-anchor": "middle", fill: C.b3 }));
     });
   }
 
