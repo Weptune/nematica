@@ -43,12 +43,19 @@ ol, ul { padding: 0; list-style: none; }
 .mark { display: inline-flex; align-items: center; gap: 10px; font: 700 .92rem var(--sans); letter-spacing: .14em; text-decoration: none; }
 .mark svg { width: 26px; height: 26px; color: var(--bone); }
 .mark circle { fill: var(--gilt); }
-.top nav { display: flex; gap: clamp(14px, 2.2vw, 34px); }
-.top nav a { font: 500 .92rem var(--sans); color: var(--bone-2); text-decoration: none; padding: 6px 0; border-bottom: 1px solid transparent; }
+.top nav { display: flex; gap: clamp(14px, 2.2vw, 34px); margin-left: auto; }
+.motion { flex: none; width: 34px; height: 34px; display: inline-grid; place-items: center; padding: 0; background: none; border: 1px solid var(--line); border-radius: 50%; color: var(--bone-2); cursor: pointer; }
+.motion:hover { color: var(--gilt); border-color: var(--gilt); }
+.motion svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.motion .pl { display: none; fill: currentColor; stroke-width: 1.6; } html.still .motion .pa { display: none; } html.still .motion .pl { display: block; }
+html:not(.still):not(.moving) .motion { display: none; }
+.btn.play { display: none; width: 48px; height: 48px; padding: 0; justify-content: center; flex: none; } html.still .btn.play { display: inline-flex; }
+.top nav a { font: 500 .92rem var(--sans); color: var(--bone-2); text-decoration: none; padding: 6px 0; border-bottom: 1px solid transparent; white-space: nowrap; }
 .top nav a:hover, .top nav a[aria-current="page"] { color: var(--bone); border-bottom-color: var(--gilt); }
 .menu { display: none; font: 600 .9rem var(--sans); color: var(--bone); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 7px 16px; cursor: pointer; }
-@media (max-width: 960px) {
-  .menu { display: block; }
+@media (max-width: 1140px) { .top nav { gap: 16px; } }
+@media (max-width: 1060px) {
+  .menu { display: block; margin-left: auto; }
   .top nav { position: absolute; left: 0; right: 0; top: 100%; flex-direction: column; gap: 0; background: var(--deep); border-bottom: 1px solid var(--line); padding: 6px var(--gutter) 18px; display: none; }
   .top.menu-open nav { display: flex; }
   .top.menu-open { background: var(--deep); }
@@ -160,7 +167,6 @@ ol, ul { padding: 0; list-style: none; }
 .fig .wane { opacity: 0; pointer-events: none; }
 .in .wane { animation: wane 4.2s ease .3s both; }
 @keyframes wane { 0% { opacity: 0; } 10% { opacity: 1; } 42% { opacity: 1; } 100% { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .in .wane { animation: none; } }
 .ledger .strip { position: relative; }
 .fig figcaption { font: 500 .86rem/1.5 var(--sans); color: var(--bone-3); margin-top: 14px; max-width: 62rem; }
 .fig svg text { font-family: var(--sans); }
@@ -169,7 +175,16 @@ ol, ul { padding: 0; list-style: none; }
 .in .rv { opacity: 1; transition: opacity .5s ease var(--d, 0ms); }
 .draw { stroke-dasharray: var(--len, 2000); stroke-dashoffset: var(--len, 2000); }
 .in .draw { stroke-dashoffset: 0; transition: stroke-dashoffset 1.6s cubic-bezier(.3, .6, .2, 1) var(--d, 0ms); }
-@media (prefers-reduced-motion: reduce) { .card .back, .card .txt > h3, .card .txt > p { transition: none; } .rv { opacity: 1; } .draw { stroke-dashoffset: 0; } html { scroll-behavior: auto; } .card, .seal .ticks { transition: none; } }
+/* Motion off. assets/motion.js puts html.still on the page when the visitor's system asks for less motion or they
+   press the switch, and html.moving when motion is on. The media query is for a page whose scripts did not run. */
+html.still { scroll-behavior: auto; }
+html.still *, html.still *::before, html.still *::after { transition: none !important; animation: none !important; }
+html.still .rv { opacity: 1; } html.still .draw { stroke-dashoffset: 0; }
+@media (prefers-reduced-motion: reduce) {
+  html:not(.moving) { scroll-behavior: auto; }
+  html:not(.moving) *, html:not(.moving) *::before, html:not(.moving) *::after { transition: none !important; animation: none !important; }
+  html:not(.moving) .rv { opacity: 1; } html:not(.moving) .draw { stroke-dashoffset: 0; }
+}
 
 .verdict { display: flex; align-items: center; gap: clamp(14px, 2vw, 26px); margin-top: clamp(30px, 4vw, 56px); padding-top: 22px; border-top: 1px solid var(--line); }
 .verdict svg { width: clamp(22px, 2.2vw, 30px); height: auto; flex: none; color: var(--gilt); align-self: flex-start; margin-top: .35em; }
@@ -257,7 +272,6 @@ ol, ul { padding: 0; list-style: none; }
 .rail a::after { content: attr(data-name); position: absolute; right: 44px; top: 50%; transform: translateY(-50%); white-space: nowrap; font: italic 500 1.05rem var(--serif); color: var(--bone); background: var(--deep); padding: 4px 12px; border: 1px solid var(--line); opacity: 0; pointer-events: none; transition: opacity .15s; }
 .rail a:hover::after, .rail a:focus-visible::after { opacity: 1; }
 @media (min-width: 1280px) { .rail { display: flex; } }
-@media (prefers-reduced-motion: reduce) { .rail { transition: none; } }
 
 /* =====================================================================================================
    The cinematic layer (20 Nov 2026). One fixed scene (#sky, assets/sky.js) lives behind the whole page;
@@ -356,20 +370,28 @@ main, .foot { position: relative; z-index: 1; }
 .verdict svg, .chip svg { filter: drop-shadow(0 0 6px rgba(240, 207, 120, .35)); }
 .bench { background: rgba(4, 10, 28, .5); }
 .rail a { background: rgba(4, 10, 28, .8); }
-@media (prefers-reduced-motion: reduce) { .kin .w { opacity: 1; transform: none; transition: none; } .card, .card:hover { transition: none; transform: none; } .tw::after { transition: none; } }
+html.still .kin .w { opacity: 1; transform: none; } html.still .card, html.still .card:hover { transform: none; }
+@media (prefers-reduced-motion: reduce) { html:not(.moving) .kin .w { opacity: 1; transform: none; } html:not(.moving) .card, html:not(.moving) .card:hover { transform: none; } }
 
 /* marks land with a little spring */
 .fig circle.rv, .fig g.mk.rv { transform-box: fill-box; transform-origin: 50% 50%; transform: scale(.15); }
 .in circle.rv, .in g.mk.rv { transform: scale(1); transition: opacity .5s ease var(--d, 0ms), transform .8s cubic-bezier(.3, 1.7, .5, 1) var(--d, 0ms); }
 .chapter { position: relative; }
-@media (prefers-reduced-motion: reduce) { .fig circle.rv, .fig g.mk.rv { transform: none; } }
+html.still .fig circle.rv, html.still .fig g.mk.rv { transform: none; }
+@media (prefers-reduced-motion: reduce) { html:not(.moving) .fig circle.rv, html:not(.moving) .fig g.mk.rv { transform: none; } }
 
 /* ---- stages: the box in each section where the scene's figure sits. The figure travels with its box,
    so it never lies over the words beside it (assets/sky.js reads these boxes). */
 .stage { pointer-events: none; min-width: 0; }
 .hero { align-items: stretch; }
 .hero .stage { flex: 1 1 auto; min-height: 30svh; }
-@media (min-width: 981px) and (max-width: 1240px) { .hero-foot { grid-template-columns: minmax(0, 27rem) auto; } .hero-cap { grid-column: 1 / -1; grid-row: 1; justify-self: start; text-align: left; max-width: none; } }
+/* short windows, which is most laptops: the title gives room to the worm and the first screen holds the whole opening */
+@media (min-width: 981px) and (max-height: 820px) {
+  .hero { padding-top: clamp(74px, 12vh, 96px); gap: clamp(10px, 2.4vh, 24px); }
+  .hero h1 { font-size: min(clamp(3.1rem, 1rem + 6.5vw, 8.4rem), 13.5vh); }
+  .hero .stage { min-height: 22svh; }
+}
+@media (min-width: 981px) and (max-width: 1500px) { .hero-foot { grid-template-columns: minmax(0, 27rem) auto; row-gap: clamp(10px, 2.2vh, 22px); } .hero-cap { grid-column: 1 / -1; grid-row: 1; justify-self: start; text-align: left; max-width: none; } }
 .open { display: grid; grid-template-columns: minmax(0, 1.42fr) minmax(0, 1fr); gap: clamp(16px, 3vw, 64px); align-items: center; min-height: 96svh; }
 .open .stage { align-self: stretch; }
 .open .chapter { max-width: none; min-height: 0; }

@@ -6,7 +6,7 @@
 (function () {
   "use strict";
   const hosts = Array.from(document.querySelectorAll("[data-net]")); if (!hosts.length) return;
-  const NS = "http://www.w3.org/2000/svg", REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const NS = "http://www.w3.org/2000/svg", MO = window.NEMATICA_MOTION, REDUCED = MO ? !MO.on : matchMedia("(prefers-reduced-motion: reduce)").matches;
   const C = { bone: "#ece6d6", b3: "rgba(236,230,214,.64)", line: "rgba(236,230,214,.26)", hair: "rgba(236,230,214,.13)", gilt: "#f0cf78", copy: "#ff5d88" };
   function el(tag, a, p) { const n = document.createElementNS(NS, tag); for (const k in a || {}) if (a[k] != null) n.setAttribute(k, a[k]); if (p) p.appendChild(n); return n; }
   const N = 12;
@@ -105,6 +105,8 @@
   const btn = document.getElementById("bench-poke"), mo = document.getElementById("bench-motion");
   if (btn) btn.addEventListener("click", () => poke(nextI));
   if (mo) { if (REDUCED) { mo.setAttribute("aria-pressed", "true"); mo.textContent = "Play motion"; }
-    mo.addEventListener("click", () => { paused = !paused; mo.setAttribute("aria-pressed", String(paused)); mo.textContent = paused ? "Play motion" : "Pause motion"; kick(); }); }
+    const show = () => { mo.setAttribute("aria-pressed", String(paused)); mo.textContent = paused ? "Play motion" : "Pause motion"; kick(); };
+    mo.addEventListener("click", () => { paused = !paused; show(); });
+    if (MO) MO.sub((on) => { paused = !on; show(); }); }
   new IntersectionObserver((es) => es.forEach((e) => { visible = e.isIntersecting; if (visible) kick(); }), { threshold: 0.15 }).observe(document.getElementById("bench") || hosts[0]);
 })();

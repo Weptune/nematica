@@ -10,7 +10,7 @@
   "use strict";
   const R = window.NEMATICA_RESULTS || {};
   const NS = "http://www.w3.org/2000/svg", PI = Math.PI;
-  const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const MO = window.NEMATICA_MOTION, REDUCED = MO ? !MO.on : matchMedia("(prefers-reduced-motion: reduce)").matches;   // as the page opened; the scene and plates follow the switch live
   const C = { bone: "#ece6d6", b2: "rgba(236,230,214,.74)", b3: "rgba(236,230,214,.64)", line: "rgba(236,230,214,.26)",
     hair: "rgba(236,230,214,.13)", ghost: "rgba(236,230,214,.06)", real: "#b68f1b", gilt: "#dcbc62", gold: "#f0cf78",
     copy: "#e03063", lit: "#ff5d88", paper: "#071230", deep: "#040a1c" };
@@ -542,7 +542,7 @@
     if (SKY && deck.length) { const sign = (c) => c.querySelector(".seal").dataset.g, title = (c) => `${c.querySelector(".num").firstChild.textContent.trim()}. ${c.querySelector("h3").textContent}`;
       deck.forEach((c) => { const on = () => SKY.light(sign(c), title(c)), off = () => SKY.light(null); c.addEventListener("pointerenter", on); c.addEventListener("pointerleave", off); c.addEventListener("focus", on); c.addEventListener("blur", off); });
       SKY.onplanet = (g) => { let hit = null; deck.forEach((c) => { const y = sign(c) === g; c.classList.toggle("lit", y); if (y) hit = c; }); SKY.light(g, hit ? title(hit) : ""); };
-      SKY.pick = (g) => { const c = deck.find((d) => sign(d) === g), to = c && $(c.getAttribute("href")); if (to) to.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" }); }; }
+      SKY.pick = (g) => { const c = deck.find((d) => sign(d) === g), to = c && $(c.getAttribute("href")); if (to) to.scrollIntoView({ behavior: (MO ? MO.on : !REDUCED) ? "smooth" : "auto" }); }; }
     const prog = $("#progress"), onProg = () => prog && prog.style.setProperty("--p", (scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)).toFixed(4));
     addEventListener("scroll", onProg, { passive: true }); onProg();
     const top = $("#top"), menu = $(".menu");
@@ -552,7 +552,7 @@
     menu.addEventListener("click", () => { const o = top.classList.toggle("menu-open"); menu.setAttribute("aria-expanded", o); });
     $$("#nav a").forEach((a) => a.addEventListener("click", shut));
     addEventListener("keydown", (e) => { if (e.key === "Escape" && top.classList.contains("menu-open")) { shut(); menu.focus(); } });
-    addEventListener("resize", () => { if (innerWidth > 960) shut(); });
+    addEventListener("resize", () => { if (innerWidth > 1060) shut(); });
   }
   (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(init);
 })();

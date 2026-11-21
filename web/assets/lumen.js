@@ -7,7 +7,8 @@
 (function () {
   "use strict";
   if (!document.createElement("canvas").getContext) return;
-  const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches, TAU = Math.PI * 2, PI = Math.PI;
+  const MO = window.NEMATICA_MOTION; let REDUCED = MO ? !MO.on : matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const TAU = Math.PI * 2, PI = Math.PI;
   const COL = { real: [240, 207, 120], copy: [255, 84, 128], ring: [255, 93, 136], bone: [236, 230, 214], line: [236, 230, 214] };
   const rgba = (c, a) => "rgba(" + c[0] + "," + c[1] + "," + c[2] + "," + a.toFixed(3) + ")";
   const smooth = (v) => (v <= 0 ? 0 : v >= 1 ? 1 : v * v * (3 - 2 * v));
@@ -129,6 +130,7 @@
   const LAYERS = []; let running = false;
   const io = "IntersectionObserver" in window ? new IntersectionObserver((es) => es.forEach((e) => { const L = LAYERS.find((l) => l.cv === e.target); if (L) { L.vis = e.isIntersecting; if (L.vis) kick(); } }), { rootMargin: "140px 0px" }) : null;
   function kick() { if (!running) { running = true; requestAnimationFrame(loop); } }
+  if (MO) MO.sub((on) => { REDUCED = !on; kick(); });
   function loop(now) {
     let any = false;
     for (let i = LAYERS.length - 1; i >= 0; i--) { const L = LAYERS[i];

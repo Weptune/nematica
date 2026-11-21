@@ -16,7 +16,7 @@
   const B = window.NEMATICA_WIRING || window.NEMATICA_BRAIN, cv = document.getElementById("sky");
   if (!B || !cv) return;
   const ctx = cv.getContext("2d"), N = B.names.length;
-  const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const MO = window.NEMATICA_MOTION; let REDUCED = MO ? !MO.on : matchMedia("(prefers-reduced-motion: reduce)").matches;
   const PI = Math.PI, TAU = 2 * PI, sin = Math.sin, cos = Math.cos, CAM = 4.2;
   const c01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
   const smooth = (u) => { u = c01(u); return u * u * (3 - 2 * u); };
@@ -476,7 +476,7 @@
     if (!born) born = now; if (now - measured > 700) measure();
     const t = REDUCED ? 8 : now / 1000, y0 = scrollY;
     if (cloud) { const ty = Math.round((0.3 - 0.6 * (y0 / Math.max(1, document.documentElement.scrollHeight - H))) * H); if (ty !== cloudY) { cloudY = ty; cloud.style.transform = `translate3d(0,${ty}px,0)`; } }
-    px += (tpx - px) * 0.05; py += (tpy - py) * 0.05;
+    if (REDUCED) px = py = 0; else { px += (tpx - px) * 0.05; py += (tpy - py) * 0.05; }                                // with motion off the scene does not lean after the pointer
 
     // ---- how much of each figure is in, from where the page is
     const k = REDUCED ? 1 : 1 - Math.exp(-dt / (now - born < 1600 ? 520 : 150)); let top = null; const live = [];
@@ -578,5 +578,6 @@
     if (!heroStage || heroStage.w < 0.9 || hero.m > 0.05) return;
     let best = -1, bd = 34 * 34; for (let i = 0; i < N; i++) { const dx = sx[i] - mx, dy = sy[i] - my, q = dx * dx + dy * dy; if (q < bd) { bd = q; best = i; } } if (best >= 0) poke(best, performance.now(), 1); });
   addEventListener("resize", resize); addEventListener("load", measure); if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+  if (MO) MO.sub((on) => { REDUCED = !on; lastAuto = performance.now(); if (!on) { pulses.length = 0; en.fill(0); } });                                              // the motion switch: the scene holds still, or picks up where it is
   resize(); setHero("worm", performance.now(), true); requestAnimationFrame(frame);
 })();

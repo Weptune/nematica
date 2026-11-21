@@ -8,7 +8,8 @@
    touch  watch, then touch: the same small network seen at rest, and answering one driven cell */
 (function () {
   "use strict";
-  const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const MO = window.NEMATICA_MOTION; let REDUCED = MO ? !MO.on : matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const KICKS = []; if (MO) MO.sub((on) => { REDUCED = !on; KICKS.forEach((k) => k()); });
   const PI = Math.PI, TAU = 2 * PI, sin = Math.sin, cos = Math.cos;
   const GOLD = [240, 207, 120], CARM = [255, 79, 126], BONE = [236, 230, 214], BRASS = [182, 143, 27];
   const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${Math.max(0, a).toFixed(3)})`;
@@ -120,7 +121,7 @@
     const size = () => { const r = host.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); W = Math.max(240, Math.round(r.width)); H = W < 300 ? 216 : 244; cv.style.width = W + "px"; cv.style.height = H + "px"; cv.width = Math.round(W * d); cv.height = Math.round(H * d); g.setTransform(d, 0, 0, d, 0, 0); };
     const frame = (now) => { raf = 0; g.clearRect(0, 0, W, H); draw(g, W, H, REDUCED ? 2.2 : now / 1000); if (live && !REDUCED) raf = requestAnimationFrame(frame); };
     const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
-    size(); kick();
+    KICKS.push(kick); size(); kick();
     if ("ResizeObserver" in window) new ResizeObserver(() => { size(); kick(); }).observe(host); else addEventListener("resize", () => { size(); kick(); });
     if ("IntersectionObserver" in window) new IntersectionObserver((es) => es.forEach((e) => { live = e.isIntersecting; if (live) kick(); }), { rootMargin: "80px" }).observe(host); else { live = true; kick(); }
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(kick);
