@@ -107,8 +107,8 @@ Where to read more:
 | I The Echo | [`docs/BENCHMARK.md`](docs/BENCHMARK.md), [`docs/RECORD.md`](docs/RECORD.md) |
 | II The Push | [`docs/OPTO_VBN.md`](docs/OPTO_VBN.md), [`docs/OPTO.md`](docs/OPTO.md), [`docs/OPTO_SIGN.md`](docs/OPTO_SIGN.md), [`docs/OPTO_SECOND.md`](docs/OPTO_SECOND.md) |
 | III The Face | [`docs/RECORD.md`](docs/RECORD.md) |
-| IV The Long Memory | [`docs/SLOW.md`](docs/SLOW.md), [`docs/SLOW_SUMMARY.md`](docs/SLOW_SUMMARY.md) |
-| V The Inner Light | [`docs/MAP.md`](docs/MAP.md), [`docs/MAP_SUMMARY.md`](docs/MAP_SUMMARY.md), [`docs/PERSIST_SUMMARY.md`](docs/PERSIST_SUMMARY.md), [`docs/BARCODE.md`](docs/BARCODE.md) |
+| IV The Long Memory | [`docs/MAP.md`](docs/MAP.md), [`docs/MAP_SUMMARY.md`](docs/MAP_SUMMARY.md) |
+| V The Inner Light | [`docs/SLOW.md`](docs/SLOW.md), [`docs/SLOW_SUMMARY.md`](docs/SLOW_SUMMARY.md), [`docs/PERSIST_SUMMARY.md`](docs/PERSIST_SUMMARY.md), [`docs/BARCODE.md`](docs/BARCODE.md) |
 | VI The Waning | [`docs/OPTO_WANING.md`](docs/OPTO_WANING.md), [`docs/RECORD.md`](docs/RECORD.md) |
 | VII The Journey | [`docs/JOURNEY.md`](docs/JOURNEY.md), [`docs/EMU_R.md`](docs/EMU_R.md) |
 | All seven, in one place | [`docs/DIFFERENCES.md`](docs/DIFFERENCES.md) |
